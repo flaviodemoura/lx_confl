@@ -1,4 +1,4 @@
-(** A nominal representation of STLC terms.
+(** A nominal representation of the lambda_x calculus.
 
     This version looks a lot like we expect a representation of
     the lambda calculus to look like. Unlike the LN version,
@@ -39,13 +39,33 @@ Qed.
 
 
 (*************************************************************)
-(** * A nominal representation of terms                      *)
+(** * A nominal representation of lambda_x terms             *)
 (*************************************************************)
 
-Inductive n_exp : Set :=
+Inductive n_sexp : Set :=
  | n_var (x:atom)
- | n_abs (x:atom) (t:n_exp)
- | n_app (t1:n_exp) (t2:n_exp).
+ | n_abs (x:atom) (t:n_sexp)
+ | n_app (t1:n_sexp) (t2:n_sexp)
+ | n_sub (t1:n_sexp) (x:atom) (t2:n_sexp).
+
+Inductive step : n_sexp -> n_sexp -> Prop :=
+ | step_betax : forall (e1 e2: n_sexp) (x: atom),
+     step (n_app  (n_abs x e1) e2)  (n_sub e1 x e2)
+ | step_var : forall (e: n_sexp) (y: atom),
+     step (n_sub (n_var y) y e) e
+ | step_gc : forall (e: n_sexp) (x y: atom),
+     x <> y -> step (n_sub (n_var x) y e) (n_var x)
+ | step_abs1 : forall (e1 e2: n_sexp) (y : atom),
+     step (n_sub (n_abs y e1) y e2)  (n_abs y e1)
+ | step_abs2 : forall (e1 e2: n_sexp) (x y: atom),
+     x <> y ->
+     step (n_sub (n_abs x e1) y e2)  (n_abs x (n_sub e1 y e2))
+ | step_app : forall (e1 e2 e3: n_sexp) (y: atom),
+     step (n_sub (n_app e1 e2) y e3) (n_app (n_sub e1 y e3) (n_sub e2 y e3))
+ | step_abs_in: forall (e e': n_sexp) (x: atom), step e e' -> step (n_abs x e) (n_abs x e')
+ | step_app_left: forall (e1 e1' e2: n_sexp) , step e1 e1' -> step (n_app e1 e2) (n_app e1' e2)
+ | step_app_right: forall (e1 e2 e2': n_sexp) , step e2 e2' -> step (n_app e1 e2) (n_app e1 e2').
+
 
 (** For example, we can encode the expression [(\X.Y X)] as below.  *)
 
