@@ -747,7 +747,11 @@ Proof.
          - intros. rewrite e. rewrite swap_id. reflexivity.
          - intros. rewrite swap_size_eq. reflexivity.         
        }
-       (*Aplicar H0 e dar reflexivity*) Admitted.
+       destruct (atom_fresh
+       (union (fv_nom u)
+          (union (remove y (fv_nom t1)) (singleton x)))). 
+       specialize (H0 x0). rewrite H0. reflexivity.
+Qed.
        
 
 (** ** Challenge Exercise [subst properties]
@@ -822,13 +826,30 @@ Proof.
              apply Sn_le_Sm__n_le_m in SZ. simpl in SZ.
              apply le_S in SZ. assumption.
            + apply aeq_app.
-             ++ apply IHt1. simpl in SZ. admit. (*Trivial*)
-             ++ apply IHt2. simpl in SZ. admit. (*Trivial*)
+             ++ apply IHt1. simpl in SZ.
+                rewrite <- plus_Sn_m in SZ.
+                rewrite plus_comm in SZ.
+                rewrite <- plus_Sn_m in SZ.
+                rewrite plus_comm in SZ.
+                apply le_trans with (S (size t1) + S (size t2)).
+                +++ apply le_plus_l.
+                +++ assumption.
+             ++ apply aeq_refl.
        --- intros. unfold not in n0. pose proof subst_abs.
            specialize (H (n_var y) y x t). case (y == x) in H.
            + contradiction.
            + simpl in H. unfold subst in H. unfold subst in IHn.
-             apply Sn_le_Sm__n_le_m in SZ. admit.
+             apply Sn_le_Sm__n_le_m in SZ.
+             destruct (atom_fresh
+           (union (singleton y)
+                  (union (remove x (fv_nom t)) (singleton y)))).
+             case (x == x0).
+             ++ intros. subst. apply aeq_abs_same. rewrite swap_id.
+                specialize (IHn t y); apply IHn in SZ. assumption.
+             ++ intros. apply aeq_abs_diff.
+                +++ apply aux_not_equal. assumption.
+                +++ Print notin_union_3. admit.
+                +++ admit.
              (*Aplicar swap_size_eq em H e depois utilizar IHn*)
     -- rewrite subst_app. apply aeq_app.
        --- specialize (IHn t1 y). apply Sn_le_Sm__n_le_m in SZ.
@@ -870,7 +891,9 @@ Proof.
     -- intros. pose proof subst_abs. unfold subst in H1.
        specialize (H1 u x x0 t). case (x == x0) in H1.
        --- contradiction.
-       --- (*Aplicar swap_size_eq em H1 e depois utilizar IHt*)
+       --- destruct (atom_fresh
+         (union (fv_nom u)
+            (union (remove x0 (fv_nom t)) (singleton x)))).
          admit.
 Admitted.
        
