@@ -354,18 +354,21 @@ Proof.
     -- admit. (*n e H sao contraditorias*)
   - intros. simpl in H. apply AtomSetImpl.remove_3 in H. simpl.
     unfold swap_var. default_simp. apply IHt in H. Admitted.*)
-    -- 
       
 Search "not".
 Print "_ == _".
 Search "union".
+Search "remove".
+Search "singleton".
 
 Lemma in_fv_nom_equivariance : forall x y x0 t,
   x0 `in` fv_nom t ->
   swap_var x y x0 `in` fv_nom (swap x y t).
 Proof.
   induction t.
-  - simpl. intro H. admit. (*Trivial*)
+  - simpl. intro H. pose proof singleton_iff.
+    specialize (H0 x1 x0). apply H0 in H. rewrite H.
+    apply singleton_iff. reflexivity.
   - simpl. intros. unfold swap_var. default_simp.
     -- pose proof AtomSetImpl.remove_1.
        assert (H1:x `notin` remove x (fv_nom t)). {
@@ -437,7 +440,23 @@ Proof.
        apply aux_not_equal in n. apply H0 in n.
        --- assumption.
        --- assumption.
-    -- admit.
+    -- case (x == y). 
+       --- intros. rewrite e. rewrite swap_id. assumption.
+       --- intros. case (x0 == x1).
+           + intros. rewrite e in H. pose proof notin_remove_3.
+             specialize (H0 x1 x1 (fv_nom t)). assert (x1 = x1). {
+               reflexivity.
+             }
+             apply H0 in H1. unfold not in H1. contradiction.
+           + intros. apply AtomSetImpl.remove_3 in H.
+             unfold swap_var in IHt. case (x0 == x) in IHt.
+             ++ contradiction.
+             ++ case (x0 == y) in IHt.
+                +++ contradiction.
+                +++ apply IHt in H. pose proof remove_neq_iff.
+                    specialize (H0 (fv_nom (swap x y t)) x1 x0).
+                    apply aux_not_equal in n4.
+                    apply H0 in n4. apply n4 in H. assumption.      
   - unfold swap_var. unfold swap_var in IHt1.
     unfold swap_var in IHt2. default_simp.
     -- pose proof AtomSetImpl.union_1.
@@ -448,7 +467,13 @@ Proof.
        --- specialize (H1 (fv_nom (swap x y t2)) (fv_nom (swap x y t1)) y).
            pose proof AtomSetProperties.union_sym. apply H3.
            apply IHt2 in H2.  apply H1 in H2. assumption.
-Admitted.           
+    -- pose proof union_iff. apply union_iff in H. inversion H.
+       --- apply IHt1 in H1. apply union_iff. left. assumption.
+       --- apply IHt2 in H1. apply union_iff. right. assumption.
+    -- apply union_iff in H. inversion H.
+       --- apply union_iff. apply IHt1 in H0. left. assumption.
+       --- apply union_iff. apply IHt2 in H0. right. assumption.
+Qed.           
 
 
                
@@ -758,6 +783,29 @@ Proof.
     -- apply O_le_n.
   - apply le_S in H. apply Sn_le_Sm__n_le_m. assumption.
 Qed.
+
+Theorem n_le_m__Sn_le_Sm : forall n m,
+  n <= m -> S n <= S m.
+Proof.
+  intros n m H. induction H.
+  - apply le_n.
+  - apply le_S. assumption.
+Qed.
+
+Theorem le_plus_l : forall a b,
+  a <= a + b.
+Proof.
+  intros a b. induction a.
+  - apply O_le_n.
+  - simpl. apply n_le_m__Sn_le_Sm. assumption.
+Qed.
+
+Lemma le_trans : forall m n o, m <= n -> n <= o -> m <= o.
+Proof.
+  intros m n o H1 H2. transitivity n.
+  - assumption.
+  - assumption.
+Qed.
   
 Lemma subst_same_aux : forall n, forall t y, size t <= n -> aeq (subst (n_var y) y t)  t.
 Proof.
@@ -770,8 +818,38 @@ Proof.
     -- unfold subst. simpl. case (y == x).
        --- intros. apply aeq_abs_same. induction t.
            + apply aeq_var.
-           + apply aeq_abs_same. apply IHt. Admitted.
-             
+           + apply aeq_abs_same. apply IHt.
+             apply Sn_le_Sm__n_le_m in SZ. simpl in SZ.
+             apply le_S in SZ. assumption.
+           + apply aeq_app.
+             ++ apply IHt1. simpl in SZ. admit. (*Trivial*)
+             ++ apply IHt2. simpl in SZ. admit. (*Trivial*)
+       --- intros. unfold not in n0. pose proof subst_abs.
+           specialize (H (n_var y) y x t). case (y == x) in H.
+           + contradiction.
+           + simpl in H. unfold subst in H. unfold subst in IHn.
+             apply Sn_le_Sm__n_le_m in SZ. admit.
+             (*Aplicar swap_size_eq em H e depois utilizar IHn*)
+    -- rewrite subst_app. apply aeq_app.
+       --- specialize (IHn t1 y). apply Sn_le_Sm__n_le_m in SZ.
+           assert (size t1 <= size t1 + size t2). {
+             apply le_plus_l.
+           }
+           pose proof le_trans.
+           specialize (H0 (size t1) (size t1 + size t2) n).
+           apply H0 in H.
+           + apply IHn in H. assumption.
+           + assumption.
+       --- specialize (IHn t2 y). apply Sn_le_Sm__n_le_m in SZ.
+           assert (size t2 <= size t1 + size t2). {
+             rewrite plus_comm. apply le_plus_l.
+           }
+           pose proof le_trans.
+           specialize (H0 (size t2) (size t1 + size t2) n).
+           apply H0 in H.
+           + apply IHn in H. assumption.
+           + assumption.
+Admitted.        
            
 Lemma subst_same : forall t y, aeq (subst (n_var y) y t)  t.
 Proof.
@@ -789,8 +867,12 @@ Proof.
     -- intros. apply aeq_var.
   - simpl. case (x == x0).
     -- intros. simpl in H0. rewrite e in H0. (*H0 eh falso*) admit.
-    -- intros. admit.
-        Admitted.
+    -- intros. pose proof subst_abs. unfold subst in H1.
+       specialize (H1 u x x0 t). case (x == x0) in H1.
+       --- contradiction.
+       --- (*Aplicar swap_size_eq em H1 e depois utilizar IHt*)
+         admit.
+Admitted.
        
 Lemma subst_fresh_eq : forall (x : atom) t u,  x `notin` fv_nom t -> aeq (subst u x t) t.
 Proof.

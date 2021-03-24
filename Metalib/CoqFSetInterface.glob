@@ -1,0 +1,1470 @@
+DIGEST a9a872a00315b839993ac91dbd0e0bde
+FMetalib.CoqFSetInterface
+R1621:1624 Coq.Bool.Bool <> <> lib
+R1626:1636 Coq.Structures.OrderedType <> <> lib
+R1638:1650 Coq.Structures.DecidableType <> <> lib
+R1997:2009 Coq.Structures.DecidableType DecidableType <> mod
+modtype 1986:1990 <> WSfun
+def 2027:2029 WSfun elt
+R2034:2036 Metalib.CoqFSetInterface E t defax
+ax 2052:2052 WSfun t
+ax 2136:2137 WSfun In
+R2144:2147 Coq.Init.Logic <> :type_scope:x_'->'_x not
+R2149:2152 Coq.Init.Logic <> :type_scope:x_'->'_x not
+R2148:2148 Metalib.CoqFSetInterface WSfun t defax
+R2141:2143 Metalib.CoqFSetInterface E t defax
+def 2172:2176 WSfun Equal
+R2197:2199 Metalib.CoqFSetInterface E t defax
+R2208:2212 Coq.Init.Logic <> :type_scope:x_'<->'_x not
+R2202:2203 Metalib.CoqFSetInterface WSfun In defax
+R2207:2207 Metalib.CoqFSetInterface <> s var
+R2205:2205 Metalib.CoqFSetInterface <> a var
+R2213:2214 Metalib.CoqFSetInterface WSfun In defax
+R2218:2219 Metalib.CoqFSetInterface <> s' var
+R2216:2216 Metalib.CoqFSetInterface <> a var
+def 2235:2240 WSfun Subset
+R2261:2263 Metalib.CoqFSetInterface E t defax
+R2272:2275 Coq.Init.Logic <> :type_scope:x_'->'_x not
+R2276:2277 Metalib.CoqFSetInterface WSfun In defax
+R2281:2282 Metalib.CoqFSetInterface <> s' var
+R2279:2279 Metalib.CoqFSetInterface <> a var
+R2266:2267 Metalib.CoqFSetInterface WSfun In defax
+R2271:2271 Metalib.CoqFSetInterface <> s var
+R2269:2269 Metalib.CoqFSetInterface <> a var
+def 2298:2302 WSfun Empty
+R2320:2322 Metalib.CoqFSetInterface E t defax
+R2325:2326 Coq.Init.Logic <> :type_scope:'~'_x not
+R2327:2328 Metalib.CoqFSetInterface WSfun In defax
+R2332:2332 Metalib.CoqFSetInterface <> s var
+R2330:2330 Metalib.CoqFSetInterface <> a var
+def 2348:2354 WSfun For_all
+R2364:2367 Coq.Init.Logic <> :type_scope:x_'->'_x not
+R2361:2363 Metalib.CoqFSetInterface E t defax
+R2395:2398 Coq.Init.Logic <> :type_scope:x_'->'_x not
+R2399:2399 Metalib.CoqFSetInterface <> P var
+R2401:2401 Metalib.CoqFSetInterface <> x var
+R2389:2390 Metalib.CoqFSetInterface WSfun In defax
+R2394:2394 Metalib.CoqFSetInterface <> s var
+R2392:2392 Metalib.CoqFSetInterface <> x var
+def 2417:2422 WSfun Exists
+R2432:2435 Coq.Init.Logic <> :type_scope:x_'->'_x not
+R2429:2431 Metalib.CoqFSetInterface E t defax
+R2447:2453 Coq.Init.Logic <> :type_scope:'exists'_x_'..'_x_','_x not
+R2455:2456 Coq.Init.Logic <> :type_scope:'exists'_x_'..'_x_','_x not
+R2463:2466 Coq.Init.Logic <> :type_scope:x_'/\'_x not
+R2457:2458 Metalib.CoqFSetInterface WSfun In defax
+R2462:2462 Metalib.CoqFSetInterface <> s var
+R2460:2460 Metalib.CoqFSetInterface <> x var
+R2467:2467 Metalib.CoqFSetInterface <> P var
+R2469:2469 Metalib.CoqFSetInterface <> x var
+R2500:2504 Metalib.CoqFSetInterface WSfun Equal def
+not 2484:2484 WSfun ::x_'[=]'_x
+R2572:2577 Metalib.CoqFSetInterface WSfun Subset def
+not 2555:2555 WSfun ::x_'[<=]'_x
+ax 2630:2634 WSfun empty
+R2638:2638 Metalib.CoqFSetInterface WSfun t defax
+ax 2678:2685 WSfun is_empty
+R2690:2693 Coq.Init.Logic <> :type_scope:x_'->'_x not
+R2694:2697 Coq.Init.Datatypes <> bool ind
+R2689:2689 Metalib.CoqFSetInterface WSfun t defax
+ax 2758:2760 WSfun mem
+R2767:2770 Coq.Init.Logic <> :type_scope:x_'->'_x not
+R2772:2775 Coq.Init.Logic <> :type_scope:x_'->'_x not
+R2776:2779 Coq.Init.Datatypes <> bool ind
+R2771:2771 Metalib.CoqFSetInterface WSfun t defax
+R2764:2766 Metalib.CoqFSetInterface E t defax
+ax 2856:2858 WSfun add
+R2865:2868 Coq.Init.Logic <> :type_scope:x_'->'_x not
+R2870:2873 Coq.Init.Logic <> :type_scope:x_'->'_x not
+R2874:2874 Metalib.CoqFSetInterface WSfun t defax
+R2869:2869 Metalib.CoqFSetInterface WSfun t defax
+R2862:2864 Metalib.CoqFSetInterface E t defax
+ax 3021:3029 WSfun singleton
+R3036:3039 Coq.Init.Logic <> :type_scope:x_'->'_x not
+R3040:3040 Metalib.CoqFSetInterface WSfun t defax
+R3033:3035 Metalib.CoqFSetInterface E t defax
+ax 3128:3133 WSfun remove
+R3140:3143 Coq.Init.Logic <> :type_scope:x_'->'_x not
+R3145:3148 Coq.Init.Logic <> :type_scope:x_'->'_x not
+R3149:3149 Metalib.CoqFSetInterface WSfun t defax
+R3144:3144 Metalib.CoqFSetInterface WSfun t defax
+R3137:3139 Metalib.CoqFSetInterface E t defax
+ax 3297:3301 WSfun union
+R3306:3309 Coq.Init.Logic <> :type_scope:x_'->'_x not
+R3311:3314 Coq.Init.Logic <> :type_scope:x_'->'_x not
+R3315:3315 Metalib.CoqFSetInterface WSfun t defax
+R3310:3310 Metalib.CoqFSetInterface WSfun t defax
+R3305:3305 Metalib.CoqFSetInterface WSfun t defax
+ax 3351:3355 WSfun inter
+R3360:3363 Coq.Init.Logic <> :type_scope:x_'->'_x not
+R3365:3368 Coq.Init.Logic <> :type_scope:x_'->'_x not
+R3369:3369 Metalib.CoqFSetInterface WSfun t defax
+R3364:3364 Metalib.CoqFSetInterface WSfun t defax
+R3359:3359 Metalib.CoqFSetInterface WSfun t defax
+ax 3412:3415 WSfun diff
+R3420:3423 Coq.Init.Logic <> :type_scope:x_'->'_x not
+R3425:3428 Coq.Init.Logic <> :type_scope:x_'->'_x not
+R3429:3429 Metalib.CoqFSetInterface WSfun t defax
+R3424:3424 Metalib.CoqFSetInterface WSfun t defax
+R3419:3419 Metalib.CoqFSetInterface WSfun t defax
+def 3471:3472 WSfun eq
+R3477:3480 Coq.Init.Logic <> :type_scope:x_'->'_x not
+R3482:3485 Coq.Init.Logic <> :type_scope:x_'->'_x not
+R3481:3481 Metalib.CoqFSetInterface WSfun t defax
+R3476:3476 Metalib.CoqFSetInterface WSfun t defax
+R3494:3498 Metalib.CoqFSetInterface WSfun Equal def
+ax 3514:3519 WSfun eq_dec
+R3536:3537 Coq.Init.Specif <> :type_scope:'{'_x_'}'_'+'_'{'_x_'}' not
+R3545:3551 Coq.Init.Specif <> :type_scope:'{'_x_'}'_'+'_'{'_x_'}' not
+R3561:3562 Coq.Init.Specif <> :type_scope:'{'_x_'}'_'+'_'{'_x_'}' not
+R3538:3539 Metalib.CoqFSetInterface WSfun eq def
+R3543:3544 Metalib.CoqFSetInterface <> s' var
+R3541:3541 Metalib.CoqFSetInterface <> s var
+R3552:3553 Coq.Init.Logic <> :type_scope:'~'_x not
+R3554:3555 Metalib.CoqFSetInterface WSfun eq def
+R3559:3560 Metalib.CoqFSetInterface <> s' var
+R3557:3557 Metalib.CoqFSetInterface <> s var
+ax 3578:3582 WSfun equal
+R3587:3590 Coq.Init.Logic <> :type_scope:x_'->'_x not
+R3592:3595 Coq.Init.Logic <> :type_scope:x_'->'_x not
+R3596:3599 Coq.Init.Datatypes <> bool ind
+R3591:3591 Metalib.CoqFSetInterface WSfun t defax
+R3586:3586 Metalib.CoqFSetInterface WSfun t defax
+ax 3721:3726 WSfun subset
+R3731:3734 Coq.Init.Logic <> :type_scope:x_'->'_x not
+R3736:3739 Coq.Init.Logic <> :type_scope:x_'->'_x not
+R3740:3743 Coq.Init.Datatypes <> bool ind
+R3735:3735 Metalib.CoqFSetInterface WSfun t defax
+R3730:3730 Metalib.CoqFSetInterface WSfun t defax
+ax 3841:3844 WSfun fold
+R3865:3865 Coq.Init.Logic <> :type_scope:x_'->'_x not
+R3879:3883 Coq.Init.Logic <> :type_scope:x_'->'_x not
+R3885:3888 Coq.Init.Logic <> :type_scope:x_'->'_x not
+R3890:3893 Coq.Init.Logic <> :type_scope:x_'->'_x not
+R3894:3894 Metalib.CoqFSetInterface <> A var
+R3889:3889 Metalib.CoqFSetInterface <> A var
+R3884:3884 Metalib.CoqFSetInterface WSfun t defax
+R3869:3872 Coq.Init.Logic <> :type_scope:x_'->'_x not
+R3874:3877 Coq.Init.Logic <> :type_scope:x_'->'_x not
+R3878:3878 Metalib.CoqFSetInterface <> A var
+R3873:3873 Metalib.CoqFSetInterface <> A var
+R3866:3868 Metalib.CoqFSetInterface E t defax
+ax 4095:4101 WSfun for_all
+R4105:4105 Coq.Init.Logic <> :type_scope:x_'->'_x not
+R4117:4121 Coq.Init.Logic <> :type_scope:x_'->'_x not
+R4123:4126 Coq.Init.Logic <> :type_scope:x_'->'_x not
+R4127:4130 Coq.Init.Datatypes <> bool ind
+R4122:4122 Metalib.CoqFSetInterface WSfun t defax
+R4109:4112 Coq.Init.Logic <> :type_scope:x_'->'_x not
+R4113:4116 Coq.Init.Datatypes <> bool ind
+R4106:4108 Metalib.CoqFSetInterface E t defax
+ax 4232:4238 WSfun exists_
+R4242:4242 Coq.Init.Logic <> :type_scope:x_'->'_x not
+R4254:4258 Coq.Init.Logic <> :type_scope:x_'->'_x not
+R4260:4263 Coq.Init.Logic <> :type_scope:x_'->'_x not
+R4264:4267 Coq.Init.Datatypes <> bool ind
+R4259:4259 Metalib.CoqFSetInterface WSfun t defax
+R4246:4249 Coq.Init.Logic <> :type_scope:x_'->'_x not
+R4250:4253 Coq.Init.Datatypes <> bool ind
+R4243:4245 Metalib.CoqFSetInterface E t defax
+ax 4378:4383 WSfun filter
+R4387:4387 Coq.Init.Logic <> :type_scope:x_'->'_x not
+R4399:4403 Coq.Init.Logic <> :type_scope:x_'->'_x not
+R4405:4408 Coq.Init.Logic <> :type_scope:x_'->'_x not
+R4409:4409 Metalib.CoqFSetInterface WSfun t defax
+R4404:4404 Metalib.CoqFSetInterface WSfun t defax
+R4391:4394 Coq.Init.Logic <> :type_scope:x_'->'_x not
+R4395:4398 Coq.Init.Datatypes <> bool ind
+R4388:4390 Metalib.CoqFSetInterface E t defax
+ax 4516:4524 WSfun partition
+R4528:4528 Coq.Init.Logic <> :type_scope:x_'->'_x not
+R4540:4544 Coq.Init.Logic <> :type_scope:x_'->'_x not
+R4546:4549 Coq.Init.Logic <> :type_scope:x_'->'_x not
+R4551:4553 Coq.Init.Datatypes <> :type_scope:x_'*'_x not
+R4550:4550 Metalib.CoqFSetInterface WSfun t defax
+R4554:4554 Metalib.CoqFSetInterface WSfun t defax
+R4545:4545 Metalib.CoqFSetInterface WSfun t defax
+R4532:4535 Coq.Init.Logic <> :type_scope:x_'->'_x not
+R4536:4539 Coq.Init.Datatypes <> bool ind
+R4529:4531 Metalib.CoqFSetInterface E t defax
+ax 4789:4796 WSfun cardinal
+R4801:4804 Coq.Init.Logic <> :type_scope:x_'->'_x not
+R4805:4807 Coq.Init.Datatypes <> nat ind
+R4800:4800 Metalib.CoqFSetInterface WSfun t defax
+ax 4872:4879 WSfun elements
+R4884:4887 Coq.Init.Logic <> :type_scope:x_'->'_x not
+R4888:4891 Coq.Init.Datatypes <> list ind
+R4893:4895 Metalib.CoqFSetInterface E t defax
+R4883:4883 Metalib.CoqFSetInterface WSfun t defax
+ax 4984:4989 WSfun choose
+R4994:4997 Coq.Init.Logic <> :type_scope:x_'->'_x not
+R4998:5003 Coq.Init.Datatypes <> option ind
+R5005:5007 Metalib.CoqFSetInterface E t defax
+R4993:4993 Metalib.CoqFSetInterface WSfun t defax
+sec 5186:5189 WSfun Spec
+var 5204:5204 WSfun.Spec s
+var 5206:5207 WSfun.Spec s'
+var 5209:5211 WSfun.Spec s''
+R5214:5214 Metalib.CoqFSetInterface WSfun t defax
+var 5228:5228 WSfun.Spec x
+var 5230:5230 WSfun.Spec y
+R5234:5236 Metalib.CoqFSetInterface E t defax
+ax 5283:5286 WSfun In_1
+R5298:5301 Coq.Init.Logic <> :type_scope:x_'->'_x not
+R5308:5311 Coq.Init.Logic <> :type_scope:x_'->'_x not
+R5312:5313 Metalib.CoqFSetInterface WSfun In defax
+R5317:5317 Metalib.CoqFSetInterface <> WSfun.Spec.s var
+R5315:5315 Metalib.CoqFSetInterface <> WSfun.Spec.y var
+R5302:5303 Metalib.CoqFSetInterface WSfun In defax
+R5307:5307 Metalib.CoqFSetInterface <> WSfun.Spec.s var
+R5305:5305 Metalib.CoqFSetInterface <> WSfun.Spec.x var
+R5290:5293 Metalib.CoqFSetInterface E eq defax
+R5297:5297 Metalib.CoqFSetInterface <> WSfun.Spec.y var
+R5295:5295 Metalib.CoqFSetInterface <> WSfun.Spec.x var
+ax 5364:5370 WSfun eq_refl
+R5374:5375 Metalib.CoqFSetInterface WSfun eq def
+R5379:5379 Metalib.CoqFSetInterface <> WSfun.Spec.s var
+R5377:5377 Metalib.CoqFSetInterface <> WSfun.Spec.s var
+ax 5394:5399 WSfun eq_sym
+R5410:5413 Coq.Init.Logic <> :type_scope:x_'->'_x not
+R5414:5415 Metalib.CoqFSetInterface WSfun eq def
+R5420:5420 Metalib.CoqFSetInterface <> WSfun.Spec.s var
+R5417:5418 Metalib.CoqFSetInterface <> WSfun.Spec.s' var
+R5403:5404 Metalib.CoqFSetInterface WSfun eq def
+R5408:5409 Metalib.CoqFSetInterface <> WSfun.Spec.s' var
+R5406:5406 Metalib.CoqFSetInterface <> WSfun.Spec.s var
+ax 5435:5442 WSfun eq_trans
+R5453:5456 Coq.Init.Logic <> :type_scope:x_'->'_x not
+R5466:5469 Coq.Init.Logic <> :type_scope:x_'->'_x not
+R5470:5471 Metalib.CoqFSetInterface WSfun eq def
+R5475:5477 Metalib.CoqFSetInterface <> WSfun.Spec.s'' var
+R5473:5473 Metalib.CoqFSetInterface <> WSfun.Spec.s var
+R5457:5458 Metalib.CoqFSetInterface WSfun eq def
+R5463:5465 Metalib.CoqFSetInterface <> WSfun.Spec.s'' var
+R5460:5461 Metalib.CoqFSetInterface <> WSfun.Spec.s' var
+R5446:5447 Metalib.CoqFSetInterface WSfun eq def
+R5451:5452 Metalib.CoqFSetInterface <> WSfun.Spec.s' var
+R5449:5449 Metalib.CoqFSetInterface <> WSfun.Spec.s var
+ax 5525:5529 WSfun mem_1
+R5539:5542 Coq.Init.Logic <> :type_scope:x_'->'_x not
+R5550:5552 Coq.Init.Logic <> :type_scope:x_'='_x not
+R5543:5545 Metalib.CoqFSetInterface WSfun mem defax
+R5549:5549 Metalib.CoqFSetInterface <> WSfun.Spec.s var
+R5547:5547 Metalib.CoqFSetInterface <> WSfun.Spec.x var
+R5553:5556 Coq.Init.Datatypes <> true constr
+R5533:5534 Metalib.CoqFSetInterface WSfun In defax
+R5538:5538 Metalib.CoqFSetInterface <> WSfun.Spec.s var
+R5536:5536 Metalib.CoqFSetInterface <> WSfun.Spec.x var
+ax 5571:5575 WSfun mem_2
+R5593:5596 Coq.Init.Logic <> :type_scope:x_'->'_x not
+R5597:5598 Metalib.CoqFSetInterface WSfun In defax
+R5602:5602 Metalib.CoqFSetInterface <> WSfun.Spec.s var
+R5600:5600 Metalib.CoqFSetInterface <> WSfun.Spec.x var
+R5586:5588 Coq.Init.Logic <> :type_scope:x_'='_x not
+R5579:5581 Metalib.CoqFSetInterface WSfun mem defax
+R5585:5585 Metalib.CoqFSetInterface <> WSfun.Spec.s var
+R5583:5583 Metalib.CoqFSetInterface <> WSfun.Spec.x var
+R5589:5592 Coq.Init.Datatypes <> true constr
+ax 5652:5658 WSfun equal_1
+R5672:5675 Coq.Init.Logic <> :type_scope:x_'->'_x not
+R5686:5688 Coq.Init.Logic <> :type_scope:x_'='_x not
+R5676:5680 Metalib.CoqFSetInterface WSfun equal defax
+R5684:5685 Metalib.CoqFSetInterface <> WSfun.Spec.s' var
+R5682:5682 Metalib.CoqFSetInterface <> WSfun.Spec.s var
+R5689:5692 Coq.Init.Datatypes <> true constr
+R5662:5666 Metalib.CoqFSetInterface WSfun Equal def
+R5670:5671 Metalib.CoqFSetInterface <> WSfun.Spec.s' var
+R5668:5668 Metalib.CoqFSetInterface <> WSfun.Spec.s var
+ax 5707:5713 WSfun equal_2
+R5734:5737 Coq.Init.Logic <> :type_scope:x_'->'_x not
+R5738:5742 Metalib.CoqFSetInterface WSfun Equal def
+R5746:5747 Metalib.CoqFSetInterface <> WSfun.Spec.s' var
+R5744:5744 Metalib.CoqFSetInterface <> WSfun.Spec.s var
+R5727:5729 Coq.Init.Logic <> :type_scope:x_'='_x not
+R5717:5721 Metalib.CoqFSetInterface WSfun equal defax
+R5725:5726 Metalib.CoqFSetInterface <> WSfun.Spec.s' var
+R5723:5723 Metalib.CoqFSetInterface <> WSfun.Spec.s var
+R5730:5733 Coq.Init.Datatypes <> true constr
+ax 5798:5805 WSfun subset_1
+R5820:5823 Coq.Init.Logic <> :type_scope:x_'->'_x not
+R5835:5837 Coq.Init.Logic <> :type_scope:x_'='_x not
+R5824:5829 Metalib.CoqFSetInterface WSfun subset defax
+R5833:5834 Metalib.CoqFSetInterface <> WSfun.Spec.s' var
+R5831:5831 Metalib.CoqFSetInterface <> WSfun.Spec.s var
+R5838:5841 Coq.Init.Datatypes <> true constr
+R5809:5814 Metalib.CoqFSetInterface WSfun Subset def
+R5818:5819 Metalib.CoqFSetInterface <> WSfun.Spec.s' var
+R5816:5816 Metalib.CoqFSetInterface <> WSfun.Spec.s var
+ax 5856:5863 WSfun subset_2
+R5885:5888 Coq.Init.Logic <> :type_scope:x_'->'_x not
+R5889:5894 Metalib.CoqFSetInterface WSfun Subset def
+R5898:5899 Metalib.CoqFSetInterface <> WSfun.Spec.s' var
+R5896:5896 Metalib.CoqFSetInterface <> WSfun.Spec.s var
+R5878:5880 Coq.Init.Logic <> :type_scope:x_'='_x not
+R5867:5872 Metalib.CoqFSetInterface WSfun subset defax
+R5876:5877 Metalib.CoqFSetInterface <> WSfun.Spec.s' var
+R5874:5874 Metalib.CoqFSetInterface <> WSfun.Spec.s var
+R5881:5884 Coq.Init.Datatypes <> true constr
+ax 5949:5955 WSfun empty_1
+R5959:5963 Metalib.CoqFSetInterface WSfun Empty def
+R5965:5969 Metalib.CoqFSetInterface WSfun empty defax
+ax 6022:6031 WSfun is_empty_1
+R6042:6045 Coq.Init.Logic <> :type_scope:x_'->'_x not
+R6056:6058 Coq.Init.Logic <> :type_scope:x_'='_x not
+R6046:6053 Metalib.CoqFSetInterface WSfun is_empty defax
+R6055:6055 Metalib.CoqFSetInterface <> WSfun.Spec.s var
+R6059:6062 Coq.Init.Datatypes <> true constr
+R6035:6039 Metalib.CoqFSetInterface WSfun Empty def
+R6041:6041 Metalib.CoqFSetInterface <> WSfun.Spec.s var
+ax 6077:6086 WSfun is_empty_2
+R6107:6110 Coq.Init.Logic <> :type_scope:x_'->'_x not
+R6111:6115 Metalib.CoqFSetInterface WSfun Empty def
+R6117:6117 Metalib.CoqFSetInterface <> WSfun.Spec.s var
+R6100:6102 Coq.Init.Logic <> :type_scope:x_'='_x not
+R6090:6097 Metalib.CoqFSetInterface WSfun is_empty defax
+R6099:6099 Metalib.CoqFSetInterface <> WSfun.Spec.s var
+R6103:6106 Coq.Init.Datatypes <> true constr
+ax 6165:6169 WSfun add_1
+R6181:6184 Coq.Init.Logic <> :type_scope:x_'->'_x not
+R6185:6186 Metalib.CoqFSetInterface WSfun In defax
+R6191:6193 Metalib.CoqFSetInterface WSfun add defax
+R6197:6197 Metalib.CoqFSetInterface <> WSfun.Spec.s var
+R6195:6195 Metalib.CoqFSetInterface <> WSfun.Spec.x var
+R6188:6188 Metalib.CoqFSetInterface <> WSfun.Spec.y var
+R6173:6176 Metalib.CoqFSetInterface E eq defax
+R6180:6180 Metalib.CoqFSetInterface <> WSfun.Spec.y var
+R6178:6178 Metalib.CoqFSetInterface <> WSfun.Spec.x var
+ax 6213:6217 WSfun add_2
+R6227:6230 Coq.Init.Logic <> :type_scope:x_'->'_x not
+R6231:6232 Metalib.CoqFSetInterface WSfun In defax
+R6237:6239 Metalib.CoqFSetInterface WSfun add defax
+R6243:6243 Metalib.CoqFSetInterface <> WSfun.Spec.s var
+R6241:6241 Metalib.CoqFSetInterface <> WSfun.Spec.x var
+R6234:6234 Metalib.CoqFSetInterface <> WSfun.Spec.y var
+R6221:6222 Metalib.CoqFSetInterface WSfun In defax
+R6226:6226 Metalib.CoqFSetInterface <> WSfun.Spec.s var
+R6224:6224 Metalib.CoqFSetInterface <> WSfun.Spec.y var
+ax 6259:6263 WSfun add_3
+R6277:6280 Coq.Init.Logic <> :type_scope:x_'->'_x not
+R6295:6298 Coq.Init.Logic <> :type_scope:x_'->'_x not
+R6299:6300 Metalib.CoqFSetInterface WSfun In defax
+R6304:6304 Metalib.CoqFSetInterface <> WSfun.Spec.s var
+R6302:6302 Metalib.CoqFSetInterface <> WSfun.Spec.y var
+R6281:6282 Metalib.CoqFSetInterface WSfun In defax
+R6287:6289 Metalib.CoqFSetInterface WSfun add defax
+R6293:6293 Metalib.CoqFSetInterface <> WSfun.Spec.s var
+R6291:6291 Metalib.CoqFSetInterface <> WSfun.Spec.x var
+R6284:6284 Metalib.CoqFSetInterface <> WSfun.Spec.y var
+R6267:6268 Coq.Init.Logic <> :type_scope:'~'_x not
+R6269:6272 Metalib.CoqFSetInterface E eq defax
+R6276:6276 Metalib.CoqFSetInterface <> WSfun.Spec.y var
+R6274:6274 Metalib.CoqFSetInterface <> WSfun.Spec.x var
+ax 6355:6362 WSfun remove_1
+R6374:6377 Coq.Init.Logic <> :type_scope:x_'->'_x not
+R6378:6379 Coq.Init.Logic <> :type_scope:'~'_x not
+R6380:6381 Metalib.CoqFSetInterface WSfun In defax
+R6386:6391 Metalib.CoqFSetInterface WSfun remove defax
+R6395:6395 Metalib.CoqFSetInterface <> WSfun.Spec.s var
+R6393:6393 Metalib.CoqFSetInterface <> WSfun.Spec.x var
+R6383:6383 Metalib.CoqFSetInterface <> WSfun.Spec.y var
+R6366:6369 Metalib.CoqFSetInterface E eq defax
+R6373:6373 Metalib.CoqFSetInterface <> WSfun.Spec.y var
+R6371:6371 Metalib.CoqFSetInterface <> WSfun.Spec.x var
+ax 6411:6418 WSfun remove_2
+R6432:6435 Coq.Init.Logic <> :type_scope:x_'->'_x not
+R6442:6445 Coq.Init.Logic <> :type_scope:x_'->'_x not
+R6446:6447 Metalib.CoqFSetInterface WSfun In defax
+R6452:6457 Metalib.CoqFSetInterface WSfun remove defax
+R6461:6461 Metalib.CoqFSetInterface <> WSfun.Spec.s var
+R6459:6459 Metalib.CoqFSetInterface <> WSfun.Spec.x var
+R6449:6449 Metalib.CoqFSetInterface <> WSfun.Spec.y var
+R6436:6437 Metalib.CoqFSetInterface WSfun In defax
+R6441:6441 Metalib.CoqFSetInterface <> WSfun.Spec.s var
+R6439:6439 Metalib.CoqFSetInterface <> WSfun.Spec.y var
+R6422:6423 Coq.Init.Logic <> :type_scope:'~'_x not
+R6424:6427 Metalib.CoqFSetInterface E eq defax
+R6431:6431 Metalib.CoqFSetInterface <> WSfun.Spec.y var
+R6429:6429 Metalib.CoqFSetInterface <> WSfun.Spec.x var
+ax 6477:6484 WSfun remove_3
+R6505:6508 Coq.Init.Logic <> :type_scope:x_'->'_x not
+R6509:6510 Metalib.CoqFSetInterface WSfun In defax
+R6514:6514 Metalib.CoqFSetInterface <> WSfun.Spec.s var
+R6512:6512 Metalib.CoqFSetInterface <> WSfun.Spec.y var
+R6488:6489 Metalib.CoqFSetInterface WSfun In defax
+R6494:6499 Metalib.CoqFSetInterface WSfun remove defax
+R6503:6503 Metalib.CoqFSetInterface <> WSfun.Spec.s var
+R6501:6501 Metalib.CoqFSetInterface <> WSfun.Spec.x var
+R6491:6491 Metalib.CoqFSetInterface <> WSfun.Spec.y var
+ax 6568:6578 WSfun singleton_1
+R6600:6603 Coq.Init.Logic <> :type_scope:x_'->'_x not
+R6604:6607 Metalib.CoqFSetInterface E eq defax
+R6611:6611 Metalib.CoqFSetInterface <> WSfun.Spec.y var
+R6609:6609 Metalib.CoqFSetInterface <> WSfun.Spec.x var
+R6582:6583 Metalib.CoqFSetInterface WSfun In defax
+R6588:6596 Metalib.CoqFSetInterface WSfun singleton defax
+R6598:6598 Metalib.CoqFSetInterface <> WSfun.Spec.x var
+R6585:6585 Metalib.CoqFSetInterface <> WSfun.Spec.y var
+ax 6626:6636 WSfun singleton_2
+R6648:6651 Coq.Init.Logic <> :type_scope:x_'->'_x not
+R6652:6653 Metalib.CoqFSetInterface WSfun In defax
+R6658:6666 Metalib.CoqFSetInterface WSfun singleton defax
+R6668:6668 Metalib.CoqFSetInterface <> WSfun.Spec.x var
+R6655:6655 Metalib.CoqFSetInterface <> WSfun.Spec.y var
+R6640:6643 Metalib.CoqFSetInterface E eq defax
+R6647:6647 Metalib.CoqFSetInterface <> WSfun.Spec.y var
+R6645:6645 Metalib.CoqFSetInterface <> WSfun.Spec.x var
+ax 6719:6725 WSfun union_1
+R6746:6749 Coq.Init.Logic <> :type_scope:x_'->'_x not
+R6756:6759 Coq.Init.Logic <> :type_scope:x_'\/'_x not
+R6750:6751 Metalib.CoqFSetInterface WSfun In defax
+R6755:6755 Metalib.CoqFSetInterface <> WSfun.Spec.s var
+R6753:6753 Metalib.CoqFSetInterface <> WSfun.Spec.x var
+R6760:6761 Metalib.CoqFSetInterface WSfun In defax
+R6765:6766 Metalib.CoqFSetInterface <> WSfun.Spec.s' var
+R6763:6763 Metalib.CoqFSetInterface <> WSfun.Spec.x var
+R6729:6730 Metalib.CoqFSetInterface WSfun In defax
+R6735:6739 Metalib.CoqFSetInterface WSfun union defax
+R6743:6744 Metalib.CoqFSetInterface <> WSfun.Spec.s' var
+R6741:6741 Metalib.CoqFSetInterface <> WSfun.Spec.s var
+R6732:6732 Metalib.CoqFSetInterface <> WSfun.Spec.x var
+ax 6781:6787 WSfun union_2
+R6797:6800 Coq.Init.Logic <> :type_scope:x_'->'_x not
+R6801:6802 Metalib.CoqFSetInterface WSfun In defax
+R6807:6811 Metalib.CoqFSetInterface WSfun union defax
+R6815:6816 Metalib.CoqFSetInterface <> WSfun.Spec.s' var
+R6813:6813 Metalib.CoqFSetInterface <> WSfun.Spec.s var
+R6804:6804 Metalib.CoqFSetInterface <> WSfun.Spec.x var
+R6791:6792 Metalib.CoqFSetInterface WSfun In defax
+R6796:6796 Metalib.CoqFSetInterface <> WSfun.Spec.s var
+R6794:6794 Metalib.CoqFSetInterface <> WSfun.Spec.x var
+ax 6832:6838 WSfun union_3
+R6849:6852 Coq.Init.Logic <> :type_scope:x_'->'_x not
+R6853:6854 Metalib.CoqFSetInterface WSfun In defax
+R6859:6863 Metalib.CoqFSetInterface WSfun union defax
+R6867:6868 Metalib.CoqFSetInterface <> WSfun.Spec.s' var
+R6865:6865 Metalib.CoqFSetInterface <> WSfun.Spec.s var
+R6856:6856 Metalib.CoqFSetInterface <> WSfun.Spec.x var
+R6842:6843 Metalib.CoqFSetInterface WSfun In defax
+R6847:6848 Metalib.CoqFSetInterface <> WSfun.Spec.s' var
+R6845:6845 Metalib.CoqFSetInterface <> WSfun.Spec.x var
+ax 6919:6925 WSfun inter_1
+R6946:6949 Coq.Init.Logic <> :type_scope:x_'->'_x not
+R6950:6951 Metalib.CoqFSetInterface WSfun In defax
+R6955:6955 Metalib.CoqFSetInterface <> WSfun.Spec.s var
+R6953:6953 Metalib.CoqFSetInterface <> WSfun.Spec.x var
+R6929:6930 Metalib.CoqFSetInterface WSfun In defax
+R6935:6939 Metalib.CoqFSetInterface WSfun inter defax
+R6943:6944 Metalib.CoqFSetInterface <> WSfun.Spec.s' var
+R6941:6941 Metalib.CoqFSetInterface <> WSfun.Spec.s var
+R6932:6932 Metalib.CoqFSetInterface <> WSfun.Spec.x var
+ax 6970:6976 WSfun inter_2
+R6997:7000 Coq.Init.Logic <> :type_scope:x_'->'_x not
+R7001:7002 Metalib.CoqFSetInterface WSfun In defax
+R7006:7007 Metalib.CoqFSetInterface <> WSfun.Spec.s' var
+R7004:7004 Metalib.CoqFSetInterface <> WSfun.Spec.x var
+R6980:6981 Metalib.CoqFSetInterface WSfun In defax
+R6986:6990 Metalib.CoqFSetInterface WSfun inter defax
+R6994:6995 Metalib.CoqFSetInterface <> WSfun.Spec.s' var
+R6992:6992 Metalib.CoqFSetInterface <> WSfun.Spec.s var
+R6983:6983 Metalib.CoqFSetInterface <> WSfun.Spec.x var
+ax 7022:7028 WSfun inter_3
+R7038:7041 Coq.Init.Logic <> :type_scope:x_'->'_x not
+R7049:7052 Coq.Init.Logic <> :type_scope:x_'->'_x not
+R7053:7054 Metalib.CoqFSetInterface WSfun In defax
+R7059:7063 Metalib.CoqFSetInterface WSfun inter defax
+R7067:7068 Metalib.CoqFSetInterface <> WSfun.Spec.s' var
+R7065:7065 Metalib.CoqFSetInterface <> WSfun.Spec.s var
+R7056:7056 Metalib.CoqFSetInterface <> WSfun.Spec.x var
+R7042:7043 Metalib.CoqFSetInterface WSfun In defax
+R7047:7048 Metalib.CoqFSetInterface <> WSfun.Spec.s' var
+R7045:7045 Metalib.CoqFSetInterface <> WSfun.Spec.x var
+R7032:7033 Metalib.CoqFSetInterface WSfun In defax
+R7037:7037 Metalib.CoqFSetInterface <> WSfun.Spec.s var
+R7035:7035 Metalib.CoqFSetInterface <> WSfun.Spec.x var
+ax 7118:7123 WSfun diff_1
+R7143:7146 Coq.Init.Logic <> :type_scope:x_'->'_x not
+R7147:7148 Metalib.CoqFSetInterface WSfun In defax
+R7152:7152 Metalib.CoqFSetInterface <> WSfun.Spec.s var
+R7150:7150 Metalib.CoqFSetInterface <> WSfun.Spec.x var
+R7127:7128 Metalib.CoqFSetInterface WSfun In defax
+R7133:7136 Metalib.CoqFSetInterface WSfun diff defax
+R7140:7141 Metalib.CoqFSetInterface <> WSfun.Spec.s' var
+R7138:7138 Metalib.CoqFSetInterface <> WSfun.Spec.s var
+R7130:7130 Metalib.CoqFSetInterface <> WSfun.Spec.x var
+ax 7167:7172 WSfun diff_2
+R7192:7195 Coq.Init.Logic <> :type_scope:x_'->'_x not
+R7196:7197 Coq.Init.Logic <> :type_scope:'~'_x not
+R7198:7199 Metalib.CoqFSetInterface WSfun In defax
+R7203:7204 Metalib.CoqFSetInterface <> WSfun.Spec.s' var
+R7201:7201 Metalib.CoqFSetInterface <> WSfun.Spec.x var
+R7176:7177 Metalib.CoqFSetInterface WSfun In defax
+R7182:7185 Metalib.CoqFSetInterface WSfun diff defax
+R7189:7190 Metalib.CoqFSetInterface <> WSfun.Spec.s' var
+R7187:7187 Metalib.CoqFSetInterface <> WSfun.Spec.s var
+R7179:7179 Metalib.CoqFSetInterface <> WSfun.Spec.x var
+ax 7219:7224 WSfun diff_3
+R7234:7237 Coq.Init.Logic <> :type_scope:x_'->'_x not
+R7247:7250 Coq.Init.Logic <> :type_scope:x_'->'_x not
+R7251:7252 Metalib.CoqFSetInterface WSfun In defax
+R7257:7260 Metalib.CoqFSetInterface WSfun diff defax
+R7264:7265 Metalib.CoqFSetInterface <> WSfun.Spec.s' var
+R7262:7262 Metalib.CoqFSetInterface <> WSfun.Spec.s var
+R7254:7254 Metalib.CoqFSetInterface <> WSfun.Spec.x var
+R7238:7239 Coq.Init.Logic <> :type_scope:'~'_x not
+R7240:7241 Metalib.CoqFSetInterface WSfun In defax
+R7245:7246 Metalib.CoqFSetInterface <> WSfun.Spec.s' var
+R7243:7243 Metalib.CoqFSetInterface <> WSfun.Spec.x var
+R7228:7229 Metalib.CoqFSetInterface WSfun In defax
+R7233:7233 Metalib.CoqFSetInterface <> WSfun.Spec.s var
+R7231:7231 Metalib.CoqFSetInterface <> WSfun.Spec.x var
+ax 7315:7320 WSfun fold_1
+R7347:7347 Metalib.CoqFSetInterface <> A var
+R7358:7361 Coq.Init.Logic <> :type_scope:x_'->'_x not
+R7363:7366 Coq.Init.Logic <> :type_scope:x_'->'_x not
+R7367:7367 Metalib.CoqFSetInterface <> A var
+R7362:7362 Metalib.CoqFSetInterface <> A var
+R7355:7357 Metalib.CoqFSetInterface E t defax
+R7387:7389 Coq.Init.Logic <> :type_scope:x_'='_x not
+R7377:7380 Metalib.CoqFSetInterface WSfun fold defax
+R7386:7386 Metalib.CoqFSetInterface <> i var
+R7384:7384 Metalib.CoqFSetInterface <> WSfun.Spec.s var
+R7382:7382 Metalib.CoqFSetInterface <> f var
+R7390:7398 Coq.Lists.List <> fold_left def
+R7432:7432 Metalib.CoqFSetInterface <> i var
+R7420:7427 Metalib.CoqFSetInterface WSfun elements defax
+R7429:7429 Metalib.CoqFSetInterface <> WSfun.Spec.s var
+R7412:7412 Metalib.CoqFSetInterface <> f var
+R7416:7416 Metalib.CoqFSetInterface <> a var
+R7414:7414 Metalib.CoqFSetInterface <> e var
+ax 7485:7494 WSfun cardinal_1
+R7508:7510 Coq.Init.Logic <> :type_scope:x_'='_x not
+R7498:7505 Metalib.CoqFSetInterface WSfun cardinal defax
+R7507:7507 Metalib.CoqFSetInterface <> WSfun.Spec.s var
+R7511:7516 Coq.Init.Datatypes <> length def
+R7519:7526 Metalib.CoqFSetInterface WSfun elements defax
+R7528:7528 Metalib.CoqFSetInterface <> WSfun.Spec.s var
+sec 7543:7548 WSfun.Spec Filter
+var 7563:7563 WSfun.Spec.Filter f
+R7570:7573 Coq.Init.Logic <> :type_scope:x_'->'_x not
+R7574:7577 Coq.Init.Datatypes <> bool ind
+R7567:7569 Metalib.CoqFSetInterface E t defax
+ax 7628:7635 WSfun filter_1
+R7657:7660 Coq.Init.Logic <> :type_scope:x_'->'_x not
+R7678:7681 Coq.Init.Logic <> :type_scope:x_'->'_x not
+R7682:7683 Metalib.CoqFSetInterface WSfun In defax
+R7687:7687 Metalib.CoqFSetInterface <> WSfun.Spec.s var
+R7685:7685 Metalib.CoqFSetInterface <> WSfun.Spec.x var
+R7661:7662 Metalib.CoqFSetInterface WSfun In defax
+R7667:7672 Metalib.CoqFSetInterface WSfun filter defax
+R7676:7676 Metalib.CoqFSetInterface <> WSfun.Spec.s var
+R7674:7674 Metalib.CoqFSetInterface <> WSfun.Spec.Filter.f var
+R7664:7664 Metalib.CoqFSetInterface <> WSfun.Spec.x var
+R7639:7649 Coq.Lists.SetoidList <> compat_bool def
+R7656:7656 Metalib.CoqFSetInterface <> WSfun.Spec.Filter.f var
+R7651:7654 Metalib.CoqFSetInterface E eq defax
+ax 7702:7709 WSfun filter_2
+R7731:7734 Coq.Init.Logic <> :type_scope:x_'->'_x not
+R7752:7755 Coq.Init.Logic <> :type_scope:x_'->'_x not
+R7759:7761 Coq.Init.Logic <> :type_scope:x_'='_x not
+R7756:7756 Metalib.CoqFSetInterface <> WSfun.Spec.Filter.f var
+R7758:7758 Metalib.CoqFSetInterface <> WSfun.Spec.x var
+R7762:7765 Coq.Init.Datatypes <> true constr
+R7735:7736 Metalib.CoqFSetInterface WSfun In defax
+R7741:7746 Metalib.CoqFSetInterface WSfun filter defax
+R7750:7750 Metalib.CoqFSetInterface <> WSfun.Spec.s var
+R7748:7748 Metalib.CoqFSetInterface <> WSfun.Spec.Filter.f var
+R7738:7738 Metalib.CoqFSetInterface <> WSfun.Spec.x var
+R7713:7723 Coq.Lists.SetoidList <> compat_bool def
+R7730:7730 Metalib.CoqFSetInterface <> WSfun.Spec.Filter.f var
+R7725:7728 Metalib.CoqFSetInterface E eq defax
+ax 7780:7787 WSfun filter_3
+R7815:7818 Coq.Init.Logic <> :type_scope:x_'->'_x not
+R7825:7828 Coq.Init.Logic <> :type_scope:x_'->'_x not
+R7839:7842 Coq.Init.Logic <> :type_scope:x_'->'_x not
+R7843:7844 Metalib.CoqFSetInterface WSfun In defax
+R7849:7854 Metalib.CoqFSetInterface WSfun filter defax
+R7858:7858 Metalib.CoqFSetInterface <> WSfun.Spec.s var
+R7856:7856 Metalib.CoqFSetInterface <> WSfun.Spec.Filter.f var
+R7846:7846 Metalib.CoqFSetInterface <> WSfun.Spec.x var
+R7832:7834 Coq.Init.Logic <> :type_scope:x_'='_x not
+R7829:7829 Metalib.CoqFSetInterface <> WSfun.Spec.Filter.f var
+R7831:7831 Metalib.CoqFSetInterface <> WSfun.Spec.x var
+R7835:7838 Coq.Init.Datatypes <> true constr
+R7819:7820 Metalib.CoqFSetInterface WSfun In defax
+R7824:7824 Metalib.CoqFSetInterface <> WSfun.Spec.s var
+R7822:7822 Metalib.CoqFSetInterface <> WSfun.Spec.x var
+R7797:7807 Coq.Lists.SetoidList <> compat_bool def
+R7814:7814 Metalib.CoqFSetInterface <> WSfun.Spec.Filter.f var
+R7809:7812 Metalib.CoqFSetInterface E eq defax
+ax 7911:7919 WSfun for_all_1
+R7947:7956 Coq.Init.Logic <> :type_scope:x_'->'_x not
+R7988:7991 Coq.Init.Logic <> :type_scope:x_'->'_x not
+R8003:8005 Coq.Init.Logic <> :type_scope:x_'='_x not
+R7992:7998 Metalib.CoqFSetInterface WSfun for_all defax
+R8002:8002 Metalib.CoqFSetInterface <> WSfun.Spec.s var
+R8000:8000 Metalib.CoqFSetInterface <> WSfun.Spec.Filter.f var
+R8006:8009 Coq.Init.Datatypes <> true constr
+R7957:7963 Metalib.CoqFSetInterface WSfun For_all def
+R7987:7987 Metalib.CoqFSetInterface <> WSfun.Spec.s var
+R7978:7980 Coq.Init.Logic <> :type_scope:x_'='_x not
+R7975:7975 Metalib.CoqFSetInterface <> WSfun.Spec.Filter.f var
+R7977:7977 Metalib.CoqFSetInterface <> x var
+R7981:7984 Coq.Init.Datatypes <> true constr
+R7929:7939 Coq.Lists.SetoidList <> compat_bool def
+R7946:7946 Metalib.CoqFSetInterface <> WSfun.Spec.Filter.f var
+R7941:7944 Metalib.CoqFSetInterface E eq defax
+ax 8024:8032 WSfun for_all_2
+R8060:8069 Coq.Init.Logic <> :type_scope:x_'->'_x not
+R8088:8091 Coq.Init.Logic <> :type_scope:x_'->'_x not
+R8092:8098 Metalib.CoqFSetInterface WSfun For_all def
+R8122:8122 Metalib.CoqFSetInterface <> WSfun.Spec.s var
+R8113:8115 Coq.Init.Logic <> :type_scope:x_'='_x not
+R8110:8110 Metalib.CoqFSetInterface <> WSfun.Spec.Filter.f var
+R8112:8112 Metalib.CoqFSetInterface <> x var
+R8116:8119 Coq.Init.Datatypes <> true constr
+R8081:8083 Coq.Init.Logic <> :type_scope:x_'='_x not
+R8070:8076 Metalib.CoqFSetInterface WSfun for_all defax
+R8080:8080 Metalib.CoqFSetInterface <> WSfun.Spec.s var
+R8078:8078 Metalib.CoqFSetInterface <> WSfun.Spec.Filter.f var
+R8084:8087 Coq.Init.Datatypes <> true constr
+R8042:8052 Coq.Lists.SetoidList <> compat_bool def
+R8059:8059 Metalib.CoqFSetInterface <> WSfun.Spec.Filter.f var
+R8054:8057 Metalib.CoqFSetInterface E eq defax
+ax 8173:8180 WSfun exists_1
+R8208:8217 Coq.Init.Logic <> :type_scope:x_'->'_x not
+R8248:8251 Coq.Init.Logic <> :type_scope:x_'->'_x not
+R8263:8265 Coq.Init.Logic <> :type_scope:x_'='_x not
+R8252:8258 Metalib.CoqFSetInterface WSfun exists_ defax
+R8262:8262 Metalib.CoqFSetInterface <> WSfun.Spec.s var
+R8260:8260 Metalib.CoqFSetInterface <> WSfun.Spec.Filter.f var
+R8266:8269 Coq.Init.Datatypes <> true constr
+R8218:8223 Metalib.CoqFSetInterface WSfun Exists def
+R8247:8247 Metalib.CoqFSetInterface <> WSfun.Spec.s var
+R8238:8240 Coq.Init.Logic <> :type_scope:x_'='_x not
+R8235:8235 Metalib.CoqFSetInterface <> WSfun.Spec.Filter.f var
+R8237:8237 Metalib.CoqFSetInterface <> x var
+R8241:8244 Coq.Init.Datatypes <> true constr
+R8190:8200 Coq.Lists.SetoidList <> compat_bool def
+R8207:8207 Metalib.CoqFSetInterface <> WSfun.Spec.Filter.f var
+R8202:8205 Metalib.CoqFSetInterface E eq defax
+ax 8284:8291 WSfun exists_2
+R8319:8328 Coq.Init.Logic <> :type_scope:x_'->'_x not
+R8347:8350 Coq.Init.Logic <> :type_scope:x_'->'_x not
+R8351:8356 Metalib.CoqFSetInterface WSfun Exists def
+R8380:8380 Metalib.CoqFSetInterface <> WSfun.Spec.s var
+R8371:8373 Coq.Init.Logic <> :type_scope:x_'='_x not
+R8368:8368 Metalib.CoqFSetInterface <> WSfun.Spec.Filter.f var
+R8370:8370 Metalib.CoqFSetInterface <> x var
+R8374:8377 Coq.Init.Datatypes <> true constr
+R8340:8342 Coq.Init.Logic <> :type_scope:x_'='_x not
+R8329:8335 Metalib.CoqFSetInterface WSfun exists_ defax
+R8339:8339 Metalib.CoqFSetInterface <> WSfun.Spec.s var
+R8337:8337 Metalib.CoqFSetInterface <> WSfun.Spec.Filter.f var
+R8343:8346 Coq.Init.Datatypes <> true constr
+R8301:8311 Coq.Lists.SetoidList <> compat_bool def
+R8318:8318 Metalib.CoqFSetInterface <> WSfun.Spec.Filter.f var
+R8313:8316 Metalib.CoqFSetInterface E eq defax
+ax 8434:8444 WSfun partition_1
+R8472:8475 Coq.Init.Logic <> :type_scope:x_'->'_x not
+R8476:8480 Metalib.CoqFSetInterface WSfun Equal def
+R8505:8510 Metalib.CoqFSetInterface WSfun filter defax
+R8514:8514 Metalib.CoqFSetInterface <> WSfun.Spec.s var
+R8512:8512 Metalib.CoqFSetInterface <> WSfun.Spec.Filter.f var
+R8483:8485 Coq.Init.Datatypes <> fst def
+R8488:8496 Metalib.CoqFSetInterface WSfun partition defax
+R8500:8500 Metalib.CoqFSetInterface <> WSfun.Spec.s var
+R8498:8498 Metalib.CoqFSetInterface <> WSfun.Spec.Filter.f var
+R8454:8464 Coq.Lists.SetoidList <> compat_bool def
+R8471:8471 Metalib.CoqFSetInterface <> WSfun.Spec.Filter.f var
+R8466:8469 Metalib.CoqFSetInterface E eq defax
+ax 8530:8540 WSfun partition_2
+R8568:8577 Coq.Init.Logic <> :type_scope:x_'->'_x not
+R8578:8582 Metalib.CoqFSetInterface WSfun Equal def
+R8607:8612 Metalib.CoqFSetInterface WSfun filter defax
+R8636:8636 Metalib.CoqFSetInterface <> WSfun.Spec.s var
+R8624:8627 Coq.Init.Datatypes <> negb def
+R8630:8630 Metalib.CoqFSetInterface <> WSfun.Spec.Filter.f var
+R8632:8632 Metalib.CoqFSetInterface <> x var
+R8585:8587 Coq.Init.Datatypes <> snd def
+R8590:8598 Metalib.CoqFSetInterface WSfun partition defax
+R8602:8602 Metalib.CoqFSetInterface <> WSfun.Spec.s var
+R8600:8600 Metalib.CoqFSetInterface <> WSfun.Spec.Filter.f var
+R8550:8560 Coq.Lists.SetoidList <> compat_bool def
+R8567:8567 Metalib.CoqFSetInterface <> WSfun.Spec.Filter.f var
+R8562:8565 Metalib.CoqFSetInterface E eq defax
+R8647:8652 Metalib.CoqFSetInterface WSfun.Spec.Filter <> sec
+ax 8705:8714 WSfun elements_1
+R8724:8727 Coq.Init.Logic <> :type_scope:x_'->'_x not
+R8728:8730 Coq.Lists.SetoidList <> InA ind
+R8740:8747 Metalib.CoqFSetInterface WSfun elements defax
+R8749:8749 Metalib.CoqFSetInterface <> WSfun.Spec.s var
+R8737:8737 Metalib.CoqFSetInterface <> WSfun.Spec.x var
+R8732:8735 Metalib.CoqFSetInterface E eq defax
+R8718:8719 Metalib.CoqFSetInterface WSfun In defax
+R8723:8723 Metalib.CoqFSetInterface <> WSfun.Spec.s var
+R8721:8721 Metalib.CoqFSetInterface <> WSfun.Spec.x var
+ax 8765:8774 WSfun elements_2
+R8801:8804 Coq.Init.Logic <> :type_scope:x_'->'_x not
+R8805:8806 Metalib.CoqFSetInterface WSfun In defax
+R8810:8810 Metalib.CoqFSetInterface <> WSfun.Spec.s var
+R8808:8808 Metalib.CoqFSetInterface <> WSfun.Spec.x var
+R8778:8780 Coq.Lists.SetoidList <> InA ind
+R8790:8797 Metalib.CoqFSetInterface WSfun elements defax
+R8799:8799 Metalib.CoqFSetInterface <> WSfun.Spec.s var
+R8787:8787 Metalib.CoqFSetInterface <> WSfun.Spec.x var
+R8782:8785 Metalib.CoqFSetInterface E eq defax
+ax 8925:8935 WSfun elements_3w
+R8939:8944 Coq.Lists.SetoidList <> NoDupA ind
+R8952:8959 Metalib.CoqFSetInterface WSfun elements defax
+R8961:8961 Metalib.CoqFSetInterface <> WSfun.Spec.s var
+R8946:8949 Metalib.CoqFSetInterface E eq defax
+ax 9013:9020 WSfun choose_1
+R9041:9044 Coq.Init.Logic <> :type_scope:x_'->'_x not
+R9045:9046 Metalib.CoqFSetInterface WSfun In defax
+R9050:9050 Metalib.CoqFSetInterface <> WSfun.Spec.s var
+R9048:9048 Metalib.CoqFSetInterface <> WSfun.Spec.x var
+R9032:9034 Coq.Init.Logic <> :type_scope:x_'='_x not
+R9024:9029 Metalib.CoqFSetInterface WSfun choose defax
+R9031:9031 Metalib.CoqFSetInterface <> WSfun.Spec.s var
+R9035:9038 Coq.Init.Datatypes <> Some constr
+R9040:9040 Metalib.CoqFSetInterface <> WSfun.Spec.x var
+ax 9065:9072 WSfun choose_2
+R9091:9094 Coq.Init.Logic <> :type_scope:x_'->'_x not
+R9095:9099 Metalib.CoqFSetInterface WSfun Empty def
+R9101:9101 Metalib.CoqFSetInterface <> WSfun.Spec.s var
+R9084:9086 Coq.Init.Logic <> :type_scope:x_'='_x not
+R9076:9081 Metalib.CoqFSetInterface WSfun choose defax
+R9083:9083 Metalib.CoqFSetInterface <> WSfun.Spec.s var
+R9087:9090 Coq.Init.Datatypes <> None constr
+R9111:9114 Metalib.CoqFSetInterface WSfun.Spec <> sec
+R9568:9572 Metalib.CoqFSetInterface WSfun <> modtype
+modtype 9761:9762 <> WS
+R9786:9798 Coq.Structures.DecidableType DecidableType <> mod
+mod 9782:9782 <> WS.E
+R9811:9815 Metalib.CoqFSetInterface WSfun <> mod
+R9817:9817 Metalib.CoqFSetInterface WS.E <> modtype
+R9824:9825 Metalib.CoqFSetInterface WS <> modtype
+R10045:10055 Coq.Structures.OrderedType OrderedType <> mod
+modtype 10035:10038 <> Sfun
+R10069:10073 Metalib.CoqFSetInterface WSfun <> mod
+R10075:10075 Metalib.CoqFSetInterface E <> modtype
+ax 10091:10092 Sfun lt
+R10097:10100 Coq.Init.Logic <> :type_scope:x_'->'_x not
+R10102:10105 Coq.Init.Logic <> :type_scope:x_'->'_x not
+R10101:10101 Metalib.CoqFSetInterface Sfun t defax
+R10096:10096 Metalib.CoqFSetInterface Sfun t defax
+ax 10124:10130 Sfun compare
+R10148:10148 Metalib.CoqFSetInterface Sfun t defax
+R10151:10157 Coq.Structures.OrderedType <> Compare ind
+R10167:10168 Metalib.CoqFSetInterface <> s' var
+R10165:10165 Metalib.CoqFSetInterface <> s var
+R10162:10163 Metalib.CoqFSetInterface Sfun eq def
+R10159:10160 Metalib.CoqFSetInterface Sfun lt defax
+ax 10285:10291 Sfun min_elt
+R10296:10299 Coq.Init.Logic <> :type_scope:x_'->'_x not
+R10300:10305 Coq.Init.Datatypes <> option ind
+R10307:10309 Metalib.CoqFSetInterface E t defax
+R10295:10295 Metalib.CoqFSetInterface Sfun t defax
+ax 10458:10464 Sfun max_elt
+R10469:10472 Coq.Init.Logic <> :type_scope:x_'->'_x not
+R10473:10478 Coq.Init.Datatypes <> option ind
+R10480:10482 Metalib.CoqFSetInterface E t defax
+R10468:10468 Metalib.CoqFSetInterface Sfun t defax
+sec 10576:10579 Sfun Spec
+var 10594:10594 Sfun.Spec s
+var 10596:10597 Sfun.Spec s'
+var 10599:10601 Sfun.Spec s''
+R10605:10605 Metalib.CoqFSetInterface Sfun t defax
+var 10619:10619 Sfun.Spec x
+var 10621:10621 Sfun.Spec y
+R10625:10627 Metalib.CoqFSetInterface E t defax
+ax 10674:10681 Sfun lt_trans
+R10692:10695 Coq.Init.Logic <> :type_scope:x_'->'_x not
+R10705:10708 Coq.Init.Logic <> :type_scope:x_'->'_x not
+R10709:10710 Metalib.CoqFSetInterface Sfun lt defax
+R10714:10716 Metalib.CoqFSetInterface <> Sfun.Spec.s'' var
+R10712:10712 Metalib.CoqFSetInterface <> Sfun.Spec.s var
+R10696:10697 Metalib.CoqFSetInterface Sfun lt defax
+R10702:10704 Metalib.CoqFSetInterface <> Sfun.Spec.s'' var
+R10699:10700 Metalib.CoqFSetInterface <> Sfun.Spec.s' var
+R10685:10686 Metalib.CoqFSetInterface Sfun lt defax
+R10690:10691 Metalib.CoqFSetInterface <> Sfun.Spec.s' var
+R10688:10688 Metalib.CoqFSetInterface <> Sfun.Spec.s var
+ax 10731:10739 Sfun lt_not_eq
+R10750:10753 Coq.Init.Logic <> :type_scope:x_'->'_x not
+R10754:10755 Coq.Init.Logic <> :type_scope:'~'_x not
+R10756:10757 Metalib.CoqFSetInterface Sfun eq def
+R10761:10762 Metalib.CoqFSetInterface <> Sfun.Spec.s' var
+R10759:10759 Metalib.CoqFSetInterface <> Sfun.Spec.s var
+R10743:10744 Metalib.CoqFSetInterface Sfun lt defax
+R10748:10749 Metalib.CoqFSetInterface <> Sfun.Spec.s' var
+R10746:10746 Metalib.CoqFSetInterface <> Sfun.Spec.s var
+ax 10826:10835 Sfun elements_3
+R10839:10842 Coq.Sorting.Sorted <> sort syndef
+R10850:10857 Metalib.CoqFSetInterface Sfun elements defax
+R10859:10859 Metalib.CoqFSetInterface <> Sfun.Spec.s var
+R10844:10847 Metalib.CoqFSetInterface E lt defax
+ax 11121:11129 Sfun min_elt_1
+R11151:11154 Coq.Init.Logic <> :type_scope:x_'->'_x not
+R11155:11156 Metalib.CoqFSetInterface Sfun In defax
+R11160:11160 Metalib.CoqFSetInterface <> Sfun.Spec.s var
+R11158:11158 Metalib.CoqFSetInterface <> Sfun.Spec.x var
+R11142:11144 Coq.Init.Logic <> :type_scope:x_'='_x not
+R11133:11139 Metalib.CoqFSetInterface Sfun min_elt defax
+R11141:11141 Metalib.CoqFSetInterface <> Sfun.Spec.s var
+R11145:11148 Coq.Init.Datatypes <> Some constr
+R11150:11150 Metalib.CoqFSetInterface <> Sfun.Spec.x var
+ax 11175:11183 Sfun min_elt_2
+R11205:11208 Coq.Init.Logic <> :type_scope:x_'->'_x not
+R11215:11218 Coq.Init.Logic <> :type_scope:x_'->'_x not
+R11219:11220 Coq.Init.Logic <> :type_scope:'~'_x not
+R11221:11224 Metalib.CoqFSetInterface E lt defax
+R11228:11228 Metalib.CoqFSetInterface <> Sfun.Spec.x var
+R11226:11226 Metalib.CoqFSetInterface <> Sfun.Spec.y var
+R11209:11210 Metalib.CoqFSetInterface Sfun In defax
+R11214:11214 Metalib.CoqFSetInterface <> Sfun.Spec.s var
+R11212:11212 Metalib.CoqFSetInterface <> Sfun.Spec.y var
+R11196:11198 Coq.Init.Logic <> :type_scope:x_'='_x not
+R11187:11193 Metalib.CoqFSetInterface Sfun min_elt defax
+R11195:11195 Metalib.CoqFSetInterface <> Sfun.Spec.s var
+R11199:11202 Coq.Init.Datatypes <> Some constr
+R11204:11204 Metalib.CoqFSetInterface <> Sfun.Spec.x var
+ax 11243:11251 Sfun min_elt_3
+R11271:11274 Coq.Init.Logic <> :type_scope:x_'->'_x not
+R11275:11279 Metalib.CoqFSetInterface Sfun Empty def
+R11281:11281 Metalib.CoqFSetInterface <> Sfun.Spec.s var
+R11264:11266 Coq.Init.Logic <> :type_scope:x_'='_x not
+R11255:11261 Metalib.CoqFSetInterface Sfun min_elt defax
+R11263:11263 Metalib.CoqFSetInterface <> Sfun.Spec.s var
+R11267:11270 Coq.Init.Datatypes <> None constr
+ax 11333:11341 Sfun max_elt_1
+R11363:11366 Coq.Init.Logic <> :type_scope:x_'->'_x not
+R11367:11368 Metalib.CoqFSetInterface Sfun In defax
+R11372:11372 Metalib.CoqFSetInterface <> Sfun.Spec.s var
+R11370:11370 Metalib.CoqFSetInterface <> Sfun.Spec.x var
+R11354:11356 Coq.Init.Logic <> :type_scope:x_'='_x not
+R11345:11351 Metalib.CoqFSetInterface Sfun max_elt defax
+R11353:11353 Metalib.CoqFSetInterface <> Sfun.Spec.s var
+R11357:11360 Coq.Init.Datatypes <> Some constr
+R11362:11362 Metalib.CoqFSetInterface <> Sfun.Spec.x var
+ax 11387:11395 Sfun max_elt_2
+R11417:11420 Coq.Init.Logic <> :type_scope:x_'->'_x not
+R11427:11430 Coq.Init.Logic <> :type_scope:x_'->'_x not
+R11431:11432 Coq.Init.Logic <> :type_scope:'~'_x not
+R11433:11436 Metalib.CoqFSetInterface E lt defax
+R11440:11440 Metalib.CoqFSetInterface <> Sfun.Spec.y var
+R11438:11438 Metalib.CoqFSetInterface <> Sfun.Spec.x var
+R11421:11422 Metalib.CoqFSetInterface Sfun In defax
+R11426:11426 Metalib.CoqFSetInterface <> Sfun.Spec.s var
+R11424:11424 Metalib.CoqFSetInterface <> Sfun.Spec.y var
+R11408:11410 Coq.Init.Logic <> :type_scope:x_'='_x not
+R11399:11405 Metalib.CoqFSetInterface Sfun max_elt defax
+R11407:11407 Metalib.CoqFSetInterface <> Sfun.Spec.s var
+R11411:11414 Coq.Init.Datatypes <> Some constr
+R11416:11416 Metalib.CoqFSetInterface <> Sfun.Spec.x var
+ax 11455:11463 Sfun max_elt_3
+R11483:11486 Coq.Init.Logic <> :type_scope:x_'->'_x not
+R11487:11491 Metalib.CoqFSetInterface Sfun Empty def
+R11493:11493 Metalib.CoqFSetInterface <> Sfun.Spec.s var
+R11476:11478 Coq.Init.Logic <> :type_scope:x_'='_x not
+R11467:11473 Metalib.CoqFSetInterface Sfun max_elt defax
+R11475:11475 Metalib.CoqFSetInterface <> Sfun.Spec.s var
+R11479:11482 Coq.Init.Datatypes <> None constr
+ax 11555:11562 Sfun choose_3
+R11583:11586 Coq.Init.Logic <> :type_scope:x_'->'_x not
+R11605:11612 Coq.Init.Logic <> :type_scope:x_'->'_x not
+R11623:11626 Coq.Init.Logic <> :type_scope:x_'->'_x not
+R11627:11630 Metalib.CoqFSetInterface E eq defax
+R11634:11634 Metalib.CoqFSetInterface <> Sfun.Spec.y var
+R11632:11632 Metalib.CoqFSetInterface <> Sfun.Spec.x var
+R11613:11617 Metalib.CoqFSetInterface Sfun Equal def
+R11621:11622 Metalib.CoqFSetInterface <> Sfun.Spec.s' var
+R11619:11619 Metalib.CoqFSetInterface <> Sfun.Spec.s var
+R11596:11598 Coq.Init.Logic <> :type_scope:x_'='_x not
+R11587:11592 Metalib.CoqFSetInterface Sfun choose defax
+R11594:11595 Metalib.CoqFSetInterface <> Sfun.Spec.s' var
+R11599:11602 Coq.Init.Datatypes <> Some constr
+R11604:11604 Metalib.CoqFSetInterface <> Sfun.Spec.y var
+R11574:11576 Coq.Init.Logic <> :type_scope:x_'='_x not
+R11566:11571 Metalib.CoqFSetInterface Sfun choose defax
+R11573:11573 Metalib.CoqFSetInterface <> Sfun.Spec.s var
+R11577:11580 Coq.Init.Datatypes <> Some constr
+R11582:11582 Metalib.CoqFSetInterface <> Sfun.Spec.x var
+R11644:11647 Metalib.CoqFSetInterface Sfun.Spec <> sec
+R11777:11780 Metalib.CoqFSetInterface Sfun <> modtype
+modtype 11985:11985 <> S
+R12009:12019 Coq.Structures.OrderedType OrderedType <> mod
+mod 12005:12005 <> S.E
+R12032:12035 Metalib.CoqFSetInterface Sfun <> mod
+R12037:12037 Metalib.CoqFSetInterface S.E <> modtype
+R12044:12044 Metalib.CoqFSetInterface S <> modtype
+modtype 12441:12444 <> Sdep
+R12469:12479 Coq.Structures.OrderedType OrderedType <> mod
+mod 12465:12465 <> Sdep.E
+def 12495:12497 Sdep elt
+R12502:12504 Metalib.CoqFSetInterface Sdep t defax
+ax 12520:12520 Sdep t
+ax 12543:12544 Sdep In
+R12551:12554 Coq.Init.Logic <> :type_scope:x_'->'_x not
+R12556:12559 Coq.Init.Logic <> :type_scope:x_'->'_x not
+R12555:12555 Metalib.CoqFSetInterface Sdep t defax
+R12548:12550 Metalib.CoqFSetInterface Sdep t defax
+def 12579:12583 Sdep Equal
+R12604:12606 Metalib.CoqFSetInterface Sdep t defax
+R12615:12619 Coq.Init.Logic <> :type_scope:x_'<->'_x not
+R12609:12610 Metalib.CoqFSetInterface Sdep In defax
+R12614:12614 Metalib.CoqFSetInterface <> s var
+R12612:12612 Metalib.CoqFSetInterface <> a var
+R12620:12621 Metalib.CoqFSetInterface Sdep In defax
+R12625:12626 Metalib.CoqFSetInterface <> s' var
+R12623:12623 Metalib.CoqFSetInterface <> a var
+def 12642:12647 Sdep Subset
+R12668:12670 Metalib.CoqFSetInterface Sdep t defax
+R12679:12682 Coq.Init.Logic <> :type_scope:x_'->'_x not
+R12683:12684 Metalib.CoqFSetInterface Sdep In defax
+R12688:12689 Metalib.CoqFSetInterface <> s' var
+R12686:12686 Metalib.CoqFSetInterface <> a var
+R12673:12674 Metalib.CoqFSetInterface Sdep In defax
+R12678:12678 Metalib.CoqFSetInterface <> s var
+R12676:12676 Metalib.CoqFSetInterface <> a var
+def 12705:12707 Sdep Add
+R12736:12740 Coq.Init.Logic <> :type_scope:x_'<->'_x not
+R12729:12730 Metalib.CoqFSetInterface Sdep In defax
+R12734:12735 Metalib.CoqFSetInterface <> s' var
+R12732:12732 Metalib.CoqFSetInterface <> y var
+R12749:12752 Coq.Init.Logic <> :type_scope:x_'\/'_x not
+R12741:12744 Metalib.CoqFSetInterface Sdep eq defax
+R12748:12748 Metalib.CoqFSetInterface <> y var
+R12746:12746 Metalib.CoqFSetInterface <> x var
+R12753:12754 Metalib.CoqFSetInterface Sdep In defax
+R12758:12758 Metalib.CoqFSetInterface <> s var
+R12756:12756 Metalib.CoqFSetInterface <> y var
+def 12774:12778 Sdep Empty
+R12796:12798 Metalib.CoqFSetInterface Sdep t defax
+R12801:12802 Coq.Init.Logic <> :type_scope:'~'_x not
+R12803:12804 Metalib.CoqFSetInterface Sdep In defax
+R12808:12808 Metalib.CoqFSetInterface <> s var
+R12806:12806 Metalib.CoqFSetInterface <> a var
+def 12824:12830 Sdep For_all
+R12840:12843 Coq.Init.Logic <> :type_scope:x_'->'_x not
+R12837:12839 Metalib.CoqFSetInterface Sdep t defax
+R12871:12874 Coq.Init.Logic <> :type_scope:x_'->'_x not
+R12875:12875 Metalib.CoqFSetInterface <> P var
+R12877:12877 Metalib.CoqFSetInterface <> x var
+R12865:12866 Metalib.CoqFSetInterface Sdep In defax
+R12870:12870 Metalib.CoqFSetInterface <> s var
+R12868:12868 Metalib.CoqFSetInterface <> x var
+def 12893:12898 Sdep Exists
+R12908:12911 Coq.Init.Logic <> :type_scope:x_'->'_x not
+R12905:12907 Metalib.CoqFSetInterface Sdep t defax
+R12923:12929 Coq.Init.Logic <> :type_scope:'exists'_x_'..'_x_','_x not
+R12931:12932 Coq.Init.Logic <> :type_scope:'exists'_x_'..'_x_','_x not
+R12939:12942 Coq.Init.Logic <> :type_scope:x_'/\'_x not
+R12933:12934 Metalib.CoqFSetInterface Sdep In defax
+R12938:12938 Metalib.CoqFSetInterface <> s var
+R12936:12936 Metalib.CoqFSetInterface <> x var
+R12943:12943 Metalib.CoqFSetInterface <> P var
+R12945:12945 Metalib.CoqFSetInterface <> x var
+R12974:12978 Metalib.CoqFSetInterface Sdep Equal def
+not 12960:12960 Sdep ::x_'[=]'_x
+def 13032:13033 Sdep eq
+R13038:13041 Coq.Init.Logic <> :type_scope:x_'->'_x not
+R13043:13046 Coq.Init.Logic <> :type_scope:x_'->'_x not
+R13042:13042 Metalib.CoqFSetInterface Sdep t defax
+R13037:13037 Metalib.CoqFSetInterface Sdep t defax
+R13055:13059 Metalib.CoqFSetInterface Sdep Equal def
+ax 13074:13075 Sdep lt
+R13080:13083 Coq.Init.Logic <> :type_scope:x_'->'_x not
+R13085:13088 Coq.Init.Logic <> :type_scope:x_'->'_x not
+R13084:13084 Metalib.CoqFSetInterface Sdep t defax
+R13079:13079 Metalib.CoqFSetInterface Sdep t defax
+ax 13107:13113 Sdep compare
+R13131:13131 Metalib.CoqFSetInterface Sdep t defax
+R13134:13140 Coq.Structures.OrderedType <> Compare ind
+R13150:13151 Metalib.CoqFSetInterface <> s' var
+R13148:13148 Metalib.CoqFSetInterface <> s var
+R13145:13146 Metalib.CoqFSetInterface Sdep eq def
+R13142:13143 Metalib.CoqFSetInterface Sdep lt defax
+ax 13167:13173 Sdep eq_refl
+R13188:13188 Metalib.CoqFSetInterface Sdep t defax
+R13191:13192 Metalib.CoqFSetInterface Sdep eq def
+R13196:13196 Metalib.CoqFSetInterface <> s var
+R13194:13194 Metalib.CoqFSetInterface <> s var
+ax 13211:13216 Sdep eq_sym
+R13234:13234 Metalib.CoqFSetInterface Sdep t defax
+R13244:13247 Coq.Init.Logic <> :type_scope:x_'->'_x not
+R13248:13249 Metalib.CoqFSetInterface Sdep eq def
+R13254:13254 Metalib.CoqFSetInterface <> s var
+R13251:13252 Metalib.CoqFSetInterface <> s' var
+R13237:13238 Metalib.CoqFSetInterface Sdep eq def
+R13242:13243 Metalib.CoqFSetInterface <> s' var
+R13240:13240 Metalib.CoqFSetInterface <> s var
+ax 13269:13276 Sdep eq_trans
+R13298:13298 Metalib.CoqFSetInterface Sdep t defax
+R13308:13311 Coq.Init.Logic <> :type_scope:x_'->'_x not
+R13321:13324 Coq.Init.Logic <> :type_scope:x_'->'_x not
+R13325:13326 Metalib.CoqFSetInterface Sdep eq def
+R13330:13332 Metalib.CoqFSetInterface <> s'' var
+R13328:13328 Metalib.CoqFSetInterface <> s var
+R13312:13313 Metalib.CoqFSetInterface Sdep eq def
+R13318:13320 Metalib.CoqFSetInterface <> s'' var
+R13315:13316 Metalib.CoqFSetInterface <> s' var
+R13301:13302 Metalib.CoqFSetInterface Sdep eq def
+R13306:13307 Metalib.CoqFSetInterface <> s' var
+R13304:13304 Metalib.CoqFSetInterface <> s var
+ax 13347:13354 Sdep lt_trans
+R13376:13376 Metalib.CoqFSetInterface Sdep t defax
+R13386:13389 Coq.Init.Logic <> :type_scope:x_'->'_x not
+R13399:13402 Coq.Init.Logic <> :type_scope:x_'->'_x not
+R13403:13404 Metalib.CoqFSetInterface Sdep lt defax
+R13408:13410 Metalib.CoqFSetInterface <> s'' var
+R13406:13406 Metalib.CoqFSetInterface <> s var
+R13390:13391 Metalib.CoqFSetInterface Sdep lt defax
+R13396:13398 Metalib.CoqFSetInterface <> s'' var
+R13393:13394 Metalib.CoqFSetInterface <> s' var
+R13379:13380 Metalib.CoqFSetInterface Sdep lt defax
+R13384:13385 Metalib.CoqFSetInterface <> s' var
+R13382:13382 Metalib.CoqFSetInterface <> s var
+ax 13425:13433 Sdep lt_not_eq
+R13451:13451 Metalib.CoqFSetInterface Sdep t defax
+R13461:13464 Coq.Init.Logic <> :type_scope:x_'->'_x not
+R13465:13466 Coq.Init.Logic <> :type_scope:'~'_x not
+R13467:13468 Metalib.CoqFSetInterface Sdep eq def
+R13472:13473 Metalib.CoqFSetInterface <> s' var
+R13470:13470 Metalib.CoqFSetInterface <> s var
+R13454:13455 Metalib.CoqFSetInterface Sdep lt defax
+R13459:13460 Metalib.CoqFSetInterface <> s' var
+R13457:13457 Metalib.CoqFSetInterface <> s var
+ax 13489:13493 Sdep eq_In
+R13509:13509 Metalib.CoqFSetInterface Sdep t defax
+R13519:13521 Metalib.CoqFSetInterface Sdep t defax
+R13533:13536 Coq.Init.Logic <> :type_scope:x_'->'_x not
+R13543:13546 Coq.Init.Logic <> :type_scope:x_'->'_x not
+R13547:13548 Metalib.CoqFSetInterface Sdep In defax
+R13552:13552 Metalib.CoqFSetInterface <> s var
+R13550:13550 Metalib.CoqFSetInterface <> y var
+R13537:13538 Metalib.CoqFSetInterface Sdep In defax
+R13542:13542 Metalib.CoqFSetInterface <> s var
+R13540:13540 Metalib.CoqFSetInterface <> x var
+R13525:13528 Metalib.CoqFSetInterface Sdep eq defax
+R13532:13532 Metalib.CoqFSetInterface <> y var
+R13530:13530 Metalib.CoqFSetInterface <> x var
+ax 13568:13572 Sdep empty
+R13576:13576 Coq.Init.Specif <> :type_scope:'{'_x_':'_x_'|'_x_'}' not
+R13578:13580 Coq.Init.Specif <> :type_scope:'{'_x_':'_x_'|'_x_'}' not
+R13582:13584 Coq.Init.Specif <> :type_scope:'{'_x_':'_x_'|'_x_'}' not
+R13592:13592 Coq.Init.Specif <> :type_scope:'{'_x_':'_x_'|'_x_'}' not
+R13581:13581 Metalib.CoqFSetInterface Sdep t defax
+R13585:13589 Metalib.CoqFSetInterface Sdep Empty def
+ax 13608:13615 Sdep is_empty
+R13630:13630 Metalib.CoqFSetInterface Sdep t defax
+R13633:13633 Coq.Init.Specif <> :type_scope:'{'_x_'}'_'+'_'{'_x_'}' not
+R13641:13645 Coq.Init.Specif <> :type_scope:'{'_x_'}'_'+'_'{'_x_'}' not
+R13655:13655 Coq.Init.Specif <> :type_scope:'{'_x_'}'_'+'_'{'_x_'}' not
+R13634:13638 Metalib.CoqFSetInterface Sdep Empty def
+R13640:13640 Metalib.CoqFSetInterface <> s var
+R13646:13647 Coq.Init.Logic <> :type_scope:'~'_x not
+R13648:13652 Metalib.CoqFSetInterface Sdep Empty def
+R13654:13654 Metalib.CoqFSetInterface <> s var
+ax 13671:13673 Sdep mem
+R13689:13691 Metalib.CoqFSetInterface Sdep t defax
+R13699:13699 Metalib.CoqFSetInterface Sdep t defax
+R13703:13703 Coq.Init.Specif <> :type_scope:'{'_x_'}'_'+'_'{'_x_'}' not
+R13710:13714 Coq.Init.Specif <> :type_scope:'{'_x_'}'_'+'_'{'_x_'}' not
+R13723:13723 Coq.Init.Specif <> :type_scope:'{'_x_'}'_'+'_'{'_x_'}' not
+R13704:13705 Metalib.CoqFSetInterface Sdep In defax
+R13709:13709 Metalib.CoqFSetInterface <> s var
+R13707:13707 Metalib.CoqFSetInterface <> x var
+R13715:13716 Coq.Init.Logic <> :type_scope:'~'_x not
+R13717:13718 Metalib.CoqFSetInterface Sdep In defax
+R13722:13722 Metalib.CoqFSetInterface <> s var
+R13720:13720 Metalib.CoqFSetInterface <> x var
+ax 13739:13741 Sdep add
+R13757:13759 Metalib.CoqFSetInterface Sdep t defax
+R13767:13767 Metalib.CoqFSetInterface Sdep t defax
+R13771:13771 Coq.Init.Specif <> :type_scope:'{'_x_':'_x_'|'_x_'}' not
+R13774:13776 Coq.Init.Specif <> :type_scope:'{'_x_':'_x_'|'_x_'}' not
+R13778:13780 Coq.Init.Specif <> :type_scope:'{'_x_':'_x_'|'_x_'}' not
+R13791:13791 Coq.Init.Specif <> :type_scope:'{'_x_':'_x_'|'_x_'}' not
+R13777:13777 Metalib.CoqFSetInterface Sdep t defax
+R13781:13783 Metalib.CoqFSetInterface Sdep Add def
+R13787:13787 Metalib.CoqFSetInterface <> s var
+R13785:13785 Metalib.CoqFSetInterface <> x var
+ax 13811:13819 Sdep singleton
+R13834:13836 Metalib.CoqFSetInterface Sdep t defax
+R13839:13839 Coq.Init.Specif <> :type_scope:'{'_x_':'_x_'|'_x_'}' not
+R13841:13843 Coq.Init.Specif <> :type_scope:'{'_x_':'_x_'|'_x_'}' not
+R13845:13847 Coq.Init.Specif <> :type_scope:'{'_x_':'_x_'|'_x_'}' not
+R13883:13883 Coq.Init.Specif <> :type_scope:'{'_x_':'_x_'|'_x_'}' not
+R13844:13844 Metalib.CoqFSetInterface Sdep t defax
+R13859:13861 Metalib.CoqFSetInterface Sdep t defax
+R13870:13874 Coq.Init.Logic <> :type_scope:x_'<->'_x not
+R13864:13865 Metalib.CoqFSetInterface Sdep In defax
+R13867:13867 Metalib.CoqFSetInterface <> y var
+R13875:13878 Metalib.CoqFSetInterface Sdep eq defax
+R13882:13882 Metalib.CoqFSetInterface <> y var
+R13880:13880 Metalib.CoqFSetInterface <> x var
+ax 13903:13908 Sdep remove
+R13930:13932 Metalib.CoqFSetInterface Sdep t defax
+R13940:13940 Metalib.CoqFSetInterface Sdep t defax
+R13950:13950 Coq.Init.Specif <> :type_scope:'{'_x_':'_x_'|'_x_'}' not
+R13953:13955 Coq.Init.Specif <> :type_scope:'{'_x_':'_x_'|'_x_'}' not
+R13957:13959 Coq.Init.Specif <> :type_scope:'{'_x_':'_x_'|'_x_'}' not
+R14008:14008 Coq.Init.Specif <> :type_scope:'{'_x_':'_x_'|'_x_'}' not
+R13956:13956 Metalib.CoqFSetInterface Sdep t defax
+R13971:13973 Metalib.CoqFSetInterface Sdep t defax
+R13983:13987 Coq.Init.Logic <> :type_scope:x_'<->'_x not
+R13976:13977 Metalib.CoqFSetInterface Sdep In defax
+R13979:13979 Metalib.CoqFSetInterface <> y var
+R13998:14001 Coq.Init.Logic <> :type_scope:x_'/\'_x not
+R13988:13989 Coq.Init.Logic <> :type_scope:'~'_x not
+R13990:13993 Metalib.CoqFSetInterface Sdep eq defax
+R13997:13997 Metalib.CoqFSetInterface <> y var
+R13995:13995 Metalib.CoqFSetInterface <> x var
+R14002:14003 Metalib.CoqFSetInterface Sdep In defax
+R14007:14007 Metalib.CoqFSetInterface <> s var
+R14005:14005 Metalib.CoqFSetInterface <> y var
+ax 14028:14032 Sdep union
+R14056:14056 Metalib.CoqFSetInterface Sdep t defax
+R14065:14065 Coq.Init.Specif <> :type_scope:'{'_x_':'_x_'|'_x_'}' not
+R14069:14071 Coq.Init.Specif <> :type_scope:'{'_x_':'_x_'|'_x_'}' not
+R14073:14075 Coq.Init.Specif <> :type_scope:'{'_x_':'_x_'|'_x_'}' not
+R14122:14122 Coq.Init.Specif <> :type_scope:'{'_x_':'_x_'|'_x_'}' not
+R14072:14072 Metalib.CoqFSetInterface Sdep t defax
+R14087:14089 Metalib.CoqFSetInterface Sdep t defax
+R14100:14104 Coq.Init.Logic <> :type_scope:x_'<->'_x not
+R14092:14093 Metalib.CoqFSetInterface Sdep In defax
+R14095:14095 Metalib.CoqFSetInterface <> x var
+R14111:14114 Coq.Init.Logic <> :type_scope:x_'\/'_x not
+R14105:14106 Metalib.CoqFSetInterface Sdep In defax
+R14110:14110 Metalib.CoqFSetInterface <> s var
+R14108:14108 Metalib.CoqFSetInterface <> x var
+R14115:14116 Metalib.CoqFSetInterface Sdep In defax
+R14120:14121 Metalib.CoqFSetInterface <> s' var
+R14118:14118 Metalib.CoqFSetInterface <> x var
+ax 14142:14146 Sdep inter
+R14170:14170 Metalib.CoqFSetInterface Sdep t defax
+R14179:14179 Coq.Init.Specif <> :type_scope:'{'_x_':'_x_'|'_x_'}' not
+R14183:14185 Coq.Init.Specif <> :type_scope:'{'_x_':'_x_'|'_x_'}' not
+R14187:14189 Coq.Init.Specif <> :type_scope:'{'_x_':'_x_'|'_x_'}' not
+R14236:14236 Coq.Init.Specif <> :type_scope:'{'_x_':'_x_'|'_x_'}' not
+R14186:14186 Metalib.CoqFSetInterface Sdep t defax
+R14201:14203 Metalib.CoqFSetInterface Sdep t defax
+R14214:14218 Coq.Init.Logic <> :type_scope:x_'<->'_x not
+R14206:14207 Metalib.CoqFSetInterface Sdep In defax
+R14209:14209 Metalib.CoqFSetInterface <> x var
+R14225:14228 Coq.Init.Logic <> :type_scope:x_'/\'_x not
+R14219:14220 Metalib.CoqFSetInterface Sdep In defax
+R14224:14224 Metalib.CoqFSetInterface <> s var
+R14222:14222 Metalib.CoqFSetInterface <> x var
+R14229:14230 Metalib.CoqFSetInterface Sdep In defax
+R14234:14235 Metalib.CoqFSetInterface <> s' var
+R14232:14232 Metalib.CoqFSetInterface <> x var
+ax 14256:14259 Sdep diff
+R14283:14283 Metalib.CoqFSetInterface Sdep t defax
+R14292:14292 Coq.Init.Specif <> :type_scope:'{'_x_':'_x_'|'_x_'}' not
+R14296:14298 Coq.Init.Specif <> :type_scope:'{'_x_':'_x_'|'_x_'}' not
+R14300:14302 Coq.Init.Specif <> :type_scope:'{'_x_':'_x_'|'_x_'}' not
+R14351:14351 Coq.Init.Specif <> :type_scope:'{'_x_':'_x_'|'_x_'}' not
+R14299:14299 Metalib.CoqFSetInterface Sdep t defax
+R14314:14316 Metalib.CoqFSetInterface Sdep t defax
+R14327:14331 Coq.Init.Logic <> :type_scope:x_'<->'_x not
+R14319:14320 Metalib.CoqFSetInterface Sdep In defax
+R14322:14322 Metalib.CoqFSetInterface <> x var
+R14338:14341 Coq.Init.Logic <> :type_scope:x_'/\'_x not
+R14332:14333 Metalib.CoqFSetInterface Sdep In defax
+R14337:14337 Metalib.CoqFSetInterface <> s var
+R14335:14335 Metalib.CoqFSetInterface <> x var
+R14342:14343 Coq.Init.Logic <> :type_scope:'~'_x not
+R14344:14345 Metalib.CoqFSetInterface Sdep In defax
+R14349:14350 Metalib.CoqFSetInterface <> s' var
+R14347:14347 Metalib.CoqFSetInterface <> x var
+ax 14367:14371 Sdep equal
+R14389:14389 Metalib.CoqFSetInterface Sdep t defax
+R14392:14392 Coq.Init.Specif <> :type_scope:'{'_x_'}'_'+'_'{'_x_'}' not
+R14399:14403 Coq.Init.Specif <> :type_scope:'{'_x_'}'_'+'_'{'_x_'}' not
+R14412:14412 Coq.Init.Specif <> :type_scope:'{'_x_'}'_'+'_'{'_x_'}' not
+R14394:14396 Metalib.CoqFSetInterface Sdep ::x_'[=]'_x not
+R14393:14393 Metalib.CoqFSetInterface <> s var
+R14397:14398 Metalib.CoqFSetInterface <> s' var
+R14404:14405 Coq.Init.Logic <> :type_scope:'~'_x not
+R14407:14409 Metalib.CoqFSetInterface Sdep ::x_'[=]'_x not
+R14406:14406 Metalib.CoqFSetInterface <> s var
+R14410:14411 Metalib.CoqFSetInterface <> s' var
+ax 14428:14433 Sdep subset
+R14451:14451 Metalib.CoqFSetInterface Sdep t defax
+R14454:14454 Coq.Init.Specif <> :type_scope:'{'_x_'}'_'+'_'{'_x_'}' not
+R14466:14470 Coq.Init.Specif <> :type_scope:'{'_x_'}'_'+'_'{'_x_'}' not
+R14484:14484 Coq.Init.Specif <> :type_scope:'{'_x_'}'_'+'_'{'_x_'}' not
+R14455:14460 Metalib.CoqFSetInterface Sdep Subset def
+R14464:14465 Metalib.CoqFSetInterface <> s' var
+R14462:14462 Metalib.CoqFSetInterface <> s var
+R14471:14472 Coq.Init.Logic <> :type_scope:'~'_x not
+R14473:14478 Metalib.CoqFSetInterface Sdep Subset def
+R14482:14483 Metalib.CoqFSetInterface <> s' var
+R14480:14480 Metalib.CoqFSetInterface <> s var
+ax 14504:14509 Sdep filter
+R14534:14537 Coq.Init.Logic <> :type_scope:x_'->'_x not
+R14531:14533 Metalib.CoqFSetInterface Sdep t defax
+R14563:14565 Metalib.CoqFSetInterface Sdep t defax
+R14568:14568 Coq.Init.Specif <> :type_scope:'{'_x_'}'_'+'_'{'_x_'}' not
+R14572:14576 Coq.Init.Specif <> :type_scope:'{'_x_'}'_'+'_'{'_x_'}' not
+R14582:14582 Coq.Init.Specif <> :type_scope:'{'_x_'}'_'+'_'{'_x_'}' not
+R14569:14569 Metalib.CoqFSetInterface <> P var
+R14571:14571 Metalib.CoqFSetInterface <> x var
+R14577:14578 Coq.Init.Logic <> :type_scope:'~'_x not
+R14579:14579 Metalib.CoqFSetInterface <> P var
+R14581:14581 Metalib.CoqFSetInterface <> x var
+R14598:14598 Metalib.CoqFSetInterface Sdep t defax
+R14608:14608 Coq.Init.Specif <> :type_scope:'{'_x_':'_x_'|'_x_'}' not
+R14611:14613 Coq.Init.Specif <> :type_scope:'{'_x_':'_x_'|'_x_'}' not
+R14615:14617 Coq.Init.Specif <> :type_scope:'{'_x_':'_x_'|'_x_'}' not
+R14678:14678 Coq.Init.Specif <> :type_scope:'{'_x_':'_x_'|'_x_'}' not
+R14614:14614 Metalib.CoqFSetInterface Sdep t defax
+R14633:14636 Coq.Init.Logic <> :type_scope:x_'->'_x not
+R14648:14650 Metalib.CoqFSetInterface Sdep t defax
+R14660:14664 Coq.Init.Logic <> :type_scope:x_'<->'_x not
+R14653:14654 Metalib.CoqFSetInterface Sdep In defax
+R14656:14656 Metalib.CoqFSetInterface <> x var
+R14671:14674 Coq.Init.Logic <> :type_scope:x_'/\'_x not
+R14665:14666 Metalib.CoqFSetInterface Sdep In defax
+R14670:14670 Metalib.CoqFSetInterface <> s var
+R14668:14668 Metalib.CoqFSetInterface <> x var
+R14675:14675 Metalib.CoqFSetInterface <> P var
+R14677:14677 Metalib.CoqFSetInterface <> x var
+R14618:14625 Coq.Lists.SetoidList <> compat_P def
+R14632:14632 Metalib.CoqFSetInterface <> P var
+R14627:14630 Metalib.CoqFSetInterface Sdep eq defax
+ax 14698:14704 Sdep for_all
+R14729:14732 Coq.Init.Logic <> :type_scope:x_'->'_x not
+R14726:14728 Metalib.CoqFSetInterface Sdep t defax
+R14758:14760 Metalib.CoqFSetInterface Sdep t defax
+R14763:14763 Coq.Init.Specif <> :type_scope:'{'_x_'}'_'+'_'{'_x_'}' not
+R14767:14771 Coq.Init.Specif <> :type_scope:'{'_x_'}'_'+'_'{'_x_'}' not
+R14777:14777 Coq.Init.Specif <> :type_scope:'{'_x_'}'_'+'_'{'_x_'}' not
+R14764:14764 Metalib.CoqFSetInterface <> P var
+R14766:14766 Metalib.CoqFSetInterface <> x var
+R14772:14773 Coq.Init.Logic <> :type_scope:'~'_x not
+R14774:14774 Metalib.CoqFSetInterface <> P var
+R14776:14776 Metalib.CoqFSetInterface <> x var
+R14793:14793 Metalib.CoqFSetInterface Sdep t defax
+R14803:14803 Coq.Init.Specif <> :type_scope:'{'_x_'}'_'+'_'{'_x_'}' not
+R14834:14838 Coq.Init.Specif <> :type_scope:'{'_x_'}'_'+'_'{'_x_'}' not
+R14871:14871 Coq.Init.Specif <> :type_scope:'{'_x_'}'_'+'_'{'_x_'}' not
+R14819:14822 Coq.Init.Logic <> :type_scope:x_'->'_x not
+R14823:14829 Metalib.CoqFSetInterface Sdep For_all def
+R14833:14833 Metalib.CoqFSetInterface <> s var
+R14831:14831 Metalib.CoqFSetInterface <> P var
+R14804:14811 Coq.Lists.SetoidList <> compat_P def
+R14818:14818 Metalib.CoqFSetInterface <> P var
+R14813:14816 Metalib.CoqFSetInterface Sdep eq defax
+R14854:14857 Coq.Init.Logic <> :type_scope:x_'->'_x not
+R14858:14859 Coq.Init.Logic <> :type_scope:'~'_x not
+R14860:14866 Metalib.CoqFSetInterface Sdep For_all def
+R14870:14870 Metalib.CoqFSetInterface <> s var
+R14868:14868 Metalib.CoqFSetInterface <> P var
+R14839:14846 Coq.Lists.SetoidList <> compat_P def
+R14853:14853 Metalib.CoqFSetInterface <> P var
+R14848:14851 Metalib.CoqFSetInterface Sdep eq defax
+ax 14891:14897 Sdep exists_
+R14922:14925 Coq.Init.Logic <> :type_scope:x_'->'_x not
+R14919:14921 Metalib.CoqFSetInterface Sdep t defax
+R14951:14953 Metalib.CoqFSetInterface Sdep t defax
+R14956:14956 Coq.Init.Specif <> :type_scope:'{'_x_'}'_'+'_'{'_x_'}' not
+R14960:14964 Coq.Init.Specif <> :type_scope:'{'_x_'}'_'+'_'{'_x_'}' not
+R14970:14970 Coq.Init.Specif <> :type_scope:'{'_x_'}'_'+'_'{'_x_'}' not
+R14957:14957 Metalib.CoqFSetInterface <> P var
+R14959:14959 Metalib.CoqFSetInterface <> x var
+R14965:14966 Coq.Init.Logic <> :type_scope:'~'_x not
+R14967:14967 Metalib.CoqFSetInterface <> P var
+R14969:14969 Metalib.CoqFSetInterface <> x var
+R14986:14986 Metalib.CoqFSetInterface Sdep t defax
+R14996:14996 Coq.Init.Specif <> :type_scope:'{'_x_'}'_'+'_'{'_x_'}' not
+R15026:15030 Coq.Init.Specif <> :type_scope:'{'_x_'}'_'+'_'{'_x_'}' not
+R15062:15062 Coq.Init.Specif <> :type_scope:'{'_x_'}'_'+'_'{'_x_'}' not
+R15012:15015 Coq.Init.Logic <> :type_scope:x_'->'_x not
+R15016:15021 Metalib.CoqFSetInterface Sdep Exists def
+R15025:15025 Metalib.CoqFSetInterface <> s var
+R15023:15023 Metalib.CoqFSetInterface <> P var
+R14997:15004 Coq.Lists.SetoidList <> compat_P def
+R15011:15011 Metalib.CoqFSetInterface <> P var
+R15006:15009 Metalib.CoqFSetInterface Sdep eq defax
+R15046:15049 Coq.Init.Logic <> :type_scope:x_'->'_x not
+R15050:15051 Coq.Init.Logic <> :type_scope:'~'_x not
+R15052:15057 Metalib.CoqFSetInterface Sdep Exists def
+R15061:15061 Metalib.CoqFSetInterface <> s var
+R15059:15059 Metalib.CoqFSetInterface <> P var
+R15031:15038 Coq.Lists.SetoidList <> compat_P def
+R15045:15045 Metalib.CoqFSetInterface <> P var
+R15040:15043 Metalib.CoqFSetInterface Sdep eq defax
+ax 15082:15090 Sdep partition
+R15115:15118 Coq.Init.Logic <> :type_scope:x_'->'_x not
+R15112:15114 Metalib.CoqFSetInterface Sdep t defax
+R15144:15146 Metalib.CoqFSetInterface Sdep t defax
+R15149:15149 Coq.Init.Specif <> :type_scope:'{'_x_'}'_'+'_'{'_x_'}' not
+R15153:15157 Coq.Init.Specif <> :type_scope:'{'_x_'}'_'+'_'{'_x_'}' not
+R15163:15163 Coq.Init.Specif <> :type_scope:'{'_x_'}'_'+'_'{'_x_'}' not
+R15150:15150 Metalib.CoqFSetInterface <> P var
+R15152:15152 Metalib.CoqFSetInterface <> x var
+R15158:15159 Coq.Init.Logic <> :type_scope:'~'_x not
+R15160:15160 Metalib.CoqFSetInterface <> P var
+R15162:15162 Metalib.CoqFSetInterface <> x var
+R15179:15179 Metalib.CoqFSetInterface Sdep t defax
+R15189:15189 Coq.Init.Specif <> :type_scope:'{'_x_':'_x_'|'_x_'}' not
+R15199:15201 Coq.Init.Specif <> :type_scope:'{'_x_':'_x_'|'_x_'}' not
+R15207:15215 Coq.Init.Specif <> :type_scope:'{'_x_':'_x_'|'_x_'}' not
+R15382:15382 Coq.Init.Specif <> :type_scope:'{'_x_':'_x_'|'_x_'}' not
+R15203:15205 Coq.Init.Datatypes <> :type_scope:x_'*'_x not
+R15202:15202 Metalib.CoqFSetInterface Sdep t defax
+R15206:15206 Metalib.CoqFSetInterface Sdep t defax
+R15266:15275 Coq.Init.Logic <> :type_scope:x_'->'_x not
+R15288:15297 Coq.Init.Logic <> :type_scope:x_'/\'_x not
+R15276:15282 Metalib.CoqFSetInterface Sdep For_all def
+R15286:15287 Metalib.CoqFSetInterface <> s1 var
+R15284:15284 Metalib.CoqFSetInterface <> P var
+R15325:15335 Coq.Init.Logic <> :type_scope:x_'/\'_x not
+R15381:15381 Coq.Init.Logic <> :type_scope:x_'/\'_x not
+R15298:15304 Metalib.CoqFSetInterface Sdep For_all def
+R15323:15324 Metalib.CoqFSetInterface <> s2 var
+R15316:15317 Coq.Init.Logic <> :type_scope:'~'_x not
+R15318:15318 Metalib.CoqFSetInterface <> P var
+R15320:15320 Metalib.CoqFSetInterface <> x var
+R15347:15349 Metalib.CoqFSetInterface Sdep t defax
+R15358:15362 Coq.Init.Logic <> :type_scope:x_'<->'_x not
+R15352:15353 Metalib.CoqFSetInterface Sdep In defax
+R15357:15357 Metalib.CoqFSetInterface <> s var
+R15355:15355 Metalib.CoqFSetInterface <> x var
+R15370:15373 Coq.Init.Logic <> :type_scope:x_'\/'_x not
+R15363:15364 Metalib.CoqFSetInterface Sdep In defax
+R15368:15369 Metalib.CoqFSetInterface <> s1 var
+R15366:15366 Metalib.CoqFSetInterface <> x var
+R15374:15375 Metalib.CoqFSetInterface Sdep In defax
+R15379:15380 Metalib.CoqFSetInterface <> s2 var
+R15377:15377 Metalib.CoqFSetInterface <> x var
+R15251:15258 Coq.Lists.SetoidList <> compat_P def
+R15265:15265 Metalib.CoqFSetInterface <> P var
+R15260:15263 Metalib.CoqFSetInterface Sdep eq defax
+ax 15402:15409 Sdep elements
+R15430:15430 Metalib.CoqFSetInterface Sdep t defax
+R15439:15439 Coq.Init.Specif <> :type_scope:'{'_x_':'_x_'|'_x_'}' not
+R15441:15443 Coq.Init.Specif <> :type_scope:'{'_x_':'_x_'|'_x_'}' not
+R15452:15460 Coq.Init.Specif <> :type_scope:'{'_x_':'_x_'|'_x_'}' not
+R15517:15517 Coq.Init.Specif <> :type_scope:'{'_x_':'_x_'|'_x_'}' not
+R15444:15447 Coq.Init.Datatypes <> list ind
+R15449:15451 Metalib.CoqFSetInterface Sdep t defax
+R15472:15476 Coq.Init.Logic <> :type_scope:x_'/\'_x not
+R15516:15516 Coq.Init.Logic <> :type_scope:x_'/\'_x not
+R15461:15464 Coq.Sorting.Sorted <> sort syndef
+R15466:15469 Metalib.CoqFSetInterface Sdep lt defax
+R15488:15490 Metalib.CoqFSetInterface Sdep t defax
+R15499:15503 Coq.Init.Logic <> :type_scope:x_'<->'_x not
+R15493:15494 Metalib.CoqFSetInterface Sdep In defax
+R15498:15498 Metalib.CoqFSetInterface <> s var
+R15496:15496 Metalib.CoqFSetInterface <> x var
+R15504:15506 Coq.Lists.SetoidList <> InA ind
+R15513:15513 Metalib.CoqFSetInterface <> x var
+R15508:15511 Metalib.CoqFSetInterface Sdep eq defax
+ax 15537:15540 Sdep fold
+R15576:15579 Coq.Init.Logic <> :type_scope:x_'->'_x not
+R15581:15584 Coq.Init.Logic <> :type_scope:x_'->'_x not
+R15585:15585 Metalib.CoqFSetInterface <> A var
+R15580:15580 Metalib.CoqFSetInterface <> A var
+R15573:15575 Metalib.CoqFSetInterface Sdep t defax
+R15593:15593 Metalib.CoqFSetInterface Sdep t defax
+R15601:15601 Metalib.CoqFSetInterface <> A var
+R15611:15611 Coq.Init.Specif <> :type_scope:'{'_x_':'_x_'|'_x_'}' not
+R15613:15615 Coq.Init.Specif <> :type_scope:'{'_x_':'_x_'|'_x_'}' not
+R15617:15619 Coq.Init.Specif <> :type_scope:'{'_x_':'_x_'|'_x_'}' not
+R15701:15701 Coq.Init.Specif <> :type_scope:'{'_x_':'_x_'|'_x_'}' not
+R15616:15616 Metalib.CoqFSetInterface <> A var
+R15633:15640 Metalib.CoqFSetInterface Sdep elements defax
+R15642:15642 Metalib.CoqFSetInterface <> s var
+R15666:15668 Coq.Init.Logic <> :type_scope:x_'='_x not
+R15669:15677 Coq.Lists.List <> fold_left def
+R15700:15700 Metalib.CoqFSetInterface <> i var
+R15698:15698 Metalib.CoqFSetInterface <> l var
+R15691:15691 Metalib.CoqFSetInterface <> f var
+R15695:15695 Metalib.CoqFSetInterface <> a var
+R15693:15693 Metalib.CoqFSetInterface <> e var
+ax 15721:15728 Sdep cardinal
+R15749:15749 Metalib.CoqFSetInterface Sdep t defax
+R15758:15758 Coq.Init.Specif <> :type_scope:'{'_x_':'_x_'|'_x_'}' not
+R15760:15762 Coq.Init.Specif <> :type_scope:'{'_x_':'_x_'|'_x_'}' not
+R15766:15768 Coq.Init.Specif <> :type_scope:'{'_x_':'_x_'|'_x_'}' not
+R15808:15809 Coq.Init.Specif <> :type_scope:'{'_x_':'_x_'|'_x_'}' not
+R15763:15765 Coq.Init.Datatypes <> nat ind
+R15782:15789 Metalib.CoqFSetInterface Sdep elements defax
+R15791:15791 Metalib.CoqFSetInterface <> s var
+R15797:15799 Coq.Init.Logic <> :type_scope:x_'='_x not
+R15800:15805 Coq.Init.Datatypes <> length def
+R15807:15807 Metalib.CoqFSetInterface <> l var
+ax 15829:15835 Sdep min_elt
+R15856:15856 Metalib.CoqFSetInterface Sdep t defax
+R15918:15921 Coq.Init.Specif <> :type_scope:x_'+'_'{'_x_'}' not
+R15929:15929 Coq.Init.Specif <> :type_scope:x_'+'_'{'_x_'}' not
+R15865:15865 Coq.Init.Specif <> :type_scope:'{'_x_':'_x_'|'_x_'}' not
+R15867:15869 Coq.Init.Specif <> :type_scope:'{'_x_':'_x_'|'_x_'}' not
+R15873:15875 Coq.Init.Specif <> :type_scope:'{'_x_':'_x_'|'_x_'}' not
+R15917:15917 Coq.Init.Specif <> :type_scope:'{'_x_':'_x_'|'_x_'}' not
+R15870:15872 Metalib.CoqFSetInterface Sdep t defax
+R15882:15885 Coq.Init.Logic <> :type_scope:x_'/\'_x not
+R15876:15877 Metalib.CoqFSetInterface Sdep In defax
+R15881:15881 Metalib.CoqFSetInterface <> s var
+R15886:15892 Metalib.CoqFSetInterface Sdep For_all def
+R15916:15916 Metalib.CoqFSetInterface <> s var
+R15904:15905 Coq.Init.Logic <> :type_scope:'~'_x not
+R15906:15909 Metalib.CoqFSetInterface Sdep lt defax
+R15911:15911 Metalib.CoqFSetInterface <> y var
+R15922:15926 Metalib.CoqFSetInterface Sdep Empty def
+R15928:15928 Metalib.CoqFSetInterface <> s var
+ax 15949:15955 Sdep max_elt
+R15976:15976 Metalib.CoqFSetInterface Sdep t defax
+R16038:16041 Coq.Init.Specif <> :type_scope:x_'+'_'{'_x_'}' not
+R16049:16049 Coq.Init.Specif <> :type_scope:x_'+'_'{'_x_'}' not
+R15985:15985 Coq.Init.Specif <> :type_scope:'{'_x_':'_x_'|'_x_'}' not
+R15987:15989 Coq.Init.Specif <> :type_scope:'{'_x_':'_x_'|'_x_'}' not
+R15993:15995 Coq.Init.Specif <> :type_scope:'{'_x_':'_x_'|'_x_'}' not
+R16037:16037 Coq.Init.Specif <> :type_scope:'{'_x_':'_x_'|'_x_'}' not
+R15990:15992 Metalib.CoqFSetInterface Sdep t defax
+R16002:16005 Coq.Init.Logic <> :type_scope:x_'/\'_x not
+R15996:15997 Metalib.CoqFSetInterface Sdep In defax
+R16001:16001 Metalib.CoqFSetInterface <> s var
+R16006:16012 Metalib.CoqFSetInterface Sdep For_all def
+R16036:16036 Metalib.CoqFSetInterface <> s var
+R16024:16025 Coq.Init.Logic <> :type_scope:'~'_x not
+R16026:16029 Metalib.CoqFSetInterface Sdep lt defax
+R16033:16033 Metalib.CoqFSetInterface <> y var
+R16042:16046 Metalib.CoqFSetInterface Sdep Empty def
+R16048:16048 Metalib.CoqFSetInterface <> s var
+ax 16065:16070 Sdep choose
+R16085:16085 Metalib.CoqFSetInterface Sdep t defax
+R16106:16109 Coq.Init.Specif <> :type_scope:x_'+'_'{'_x_'}' not
+R16117:16117 Coq.Init.Specif <> :type_scope:x_'+'_'{'_x_'}' not
+R16088:16088 Coq.Init.Specif <> :type_scope:'{'_x_':'_x_'|'_x_'}' not
+R16090:16092 Coq.Init.Specif <> :type_scope:'{'_x_':'_x_'|'_x_'}' not
+R16096:16098 Coq.Init.Specif <> :type_scope:'{'_x_':'_x_'|'_x_'}' not
+R16105:16105 Coq.Init.Specif <> :type_scope:'{'_x_':'_x_'|'_x_'}' not
+R16093:16095 Metalib.CoqFSetInterface Sdep t defax
+R16099:16100 Metalib.CoqFSetInterface Sdep In defax
+R16104:16104 Metalib.CoqFSetInterface <> s var
+R16110:16114 Metalib.CoqFSetInterface Sdep Empty def
+R16116:16116 Metalib.CoqFSetInterface <> s var
+ax 16266:16277 Sdep choose_equal
+R16304:16312 Coq.Init.Logic <> :type_scope:x_'->'_x not
+R16329:16334 Metalib.CoqFSetInterface Sdep choose defax
+R16336:16337 Metalib.CoqFSetInterface <> s' var
+R16319:16324 Metalib.CoqFSetInterface Sdep choose defax
+R16326:16326 Metalib.CoqFSetInterface <> s var
+R16353:16358 Coq.Init.Specif <> inleft constr
+R16361:16365 Coq.Init.Specif <> exist constr
+R16375:16380 Coq.Init.Specif <> inleft constr
+R16383:16387 Coq.Init.Specif <> exist constr
+R16400:16403 Metalib.CoqFSetInterface Sdep eq defax
+R16419:16425 Coq.Init.Specif <> inright constr
+R16430:16436 Coq.Init.Specif <> inright constr
+R16444:16447 Coq.Init.Logic <> True ind
+R16467:16471 Coq.Init.Logic <> False ind
+R16294:16298 Metalib.CoqFSetInterface Sdep Equal def
+R16302:16303 Metalib.CoqFSetInterface <> s' var
+R16300:16300 Metalib.CoqFSetInterface <> s var
+R16488:16491 Metalib.CoqFSetInterface Sdep <> modtype

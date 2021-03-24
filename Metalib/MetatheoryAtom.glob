@@ -1,0 +1,230 @@
+DIGEST a28c729b8fd38d907e747d1512e574a6
+FMetalib.MetatheoryAtom
+R297:311 Coq.Arith.Arith <> <> lib
+R329:341 Coq.Arith.Max <> <> lib
+R359:378 Coq.Classes.EquivDec <> <> lib
+R396:409 Coq.Lists.List <> <> lib
+R427:451 Coq.Structures.Equalities <> <> lib
+R470:484 Coq.FSets.FSets <> <> lib
+R502:521 Metalib.CoqListFacts <> <> lib
+R539:555 Metalib.FSetExtra <> <> lib
+R573:593 Metalib.FSetWeakNotin <> <> lib
+R611:628 Metalib.LibTactics <> <> lib
+R647:651 Coq.omega.Omega <> <> lib
+R1014:1031 Coq.Structures.DecidableTypeEx UsualDecidableType <> mod
+modtype 1006:1009 <> ATOM
+ax 1047:1050 ATOM atom
+def 1072:1072 ATOM t
+R1077:1080 Metalib.MetatheoryAtom ATOM atom defax
+ax 1096:1101 ATOM eq_dec
+R1118:1121 Metalib.MetatheoryAtom ATOM atom defax
+R1124:1124 Coq.Init.Specif <> :type_scope:'{'_x_'}'_'+'_'{'_x_'}' not
+R1130:1134 Coq.Init.Specif <> :type_scope:'{'_x_'}'_'+'_'{'_x_'}' not
+R1141:1141 Coq.Init.Specif <> :type_scope:'{'_x_'}'_'+'_'{'_x_'}' not
+R1126:1128 Coq.Init.Logic <> :type_scope:x_'='_x not
+R1125:1125 Metalib.MetatheoryAtom <> x var
+R1129:1129 Metalib.MetatheoryAtom <> y var
+R1136:1139 Coq.Init.Logic <> :type_scope:x_'<>'_x not
+R1135:1135 Metalib.MetatheoryAtom <> x var
+R1140:1140 Metalib.MetatheoryAtom <> y var
+ax 1157:1175 ATOM atom_fresh_for_list
+R1196:1199 Coq.Init.Datatypes <> list ind
+R1201:1201 Metalib.MetatheoryAtom ATOM t def
+R1205:1205 Coq.Init.Specif <> :type_scope:'{'_x_':'_x_'|'_x_'}' not
+R1207:1209 Coq.Init.Specif <> :type_scope:'{'_x_':'_x_'|'_x_'}' not
+R1214:1216 Coq.Init.Specif <> :type_scope:'{'_x_':'_x_'|'_x_'}' not
+R1231:1231 Coq.Init.Specif <> :type_scope:'{'_x_':'_x_'|'_x_'}' not
+R1210:1213 Metalib.MetatheoryAtom ATOM atom defax
+R1217:1218 Coq.Init.Logic <> :type_scope:'~'_x not
+R1219:1225 Coq.Lists.List <> In def
+R1229:1230 Metalib.MetatheoryAtom <> xs var
+ax 1247:1251 ATOM fresh
+R1264:1267 Coq.Init.Logic <> :type_scope:x_'->'_x not
+R1268:1271 Metalib.MetatheoryAtom ATOM atom defax
+R1255:1258 Coq.Init.Datatypes <> list ind
+R1260:1263 Metalib.MetatheoryAtom ATOM atom defax
+ax 1287:1298 ATOM fresh_not_in
+R1312:1313 Coq.Init.Logic <> :type_scope:'~'_x not
+R1314:1315 Coq.Lists.List <> In def
+R1327:1327 Metalib.MetatheoryAtom <> l var
+R1318:1322 Metalib.MetatheoryAtom ATOM fresh defax
+R1324:1324 Metalib.MetatheoryAtom <> l var
+ax 1343:1348 ATOM nat_of
+R1356:1359 Coq.Init.Logic <> :type_scope:x_'->'_x not
+R1360:1362 Coq.Init.Datatypes <> nat ind
+R1352:1355 Metalib.MetatheoryAtom ATOM atom defax
+R1400:1409 Coq.Structures.Equalities HasUsualEq <> mod
+R1414:1422 Coq.Structures.Equalities UsualIsEq <> mod
+R1427:1439 Coq.Structures.Equalities UsualIsEqOrig <> mod
+R1448:1451 Metalib.MetatheoryAtom ATOM <> modtype
+R1561:1564 Metalib.MetatheoryAtom ATOM <> mod
+mod 1554:1557 <> Atom
+def 1600:1603 Atom atom
+R1608:1610 Coq.Init.Datatypes <> nat ind
+def 1626:1626 Atom t
+R1631:1634 Metalib.MetatheoryAtom Atom atom def
+def 1651:1656 Atom eq_dec
+R1661:1670 Coq.Arith.Peano_dec <> eq_nat_dec syndef
+prf 1682:1689 Atom max_lt_r
+R1717:1720 Coq.Init.Logic <> :type_scope:x_'->'_x not
+R1722:1725 Coq.Init.Peano <> :nat_scope:x_'<='_x not
+R1721:1721 Metalib.MetatheoryAtom <> x var
+R1726:1728 Coq.Arith.Max <> max syndef
+R1732:1732 Metalib.MetatheoryAtom <> z var
+R1730:1730 Metalib.MetatheoryAtom <> y var
+R1712:1715 Coq.Init.Peano <> :nat_scope:x_'<='_x not
+R1711:1711 Metalib.MetatheoryAtom <> x var
+R1716:1716 Metalib.MetatheoryAtom <> z var
+prf 1878:1889 Atom nat_list_max
+R1906:1909 Coq.Init.Datatypes <> list ind
+R1911:1913 Coq.Init.Datatypes <> nat ind
+R1921:1922 Coq.Init.Specif <> :type_scope:'{'_x_':'_x_'|'_x_'}' not
+R1924:1926 Coq.Init.Specif <> :type_scope:'{'_x_':'_x_'|'_x_'}' not
+R1930:1932 Coq.Init.Specif <> :type_scope:'{'_x_':'_x_'|'_x_'}' not
+R1965:1966 Coq.Init.Specif <> :type_scope:'{'_x_':'_x_'|'_x_'}' not
+R1927:1929 Coq.Init.Datatypes <> nat ind
+R1955:1958 Coq.Init.Logic <> :type_scope:x_'->'_x not
+R1960:1963 Coq.Init.Peano <> :nat_scope:x_'<='_x not
+R1959:1959 Metalib.MetatheoryAtom <> x var
+R1943:1949 Coq.Lists.List <> In def
+R1953:1954 Metalib.MetatheoryAtom <> xs var
+R1951:1951 Metalib.MetatheoryAtom <> x var
+R2101:2103 Coq.Arith.Max <> max syndef
+R2101:2103 Coq.Arith.Max <> max syndef
+R2205:2212 Metalib.MetatheoryAtom Atom max_lt_r thm
+R2205:2212 Metalib.MetatheoryAtom Atom max_lt_r thm
+prf 2231:2249 Atom atom_fresh_for_list
+R2270:2273 Coq.Init.Datatypes <> list ind
+R2275:2277 Coq.Init.Datatypes <> nat ind
+R2281:2282 Coq.Init.Specif <> :type_scope:'{'_x_':'_x_'|'_x_'}' not
+R2284:2286 Coq.Init.Specif <> :type_scope:'{'_x_':'_x_'|'_x_'}' not
+R2290:2292 Coq.Init.Specif <> :type_scope:'{'_x_':'_x_'|'_x_'}' not
+R2307:2308 Coq.Init.Specif <> :type_scope:'{'_x_':'_x_'|'_x_'}' not
+R2287:2289 Coq.Init.Datatypes <> nat ind
+R2293:2294 Coq.Init.Logic <> :type_scope:'~'_x not
+R2295:2301 Coq.Lists.List <> In def
+R2305:2306 Metalib.MetatheoryAtom <> xs var
+R2345:2356 Metalib.MetatheoryAtom Atom nat_list_max thm
+R2345:2356 Metalib.MetatheoryAtom Atom nat_list_max thm
+R2384:2384 Coq.Init.Datatypes <> S constr
+R2384:2384 Coq.Init.Datatypes <> S constr
+R2411:2411 Coq.Init.Datatypes <> S constr
+R2411:2411 Coq.Init.Datatypes <> S constr
+def 2455:2459 Atom fresh
+R2466:2469 Coq.Init.Datatypes <> list ind
+R2471:2474 Metalib.MetatheoryAtom Atom atom def
+R2490:2508 Metalib.MetatheoryAtom Atom atom_fresh_for_list thm
+R2510:2510 Metalib.MetatheoryAtom <> l var
+R2524:2528 Coq.Init.Specif <> exist constr
+prf 2560:2571 Atom fresh_not_in
+R2585:2586 Coq.Init.Logic <> :type_scope:'~'_x not
+R2587:2588 Coq.Lists.List <> In def
+R2600:2600 Metalib.MetatheoryAtom <> l var
+R2591:2595 Metalib.MetatheoryAtom Atom fresh def
+R2597:2597 Metalib.MetatheoryAtom <> l var
+R2632:2636 Metalib.MetatheoryAtom Atom fresh def
+R2652:2670 Metalib.MetatheoryAtom Atom atom_fresh_for_list thm
+def 2700:2705 Atom nat_of
+R2719:2722 Metalib.MetatheoryAtom Atom atom def
+R2728:2728 Metalib.MetatheoryAtom <> x var
+R2742:2751 Coq.Structures.Equalities HasUsualEq <> mod
+R2756:2764 Coq.Structures.Equalities UsualIsEq <> mod
+R2769:2781 Coq.Structures.Equalities UsualIsEqOrig <> mod
+R2807:2810 Metalib.MetatheoryAtom Atom <> mod
+syndef 2934:2937 <> atom
+R2942:2950 Metalib.MetatheoryAtom <> atom defax
+syndef 2962:2966 <> fresh
+R2971:2980 Metalib.MetatheoryAtom <> fresh defax
+syndef 2992:3003 <> fresh_not_in
+R3008:3024 Metalib.MetatheoryAtom <> fresh_not_in defax
+syndef 3036:3054 <> atom_fresh_for_list
+R3059:3082 Metalib.MetatheoryAtom <> atom_fresh_for_list defax
+R3138:3144 Metalib.MetatheoryAtom <> eq def
+inst 3227:3236 <> EqDec_atom
+R3241:3245 Coq.Classes.EquivDec <> EqDec class
+R3255:3268 Coq.Classes.RelationClasses <> eq_equivalence inst
+R3252:3253 Coq.Init.Logic <> eq ind
+R3247:3250 Metalib.MetatheoryAtom <> atom syndef
+R3284:3294 Metalib.MetatheoryAtom <> eq_dec defax
+R3284:3294 Metalib.MetatheoryAtom <> eq_dec defax
+R3751:3765 Metalib.FSetExtra WSfun <> mod
+R3767:3770 Metalib.MetatheoryAtom Atom <> modtype
+R3777:3790 Metalib.FSetExtra Make <> modtype
+R3792:3795 Metalib.MetatheoryAtom Atom <> modtype
+mod 3737:3747 <> AtomSetImpl
+syndef 3808:3812 <> atoms
+R3819:3831 Metalib.MetatheoryAtom <> t defax
+R3981:4012 Coq.FSets.FSetDecide WDecide_fun <> modtype
+R4014:4017 Metalib.MetatheoryAtom Atom <> modtype
+R4019:4029 Metalib.MetatheoryAtom AtomSetImpl <> modtype
+mod 3964:3976 <> AtomSetDecide
+R4266:4288 Metalib.FSetWeakNotin Notin_fun <> modtype
+R4290:4293 Metalib.MetatheoryAtom Atom <> modtype
+R4295:4305 Metalib.MetatheoryAtom AtomSetImpl <> modtype
+mod 4250:4261 <> AtomSetNotin
+R4755:4774 Coq.FSets.FSetFacts WFacts_fun <> modtype
+R4776:4779 Metalib.MetatheoryAtom Atom <> modtype
+R4781:4791 Metalib.MetatheoryAtom AtomSetImpl <> modtype
+mod 4739:4750 <> AtomSetFacts
+R4822:4851 Coq.FSets.FSetProperties WProperties_fun <> modtype
+R4853:4856 Metalib.MetatheoryAtom Atom <> modtype
+R4858:4868 Metalib.MetatheoryAtom AtomSetImpl <> modtype
+mod 4801:4817 <> AtomSetProperties
+prf 5083:5092 <> atom_fresh
+R5107:5111 Metalib.MetatheoryAtom <> atoms syndef
+R5114:5115 Coq.Init.Specif <> :type_scope:'{'_x_':'_x_'|'_x_'}' not
+R5117:5119 Coq.Init.Specif <> :type_scope:'{'_x_':'_x_'|'_x_'}' not
+R5124:5126 Coq.Init.Specif <> :type_scope:'{'_x_':'_x_'|'_x_'}' not
+R5135:5136 Coq.Init.Specif <> :type_scope:'{'_x_':'_x_'|'_x_'}' not
+R5120:5123 Metalib.MetatheoryAtom <> atom syndef
+R5127:5128 Coq.Init.Logic <> :type_scope:'~'_x not
+R5129:5130 Metalib.MetatheoryAtom <> In defax
+R5134:5134 Metalib.MetatheoryAtom <> L var
+R5168:5186 Metalib.MetatheoryAtom <> atom_fresh_for_list syndef
+R5189:5196 Metalib.MetatheoryAtom <> elements defax
+R5168:5186 Metalib.MetatheoryAtom <> atom_fresh_for_list syndef
+R5189:5196 Metalib.MetatheoryAtom <> elements defax
+R5264:5286 Metalib.CoqListFacts <> InA_iff_In thm
+R5264:5286 Metalib.CoqListFacts <> InA_iff_In thm
+R5264:5286 Metalib.CoqListFacts <> InA_iff_In thm
+R5300:5309 Metalib.MetatheoryAtom <> elements_1 defax
+R5300:5309 Metalib.MetatheoryAtom <> elements_1 defax
+R5767:5781 Coq.Lists.List <> fold_right def
+R5789:5793 Metalib.MetatheoryAtom <> empty defax
+R5783:5787 Metalib.MetatheoryAtom <> union defax
+R5833:5837 Metalib.MetatheoryAtom <> union defax
+R5842:5846 Metalib.MetatheoryAtom <> empty defax
+R5833:5837 Metalib.MetatheoryAtom <> union defax
+R5842:5846 Metalib.MetatheoryAtom <> empty defax
+R6130:6133 Coq.Init.Logic <> :type_scope:x_'->'_x not
+R6135:6138 Coq.Init.Logic <> :type_scope:x_'->'_x not
+R6140:6143 Coq.Init.Logic <> :type_scope:x_'->'_x not
+R6130:6133 Coq.Init.Logic <> :type_scope:x_'->'_x not
+R6135:6138 Coq.Init.Logic <> :type_scope:x_'->'_x not
+R6140:6143 Coq.Init.Logic <> :type_scope:x_'->'_x not
+R6176:6179 Coq.Init.Logic <> :type_scope:x_'->'_x not
+R6181:6184 Coq.Init.Logic <> :type_scope:x_'->'_x not
+R6176:6179 Coq.Init.Logic <> :type_scope:x_'->'_x not
+R6181:6184 Coq.Init.Logic <> :type_scope:x_'->'_x not
+R6215:6218 Coq.Init.Logic <> :type_scope:x_'->'_x not
+R6215:6218 Coq.Init.Logic <> :type_scope:x_'->'_x not
+R6427:6431 Metalib.MetatheoryAtom <> union defax
+R6793:6797 Metalib.MetatheoryAtom <> union defax
+R6793:6797 Metalib.MetatheoryAtom <> union defax
+R6853:6857 Metalib.MetatheoryAtom <> empty defax
+R6853:6857 Metalib.MetatheoryAtom <> empty defax
+R6913:6917 Metalib.MetatheoryAtom <> empty defax
+R6913:6917 Metalib.MetatheoryAtom <> empty defax
+R6956:6960 Metalib.MetatheoryAtom <> union defax
+R7656:7660 Metalib.MetatheoryAtom <> empty defax
+R7793:7802 Metalib.MetatheoryAtom <> atom_fresh thm
+R8210:8214 Metalib.MetatheoryAtom <> atoms syndef
+R8219:8219 Metalib.MetatheoryAtom <> x var
+R8263:8266 Metalib.MetatheoryAtom <> atom syndef
+R8271:8279 Metalib.MetatheoryAtom <> singleton defax
+R8281:8281 Metalib.MetatheoryAtom <> x var
+R8297:8301 Metalib.MetatheoryAtom <> union defax
+prf 8316:8337 <> example_pick_fresh_use
+R8357:8360 Metalib.MetatheoryAtom <> atom syndef
+R8374:8378 Metalib.MetatheoryAtom <> atoms syndef
+R8382:8385 Coq.Init.Logic <> True ind
