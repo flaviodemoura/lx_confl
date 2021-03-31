@@ -335,25 +335,6 @@ Qed.
 
 Check AtomSetImpl.union_1.
 Check fv_nom_swap.
-
-Search "remove".
-
-(*Theorem notin_swap : forall x y t,
-     x<>y -> y `notin` fv_nom((swap x y t)).
-Proof.
-  induction t.
-  - intros. simpl. unfold swap_var. default_simp. Admitted.
-    
-
-Theorem in_swap : forall x y t,
-    x `in` fv_nom(t) -> x<>y -> y `in` fv_nom(swap x y t).
-Proof.
-  induction t.
-  - intros. simpl. unfold swap_var. default_simp.
-    -- admit. (*n e H sao contraditorias*)
-    -- admit. (*n e H sao contraditorias*)
-  - intros. simpl in H. apply AtomSetImpl.remove_3 in H. simpl.
-    unfold swap_var. default_simp. apply IHt in H. Admitted.*)
       
 Search "not".
 Print "_ == _".
@@ -737,7 +718,9 @@ Proof.
   intros. case (x == y).
   - intros. unfold subst.  rewrite e. simpl. case (y == y).
     -- trivial.
-    -- unfold not. intros. assert (y = y). {reflexivity.}
+    -- unfold not. intros. assert (y = y). {
+         reflexivity.
+       }
        contradiction.
   - intros. unfold subst. simpl. case (x == y).
     -- intros. contradiction.
@@ -919,7 +902,7 @@ Proof.
                 apply notin_remove_1 in n2.
                 inversion n2.
                 +++ symmetry in H2. contradiction.
-                +++ apply aeq_abs_diff.
+                +++ pose proof aeq_abs_diff. apply aeq_abs_diff.
                     * assumption.
                     * assumption.
                     * admit.
@@ -941,7 +924,7 @@ Proof.
        apply H4 in H3.
        --- specialize (IHt1 u). specialize (IHt2 u).
            apply IHt1 in H1.
-           + simpl in H0. Search "union". pose proof notin_union_1.
+           + simpl in H0. pose proof notin_union_1.
              specialize (H5 x (fv_nom t1) (fv_nom t2)).
              pose proof notin_union_1.
              specialize (H6 x (fv_nom t2) (fv_nom t1)).
