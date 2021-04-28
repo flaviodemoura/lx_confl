@@ -49,27 +49,29 @@ Inductive n_sexp : Set :=
  | n_app (t1:n_sexp) (t2:n_sexp)
  | n_sub (t1:n_sexp) (x:atom) (t2:n_sexp).
 
-Inductive step : n_sexp -> n_sexp -> Prop :=
+Inductive betax : n_sexp -> n_sexp -> Prop :=
  | step_betax : forall (e1 e2: n_sexp) (x: atom),
-     step (n_app  (n_abs x e1) e2)  (n_sub e1 x e2)
+     betax (n_app  (n_abs x e1) e2)  (n_sub e1 x e2).
+
+Inductive pix : n_sexp -> n_sexp -> Prop :=
  | step_var : forall (e: n_sexp) (y: atom),
-     step (n_sub (n_var y) y e) e
+     pix (n_sub (n_var y) y e) e
  | step_gc : forall (e: n_sexp) (x y: atom),
-     x <> y -> step (n_sub (n_var x) y e) (n_var x)
+     x <> y -> pix (n_sub (n_var x) y e) (n_var x)
  | step_abs1 : forall (e1 e2: n_sexp) (y : atom),
-     step (n_sub (n_abs y e1) y e2)  (n_abs y e1)
+     pix (n_sub (n_abs y e1) y e2)  (n_abs y e1)
  | step_abs2 : forall (e1 e2: n_sexp) (x y: atom),
      x <> y ->
-     step (n_sub (n_abs x e1) y e2)  (n_abs x (n_sub e1 y e2))
+     pix (n_sub (n_abs x e1) y e2)  (n_abs x (n_sub e1 y e2))
  | step_app : forall (e1 e2 e3: n_sexp) (y: atom),
-     step (n_sub (n_app e1 e2) y e3) (n_app (n_sub e1 y e3) (n_sub e2 y e3))
+     pix (n_sub (n_app e1 e2) y e3) (n_app (n_sub e1 y e3) (n_sub e2 y e3)).
+
+Inductive step : n_sexp -> n_sexp -> Prop :=
  | step_abs_in: forall (e e': n_sexp) (x: atom), step e e' -> step (n_abs x e) (n_abs x e')
  | step_app_left: forall (e1 e1' e2: n_sexp) , step e1 e1' -> step (n_app e1 e2) (n_app e1' e2)
  | step_app_right: forall (e1 e2 e2': n_sexp) , step e2 e2' -> step (n_app e1 e2) (n_app e1 e2')
-
  | step_sub_left: forall (e1 e1' e2: n_sexp) (x : atom) , step e1 e1' -> step (n_sub e1 x e2) (n_sub e1' x e2)
  | step_sub_right: forall (e1 e2 e2': n_sexp) (x:atom), step e2 e2' -> step (n_sub e1 x e2) (n_sub e1 x e2').
-
 
 (** For example, we can encode the expression [(\X.Y X)] as below.  *)
 
