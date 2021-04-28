@@ -870,8 +870,7 @@ Lemma subst_same : forall t y, aeq (subst (n_var y) y t)  t.
 Proof.
   intros.
   apply subst_same_aux with (n := size t). auto.
-Qed.
-
+Qed. 
 
 Lemma subst_fresh_eq_aux : forall n, forall (x:atom) t u, size t <= n ->
   x `notin` fv_nom t -> aeq (subst u x t) t.
@@ -882,7 +881,42 @@ Proof.
        specialize (H1 x0 x). symmetry in e; apply H1 in e. 
        contradiction.
     -- intros. apply aeq_var.
-  - intros. unfold subst. simpl. case (x == x0).
+  - intros. simpl in H. simpl in H0. case (x == x0).
+    -- intros. rewrite e in H0. rewrite e. unfold subst.
+       simpl. case (x0 == x0).
+       --- intros. apply aeq_refl.
+       --- intros. contradiction.         
+    -- intros. Search "remove". pose proof notin_remove_1.
+       specialize (H1 x0 x (fv_nom t)). apply H1 in H0.
+       inversion H0.
+       --- symmetry in H2. contradiction.
+       --- rewrite subst_abs. case (x == x0).
+           + intros. contradiction.
+           + intros. simpl. destruct (atom_fresh
+         (union (fv_nom u)
+                (union (remove x0 (fv_nom t)) (singleton x)))).
+             case (x1 == x0).
+             ++ intros. rewrite e. rewrite swap_id.
+                apply aeq_abs_same. apply IHt.
+                +++ apply le_S in H. apply Sn_le_Sm__n_le_m in H.
+                    assumption.
+                +++ assumption.
+             ++ intros. Search "union". apply notin_union_2 in n2.
+                apply notin_union_1 in n2.
+                apply notin_remove_1 in n2. inversion n2.
+                +++ symmetry in H3. contradiction.
+                +++ apply aeq_abs_diff.
+                    * assumption.
+                    * assumption.
+                    * apply le_S in H. apply Sn_le_Sm__n_le_m in H.
+                      specialize (IHt u). apply IHt in H.
+                      ** admit.
+                      ** assumption.
+                         
+             
+
+
+    (*intros. unfold subst. simpl. case (x == x0).
     -- intros. simpl in H0. rewrite e in H0. apply aeq_abs_same.
        apply aeq_refl.
     -- intros. pose proof subst_abs. unfold subst in H1.
@@ -905,7 +939,7 @@ Proof.
                 +++ pose proof aeq_abs_diff. apply aeq_abs_diff.
                     * assumption.
                     * assumption.
-                    * admit.
+                    * admit.*)
 
 
 

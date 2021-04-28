@@ -23,6 +23,7 @@ Require Export Metalib.Metatheory.
     its library are useful for automating reasoning about
     names (i.e. atoms).  *)
 Require Export Metalib.LibLNgen.
+Require Import Nominal.
 
 
 (** Some fresh atoms *)
@@ -64,7 +65,10 @@ Inductive step : n_sexp -> n_sexp -> Prop :=
      step (n_sub (n_app e1 e2) y e3) (n_app (n_sub e1 y e3) (n_sub e2 y e3))
  | step_abs_in: forall (e e': n_sexp) (x: atom), step e e' -> step (n_abs x e) (n_abs x e')
  | step_app_left: forall (e1 e1' e2: n_sexp) , step e1 e1' -> step (n_app e1 e2) (n_app e1' e2)
- | step_app_right: forall (e1 e2 e2': n_sexp) , step e2 e2' -> step (n_app e1 e2) (n_app e1 e2').
+ | step_app_right: forall (e1 e2 e2': n_sexp) , step e2 e2' -> step (n_app e1 e2) (n_app e1 e2')
+
+ | step_sub_left: forall (e1 e1' e2: n_sexp) (x : atom) , step e1 e1' -> step (n_sub e1 x e2) (n_sub e1' x e2)
+ | step_sub_right: forall (e1 e2 e2': n_sexp) (x:atom), step e2 e2' -> step (n_sub e1 x e2) (n_sub e1 x e2').
 
 
 (** For example, we can encode the expression [(\X.Y X)] as below.  *)
