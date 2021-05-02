@@ -84,11 +84,12 @@ Definition demo_rep2 := n_abs Z (n_app (n_var Y) (n_var Z)).
 
 (** As usual, the free variable function needs to remove the
     bound variable in the [n_abs] case. *)
-Fixpoint fv_nom (n : n_exp) : atoms :=
+Fixpoint fv_nom (n : n_sexp) : atoms :=
   match n with
   | n_var x => {{x}}
   | n_abs x n => remove x (fv_nom n)
   | n_app t1 t2 => fv_nom t1 `union` fv_nom t2
+  | n_sub t1 x t2 => (remove x (fv_nom t1)) `union` fv_nom t2
   end.
 
 (** The tactics for reasoning about lists and sets of atoms are useful here
@@ -123,11 +124,12 @@ Definition swap_var (x:atom) (y:atom) (z:atom) :=
       (swap x y) (\y. x) = \x.y
 
 *)
-Fixpoint swap (x:atom) (y:atom) (t:n_exp) : n_exp :=
+Fixpoint swap (x:atom) (y:atom) (t:n_sexp) : n_sexp :=
   match t with
   | n_var z     => n_var (swap_var x y z)
   | n_abs z t1  => n_abs (swap_var x y z) (swap x y t1)
   | n_app t1 t2 => n_app (swap x y t1) (swap x y t2)
+  | n_sub t1 z t2 => n_sub (swap x y t1) (swap_var x y z) (swap x y t2)
   end.
 
 
@@ -175,7 +177,7 @@ Qed.
     bodies, or the binders differ, but we can swap one side to
     make it look like the other.  *)
 
-Inductive aeq : n_exp -> n_exp -> Prop :=
+Inductive aeq : n_sexp -> n_sexp -> Prop :=
  | aeq_var : forall x,
      aeq (n_var x) (n_var x)
  | aeq_abs_same : forall x t1 t2,
@@ -187,7 +189,14 @@ Inductive aeq : n_exp -> n_exp -> Prop :=
      aeq (n_abs x t1) (n_abs y t2)
  | aeq_app : forall t1 t2 t1' t2',
      aeq t1 t1' -> aeq t2 t2' ->
-     aeq (n_app t1 t2) (n_app t1' t2').
+     aeq (n_app t1 t2) (n_app t1' t2')
+ | aeq_sub_same : forall t1 t2 t1' t2' x,
+     aeq t1 t1' -> aeq t2 t2' ->
+     aeq (n_sub t1 x t2) (n_sub t1' x t2')
+ | aeq_sub_diff : forall t1 t2 t1' t2' x y,
+     aeq t1 t1' -> aeq t2 t2' -> x <> y ->
+     x `notin` fv_nom t1' -> aeq t1 (swap y x t1') ->
+     aeq (n_sub t1 x t2) (n_sub t1' y t2').
 
 Hint Constructors aeq.
 
@@ -259,12 +268,18 @@ Proof.
   - intros x y; simpl.
     rewrite IHt1.
     rewrite IHt2; reflexivity.
+  - intros. simpl. unfold swap_var. default_simp.
 Qed.
     
 Lemma swap_involutive : forall t x y,
     swap x y (swap x y t) = t.
 Proof.
-  (* FILL IN HERE *) Admitted.
+ induction t.
+  - intros. simpl. unfold swap_var. default_simp.
+  - intros. simpl. unfold swap_var. default_simp.
+  - intros. simpl. unfold swap_var. default_simp.
+  - intros. simpl. unfold swap_var. default_simp.    
+Qed.
 
 (** *** Challenge exercises: equivariance
 
@@ -281,18 +296,80 @@ Lemma swap_var_equivariance : forall v x y z w,
     swap_var x y (swap_var z w v) =
     swap_var (swap_var x y z) (swap_var x y w) (swap_var x y v).
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros. unfold swap_var.
+  case(v == z).
+  - case (w == x).
+    -- default_simp.
+    -- default_simp.
+  - case (w == x).
+    -- default_simp.
+    -- default_simp.
+Qed.
 
 Lemma swap_equivariance : forall t x y z w,
     swap x y (swap z w t) = swap (swap_var x y z) (swap_var x y w) (swap x y t).
 Proof.
-  (* FILL IN HERE *) Admitted.
+  induction t.
+  - intros. unfold swap_var. case (z == x0).
+    -- case (w == x0).
+       --- intros. rewrite swap_id. rewrite e; rewrite e0.
+           rewrite swap_id. reflexivity.
+       --- intros. case (w == y).
+           + intros. rewrite swap_symmetric. rewrite e; rewrite e0.
+             reflexivity.
+           + intros. unfold swap. unfold swap_var. default_simp.
+    -- unfold swap. unfold swap_var. intros. default_simp.
+  - intros. simpl. rewrite IHt. unfold swap_var.
+    case (x == z).
+    -- case (w == x0).
+       --- default_simp.
+       --- default_simp.
+    -- case (w == x0).
+       --- default_simp.
+       --- intros. case (x == w).
+           + intros. case (z == x0).
+             ++ default_simp.
+             ++ default_simp.
+           + intros. case (z == x0).
+             ++ default_simp.
+             ++ default_simp.
+  - intros. simpl. rewrite IHt1. rewrite IHt2. reflexivity.
+  - intros. simpl. rewrite IHt1. rewrite IHt2. unfold swap_var.
+    default_simp.    
+Qed.
+
+Lemma aux_not_equal : forall (x:atom) (y:atom),
+    x <> y -> y <> x.
+Proof.
+  intros. unfold not. intros. unfold not in H.
+  assert (x = y). {
+    rewrite H0. reflexivity.
+  }
+  contradiction.
+Qed.
 
 Lemma notin_fv_nom_equivariance : forall x0 x y t ,
   x0 `notin` fv_nom t ->
   swap_var x y x0  `notin` fv_nom (swap x y t).
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros. unfold swap_var. case (x0 == x).
+  - intros. simpl. rewrite swap_symmetric. apply fv_nom_swap.
+    rewrite <- e. assumption.
+  - intros. case (x0 == y).
+    -- intros. apply fv_nom_swap. rewrite <- e. assumption.
+    -- intros. apply aux_not_equal in n. apply aux_not_equal in n0.
+       assert ((x <> x0) -> (y <> x0)). {
+         intros. assumption.
+       }
+       eapply (shuffle_swap x y t) in H0.
+       --- induction t.
+           + simpl. unfold swap_var. default_simp.
+           + simpl. unfold swap_var. default_simp.
+           + simpl. default_simp.
+           + simpl. unfold swap_var. default_simp.
+       --- assumption.
+       --- assumption.
+Qed.
 
 (* HINT: For a helpful fact about sets of atoms, check AtomSetImpl.union_1 *)
 
@@ -300,9 +377,156 @@ Lemma in_fv_nom_equivariance : forall x y x0 t,
   x0 `in` fv_nom t ->
   swap_var x y x0 `in` fv_nom (swap x y t).
 Proof.
-  (* FILL IN HERE *) Admitted.
-
-
+  induction t.
+  - simpl. intro H. pose proof singleton_iff.
+    specialize (H0 x1 x0). apply H0 in H. rewrite H.
+    apply singleton_iff. reflexivity.
+  - simpl. intros. unfold swap_var. default_simp.
+    -- pose proof AtomSetImpl.remove_1.
+       assert (H1:x `notin` remove x (fv_nom t)). {
+         apply H0. reflexivity.
+       }contradiction.
+    -- pose proof AtomSetImpl.remove_2. apply H0.
+       --- unfold not. intro. symmetry in H1. contradiction.
+       --- specialize (H0 (fv_nom t) y x). assert(y<>x). {
+             apply n.
+           }
+           
+           apply H0 in n.
+           + apply AtomSetImpl.remove_3 in H. apply IHt in H.
+             unfold swap_var in IHt. case (x == x) in IHt.
+             ++ apply AtomSetImpl.remove_3 in n.
+                apply IHt in n. assumption.
+             ++ unfold not in n0. contradiction. 
+           + apply AtomSetImpl.remove_3 in H. assumption.
+    -- apply AtomSetImpl.remove_2.
+       --- assumption.
+       --- apply AtomSetImpl.remove_3 in H. apply IHt in H.
+           unfold swap_var in H. case (x == x) in H.
+           + assumption.
+           + contradiction.
+    -- apply AtomSetImpl.remove_2.
+       --- assumption.
+       --- apply AtomSetImpl.remove_3 in H. unfold swap_var in IHt.
+           case (y == x) in IHt.
+           + intros. contradiction.
+           + intros. case (y == y) in IHt.
+             ++ apply IHt in H. assumption.
+             ++ contradiction.
+    -- assert (y = y). {
+         reflexivity.
+       }
+       pose proof AtomSetImpl.remove_1.
+       specialize (H1 (fv_nom t) y y).
+       apply H1 in H0. unfold not in H0. contradiction.
+    -- unfold swap_var in IHt. case (y == x) in IHt.
+       --- contradiction.
+       --- case (y == y) in IHt.
+           + apply AtomSetImpl.remove_3 in H. apply IHt in H.
+             pose proof AtomSetImpl.remove_2.
+             specialize (H0 (fv_nom (swap x y t)) x1 x).
+             apply H0 in n0.
+             ++ assumption.
+             ++ assumption.
+           + contradiction.
+    -- apply AtomSetImpl.remove_3 in H. apply IHt in H.
+       unfold swap_var in H. case(x0 == x) in H.
+       --- contradiction.
+       --- case(x0 == y) in H.
+           + pose proof AtomSetImpl.remove_2.
+             specialize (H0 (fv_nom (swap x y t)) y x0).
+             apply aux_not_equal in n0. apply H0 in n0.
+             ++ assumption.
+             ++ symmetry in e. contradiction.
+           + unfold swap_var in IHt. case (x0 == x) in IHt.
+             ++ contradiction.
+             ++ pose proof AtomSetImpl.remove_2.
+                specialize (H0 (fv_nom (swap x y t)) y x0).
+                apply aux_not_equal in n0. apply H0 in n0.
+                +++ assumption.
+                +++ assumption.
+    -- unfold swap_var in IHt. default_simp.
+       apply AtomSetImpl.remove_3 in H. apply IHt in H.
+       pose proof AtomSetImpl.remove_2.
+       specialize (H0 (fv_nom (swap x y t)) x x0).
+       apply aux_not_equal in n. apply H0 in n.
+       --- assumption.
+       --- assumption.
+    -- case (x == y). 
+       --- intros. rewrite e. rewrite swap_id. assumption.
+       --- intros. case (x0 == x1).
+           + intros. rewrite e in H. pose proof notin_remove_3.
+             specialize (H0 x1 x1 (fv_nom t)). assert (x1 = x1). {
+               reflexivity.
+             }
+             apply H0 in H1. unfold not in H1. contradiction.
+           + intros. apply AtomSetImpl.remove_3 in H.
+             unfold swap_var in IHt. case (x0 == x) in IHt.
+             ++ contradiction.
+             ++ case (x0 == y) in IHt.
+                +++ contradiction.
+                +++ apply IHt in H. pose proof remove_neq_iff.
+                    specialize (H0 (fv_nom (swap x y t)) x1 x0).
+                    apply aux_not_equal in n4.
+                    apply H0 in n4. apply n4 in H. assumption.      
+  - unfold swap_var. unfold swap_var in IHt1.
+    unfold swap_var in IHt2. default_simp.
+    -- pose proof AtomSetImpl.union_1.
+       specialize (H0 (fv_nom t1) (fv_nom t2) x). apply H0 in H.
+       pose proof AtomSetImpl.union_2.
+       inversion H. 
+       --- specialize (H1 (fv_nom (swap x y t1)) (fv_nom (swap x y t2)) y). apply IHt1 in H2.  apply H1 in H2. assumption.
+       --- specialize (H1 (fv_nom (swap x y t2)) (fv_nom (swap x y t1)) y).
+           pose proof AtomSetProperties.union_sym. apply H3.
+           apply IHt2 in H2.  apply H1 in H2. assumption.
+    -- pose proof union_iff. apply union_iff in H. inversion H.
+       --- apply IHt1 in H1. apply union_iff. left. assumption.
+       --- apply IHt2 in H1. apply union_iff. right. assumption.
+    -- apply union_iff in H. inversion H.
+       --- apply union_iff. apply IHt1 in H0. left. assumption.
+       --- apply union_iff. apply IHt2 in H0. right. assumption.
+  - intros. simpl. unfold swap_var. case (x == y).
+    -- intros. default_simp.
+       --- repeat rewrite swap_id. assumption.
+       --- repeat rewrite swap_id. assumption.
+       --- repeat rewrite swap_id. assumption.
+       --- repeat rewrite swap_id. assumption.
+    -- intros. default_simp.
+       --- Search "remove". pose proof AtomSetImpl.remove_1.
+           specialize (H0 (fv_nom t1) x x).
+           assert (x = x). {
+             reflexivity.
+           }
+           apply H0 in H1. pose proof union_iff. apply H2.
+           apply H2 in H. inversion H.
+           + contradiction.
+           + right. simpl. apply IHt2 in H3. unfold swap_var in H3.
+             case (x == x) in H3.
+             ++ assumption.
+             ++ contradiction.
+       --- admit.
+       --- admit.
+       --- admit.
+       --- Search "remove". pose proof AtomSetImpl.remove_1.
+           specialize (H0 (fv_nom t1) x x).
+           assert (x = x). {
+             reflexivity.
+           }
+           apply H0 in H1. apply union_iff. right.
+           unfold swap_var in IHt2. case (y == x) in IHt2.
+           + contradiction.
+           + case (y == y) in IHt2.
+             ++ apply union_iff in H. inversion H.
+                +++ pose proof AtomSetImpl.remove_1.
+                    specialize (H3 (fv_nom t1) y y).
+                    assert (y = y). {
+                      reflexivity.
+                    }
+                    apply H3 in H4. contradiction.
+                +++ apply IHt2 in H2. assumption.
+             ++ contradiction.
+       ---       
+Admitted.
 
 (*************************************************************)
 (** * An abstract machine for cbn evaluation                 *)
@@ -335,12 +559,12 @@ Proof.
     up the definition when we get to [x] during evaluation.  *)
 
 
-Definition heap := list (atom * n_exp).
+Definition heap := list (atom * n_sexp).
 
-Inductive frame : Set := | n_app2 : n_exp -> frame.
+Inductive frame : Set := | n_app2 : n_sexp -> frame.
 Notation  stack := (list frame).
 
-Definition configuration := (heap * n_exp * stack)%type.
+Definition configuration := (heap * n_sexp * stack)%type.
 
 (** The (small-step) semantics is a _function_ from
     configurations to configurations, until completion or
@@ -350,7 +574,7 @@ Inductive Step a := Error    : Step a
                   | Done     : Step a
                   | TakeStep : a -> Step a.
 
-Definition isVal (t : n_exp) :=
+Definition isVal (t : n_sexp) :=
   match t with
   | n_abs _ _ => true
   | _         => false
@@ -384,7 +608,7 @@ Definition machine_step (avoid : atoms) (c : configuration) : Step configuration
          end
   end.
 
-Definition initconf (t : n_exp) : configuration := (nil,t,nil).
+Definition initconf (t : n_sexp) : configuration := (nil,t,nil).
 
 
 (** Example: evaluation of  "(\y. (\x. x) y) 3"
@@ -419,7 +643,10 @@ semantics in the next section.
 Lemma values_are_done : forall D t,
     isVal t = true -> machine_step D (initconf t) = Done _.
 Proof.
-(* FILL IN HERE *) Admitted.
+  intros. unfold machine_step. simpl. case (isVal t) eqn:E.
+  - reflexivity.
+  - discriminate.
+Qed.
 
 
 (*************************************************************)
@@ -435,11 +662,12 @@ Proof.
     so that means we can prove such properties by induction on
     that size.  *)
 
-Fixpoint size (t : n_exp) : nat :=
+Fixpoint size (t : n_sexp) : nat :=
   match t with
   | n_var x => 1
   | n_abs x t => 1 + size t
   | n_app t1 t2 => 1 + size t1 + size t2
+  | n_sub t1 x t2 => 1 + size t1 + size t2
   end.
 
 Lemma swap_size_eq : forall x y t,
@@ -458,7 +686,7 @@ Hint Rewrite swap_size_eq.
     recursive. So, we add an extra argument to the function
     that decreases with each recursive call. *)
 
-Fixpoint subst_rec (n:nat) (t:n_exp) (u :n_exp) (x:atom)  : n_exp :=
+Fixpoint subst_rec (n:nat) (t:n_sexp) (u :n_sexp) (x:atom)  : n_sexp :=
   match n with
   | 0 => t
   | S m => match t with
@@ -473,6 +701,7 @@ Fixpoint subst_rec (n:nat) (t:n_exp) (u :n_exp) (x:atom)  : n_exp :=
                  n_abs z (subst_rec m (swap y z t1) u x)
           | n_app t1 t2 =>
             n_app (subst_rec m t1 u x) (subst_rec m t2 u x)
+          | n_sub t1 y t2 => 
           end
   end.
 
