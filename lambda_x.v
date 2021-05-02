@@ -504,9 +504,48 @@ Proof.
              case (x == x) in H3.
              ++ assumption.
              ++ contradiction.
-       --- admit.
-       --- admit.
-       --- admit.
+       --- apply union_iff in H. apply union_iff. inversion H.
+           + unfold swap_var in IHt2. case (x == x) in IHt2.
+             ++ apply remove_iff in H0. inversion H0.
+                unfold swap_var in IHt1. case (x == x) in IHt1.
+                +++ apply IHt1 in H1. pose proof remove_neq_iff.
+                    left. apply H3.
+                    * assumption.
+                    * assumption.                
+                +++ contradiction.
+             ++ contradiction.
+           + apply IHt2 in H0. unfold swap_var in H0.
+             case (x == x) in H0.
+             ++ right. assumption.
+             ++ contradiction.
+       --- apply union_iff. apply union_iff in H. inversion H.
+           + apply remove_neq_iff in H0. apply IHt1 in H0.
+             unfold swap_var in H0. case (x == x) in H0.
+             ++ left. apply remove_iff. split.
+                +++ assumption.
+                +++ assumption.
+             ++ contradiction.
+             ++ assumption.
+           + apply IHt2 in H0. unfold swap_var in H0.
+             case (x == x) in H0.
+             ++ right. assumption.
+             ++ contradiction.
+       --- apply union_iff. apply union_iff in H. inversion H.
+           + apply remove_neq_iff in H0. apply IHt1 in H0.
+             unfold swap_var in H0. case (y == x) in H0.
+             ++ contradiction.
+             ++ case (y == y) in H0.
+                +++ left. apply remove_iff. split.
+                    * assumption.
+                    * assumption.
+                +++ contradiction.
+             ++ assumption.
+           + apply IHt2 in H0. unfold swap_var in H0.
+             case (y == x) in H0.
+             ++ contradiction.
+             ++ case (y == y) in H0.
+                +++ right. assumption.
+                +++ contradiction.
        --- Search "remove". pose proof AtomSetImpl.remove_1.
            specialize (H0 (fv_nom t1) x x).
            assert (x = x). {
@@ -525,8 +564,83 @@ Proof.
                     apply H3 in H4. contradiction.
                 +++ apply IHt2 in H2. assumption.
              ++ contradiction.
-       ---       
-Admitted.
+       --- apply union_iff. apply union_iff in H. inversion H.
+           + apply remove_neq_iff in H0. apply IHt1 in H0.
+             unfold swap_var in H0. case (y == x) in H0.
+             ++ contradiction.
+             ++ case (y == y) in H0.
+                +++ left. apply remove_neq_iff.
+                    * assumption.
+                    * assumption.
+                +++ contradiction.
+             ++ assumption.  
+           + apply IHt2 in H0. unfold swap_var in H0.
+             case (y == x) in H0.
+             ++ contradiction.
+             ++ case (y == y) in H0.
+                +++ right. assumption.
+                +++ contradiction.
+       --- apply union_iff. apply union_iff in H. inversion H.
+           + apply remove_neq_iff in H0. apply IHt1 in H0.
+             unfold swap_var in H0. case (x0 == x) in H0.
+             ++ contradiction.
+             ++ case (x0 == y) in H0.
+                +++ contradiction.
+                +++ left. apply remove_neq_iff.
+                    * apply aux_not_equal. assumption.
+                    * assumption.
+             ++ apply aux_not_equal. assumption.  
+           + apply IHt2 in H0. unfold swap_var in H0.
+             case (x0 == x) in H0.
+             ++ contradiction.
+             ++ case (x0 == y) in H0.
+                +++ contradiction.
+                +++ right. assumption. 
+       --- apply union_iff. apply union_iff in H. inversion H.
+           + apply remove_neq_iff in H0.
+             ++ apply IHt1 in H0. unfold swap_var in H0.
+                case (x0 == x) in H0.
+                +++ contradiction.
+                +++ case (x0 == y) in H0.
+                    * contradiction.
+                    * left. apply remove_neq_iff.
+                      ** apply aux_not_equal. assumption.
+                      ** assumption.
+             ++ apply aux_not_equal. assumption.
+           + apply IHt2 in H0. unfold swap_var in H0.
+             case (x0 == x) in H0.
+             ++ contradiction.
+             ++ case (x0 == y) in H0.
+                +++ contradiction.
+                +++ right. assumption.
+       --- apply union_iff. apply union_iff in H. case (x1 == x0).
+           + intros. right. inversion H.
+             ++ rewrite e in H0. apply remove_iff in H0.
+                inversion H0. contradiction.
+             ++ apply IHt2 in H0. unfold swap_var in H0.
+                case (x0 == x) in H0.
+                +++ contradiction.
+                +++ case (x0 == y) in H0.
+                    * contradiction.
+                    * assumption.
+           + inversion H.
+             ++ intros. apply remove_neq_iff in H0.
+                +++ apply IHt1 in H0. unfold swap_var in H0.
+                case (x0 == x) in H0.
+                    * contradiction.
+                    * case (x0 == y) in H0.
+                      ** contradiction.
+                      ** left. apply remove_neq_iff.
+                         *** assumption.
+                         *** assumption.
+                +++ assumption.
+             ++ intros. apply IHt2 in H0. unfold swap_var in H0.
+                case (x0 == x) in H0.
+                +++ contradiction.
+                +++ case (x0 == y) in H0.
+                    * contradiction.
+                    * right. assumption.
+Qed.
 
 (*************************************************************)
 (** * An abstract machine for cbn evaluation                 *)
