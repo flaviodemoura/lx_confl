@@ -66,12 +66,13 @@ Inductive pix : n_sexp -> n_sexp -> Prop :=
  | step_app : forall (e1 e2 e3: n_sexp) (y: atom),
      pix (n_sub (n_app e1 e2) y e3) (n_app (n_sub e1 y e3) (n_sub e2 y e3)).
 
-Inductive step : n_sexp -> n_sexp -> Prop :=
- | step_abs_in: forall (e e': n_sexp) (x: atom), step e e' -> step (n_abs x e) (n_abs x e')
- | step_app_left: forall (e1 e1' e2: n_sexp) , step e1 e1' -> step (n_app e1 e2) (n_app e1' e2)
- | step_app_right: forall (e1 e2 e2': n_sexp) , step e2 e2' -> step (n_app e1 e2) (n_app e1 e2')
- | step_sub_left: forall (e1 e1' e2: n_sexp) (x : atom) , step e1 e1' -> step (n_sub e1 x e2) (n_sub e1' x e2)
- | step_sub_right: forall (e1 e2 e2': n_sexp) (x:atom), step e2 e2' -> step (n_sub e1 x e2) (n_sub e1 x e2').
+Inductive step  (R : n_sexp -> n_sexp -> Prop): n_sexp -> n_sexp -> Prop :=
+ | step_redex: forall (e1 e2 : n_sexp), R e1 e2 -> step R e1 e2
+ | step_abs_in: forall (e e': n_sexp) (x: atom), step R e e' -> step R (n_abs x e) (n_abs x e')
+ | step_app_left: forall (e1 e1' e2: n_sexp) , step R e1 e1' -> step R (n_app e1 e2) (n_app e1' e2)
+ | step_app_right: forall (e1 e2 e2': n_sexp) , step R e2 e2' -> step R (n_app e1 e2) (n_app e1 e2')
+ | step_sub_left: forall (e1 e1' e2: n_sexp) (x : atom) , step R e1 e1' -> step R (n_sub e1 x e2) (n_sub e1' x e2)
+ | step_sub_right: forall (e1 e2 e2': n_sexp) (x:atom), step R e2 e2' -> step R (n_sub e1 x e2) (n_sub e1 x e2').
 
 (** For example, we can encode the expression [(\X.Y X)] as below.  *)
 
@@ -641,7 +642,7 @@ Proof.
                     * contradiction.
                     * right. assumption.
 Qed.
-
+(*
 (*************************************************************)
 (** * An abstract machine for cbn evaluation                 *)
 (*************************************************************)
@@ -760,7 +761,7 @@ Proof.
   intros. unfold machine_step. simpl. case (isVal t) eqn:E.
   - reflexivity.
   - discriminate.
-Qed.
+Qed.*)
 
 
 (*************************************************************)
@@ -815,19 +816,25 @@ Fixpoint subst_rec (n:nat) (t:n_sexp) (u :n_sexp) (x:atom)  : n_sexp :=
                  n_abs z (subst_rec m (swap y z t1) u x)
           | n_app t1 t2 =>
             n_app (subst_rec m t1 u x) (subst_rec m t2 u x)
-          | n_sub t1 y t2 => 
+          | n_sub t1 y t2 =>
+            if (x == y) then t
+            else
+              (* rename to avoid capture *)
+              let (z,_) :=
+                  atom_fresh (fv_nom u `union` fv_nom t `union` {{x}}) in
+                 n_sub  (subst_rec m (swap y z t1) u x) z (subst_rec m t2 u x) 
           end
   end.
 
 (** Our real substitution function uses the size of the size of the term
     as that extra argument. *)
-Definition subst (u : n_exp) (x:atom) (t:n_exp) :=
+Definition m_subst (u : n_sexp) (x:atom) (t:n_sexp) :=
   subst_rec (size t) t u x.
 
 (** This next lemma uses course of values induction [lt_wf_ind] to prove that
     the size of the term [t] is enough "fuel" to completely calculate a
     substitution. Providing larger numbers produces the same result. *)
-Lemma subst_size : forall n (u : n_exp) (x:atom) (t:n_exp),
+Lemma subst_size : forall n (u : n_sexp) (x:atom) (t:n_sexp),
     size t <= n -> subst_rec n t u x = subst_rec (size t) t u x.
 Proof.
   intro n. eapply (lt_wf_ind n). clear n.
@@ -844,48 +851,185 @@ Proof.
     rewrite (IH (size t1 + size t2)); try omega.
     rewrite (IH (size t1 + size t2)); try omega.
     auto.
+  - default_simp.
+    -- rewrite (IH n); try omega.
+       --- rewrite swap_size_eq.
+           assert (size t1 <= size t1 + size t2). {
+             apply le_plus_l.
+           }
+           Search "lt". apply Sn_le_Sm__n_le_m in SZ.
+           apply le_lt_n_Sm in SZ.
+           specialize (IH (size t1 + size t2) SZ u x (swap x0 x1 t1)).
+           rewrite swap_size_eq in IH. apply IH in H.
+           symmetry in H. assumption.
+       --- rewrite swap_size_eq. apply Sn_le_Sm__n_le_m in SZ.
+           assert (size t1 <= size t1 + size t2). {
+             apply le_plus_l.
+           }
+           transitivity (size t1 + size t2).
+           + assumption.
+           + assumption.
+   -- rewrite (IH n); try omega.
+       --- rewrite plus_comm. rewrite plus_comm in SZ.
+           assert (size t2 <= size t2 + size t1). {
+             apply le_plus_l.
+           }
+           Search "lt". apply Sn_le_Sm__n_le_m in SZ.
+           apply le_lt_n_Sm in SZ.
+           specialize (IH (size t2 + size t1) SZ u x t2).
+           apply IH in H.
+           symmetry in H. assumption.       
 Qed.
 
-(** ** Challenge Exercise [subst]
+(** ** Challenge Exercise [m_subst]
 
     Use the definitions above to prove the following results about the
     nominal substitution function.  *)
 
 Lemma subst_eq_var : forall u x,
-    subst u x (n_var x) = u.
+    m_subst u x (n_var x) = u.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros. unfold size. unfold subst_rec.
+  unfold m_subst. simpl.
+  case (x == x).
+  - trivial.
+  - intros. contradiction.
+Qed.
 
 Lemma subst_neq_var : forall u x y,
     x <> y ->
-    subst u x (n_var y) = n_var y.
+    m_subst u x (n_var y) = n_var y.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros. unfold m_subst. unfold size. unfold subst_rec.
+  case (x == y).
+  - intros. contradiction.
+  - reflexivity.
+Qed.
 
 Lemma subst_app : forall u x t1 t2,
-    subst u x (n_app t1 t2) = n_app (subst u x t1) (subst u x t2).
-Proof. (* FILL IN HERE *) Admitted.
+    m_subst u x (n_app t1 t2) = n_app (m_subst u x t1) (m_subst u x t2).
+Proof.
+  intros. unfold m_subst. simpl.
+  assert (size t1 <= (size t1 + size t2)). {
+    apply le_plus_l.         
+  }
+  assert (size t2 <= (size t1 + size t2)). {
+    rewrite plus_comm. apply le_plus_l.         
+  }
+  rewrite subst_size.
+  - assert ((subst_rec (size t1 + size t2) t2 u x) = subst_rec (size t2) t2 u x). {
+      apply subst_size. assumption.
+    }
+    rewrite H1. reflexivity.
+  - assumption.
+Qed.
 
 Lemma subst_abs : forall u x y t1,
-    subst u x (n_abs y t1) =
+    m_subst u x (n_abs y t1) =
        if (x == y) then (n_abs y t1)
        else let (z,_) := atom_fresh (fv_nom u `union` fv_nom (n_abs y t1) `union` {{x}}) in
-       n_abs z (subst u x (swap y z t1)).
-Proof. (* FILL IN HERE *) Admitted.
+       n_abs z (m_subst u x (swap y z t1)).
+Proof.
+  intros. case (x == y).
+  - intros. unfold m_subst.  rewrite e. simpl. case (y == y).
+    -- trivial.
+    -- unfold not. intros. assert (y = y). {
+         reflexivity.
+       }
+       contradiction.
+  - intros. unfold m_subst. simpl. case (x == y).
+    -- intros. contradiction.
+    -- intros. pose proof AtomSetImpl.union_1.
+       assert (forall z, size t1 = size (swap y z t1)). {
+         intros. case (y == z).
+         - intros. rewrite e. rewrite swap_id. reflexivity.
+         - intros. rewrite swap_size_eq. reflexivity.         
+       }
+       destruct (atom_fresh
+       (union (fv_nom u)
+          (union (remove y (fv_nom t1)) (singleton x)))). 
+       specialize (H0 x0). rewrite H0. reflexivity.
+Qed.
 
-
-(** ** Challenge Exercise [subst properties]
+(** ** Challenge Exercise [m_subst properties]
 
     Now show the following property by induction on the size of terms. *)
 
-Lemma subst_same_aux : forall n, forall t y, size t <= n -> aeq (subst (n_var y) y t)  t.
+Lemma subst_same_aux : forall n, forall t y, size t <= n -> aeq (m_subst (n_var y) y t)  t.
 Proof.
   intro n. induction n.
-  intros t y SZ. destruct t; simpl in SZ; omega.
-  intros t y SZ. destruct t; simpl in SZ.
-(* FILL IN HERE *) Admitted.
+  - intros t y SZ. destruct t; simpl in SZ; omega.
+  - intros t y SZ. destruct t; simpl in SZ.
+    -- unfold m_subst. simpl. case (y == x).
+       --- intros. rewrite e. apply aeq_var.
+       --- intros. apply aeq_var.
+    -- unfold m_subst. simpl. case (y == x).
+       --- intros. apply aeq_abs_same. induction t.
+           + apply aeq_var.
+           + apply aeq_abs_same. apply IHt.
+             apply Sn_le_Sm__n_le_m in SZ. simpl in SZ.
+             apply le_S in SZ. assumption.
+           + apply aeq_app.
+             ++ apply IHt1. simpl in SZ.
+                rewrite <- plus_Sn_m in SZ.
+                rewrite plus_comm in SZ.
+                rewrite <- plus_Sn_m in SZ.
+                rewrite plus_comm in SZ.
+                apply le_trans with (S (size t1) + S (size t2)).
+                +++ apply le_plus_l.
+                +++ assumption.
+             ++ apply aeq_refl.
+           + apply aeq_sub_same. apply aeq_refl. apply aeq_refl.
+       --- intros. unfold not in n0. pose proof subst_abs.
+           specialize (H (n_var y) y x t). case (y == x) in H.
+           + contradiction.
+           + simpl in H. unfold subst in H. unfold subst in IHn.
+             apply Sn_le_Sm__n_le_m in SZ.
+             destruct (atom_fresh
+           (union (singleton y)
+                  (union (remove x (fv_nom t)) (singleton y)))).
+             case (x == x0).
+             ++ intros. subst. apply aeq_abs_same. rewrite swap_id.
+                specialize (IHn t y); apply IHn in SZ. assumption.
+             ++ intros. apply aeq_abs_diff.
+                +++ apply aux_not_equal. assumption.
+                +++ pose proof notin_union_2.
+                    pose proof notin_union_1.  
+                    apply H0 in n2.
+                    apply H1 in n2.
+                    unfold not; intros. pose proof remove_neq_iff.
+                    specialize (H3 (fv_nom t) x x0).
+                    apply H3 in n3. apply n3 in H2.
+                    unfold not in n2. contradiction.                
+                +++ pose proof swap_size_eq.
+                    specialize (H0 x x0 t).
+                    rewrite <- H0.
+                    specialize (IHn (swap x x0 t) y).
+                    rewrite <- H0 in SZ. apply IHn in SZ.
+                    assumption.
+    -- rewrite subst_app. apply aeq_app.
+       --- specialize (IHn t1 y). apply Sn_le_Sm__n_le_m in SZ.
+           assert (size t1 <= size t1 + size t2). {
+             apply le_plus_l.
+           }
+           pose proof le_trans.
+           specialize (H0 (size t1) (size t1 + size t2) n).
+           apply H0 in H.
+           + apply IHn in H. assumption.
+           + assumption.
+       --- specialize (IHn t2 y). apply Sn_le_Sm__n_le_m in SZ.
+           assert (size t2 <= size t1 + size t2). {
+             rewrite plus_comm. apply le_plus_l.
+           }
+           pose proof le_trans.
+           specialize (H0 (size t2) (size t1 + size t2) n).
+           apply H0 in H.
+           + apply IHn in H. assumption.
+           + assumption.
+    -- 
+Qed.
 
-Lemma subst_same : forall t y, aeq (subst (n_var y) y t)  t.
+Lemma subst_same : forall t y, aeq (m_subst (n_var y) y t)  t.
 Proof.
   intros.
   apply subst_same_aux with (n := size t). auto.
@@ -893,10 +1037,10 @@ Qed.
 
 
 Lemma subst_fresh_eq_aux : forall n, forall (x : atom) t u, size t <= n ->
-  x `notin` fv_nom t -> aeq (subst u x t) t.
+  x `notin` fv_nom t -> aeq (m_subst u x t) t.
 Proof. (* FILL IN HERE *) Admitted.
 
-Lemma subst_fresh_eq : forall (x : atom) t u,  x `notin` fv_nom t -> aeq (subst u x t) t.
+Lemma subst_fresh_eq : forall (x : atom) t u,  x `notin` fv_nom t -> aeq (m_subst u x t) t.
 Proof.
   intros. apply subst_fresh_eq_aux with (n := size t). omega. auto.
 Qed.
