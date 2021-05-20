@@ -1,4 +1,5 @@
 Require Import lambda_x.
+Require Import ZtoConfl.
 
 Fixpoint B (t : n_sexp) := match t with
                            | n_var x => n_var x
@@ -20,4 +21,30 @@ Fixpoint P (t : n_sexp) := match t with
 Lemma pi_P: forall t1 t2, step pix t1 t2 -> P t1 = P t2.
 Proof.
   intros t1 t2 H. induction H.
-  - inversion H. 
+  - inversion H.
+    -- subst. simpl. unfold m_subst. simpl. case (y == y).
+       --- intros. reflexivity.
+       --- contradiction.
+    -- subst. simpl. unfold m_subst. simpl. case (y == x).
+       --- intros. symmetry in e0. contradiction.
+       --- intros. reflexivity.
+    -- subst. simpl. unfold m_subst. simpl. case (y == y).
+       --- intros. reflexivity.
+       --- contradiction.
+    -- subst. simpl. unfold m_subst. simpl. case (y == x).
+       --- intros. symmetry in e. contradiction.
+       --- intros. admit.
+Admitted.
+
+Lemma pure_P: forall e, pure (P e).
+Proof.
+  Admitted.
+
+Lemma pure_P_id: forall e, pure e -> P e = e.
+  Proof.
+  Admitted.
+
+  Lemma pure_pix: forall e1 x e2, pure e1 -> refltrans (step pix) (n_sub e1 x e2) (m_subst e2 x e1).
+  Proof.
+    Admitted.
+    

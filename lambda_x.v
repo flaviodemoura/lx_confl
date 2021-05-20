@@ -49,6 +49,9 @@ Inductive n_sexp : Set :=
  | n_app (t1:n_sexp) (t2:n_sexp)
  | n_sub (t1:n_sexp) (x:atom) (t2:n_sexp).
 
+Inductive pure : n_sexp -> Prop :=
+ | pure_var : forall x, pure (n_var x)
+ | pure_app : forall e1 e2, pure e1 -> pure e2 -> pure (n_app e1 e2) | pure_abs : forall x e1, pure e1 -> pure (n_abs x e1).                          
 Inductive betax : n_sexp -> n_sexp -> Prop :=
  | step_betax : forall (e1 e2: n_sexp) (x: atom),
      betax (n_app  (n_abs x e1) e2)  (n_sub e1 x e2).
