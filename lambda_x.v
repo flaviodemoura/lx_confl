@@ -51,7 +51,8 @@ Inductive n_sexp : Set :=
 
 Inductive pure : n_sexp -> Prop :=
  | pure_var : forall x, pure (n_var x)
- | pure_app : forall e1 e2, pure e1 -> pure e2 -> pure (n_app e1 e2) | pure_abs : forall x e1, pure e1 -> pure (n_abs x e1).                          
+ | pure_app : forall e1 e2, pure e1 -> pure e2 -> pure (n_app e1 e2) | pure_abs : forall x e1, pure e1 -> pure (n_abs x e1).
+
 Inductive betax : n_sexp -> n_sexp -> Prop :=
  | step_betax : forall (e1 e2: n_sexp) (x: atom),
      betax (n_app  (n_abs x e1) e2)  (n_sub e1 x e2).
@@ -135,6 +136,18 @@ Fixpoint swap (x:atom) (y:atom) (t:n_sexp) : n_sexp :=
   | n_app t1 t2 => n_app (swap x y t1) (swap x y t2)
   | n_sub t1 z t2 => n_sub (swap x y t1) (swap_var x y z) (swap x y t2)
   end.
+
+Lemma pure_swap : forall x y t, pure t -> pure (swap x y t).
+Proof.
+  intros. induction t.
+  - simpl. apply pure_var.
+  - simpl. apply pure_abs. inversion H. apply IHt in H1.
+    assumption.
+  - simpl. apply pure_app.
+    -- inversion H. apply IHt1 in H2. assumption.
+    -- inversion H. apply IHt2 in H3. assumption.
+  - inversion H.
+Qed.  
 
 
 (** Because swapping is a simple, structurally recursive
