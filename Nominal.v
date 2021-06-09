@@ -169,7 +169,7 @@ Hint Constructors aeq.
 Example aeq1 : forall x y, x <> y -> aeq (n_abs x (n_var x)) (n_abs y (n_var y)).
 Proof.
   intros.
-  eapply aeq_abs_diff; auto.
+  apply aeq_abs_diff; auto.
   simpl; unfold swap_var; default_simp.
 Qed.
 
@@ -188,7 +188,7 @@ Qed.
 Lemma swap_id : forall n x,
     swap x x n = n.
 Proof.
-  induction n; simpl; unfold swap_var;  default_simp.
+  induction n; simpl; unfold swap_var; default_simp.
 Qed.
 
 (** Demo: We will need the next two properties later in the tutorial,
@@ -199,14 +199,13 @@ Lemma fv_nom_swap : forall z y n,
   z `notin` fv_nom n ->
   y `notin` fv_nom (swap y z n).
 Proof.
-  (* WORKED IN CLASS *)
   induction n; intros; simpl; unfold swap_var; default_simp.
 Qed.
+
 Lemma shuffle_swap : forall w y n z,
     w <> z -> y <> z ->
     (swap w y (swap y z n)) = (swap w z (swap w y n)).
 Proof.
-  (* WORKED IN CLASS *)
   induction n; intros; simpl; unfold swap_var; default_simp.
 Qed. 
 (*************************************************************)
@@ -234,10 +233,7 @@ Qed.
 Lemma swap_involutive : forall t x y,
     swap x y (swap x y t) = t.
 Proof.
-  induction t.
-  - intros. simpl. unfold swap_var. default_simp.
-  - intros. simpl. unfold swap_var. default_simp.
-  - intros. simpl. unfold swap_var. default_simp.
+  induction t; intros; simpl; unfold swap_var; default_simp.
 Qed.
 
 (** *** Challenge exercises: equivariance
@@ -256,15 +252,8 @@ Lemma swap_var_equivariance : forall v x y z w,
     swap_var (swap_var x y z) (swap_var x y w) (swap_var x y v).
 Proof.
   intros. unfold swap_var.
-  case(v == z).
-  - case (w == x).
-    -- default_simp.
-    -- default_simp.
-  - case (w == x).
-    -- default_simp.
-    -- default_simp.
+  case(v == z); case (w == x); default_simp.
 Qed.
-  
 
 Lemma swap_equivariance : forall t x y z w,
     swap x y (swap z w t) = swap (swap_var x y z) (swap_var x y w) (swap x y t).
@@ -327,9 +316,6 @@ Proof.
        --- assumption.
        --- assumption.
 Qed.
-      
-      
-
       
 (* HINT: For a helpful fact about sets of atoms, check AtomSetImpl.union_1 *)
 
@@ -603,6 +589,10 @@ Proof.
   induction t; simpl; auto.
 Qed.
 
+Lemma size_gt_0: forall t, size t > 0.
+Proof.
+Admitted.
+
 Hint Rewrite swap_size_eq.
 
 (** ** Capture-avoiding substitution *)
@@ -875,125 +865,126 @@ Qed.
 Lemma subst_fresh_eq_aux : forall n, forall (x:atom) t u, size t <= n ->
   x `notin` fv_nom t -> aeq (subst u x t) t.
 Proof.
-  induction t.  
-  - intros. unfold subst. simpl. case (x == x0).
+  intro n; induction n.
+  - intros x t u H.
+    assert (H': size t > 0).
+    {
+      apply size_gt_0.
+    }
+    unfold gt in H'.
+    assert (H'': size t < size t).
+    {
+      apply Nat.le_lt_trans with 0; assumption.
+    }
+    assert (H''': ~(size t < size t)).
+              {
+                apply Nat.lt_irrefl.
+              }
+    contradiction.
+  - destruct t.
+    + intros. unfold subst. simpl. case (x == x0).
     -- intros. simpl in H0. pose proof singleton_iff.
        specialize (H1 x0 x). symmetry in e; apply H1 in e. 
        contradiction.
     -- intros. apply aeq_var.
-  - intros. simpl in H. simpl in H0. case (x == x0).
-    -- intros. rewrite e in H0. rewrite e. unfold subst.
-       simpl. case (x0 == x0).
-       --- intros. apply aeq_refl.
-       --- intros. contradiction.         
-    -- intros. Search "remove". pose proof notin_remove_1.
-       specialize (H1 x0 x (fv_nom t)). apply H1 in H0.
-       inversion H0.
-       --- symmetry in H2. contradiction.
-       --- rewrite subst_abs. case (x == x0).
-           + intros. contradiction.
-           + intros. simpl. destruct (atom_fresh
-         (union (fv_nom u)
-                (union (remove x0 (fv_nom t)) (singleton x)))).
-             case (x1 == x0).
-             ++ intros. rewrite e. rewrite swap_id.
-                apply aeq_abs_same. apply IHt.
-                +++ apply le_S in H. apply Sn_le_Sm__n_le_m in H.
-                    assumption.
-                +++ assumption.
-             ++ intros. Search "union". apply notin_union_2 in n2.
-                apply notin_union_1 in n2.
-                apply notin_remove_1 in n2. inversion n2.
-                +++ symmetry in H3. contradiction.
-                +++ apply aeq_abs_diff.
-                    * assumption.
-                    * assumption.
-                    * apply le_S in H. apply Sn_le_Sm__n_le_m in H.
-                      specialize (IHt u). apply IHt in H.
-                      ** admit.
-                      ** assumption.
-                         
-             
-
-
-    (*intros. unfold subst. simpl. case (x == x0).
-    -- intros. simpl in H0. rewrite e in H0. apply aeq_abs_same.
-       apply aeq_refl.
-    -- intros. pose proof subst_abs. unfold subst in H1.
-       specialize (H1 u x x0 t). case (x == x0) in H1.
-       --- contradiction.
-       --- destruct (atom_fresh
-         (union (fv_nom u)
-                (union (remove x0 (fv_nom t)) (singleton x)))).
-           unfold subst in IHt. simpl in H. apply le_S in H.
-           apply Sn_le_Sm__n_le_m in H. specialize (IHt u).
-           apply IHt in H.
-           + case (x1 == x0).
-             ++ intros. rewrite e. rewrite swap_id.
-                apply aeq_abs_same. assumption.
-             ++ intros. apply notin_union_2 in n2.
-                apply notin_union_1 in n2.
-                apply notin_remove_1 in n2.
-                inversion n2.
-                +++ symmetry in H2. contradiction.
-                +++ pose proof aeq_abs_diff. apply aeq_abs_diff.
-                    * assumption.
-                    * assumption.
-                    * admit.*)
-
-
-
-           + simpl in H0. pose proof notin_remove_1.
-             apply H2 in H0. inversion H0.
-             ++ symmetry in H3. contradiction.
-             ++ assumption.
-  - intros. unfold subst. simpl. simpl in H. pose proof le_plus_l.
-    specialize (H1 (size t1) (size t2)). apply le_S in H.
-    apply Sn_le_Sm__n_le_m in H. pose proof le_trans.
-    specialize (H2 (size t1) (size t1 + size t2) n). apply H2 in H1.
-    -- pose proof le_plus_l. specialize (H3 (size t2) (size t1)).
-       rewrite plus_comm in H. pose proof le_trans.
-       specialize (H4 (size t2) (size t1 + size t2) n).
-       rewrite plus_comm in H2. rewrite plus_comm in H4.
-       apply H4 in H3.
-       --- specialize (IHt1 u). specialize (IHt2 u).
-           apply IHt1 in H1.
-           + simpl in H0. pose proof notin_union_1.
-             specialize (H5 x (fv_nom t1) (fv_nom t2)).
-             pose proof notin_union_1.
-             specialize (H6 x (fv_nom t2) (fv_nom t1)).
-             apply IHt1 in H5.
-             ++ apply IHt2 in H6.
-                +++ pose proof subst_size. apply aeq_app.
-                    * unfold subst in H5.
-                      specialize (H7 (size t1 + size t2) u x t1).
-                      rewrite H7.
-                      ** assumption.
-                      ** apply le_plus_l.
-                    * unfold subst in H6.
-                      specialize (H7 (size t1 + size t2) u x t2).
-                      rewrite H7.
-                      ** assumption.
-                      ** rewrite plus_comm. apply le_plus_l.
-                +++ assumption.
-                +++ pose proof notin_union_1.
-                    pose proof notin_union_2. pose proof H0.
-                    apply H7 in H0. apply H8 in H9.
-                    pose proof notin_union_3.
-                    specialize (H10 x (fv_nom t2) (fv_nom t1)).
-                    apply H10.
-                    * assumption.
-                    * assumption.
-             ++ pose proof le_plus_l.
-                apply H2.
-                +++ rewrite plus_comm. apply le_plus_l.
-                +++ assumption.
-             ++ assumption.
-           + simpl in H0. pose proof notin_union_1.
-             apply H5 in H0. assumption.
-       --- assumption.
-    -- assumption.    
-Admitted.
+    + intros. rewrite subst_abs.
+      case (x == x0).
+    -- intros. apply aeq_refl.
+    -- intros.
+       simpl.
+       destruct (atom_fresh
+                   (union (fv_nom u)
+                          (union (remove x0 (fv_nom t)) (singleton x)))).
+       pose proof notin_remove_1.
+       specialize (H1 x0 x (fv_nom t)).
+       simpl in H0.
+       apply H1 in H0.
+       clear H1.
+       inversion H0; clear H0.
+       --- symmetry in H1. contradiction.
+       --- case (x1 == x0).
+           ---- intro; subst.
+                rewrite swap_id.
+                apply aeq_abs_same.
+                apply IHn.
+                ----- simpl in H.
+                      apply Sn_le_Sm__n_le_m in H; assumption.
+                ----- assumption.
+           ---- intro.
+                apply aeq_abs_diff.
+                ----- assumption.
+                ----- apply notin_union_2 in n1.
+                      apply notin_union_1 in n1.
+                      apply notin_remove_1 in n1.
+                      inversion n1.
+                      ------ symmetry in H0; contradiction.
+                      ------ assumption.
+                ----- apply IHn.
+                ------ rewrite swap_size_eq.
+                       simpl in H.
+                       apply Sn_le_Sm__n_le_m in H; assumption.
+                ------ apply notin_union_2 in n1.
+                      apply notin_union_2 in n1.
+                      apply notin_singleton_1 in n1.
+                      pose proof notin_fv_nom_equivariance.
+                      specialize (H0 x x0 x1 t). 
+                      apply H0 in H1.
+                      assert (H2: swap_var x0 x1 x = x).
+                      {
+                        unfold swap_var.
+                        default_simp.
+                      }
+                      rewrite H2 in H1.
+                      assumption.
+    + intros. unfold subst. simpl. simpl in H. pose proof le_plus_l.
+      specialize (H1 (size t1) (size t2)). apply le_S in H.
+      apply Sn_le_Sm__n_le_m in H. pose proof le_trans.
+      specialize (H2 (size t1) (size t1 + size t2) n).
+      apply H2 in H1.
+      -- pose proof le_plus_l. specialize (H3 (size t2) (size t1)).
+         rewrite plus_comm in H. pose proof le_trans.
+         specialize (H4 (size t2) (size t1 + size t2) n).
+         rewrite plus_comm in H2. rewrite plus_comm in H4.
+         apply H4 in H3.
+         --- Admitted.
+(*            specialize (IHn u). specialize (IHt2 u). *)
+(*              apply IHt1 in H1. *)
+(*              ---- simpl in H0. pose proof notin_union_1. *)
+(*                   specialize (H5 x (fv_nom t1) (fv_nom t2)). *)
+(*                   pose proof notin_union_1. *)
+(*                   specialize (H6 x (fv_nom t2) (fv_nom t1)). *)
+(*                   apply IHt1 in H5. *)
+(*                   ----- apply IHt2 in H6. *)
+(*                   ------ pose proof subst_size. apply aeq_app. *)
+(*                     ------- unfold subst in H5. *)
+(*                       specialize (H7 (size t1 + size t2) u x t1). *)
+(*                       rewrite H7. *)
+(*                       -------- assumption. *)
+(*                       -------- apply le_plus_l. *)
+(*                     ------- unfold subst in H6. *)
+(*                       specialize (H7 (size t1 + size t2) u x t2). *)
+(*                       rewrite H7. *)
+(*                       -------- assumption. *)
+(*                       -------- rewrite plus_comm. apply le_plus_l. *)
+(*                 ------ assumption. *)
+(*                 ------ pose proof notin_union_1. *)
+(*                     pose proof notin_union_2. pose proof H0. *)
+(*                     apply H7 in H0. apply H8 in H9. *)
+(*                     pose proof notin_union_3. *)
+(*                     specialize (H10 x (fv_nom t2) (fv_nom t1)). *)
+(*                     apply H10. *)
+(*                     ------- assumption. *)
+(*                     ------- assumption. *)
+(*              ----- pose proof le_plus_l. *)
+(*                 apply H2. *)
+(*                 ------ rewrite plus_comm. apply le_plus_l. *)
+(*                 ------ assumption. *)
+(*              ----- assumption. *)
+(*            ---- simpl in H0. pose proof notin_union_1. *)
+(*                 apply H5 in H0. assumption. *)
+(*          --- assumption. *)
+(*     -- assumption.     *)
+(* Admitted. *)
        
 Lemma subst_fresh_eq : forall (x : atom) t u,  x `notin` fv_nom t -> aeq (subst u x t) t.
 Proof.
