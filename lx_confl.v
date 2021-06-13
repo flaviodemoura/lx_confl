@@ -33,7 +33,9 @@ Proof.
        --- contradiction.
     -- subst. simpl. unfold m_subst. simpl. case (y == x).
        --- intros. symmetry in e. contradiction.
-       --- intros. admit.
+       --- intros. destruct (atom_fresh
+           (Metatheory.union (fv_nom (P e3))
+                             (Metatheory.union (remove x (fv_nom (P e0))) (singleton y)))).  admit.
     -- subst. simpl. unfold m_subst. simpl.
        assert (subst_rec (size (P e0) + size (P e3)) (P e0) (P e4) y = subst_rec (size (P e0)) (P e0) (P e4) y). {
          apply subst_size. apply le_plus_l.       
@@ -96,8 +98,13 @@ Proof.
        --- intros. assumption.
        --- intros. destruct (atom_fresh
            (Metatheory.union (fv_nom (P e2))
-                             (Metatheory.union (remove x0 (fv_nom n)) (singleton x)))). apply pure_abs. 
-           admit.
+                             (Metatheory.union (remove x0 (fv_nom n)) (singleton x)))). apply pure_abs. inversion IHe1.
+           pose proof pure_m_subst. pose proof pure_swap.
+           specialize (H3 x0 x1 n). apply H3 in H0.
+           specialize (H2 (P e2) x (swap x0 x1 n)).
+           apply H2 in H0. unfold m_subst in H0.
+           + rewrite swap_size_eq in H0. assumption.
+           + assumption.
     -- simpl. apply pure_app.
        --- inversion IHe1. apply IHn1 in H1. pose proof le_plus_l.
            specialize (H3 (size n1) (size n2)).
@@ -111,8 +118,10 @@ Proof.
            apply H4 in H3. rewrite H3. assumption.
     -- simpl. case (x == x0).
        --- intros. assumption.
-       --- intros. admit.                
-Admitted.
+       --- intros. destruct (atom_fresh
+           (Metatheory.union (fv_nom (P e2))
+                             (Metatheory.union (Metatheory.union (remove x0 (fv_nom n1)) (fv_nom n2)) (singleton x)))). inversion IHe1.
+Qed.
 
 Lemma pure_P_id: forall e, pure e -> P e = e.
 Proof.
@@ -127,5 +136,20 @@ Qed.
 
   Lemma pure_pix: forall e1 x e2, pure e1 -> refltrans (step pix) (n_sub e1 x e2) (m_subst e2 x e1).
 Proof.
+  induction e1.
+  - intros. case (x == x0).
+    -- intros; subst. apply rtrans with e2.
+       --- apply step_redex. apply step_var.
+       --- unfold m_subst. simpl. destruct (x0 == x0).
+           + apply refl.
+           + contradiction.
+    -- intros. apply rtrans with (n_var x).
+       --- apply step_redex. apply step_gc. assumption.
+       --- unfold m_subst. simpl. destruct (x0 == x).
+           + symmetry in e. contradiction.
+           + apply refl.
+  - intros. inversion H. subst. specialize (IHe1 x0 e2).
+    apply IHe1 in H1. apply rtrans with e2.
+    -- apply step_redex. 
 Admitted.
     

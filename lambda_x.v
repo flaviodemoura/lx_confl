@@ -847,6 +847,20 @@ Fixpoint subst_rec (n:nat) (t:n_sexp) (u :n_sexp) (x:atom)  : n_sexp :=
 Definition m_subst (u : n_sexp) (x:atom) (t:n_sexp) :=
   subst_rec (size t) t u x.
 
+Lemma pure_m_subst : forall u x t, pure u -> pure t -> pure (m_subst u x t).
+Proof.
+  intros. unfold m_subst. induction t.
+  - simpl. case (x == x0).
+    -- intros. assumption.
+    -- intros. assumption.
+  - simpl. case (x == x0).
+    -- intros. assumption.
+    -- intros. destruct (atom_fresh
+              (union (fv_nom u)
+                     (union (remove x0 (fv_nom t)) (singleton x)))).
+       simpl. apply pure_abs.
+Admitted.
+
 (** This next lemma uses course of values induction [lt_wf_ind] to prove that
     the size of the term [t] is enough "fuel" to completely calculate a
     substitution. Providing larger numbers produces the same result. *)
@@ -1042,8 +1056,8 @@ Proof.
            apply H0 in H.
            + apply IHn in H. assumption.
            + assumption.
-    -- 
-Qed.
+    -- admit. 
+Admitted.
 
 Lemma subst_same : forall t y, aeq (m_subst (n_var y) y t)  t.
 Proof.

@@ -591,7 +591,32 @@ Qed.
 
 Lemma size_gt_0: forall t, size t > 0.
 Proof.
-Admitted.
+  induction t.
+  - simpl. unfold gt. unfold lt. reflexivity.
+  - simpl. unfold gt; unfold gt in IHt. unfold lt; unfold lt in IHt.
+    default_simp.
+  - simpl. unfold gt; unfold gt in IHt1; unfold gt in IHt2.
+    unfold lt; unfold lt in IHt1; unfold lt in IHt2.
+    inversion IHt1.
+    -- inversion IHt2.
+       --- simpl. default_simp.
+       --- simpl. default_simp.
+    -- inversion IHt2.
+       --- assert (S m + 1 = 1 + S m). {
+             apply plus_comm.
+           }
+           subst. simpl. default_simp. rewrite H3. default_simp.
+       --- simpl. assert (m + S m0 = S m0 + m). {
+             apply plus_comm.
+           }
+           rewrite H3. simpl. default_simp. repeat apply le_S.
+           default_simp. assert (m0 <= m0 + m). {
+             apply le_plus_l.
+           }
+           transitivity (m0).
+           + assumption.
+           + assumption.
+Qed.
 
 Hint Rewrite swap_size_eq.
 
@@ -936,8 +961,9 @@ Proof.
                       }
                       rewrite H2 in H1.
                       assumption.
-    + intros. unfold subst. simpl. simpl in H. pose proof le_plus_l.
-      specialize (H1 (size t1) (size t2)). apply le_S in H.
+    + intros. simpl. simpl in H. pose proof le_plus_l.
+      specialize (H1 (size t1) (size t2)).
+      apply Sn_le_Sm__n_le_m in H as HH.
       apply Sn_le_Sm__n_le_m in H. pose proof le_trans.
       specialize (H2 (size t1) (size t1 + size t2) n).
       apply H2 in H1.
@@ -946,45 +972,21 @@ Proof.
          specialize (H4 (size t2) (size t1 + size t2) n).
          rewrite plus_comm in H2. rewrite plus_comm in H4.
          apply H4 in H3.
-         --- Admitted.
-(*            specialize (IHn u). specialize (IHt2 u). *)
-(*              apply IHt1 in H1. *)
-(*              ---- simpl in H0. pose proof notin_union_1. *)
-(*                   specialize (H5 x (fv_nom t1) (fv_nom t2)). *)
-(*                   pose proof notin_union_1. *)
-(*                   specialize (H6 x (fv_nom t2) (fv_nom t1)). *)
-(*                   apply IHt1 in H5. *)
-(*                   ----- apply IHt2 in H6. *)
-(*                   ------ pose proof subst_size. apply aeq_app. *)
-(*                     ------- unfold subst in H5. *)
-(*                       specialize (H7 (size t1 + size t2) u x t1). *)
-(*                       rewrite H7. *)
-(*                       -------- assumption. *)
-(*                       -------- apply le_plus_l. *)
-(*                     ------- unfold subst in H6. *)
-(*                       specialize (H7 (size t1 + size t2) u x t2). *)
-(*                       rewrite H7. *)
-(*                       -------- assumption. *)
-(*                       -------- rewrite plus_comm. apply le_plus_l. *)
-(*                 ------ assumption. *)
-(*                 ------ pose proof notin_union_1. *)
-(*                     pose proof notin_union_2. pose proof H0. *)
-(*                     apply H7 in H0. apply H8 in H9. *)
-(*                     pose proof notin_union_3. *)
-(*                     specialize (H10 x (fv_nom t2) (fv_nom t1)). *)
-(*                     apply H10. *)
-(*                     ------- assumption. *)
-(*                     ------- assumption. *)
-(*              ----- pose proof le_plus_l. *)
-(*                 apply H2. *)
-(*                 ------ rewrite plus_comm. apply le_plus_l. *)
-(*                 ------ assumption. *)
-(*              ----- assumption. *)
-(*            ---- simpl in H0. pose proof notin_union_1. *)
-(*                 apply H5 in H0. assumption. *)
-(*          --- assumption. *)
-(*     -- assumption.     *)
-(* Admitted. *)
+         --- pose proof H0 as H'. simpl in H0.
+             apply notin_union_2 in H0.
+             simpl in H'. apply notin_union_1 in H'.
+             rewrite subst_app. pose proof IHn as IHn'.
+             specialize (IHn x t1 u); specialize (IHn' x t2 u).
+             apply IHn in H1.
+             ---- apply IHn' in H3.
+             ----- apply aeq_app.
+             ------ assumption.
+             ------ assumption.
+             ----- assumption.
+             ---- assumption.
+         --- assumption.
+      -- assumption.
+Qed.               
        
 Lemma subst_fresh_eq : forall (x : atom) t u,  x `notin` fv_nom t -> aeq (subst u x t) t.
 Proof.
