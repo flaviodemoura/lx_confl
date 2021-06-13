@@ -1056,7 +1056,18 @@ Proof.
            apply H0 in H.
            + apply IHn in H. assumption.
            + assumption.
-    -- admit. 
+     -- unfold m_subst. simpl. default_simp.
+        --- apply aeq_sub_same.
+            + apply aeq_refl.
+            + apply aeq_refl.
+        --- apply aeq_sub_diff.
+            + pose proof subst_size.
+              specialize (H (size t1 + size t2) (n_var y) y (swap x x0 t1)). pose proof swap_size_eq. specialize (H0 x x0 t1).
+              rewrite H0 in H. clear H0.
+              assert (size t1 <= size t1 + size t2). {
+                apply le_plus_l.
+              }
+              apply H in H0. clear H. rewrite H0.
 Admitted.
 
 Lemma subst_same : forall t y, aeq (m_subst (n_var y) y t)  t.
