@@ -211,7 +211,7 @@ Inductive aeq : n_sexp -> n_sexp -> Prop :=
      aeq t1 t1' -> aeq t2 t2' ->
      aeq (n_sub t1 x t2) (n_sub t1' x t2')
  | aeq_sub_diff : forall t1 t2 t1' t2' x y,
-     aeq t1 t1' -> aeq t2 t2' -> x <> y ->
+     aeq t2 t2' -> x <> y ->
      x `notin` fv_nom t1' -> aeq t1 (swap y x t1') ->
      aeq (n_sub t1 x t2) (n_sub t1' y t2').
 
@@ -981,6 +981,14 @@ Proof.
        specialize (H0 x0). rewrite H0. reflexivity.
 Qed.
 
+Lemma subst_sub : forall u x y t1 t2,
+    m_subst u x (n_sub t1 y t2) =
+       if (x == y) then (n_sub t1 y t2)
+       else let (z,_) := atom_fresh (fv_nom u `union` fv_nom (n_sub t1 y t2) `union` {{x}}) in
+            n_sub (m_subst u x (swap y z t1)) z (m_subst u x t2).
+Proof.
+Admitted.
+
 (** ** Challenge Exercise [m_subst properties]
 
     Now show the following property by induction on the size of terms. *)
@@ -993,129 +1001,105 @@ Proof.
     -- unfold m_subst. simpl. case (y == x).
        --- intros. rewrite e. apply aeq_var.
        --- intros. apply aeq_var.
-    -- unfold m_subst. simpl. case (y == x).
-       --- intros. apply aeq_abs_same. induction t.
-           + apply aeq_var.
-           + apply aeq_abs_same. apply IHt.
-             apply Sn_le_Sm__n_le_m in SZ. simpl in SZ.
-             apply le_S in SZ. assumption.
-           + apply aeq_app.
-             ++ apply IHt1. simpl in SZ.
-                rewrite <- plus_Sn_m in SZ.
-                rewrite plus_comm in SZ.
-                rewrite <- plus_Sn_m in SZ.
-                rewrite plus_comm in SZ.
-                apply le_trans with (S (size t1) + S (size t2)).
-                +++ apply le_plus_l.
-                +++ assumption.
-             ++ apply aeq_refl.
-           + apply aeq_sub_same. apply aeq_refl. apply aeq_refl.
-       --- intros. unfold not in n0. pose proof subst_abs.
-           specialize (H (n_var y) y x t). case (y == x) in H.
-           + contradiction.
-           + simpl in H. unfold subst in H. unfold subst in IHn.
-             apply Sn_le_Sm__n_le_m in SZ.
-             destruct (atom_fresh
+    -- rewrite subst_abs.
+       case (y == x).
+       --- intros. apply aeq_refl.
+       --- intros. simpl.
+           destruct (atom_fresh
            (union (singleton y)
                   (union (remove x (fv_nom t)) (singleton y)))).
-             case (x == x0).
-             ++ intros. subst. apply aeq_abs_same. rewrite swap_id.
-                specialize (IHn t y); apply IHn in SZ. assumption.
-             ++ intros. apply aeq_abs_diff.
-                +++ apply aux_not_equal. assumption.
-                +++ pose proof notin_union_2.
-                    pose proof notin_union_1.  
-                    apply H0 in n2.
-                    apply H1 in n2.
-                    unfold not; intros. pose proof remove_neq_iff.
-                    specialize (H3 (fv_nom t) x x0).
-                    apply H3 in n3. apply n3 in H2.
-                    unfold not in n2. contradiction.                
-                +++ pose proof swap_size_eq.
-                    specialize (H0 x x0 t).
-                    rewrite <- H0.
-                    specialize (IHn (swap x x0 t) y).
-                    rewrite <- H0 in SZ. apply IHn in SZ.
-                    assumption.
-    -- rewrite subst_app. apply aeq_app.
-       --- specialize (IHn t1 y). apply Sn_le_Sm__n_le_m in SZ.
-           assert (size t1 <= size t1 + size t2). {
-             apply le_plus_l.
-           }
-           pose proof le_trans.
-           specialize (H0 (size t1) (size t1 + size t2) n).
-           apply H0 in H.
-           + apply IHn in H. assumption.
-           + assumption.
-       --- specialize (IHn t2 y). apply Sn_le_Sm__n_le_m in SZ.
-           assert (size t2 <= size t1 + size t2). {
-             rewrite plus_comm. apply le_plus_l.
-           }
-           pose proof le_trans.
-           specialize (H0 (size t2) (size t1 + size t2) n).
-           apply H0 in H.
-           + apply IHn in H. assumption.
-           + assumption.
-    -- unfold m_subst. simpl. case (x == y).
-       --- intros. case (y == x).
-           + intros. apply aeq_refl.
-           + intros. symmetry in e. contradiction.
-       --- intros. case (y == x).
-           + intros. symmetry in e. contradiction.
-           + intros. destruct (atom_fresh
+           case (x == x0).
+           ---- intro Heq; subst.
+                rewrite swap_id.
+                apply aeq_abs_same.
+                apply IHn.
+                apply Sn_le_Sm__n_le_m in SZ.
+                assumption.
+           ---- intro Hneq.
+                apply aeq_abs_diff.
+                ----- apply aux_not_equal. assumption.
+                ----- apply notin_union_2 in n1.
+                      apply notin_union_1 in n1.
+                      apply notin_remove_1 in n1.
+                      destruct n1.
+                      ------ contradiction.
+                      ------ assumption.
+                      ----- apply IHn.
+                            rewrite swap_size_eq.
+                            apply Sn_le_Sm__n_le_m in SZ.
+                            assumption.
+    -- rewrite subst_app.
+       apply aeq_app.
+       --- apply IHn.
+           admit.
+       --- apply IHn.
+           admit.
+    -- rewrite subst_sub. case (y == x).
+       --- intro Heq; subst.
+           apply aeq_refl.
+       --- intro Hneq.
+           simpl.
+           destruct (atom_fresh
            (union (singleton y)
-                  (union (union (remove x (fv_nom t1)) (fv_nom t2)) (singleton y)))). case (x == x0).
-             ++ intros; subst. apply aeq_sub_same.
-                +++ rewrite swap_id.
-                    assert (size t1 <= size t1 + size t2). {
-                      apply le_plus_l.
-                    }
-                    pose proof subst_size.
-                    specialize (H0 (size t1 + size t2) (n_var y) y t1).
-                    apply H0 in H; clear H0. rewrite H. apply IHn.
-                    apply Sn_le_Sm__n_le_m in SZ.
-                    transitivity (size t1 + size t2).
-                    * apply le_plus_l.
-                    * assumption.
-                +++ assert (size t2 <= size t1 + size t2). {
-                      apply le_plus_r.
-                    }
-                    pose proof subst_size.
-                    specialize (H0 (size t1 + size t2) (n_var y) y t2).
-                    apply H0 in H; clear H0. rewrite H. apply IHn.
-                    apply Sn_le_Sm__n_le_m in SZ.
-                    transitivity (size t1 + size t2).
-                    * apply le_plus_r.
-                    * assumption.
-             ++ intros. apply aeq_sub_diff.
-                +++ admit.
-                +++ assert (size t2 <= size t1 + size t2). {
-                      apply le_plus_r.
-                    }
-                    pose proof subst_size.
-                    specialize (H0 (size t1 + size t2) (n_var y) y t2).
-                    apply H0 in H; clear H0. rewrite H. apply IHn.
-                    apply Sn_le_Sm__n_le_m in SZ.
-                    transitivity (size t1 + size t2).
-                    * apply le_plus_r.
-                    * assumption.
-                +++ apply aux_not_equal. assumption.
-                +++ apply notin_union_2 in n2.
-                    repeat apply notin_union_1 in n2.
-                    apply notin_remove_1 in n2. inversion n2.
-                    * contradiction.
-                    * assumption.
-                +++ assert (size (swap x x0 t1) <= size t1 + size t2). {
-                      rewrite swap_size_eq; apply le_plus_l.
-                    }
-                    pose proof subst_size.
-                    specialize (H0 (size t1 + size t2) (n_var y) y (swap x x0 t1)).
-                    apply H0 in H; clear H0. rewrite H. apply IHn.
-                    apply Sn_le_Sm__n_le_m in SZ.
-                    transitivity (size t1 + size t2).
-                    * rewrite swap_size_eq; apply le_plus_l.
-                    * assumption.
-Admitted.
+                  (union (union (remove x (fv_nom t1)) (fv_nom t2)) (singleton y)))).
+           case (x == x0).
+             ---- intros; subst. rewrite swap_id.
+                  apply aeq_sub_same.
+                  ----- admit.
+                  ----- admit.
+             ---- intro Hneq'.
+                  apply aeq_sub_diff.
+                  -----
+                    
+(*                   assert (size t1 <= size t1 + size t2). { *)
+(*                       apply le_plus_l. *)
+(*                     } *)
+(*                     pose proof subst_size. *)
+(*                     specialize (H0 (size t1 + size t2) (n_var y) y t1). *)
+(*                     apply H0 in H; clear H0. rewrite H. apply IHn. *)
+(*                     apply Sn_le_Sm__n_le_m in SZ. *)
+(*                     transitivity (size t1 + size t2). *)
+(*                     * apply le_plus_l. *)
+(*                     * assumption. *)
+(*                 +++ assert (size t2 <= size t1 + size t2). { *)
+(*                       apply le_plus_r. *)
+(*                     } *)
+(*                     pose proof subst_size. *)
+(*                     specialize (H0 (size t1 + size t2) (n_var y) y t2). *)
+(*                     apply H0 in H; clear H0. rewrite H. apply IHn. *)
+(*                     apply Sn_le_Sm__n_le_m in SZ. *)
+(*                     transitivity (size t1 + size t2). *)
+(*                     * apply le_plus_r. *)
+(*                     * assumption. *)
+(*              ++ intros. apply aeq_sub_diff. *)
+(*                 +++ admit. *)
+(*                 +++ assert (size t2 <= size t1 + size t2). { *)
+(*                       apply le_plus_r. *)
+(*                     } *)
+(*                     pose proof subst_size. *)
+(*                     specialize (H0 (size t1 + size t2) (n_var y) y t2). *)
+(*                     apply H0 in H; clear H0. rewrite H. apply IHn. *)
+(*                     apply Sn_le_Sm__n_le_m in SZ. *)
+(*                     transitivity (size t1 + size t2). *)
+(*                     * apply le_plus_r. *)
+(*                     * assumption. *)
+(*                 +++ apply aux_not_equal. assumption. *)
+(*                 +++ apply notin_union_2 in n2. *)
+(*                     repeat apply notin_union_1 in n2. *)
+(*                     apply notin_remove_1 in n2. inversion n2. *)
+(*                     * contradiction. *)
+(*                     * assumption. *)
+(*                 +++ assert (size (swap x x0 t1) <= size t1 + size t2). { *)
+(*                       rewrite swap_size_eq; apply le_plus_l. *)
+(*                     } *)
+(*                     pose proof subst_size. *)
+(*                     specialize (H0 (size t1 + size t2) (n_var y) y (swap x x0 t1)). *)
+(*                     apply H0 in H; clear H0. rewrite H. apply IHn. *)
+(*                     apply Sn_le_Sm__n_le_m in SZ. *)
+(*                     transitivity (size t1 + size t2). *)
+(*                     * rewrite swap_size_eq; apply le_plus_l. *)
+(*                     * assumption. *)
+(* Admitted. *)
 
 Lemma subst_same : forall t y, aeq (m_subst (n_var y) y t)  t.
 Proof.
