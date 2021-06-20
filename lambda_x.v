@@ -972,7 +972,7 @@ Lemma subst_sub : forall u x y t1 t2,
        if (x == y) then (n_sub t1 y t2)
        else let (z,_) := atom_fresh (fv_nom u `union` fv_nom (n_sub t1 y t2) `union` {{x}}) in
             n_sub (m_subst u x (swap y z t1)) z (m_subst u x t2).
-Proof.
+Proof.   
 Admitted.
 
 Lemma pure_m_subst : forall u x t, pure u -> pure t -> pure (m_subst u x t).
@@ -989,7 +989,8 @@ Proof.
        apply pure_abs. inversion H0. apply IHt in H2.
        --- clear H1; clear H3; clear e1. inversion H0.
            clear H1; clear H4; clear e1. pose proof pure_swap.
-           specialize (H1 x0 x1 t). admit.
+           specialize (H1 x0 x1 t). unfold m_subst in H2.
+           admit.
        --- assumption.
   - intros. unfold m_subst; simpl. apply pure_app.
     -- inversion H0. clear H1; clear H2.
