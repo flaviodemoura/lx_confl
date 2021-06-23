@@ -807,6 +807,20 @@ Proof.
   induction t; simpl; auto.
 Qed.
 
+Lemma n_sexp_induction :
+ forall P : n_sexp -> Prop,
+ (forall x, P (n_var x)) ->
+ (forall t1 z,
+    (forall t2 x y, size t2 = size t1 ->
+    P (swap x y t2)) -> P (n_abs z t1)) ->
+ (forall t1 t2, P t1 -> P t2 -> P (n_app t1 t2)) ->
+ (forall t1 t3 z, P t3 -> 
+    (forall t2 x y, size t2 = size t1 ->
+    P (swap x y t2)) -> P (n_sub t1 z t3)) -> 
+ (forall t, P t).
+Proof.
+ Admitted.
+  
 Hint Rewrite swap_size_eq.
 
 (** ** Capture-avoiding substitution *)
@@ -972,12 +986,46 @@ Lemma subst_sub : forall u x y t1 t2,
        if (x == y) then (n_sub t1 y t2)
        else let (z,_) := atom_fresh (fv_nom u `union` fv_nom (n_sub t1 y t2) `union` {{x}}) in
             n_sub (m_subst u x (swap y z t1)) z (m_subst u x t2).
-Proof.   
+Proof.
+  intros. case (x == y).
+  - intro H; subst.
+    unfold m_subst.
+    simpl.
+    case (y == y).
+    + intro H; reflexivity.
+    + intro H.
+      contradiction.      
+  - intro Hneq.
+    unfold m_subst.
+    simpl.
+    case (x == y).
+    + intro H; contradiction.
+    + intro Hneq'.
+      destruct (atom_fresh (union (fv_nom u) (union (union (remove y (fv_nom t1)) (fv_nom t2)) (singleton x)))).
+      rewrite swap_size_eq.
+      pose proof subst_size.
+      specialize (H (size t1 + size t2) u x (swap y x0 t1)).
+      rewrite H.
 Admitted.
 
-Lemma pure_m_subst : forall u x t, pure u -> pure t -> pure (m_subst u x t).
+Lemma pure_m_subst : forall t u x, pure u -> pure t -> pure (m_subst u x t).
 Proof.
-  induction t.
+  induction t using n_sexp_induction.
+  - admit.
+  - 
+  intros u x t H1 H2.
+  unfold m_subst.
+  remember (size t) as n.
+  generalize dependent x.
+  generalize dependent u.
+  generalize dependent t.
+  induction n.
+  - intros t Ht Hsize u Hu x.
+    simpl.
+    assumption.
+  - 
+
+  
   - intros. unfold m_subst. simpl. case (x == x0).
     -- intros; assumption.
     -- intros; assumption.   
@@ -986,7 +1034,9 @@ Proof.
     -- intros; destruct (atom_fresh
          (union (fv_nom u)
                 (union (remove x0 (fv_nom t)) (singleton x)))).
-       apply pure_abs. inversion H0. apply IHt in H2.
+       apply pure_abs.
+       unfold m_subst in IHt.
+       inversion H0. apply IHt in H2.
        --- clear H1; clear H3; clear e1. inversion H0.
            clear H1; clear H4; clear e1. pose proof pure_swap.
            specialize (H1 x0 x1 t). unfold m_subst in H2.
