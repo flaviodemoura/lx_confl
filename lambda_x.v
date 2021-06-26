@@ -819,7 +819,10 @@ Lemma n_sexp_induction :
     P (swap x y t2)) -> P (n_sub t1 z t3)) -> 
  (forall t, P t).
 Proof.
- Admitted.
+  intros P x t1 t2 t3. induction t.
+  - specialize (x x0). assumption.
+  - 
+ 
   
 Hint Rewrite swap_size_eq.
 
@@ -992,70 +995,74 @@ Proof.
     unfold m_subst.
     simpl.
     case (y == y).
-    + intro H; reflexivity.
-    + intro H.
+    -- intro H; reflexivity.
+    -- intro H.
       contradiction.      
   - intro Hneq.
     unfold m_subst.
     simpl.
     case (x == y).
-    + intro H; contradiction.
-    + intro Hneq'.
+    -- intro H; contradiction.
+    -- intro Hneq'.
       destruct (atom_fresh (union (fv_nom u) (union (union (remove y (fv_nom t1)) (fv_nom t2)) (singleton x)))).
       rewrite swap_size_eq.
       pose proof subst_size.
       specialize (H (size t1 + size t2) u x (swap y x0 t1)).
       rewrite H.
-Admitted.
+    --- rewrite swap_size_eq.
+        assert (size t2 <= size t1 + size t2). {
+          apply le_plus_r.
+        }
+        pose proof subst_size.
+        specialize (H1 (size t1 + size t2) u x t2).
+        apply H1 in H0; clear H1. rewrite H0. reflexivity.
+    --- rewrite swap_size_eq. apply le_plus_l.
+Qed.
 
 Lemma pure_m_subst : forall t u x, pure u -> pure t -> pure (m_subst u x t).
 Proof.
   induction t using n_sexp_induction.
-  - admit.
-  - 
-  intros u x t H1 H2.
-  unfold m_subst.
-  remember (size t) as n.
-  generalize dependent x.
-  generalize dependent u.
-  generalize dependent t.
-  induction n.
-  - intros t Ht Hsize u Hu x.
-    simpl.
-    assumption.
-  - 
-
-  
-  - intros. unfold m_subst. simpl. case (x == x0).
-    -- intros; assumption.
-    -- intros; assumption.   
-  - unfold m_subst. simpl. case (x == x0).
-    -- intros; assumption.
-    -- intros; destruct (atom_fresh
+  - intros. unfold m_subst. simpl. case (x0 == x).
+    -- intros. assumption.
+    -- intros. assumption.
+  - intros. unfold m_subst. simpl. case (x==z).
+    -- intros; subst. assumption.
+    -- intros. destruct (atom_fresh
          (union (fv_nom u)
-                (union (remove x0 (fv_nom t)) (singleton x)))).
-       apply pure_abs.
-       unfold m_subst in IHt.
-       inversion H0. apply IHt in H2.
-       --- clear H1; clear H3; clear e1. inversion H0.
-           clear H1; clear H4; clear e1. pose proof pure_swap.
-           specialize (H1 x0 x1 t). unfold m_subst in H2.
-           admit.
-       --- assumption.
-  - intros. unfold m_subst; simpl. apply pure_app.
-    -- inversion H0. clear H1; clear H2.
-       pose proof subst_size. apply IHt1 in H.
-       --- unfold m_subst in H.
-           specialize (H1 (size t1 + size t2) u x t1).
-           pose proof le_plus_l. specialize (H2 (size t1) (size t2)). apply H1 in H2. rewrite H2. assumption.
-       --- assumption.
-    -- inversion H0. clear H1; clear H2.
-       pose proof subst_size. apply IHt2 in H.
-       --- unfold m_subst in H.
-           specialize (H1 (size t1 + size t2) u x t2).
-           pose proof le_plus_r. specialize (H2 (size t1) (size t2)). apply H1 in H2. rewrite H2. assumption.
-       --- assumption.
-Admitted.
+                (union (remove z (fv_nom t)) (singleton x)))).
+       apply pure_abs. inversion H1. unfold m_subst in H.
+       pose proof pure_swap. specialize (H5 z x0 t).
+       pose proof H3. apply H5 in H6; clear H5.
+       specialize (H t z x0). assert (size t = size t). {
+         reflexivity.
+       }
+       specialize (H H5 u x); clear H5. rewrite swap_size_eq in H.
+       apply H.
+    --- assumption.
+    --- assumption.
+  - unfold m_subst; unfold m_subst in IHt1; unfold m_subst in IHt2.
+    intros. simpl. inversion H0.
+    clear H1; clear H2; clear e1; clear e2. apply pure_app.
+    -- specialize (IHt1 u x).
+       assert (size t1 <= size t1 + size t2). {
+         apply le_plus_l.
+       }
+       pose proof subst_size.
+       specialize (H2 (size t1 + size t2) u x t1).
+       apply H2 in H1; clear H2. rewrite H1. apply IHt1.
+    --- assumption.
+    --- assumption.
+    -- specialize (IHt2 u x).
+       assert (size t2 <= size t1 + size t2). {
+         apply le_plus_r.
+       }
+       pose proof subst_size.
+       specialize (H2 (size t1 + size t2) u x t2).
+       apply H2 in H1; clear H2. rewrite H1. apply IHt2.
+    --- assumption.
+    --- assumption.
+  - intros. inversion H1.
+Qed.
 
 (** ** Challenge Exercise [m_subst properties]
 

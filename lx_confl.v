@@ -35,7 +35,27 @@ Proof.
        --- intros. symmetry in e. contradiction.
        --- intros. destruct (atom_fresh
            (Metatheory.union (fv_nom (P e3))
-                             (Metatheory.union (remove x (fv_nom (P e0))) (singleton y)))).  admit.
+                             (Metatheory.union (remove x (fv_nom (P e0))) (singleton y)))). apply notin_union_2 in n0.
+           apply notin_union_1 in n0. apply notin_remove_1 in n0.
+           inversion n0.
+           + subst. rewrite swap_id. reflexivity.
+           + assert (swap x x0 (n_var x0) = n_var x). {
+               simpl. unfold swap_var. case (x0 == x).
+               - intros. subst. reflexivity.
+               - intros. case (x0 == x0).
+                 -- intros; reflexivity.
+                 -- contradiction.
+             } admit.
+             
+
+
+
+
+
+
+
+
+                        
     -- subst. simpl. unfold m_subst. simpl.
        assert (subst_rec (size (P e0) + size (P e3)) (P e0) (P e4) y = subst_rec (size (P e0)) (P e0) (P e4) y). {
          apply subst_size. apply le_plus_l.       
@@ -149,7 +169,9 @@ Proof.
            + symmetry in e. contradiction.
            + apply refl.
   - intros. inversion H. subst. specialize (IHe1 x0 e2).
-    apply IHe1 in H1. apply rtrans with e2.
-    -- apply step_redex. 
+    apply IHe1 in H1. unfold m_subst in H1; unfold m_subst.
+    inversion H1.
+    -- subst. simpl. default_simp.
+       --- admit.
 Admitted.
     
