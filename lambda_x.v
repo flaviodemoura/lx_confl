@@ -854,8 +854,31 @@ Proof.
       apply Nat.lt_succ_diag_r.
     + symmetry.
       apply swap_size_eq.
-  - Admitted.
-    
+  - intros. apply Happ.
+    + apply H with ((size t1)).
+      ++ simpl in Heqn. rewrite Heqn.
+         apply le_lt_n_Sm.
+         apply le_plus_l.
+      ++ reflexivity.
+    + apply H with ((size t2)).
+      ++ simpl in Heqn. rewrite Heqn.
+          apply le_lt_n_Sm.
+         apply le_plus_r.
+      ++ reflexivity.
+  - intros. apply Hsub.
+    + apply H with ((size t2)).
+      ++ simpl in Heqn. rewrite Heqn.
+          apply le_lt_n_Sm.
+         apply le_plus_r.
+      ++ reflexivity.
+    + intros. apply H with ((size (swap x0 y t0))).
+      ++ rewrite swap_size_eq. rewrite H0.
+         simpl in Heqn. rewrite Heqn.
+         apply le_lt_n_Sm.
+         apply le_plus_l.
+      ++ reflexivity.
+Qed.
+
 Hint Rewrite swap_size_eq.
 
 (** ** Capture-avoiding substitution *)
