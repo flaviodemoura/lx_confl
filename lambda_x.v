@@ -807,6 +807,24 @@ Proof.
   induction t; simpl; auto.
 Qed.
 
+Lemma strong_induction :
+ forall (P:nat->Prop),
+   (forall n, (forall m, m < n -> P m) -> P n) ->
+   (forall n, P n).
+Proof.
+  intros Q IH n.
+  assert (H := nat_ind (fun n => (forall m : nat, m < n -> Q m))).
+  apply IH.
+  apply H.
+  - intros m Hlt; inversion Hlt.
+  - intros n' H' m Hlt.
+    apply IH.
+    intros m0 Hlt'.
+    apply H'.
+    apply lt_n_Sm_le in Hlt.
+    apply lt_le_trans with m; assumption.
+Qed.
+
 Lemma n_sexp_induction :
  forall P : n_sexp -> Prop,
  (forall x, P (n_var x)) ->
@@ -819,11 +837,25 @@ Lemma n_sexp_induction :
     P (swap x y t2)) -> P (n_sub t1 z t3)) -> 
  (forall t, P t).
 Proof.
-  intros P x t1 t2 t3. induction t.
-  - specialize (x x0). assumption.
-  - 
- 
-  
+  intros P Hvar Habs Happ Hsub t.
+  remember (size t) as n.
+  generalize dependent t.
+  induction n using strong_induction.
+  intro t; case t.
+  - intros x Hsize.
+    apply Hvar.
+  - intros x t' Hsize.
+    apply Habs.
+    intros t'' x1 x2 Hsize'.
+    apply H with (size t'').
+    + rewrite Hsize'.
+      rewrite Hsize.
+      simpl.
+      apply Nat.lt_succ_diag_r.
+    + symmetry.
+      apply swap_size_eq.
+  - Admitted.
+    
 Hint Rewrite swap_size_eq.
 
 (** ** Capture-avoiding substitution *)
