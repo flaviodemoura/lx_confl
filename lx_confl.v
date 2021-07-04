@@ -18,18 +18,18 @@ Fixpoint P (t : n_sexp) := match t with
                            | n_sub t1 x t2 => m_subst (P t2) x (P t1)
                            end.
 
-Lemma pi_P: forall t1 t2, step pix t1 t2 -> P t1 = P t2.
+Lemma pi_P: forall t1 t2, step pix t1 t2 -> aeq (P t1) (P t2).
 Proof.
   intros t1 t2 H. induction H.
   - inversion H.
     -- subst. simpl. unfold m_subst. simpl. case (y == y).
-       --- intros. reflexivity.
+       --- intros. apply aeq_refl.
        --- contradiction.
     -- subst. simpl. unfold m_subst. simpl. case (y == x).
        --- intros. symmetry in e0. contradiction.
-       --- intros. reflexivity.
+       --- intros. apply aeq_refl.
     -- subst. simpl. unfold m_subst. simpl. case (y == y).
-       --- intros. reflexivity.
+       --- intros. apply aeq_refl.
        --- contradiction.
     -- subst. simpl. unfold m_subst. simpl. case (y == x).
        --- intros. symmetry in e. contradiction.
@@ -38,14 +38,8 @@ Proof.
                              (Metatheory.union (remove x (fv_nom (P e0))) (singleton y)))). apply notin_union_2 in n0.
            apply notin_union_1 in n0. apply notin_remove_1 in n0.
            inversion n0.
-           + subst. rewrite swap_id. reflexivity.
-           + assert (swap x x0 (n_var x0) = n_var x). {
-               simpl. unfold swap_var. case (x0 == x).
-               - intros. subst. reflexivity.
-               - intros. case (x0 == x0).
-                 -- intros; reflexivity.
-                 -- contradiction.
-             } admit.
+           + subst. rewrite swap_id. apply aeq_refl.
+           +  admit. 
              
 
 
@@ -63,42 +57,54 @@ Proof.
        assert ((subst_rec (size (P e0) + size (P e3)) (P e3) (P e4) y = subst_rec (size (P e3)) (P e3) (P e4) y)). {
          apply subst_size. apply le_plus_r.
        }
-       rewrite H0; rewrite H1. reflexivity.
+       rewrite H0; rewrite H1. apply aeq_refl.
   - inversion H.
-    -- subst. simpl. simpl in IHstep. rewrite IHstep. reflexivity.
-    -- subst. simpl. simpl in IHstep. rewrite IHstep. reflexivity.
-    -- subst. simpl. simpl in IHstep. rewrite IHstep. reflexivity.
-    -- subst. simpl. simpl in IHstep. rewrite IHstep. reflexivity.
-    -- subst. simpl. simpl in IHstep. rewrite IHstep. reflexivity.
-    -- subst. simpl. simpl in IHstep. rewrite IHstep. reflexivity.
+    -- subst. simpl. simpl in IHstep. apply aeq_abs_same. apply IHstep.
+    -- subst. simpl. simpl in IHstep. apply aeq_abs_same. apply IHstep.
+    -- subst. simpl. simpl in IHstep. apply aeq_abs_same. apply IHstep.
+    -- subst. simpl. simpl in IHstep. apply aeq_abs_same. apply IHstep.
+    -- subst. simpl. simpl in IHstep. apply aeq_abs_same. apply IHstep.
+    -- subst. simpl. simpl in IHstep. apply aeq_abs_same. apply IHstep.
   - inversion H.
-    -- subst. simpl. simpl in IHstep. rewrite IHstep. reflexivity.
-    -- subst. simpl. simpl in IHstep. rewrite IHstep. reflexivity.
-    -- subst. simpl. simpl in IHstep. rewrite IHstep. reflexivity.
-    -- subst. simpl. simpl in IHstep. rewrite IHstep. reflexivity.
-    -- subst. simpl. simpl in IHstep. rewrite IHstep. reflexivity.
-    -- subst. simpl. simpl in IHstep. rewrite IHstep. reflexivity.
+    -- subst. simpl. simpl in IHstep. apply aeq_app.
+       --- apply IHstep.
+       --- apply aeq_refl.
+    -- subst. simpl. simpl in IHstep. apply aeq_app.
+       --- apply IHstep.
+       --- apply aeq_refl.
+    -- subst. simpl. simpl in IHstep. apply aeq_app.
+       --- apply IHstep.
+       --- apply aeq_refl.
+    -- subst. simpl. simpl in IHstep. apply aeq_app.
+       --- apply IHstep.
+       --- apply aeq_refl.
+    -- subst. simpl. simpl in IHstep. apply aeq_app.
+       --- apply IHstep.
+       --- apply aeq_refl.
+    -- subst. simpl. simpl in IHstep. apply aeq_app.
+       --- apply IHstep.
+       --- apply aeq_refl.
   - inversion H.
-    -- subst. simpl. simpl in IHstep. rewrite IHstep. reflexivity.
-    -- subst. simpl. simpl in IHstep. rewrite IHstep. reflexivity.
-    -- subst. simpl. simpl in IHstep. rewrite IHstep. reflexivity.
-    -- subst. simpl. simpl in IHstep. rewrite IHstep. reflexivity.
-    -- subst. simpl. simpl in IHstep. rewrite IHstep. reflexivity.
-    -- subst. simpl. simpl in IHstep. rewrite IHstep. reflexivity.
-  - inversion H.
-    -- subst. simpl. simpl in IHstep. rewrite IHstep. reflexivity.
-    -- subst. simpl. simpl in IHstep. rewrite IHstep. reflexivity.
-    -- subst. simpl. simpl in IHstep. rewrite IHstep. reflexivity.
-    -- subst. simpl. simpl in IHstep. rewrite IHstep. reflexivity.
-    -- subst. simpl. simpl in IHstep. rewrite IHstep. reflexivity.
-    -- subst. simpl. simpl in IHstep. rewrite IHstep. reflexivity.
-  - inversion H.
-    -- subst. simpl. simpl in IHstep. rewrite IHstep. reflexivity.
-    -- subst. simpl. simpl in IHstep. rewrite IHstep. reflexivity.
-    -- subst. simpl. simpl in IHstep. rewrite IHstep. reflexivity.
-    -- subst. simpl. simpl in IHstep. rewrite IHstep. reflexivity.
-    -- subst. simpl. simpl in IHstep. rewrite IHstep. reflexivity.
-    -- subst. simpl. simpl in IHstep. rewrite IHstep. reflexivity. 
+    -- subst. simpl. simpl in IHstep. apply aeq_app.
+       --- apply aeq_refl.
+       --- apply IHstep.
+    -- subst. simpl. simpl in IHstep. apply aeq_app.
+       --- apply aeq_refl.
+       --- apply IHstep.
+    -- subst. simpl. simpl in IHstep. apply aeq_app.
+       --- apply aeq_refl.
+       --- apply IHstep.
+    -- subst. simpl. simpl in IHstep. apply aeq_app.
+       --- apply aeq_refl.
+       --- apply IHstep.
+    -- subst. simpl. simpl in IHstep. apply aeq_app.
+       --- apply aeq_refl.
+       --- apply IHstep.
+    -- subst. simpl. simpl in IHstep. apply aeq_app.
+       --- apply aeq_refl.
+       --- apply IHstep.
+  - admit.
+  - admit.
 Admitted.
 
 Lemma pure_P: forall e, pure (P e).
@@ -174,4 +180,3 @@ Proof.
     -- subst. simpl. default_simp.
        --- admit.
 Admitted.
-    

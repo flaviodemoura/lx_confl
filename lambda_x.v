@@ -911,7 +911,7 @@ Fixpoint subst_rec (n:nat) (t:n_sexp) (u :n_sexp) (x:atom)  : n_sexp :=
               let (z,_) :=
                   atom_fresh (fv_nom u `union` fv_nom t `union` {{x}}) in
                  n_sub  (subst_rec m (swap y z t1) u x) z (subst_rec m t2 u x) 
-          end
+           end
   end.
 
 (** Our real substitution function uses the size of the size of the term
@@ -1119,12 +1119,20 @@ Proof.
   - intros. inversion H1.
 Qed.
 
+Lemma fv_nom_abs_subst_aux: forall t u y,
+    fv_nom (subst_rec (size t) t u y) = (remove y (fv_nom t)) `union` fv_nom u.
+Proof.
+  induction t.
+  - intros. simpl. default_simp.
+    -- Search "union". admit.
+
+
 (** ** Challenge Exercise [m_subst properties]
 
     Now show the following property by induction on the size of terms. *)
 
 Lemma subst_same_aux : forall n, forall t y, size t <= n -> aeq (m_subst (n_var y) y t)  t.
-Proof.
+yProof.
   intro n. induction n.
   - intros t y SZ. destruct t; simpl in SZ; omega.
   - intros t y SZ. destruct t; simpl in SZ.
