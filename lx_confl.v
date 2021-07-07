@@ -18,7 +18,7 @@ Fixpoint P (t : n_sexp) := match t with
                            | n_sub t1 x t2 => m_subst (P t2) x (P t1)
                            end.
 
-Lemma pi_P: forall t1 t2, step pix t1 t2 -> aeq (P t1) (P t2).
+Lemma pi_P: forall t1 t2, ctx pix t1 t2 -> aeq (P t1) (P t2).
 Proof.
   intros t1 t2 H. induction H.
   - inversion H.
@@ -39,12 +39,12 @@ Proof.
            apply notin_union_1 in n0. apply notin_remove_1 in n0.
            inversion n0.
            + subst. rewrite swap_id. apply aeq_refl.
-           +  admit. 
+           +  Admitted.
              
 
 
 
-
+(*
 
 
 
@@ -105,7 +105,7 @@ Proof.
        --- apply IHstep.
   - admit.
   - admit.
-Admitted.
+Admitted.*)
 
 Lemma pure_P: forall e, pure (P e).
 Proof.
@@ -127,7 +127,8 @@ Proof.
                              (Metatheory.union (remove x0 (fv_nom n)) (singleton x)))). apply pure_abs. inversion IHe1.
            pose proof pure_m_subst. pose proof pure_swap.
            specialize (H3 x0 x1 n). apply H3 in H0.
-           specialize (H2 (P e2) x (swap x0 x1 n)).
+           Admitted.
+(*           specialize (H2 (P e2) x (swap x0 x1 n)).
            apply H2 in H0. unfold m_subst in H0.
            + rewrite swap_size_eq in H0. assumption.
            + assumption.
@@ -147,7 +148,7 @@ Proof.
        --- intros. destruct (atom_fresh
            (Metatheory.union (fv_nom (P e2))
                              (Metatheory.union (Metatheory.union (remove x0 (fv_nom n1)) (fv_nom n2)) (singleton x)))). inversion IHe1.
-Qed.
+Qed. *)
 
 Lemma pure_P_id: forall e, pure e -> P e = e.
 Proof.
@@ -160,7 +161,7 @@ Proof.
   - intros. inversion H.
 Qed.
 
-  Lemma pure_pix: forall e1 x e2, pure e1 -> refltrans (step pix) (n_sub e1 x e2) (m_subst e2 x e1).
+  Lemma pure_pix: forall e1 x e2, pure e1 -> refltrans (ctx pix) (n_sub e1 x e2) (m_subst e2 x e1).
 Proof.
   induction e1.
   - intros. case (x == x0).
@@ -180,3 +181,26 @@ Proof.
     -- subst. simpl. default_simp.
        --- admit.
 Admitted.
+
+Lemma lambda_x_Z_comp_eq: Z_comp_eq lx.
+Proof.
+  unfold Z_comp_eq.
+  exists (ctx pix), (ctx betax), P, B.
+  split.
+  - intros x y. split.
+    + admit.
+    + admit.
+  - split.
+    + admit.
+    + split.
+      * admit.
+      * split.
+        ** admit.
+        ** Admitted.
+  
+Theorem lambda_x_is_confluent: Confl lx.
+Proof.
+  apply Z_prop_implies_Confl.
+  apply Z_comp_eq_implies_Z_prop.
+  apply lambda_x_Z_comp_eq.
+Qed.

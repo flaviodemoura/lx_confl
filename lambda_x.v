@@ -70,13 +70,17 @@ Inductive pix : n_sexp -> n_sexp -> Prop :=
  | step_app : forall (e1 e2 e3: n_sexp) (y: atom),
      pix (n_sub (n_app e1 e2) y e3) (n_app (n_sub e1 y e3) (n_sub e2 y e3)).
 
-Inductive step  (R : n_sexp -> n_sexp -> Prop): n_sexp -> n_sexp -> Prop :=
- | step_redex: forall (e1 e2 : n_sexp), R e1 e2 -> step R e1 e2
- | step_abs_in: forall (e e': n_sexp) (x: atom), step R e e' -> step R (n_abs x e) (n_abs x e')
- | step_app_left: forall (e1 e1' e2: n_sexp) , step R e1 e1' -> step R (n_app e1 e2) (n_app e1' e2)
- | step_app_right: forall (e1 e2 e2': n_sexp) , step R e2 e2' -> step R (n_app e1 e2) (n_app e1 e2')
- | step_sub_left: forall (e1 e1' e2: n_sexp) (x : atom) , step R e1 e1' -> step R (n_sub e1 x e2) (n_sub e1' x e2)
- | step_sub_right: forall (e1 e2 e2': n_sexp) (x:atom), step R e2 e2' -> step R (n_sub e1 x e2) (n_sub e1 x e2').
+Inductive ctx  (R : n_sexp -> n_sexp -> Prop): n_sexp -> n_sexp -> Prop :=
+ | step_redex: forall (e1 e2 : n_sexp), R e1 e2 -> ctx R e1 e2
+ | step_abs_in: forall (e e': n_sexp) (x: atom), ctx R e e' -> ctx R (n_abs x e) (n_abs x e')
+ | step_app_left: forall (e1 e1' e2: n_sexp) , ctx R e1 e1' -> ctx R (n_app e1 e2) (n_app e1' e2)
+ | step_app_right: forall (e1 e2 e2': n_sexp) , ctx R e2 e2' -> ctx R (n_app e1 e2) (n_app e1 e2')
+ | step_sub_left: forall (e1 e1' e2: n_sexp) (x : atom) , ctx R e1 e1' -> ctx R (n_sub e1 x e2) (n_sub e1' x e2)
+ | step_sub_right: forall (e1 e2 e2': n_sexp) (x:atom), ctx R e2 e2' -> ctx R (n_sub e1 x e2) (n_sub e1 x e2').
+
+Inductive lx: n_sexp -> n_sexp -> Prop :=
+| b_ctx_rule : forall t u, (ctx betax) t u -> lx t u
+| x_ctx_rule : forall t u, (ctx pix) t u -> lx t u.
 
 (** For example, we can encode the expression [(\X.Y X)] as below.  *)
 
@@ -1124,7 +1128,7 @@ Lemma fv_nom_abs_subst_aux: forall t u y,
 Proof.
   induction t.
   - intros. simpl. default_simp.
-    -- Search "union". admit.
+    -- Search "union". Admitted.
 
 
 (** ** Challenge Exercise [m_subst properties]
@@ -1132,7 +1136,7 @@ Proof.
     Now show the following property by induction on the size of terms. *)
 
 Lemma subst_same_aux : forall n, forall t y, size t <= n -> aeq (m_subst (n_var y) y t)  t.
-yProof.
+Proof.
   intro n. induction n.
   - intros t y SZ. destruct t; simpl in SZ; omega.
   - intros t y SZ. destruct t; simpl in SZ.
