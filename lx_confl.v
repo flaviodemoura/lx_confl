@@ -188,10 +188,152 @@ Proof.
   exists (ctx pix), (ctx betax), P, B.
   split.
   - intros x y. split.
-    + admit.
-    + admit.
+    + intros. inversion H.
+      ++ subst. apply union_right. assumption.
+      ++ subst. apply union_left. assumption.
+    + intros. apply union_or in H. inversion H.
+      ++ apply x_ctx_rule. assumption.
+      ++ apply b_ctx_rule. assumption.        
   - split.
-    + admit.
+    + intros. induction H.
+      ++ inversion H.
+         +++ simpl. unfold m_subst. simpl. default_simp.
+         +++ simpl. unfold m_subst. simpl. default_simp.
+         +++ simpl. unfold m_subst. simpl. default_simp.
+         +++ simpl. unfold m_subst. simpl. default_simp.
+         ++++ inversion H.
+         +++++ subst. apply notin_union_2 in n.
+               apply notin_union_1 in n.
+               apply notin_remove_1 in n. inversion n.
+         ++++++ contradiction.
+         ++++++ contradiction.
+         +++++ subst. apply notin_union_2 in n.
+               apply notin_union_1 in n.
+               apply notin_remove_1 in n. inversion n.
+         ++++++ symmetry in H1; assumption.
+         ++++++ admit.
+         ++++ case (x == x0).
+         +++++ intros. subst. rewrite swap_id. reflexivity.
+         +++++ intros. apply notin_union_2 in n.
+               apply notin_union_1 in n.
+               apply notin_remove_1 in n. inversion n.
+         ++++++ contradiction.
+         ++++++ admit.
+
+         +++ admit.
+      ++ admit.
+      ++ admit.
+      ++ admit.
+      ++ admit.
+      ++ admit.
+
+    (*inversion H.
+      ++ subst. inversion H0.
+         +++ simpl. unfold m_subst. simpl. case (y == y).
+         ++++ intros; reflexivity.
+         ++++ intros; contradiction.
+
+         +++ simpl. unfold m_subst. simpl. case (y == x).
+         ++++ intros; subst. contradiction.
+         ++++ intros; reflexivity.
+
+         +++ simpl. unfold m_subst. simpl. case (y == y).
+         ++++ intros; reflexivity.
+         ++++ intros; contradiction.
+
+         +++ simpl. unfold m_subst. simpl. case (y == x).
+         ++++ intros; subst. contradiction.
+         ++++ intros. destruct  (atom_fresh
+       (Metatheory.union (fv_nom (P e2))
+          (Metatheory.union (remove x (fv_nom (P e1)))
+                            (singleton y)))).
+              admit.
+
+         +++ simpl. unfold m_subst. simpl.
+             assert (size (P e1) <= size (P e1) + size (P e2)). {
+               apply le_plus_l.
+             }
+             assert (size (P e2) <= size (P e1) + size (P e2)). {
+               apply le_plus_r.
+             }
+             pose proof subst_size. pose proof H5.
+             specialize (H5 (size (P e1) + size (P e2)) (P e3) y (P e1)).
+             specialize (H6 (size (P e1) + size (P e2)) (P e3) y (P e2)).
+             apply H5 in H3; clear H5; apply H6 in H4; clear H6.
+             rewrite H3; rewrite H4. reflexivity.*)
+
+
+             
+      (*++ subst. inversion H0.
+         +++ simpl. unfold m_subst. simpl. case (y == y).
+         ++++ intros; reflexivity.
+         ++++ intros; contradiction.
+
+         +++ simpl. unfold m_subst. simpl. case (y == x).
+         ++++ intros; subst. contradiction.
+         ++++ intros; reflexivity.
+
+         +++ simpl. unfold m_subst. simpl. case (y == y).
+         ++++ intros; reflexivity.
+         ++++ intros; contradiction.
+
+         +++ simpl. unfold m_subst. simpl. case (y == x).
+         ++++ intros; subst. contradiction.
+         ++++ intros. destruct  (atom_fresh
+       (Metatheory.union (fv_nom (P e2))
+          (Metatheory.union (remove x (fv_nom (P e1)))
+                            (singleton y)))).
+              admit.
+
+         +++ simpl. unfold m_subst. simpl.
+             assert (size (P e1) <= size (P e1) + size (P e2)). {
+               apply le_plus_l.
+             }
+             assert (size (P e2) <= size (P e1) + size (P e2)). {
+               apply le_plus_r.
+             }
+             pose proof subst_size. pose proof H5.
+             specialize (H5 (size (P e1) + size (P e2)) (P e3) y (P e1)).
+             specialize (H6 (size (P e1) + size (P e2)) (P e3) y (P e2)).
+             apply H5 in H3; clear H5; apply H6 in H4; clear H6.
+             rewrite H3; rewrite H4. reflexivity.
+
+      ++ subst. simpl. inversion H0.
+         +++ subst. inversion H1.
+         ++++ subst. simpl. unfold m_subst; simpl. case (y == y).
+         +++++ intros; reflexivity.
+         +++++ intros; contradiction.
+         ++++ simpl. unfold m_subst. simpl. case (y == x0).
+         +++++ intros. subst; contradiction.
+         +++++ intros; reflexivity.
+         ++++ simpl. unfold m_subst. simpl. case (y == y).
+         +++++ intros; reflexivity.
+         +++++ intros; contradiction.
+         ++++ simpl. unfold m_subst. simpl. case (y == x0).
+         +++++ intros. symmetry in e0; contradiction.
+         +++++ intros. destruct (atom_fresh
+         (Metatheory.union (fv_nom (P e2))
+            (Metatheory.union (remove x0 (fv_nom (P e1)))
+                              (singleton y)))). admit.
+         ++++ simpl. unfold m_subst. simpl.
+              assert (size (P e1) <= size (P e1) + size (P e2)). {
+               apply le_plus_l.
+             }
+             assert (size (P e2) <= size (P e1) + size (P e2)). {
+               apply le_plus_r.
+             }
+             pose proof subst_size. pose proof H6.
+             specialize (H6 (size (P e1) + size (P e2)) (P e3) y (P e1)).
+             specialize (H7 (size (P e1) + size (P e2)) (P e3) y (P e2)).
+             apply H6 in H4; clear H6; apply H7 in H5; clear H7.
+             rewrite H4; rewrite H5. reflexivity.
+
+        +++ simpl. subst. inversion H1.
+        ++++ subst.*)
+        
+
+
+
     + split.
       * admit.
       * split.
