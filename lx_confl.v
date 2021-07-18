@@ -18,34 +18,20 @@ Fixpoint P (t : n_sexp) := match t with
                            | n_sub t1 x t2 => m_subst (P t2) x (P t1)
                            end.
 
-(**
-Lemma pi_P: forall t1 t2, ctx pix t1 t2 -> P t1 = P t2.
-
-\x. t = \y. (x y)t
-*)
-
-Lemma fv_nom_subst_rec: forall t1 t2 x n, fv_nom (subst_rec (size n) t1 t2 x) = (remove x (fv_nom t1)) `union` (fv_nom t2).
-Proof.
-  Admitted.
-
-Lemma swap_m_subst: forall t1 t2 x1 x2 y, (swap x1 x2 (m_subst t1 y t2)) = (m_subst  (swap x1 x2 t1) (swap_var x1 x2 y) (swap x1 x2 t2)).
-Proof.
-Admitted.
-  
 Lemma pi_P: forall t1 t2, ctx pix t1 t2 -> aeq (P t1) (P t2).
 Proof.
-  induction 1.
-  - inversion H; subst.
-    -- simpl. unfold m_subst. simpl. case (y == y).
+  intros t1 t2 H. induction H.
+  - inversion H.
+    -- subst. simpl. unfold m_subst. simpl. case (y == y).
        --- intros. apply aeq_refl.
        --- contradiction.
-    -- simpl. unfold m_subst. simpl. case (y == x).
+    -- subst. simpl. unfold m_subst. simpl. case (y == x).
        --- intros. symmetry in e0. contradiction.
        --- intros. apply aeq_refl.
-    -- simpl. unfold m_subst. simpl. case (y == y).
+    -- subst. simpl. unfold m_subst. simpl. case (y == y).
        --- intros. apply aeq_refl.
        --- contradiction.
-    -- simpl. unfold m_subst. simpl. case (y == x).
+    -- subst. simpl. unfold m_subst. simpl. case (y == x).
        --- intros. symmetry in e. contradiction.
        --- intros. destruct (atom_fresh
            (Metatheory.union (fv_nom (P e3))
@@ -53,17 +39,7 @@ Proof.
            apply notin_union_1 in n0. apply notin_remove_1 in n0.
            inversion n0.
            + subst. rewrite swap_id. apply aeq_refl.
-<<<<<<< HEAD
            + Admitted.
-=======
-           + clear n0.
-             apply aeq_abs_diff.
-             * admit.
-             * rewrite fv_nom_subst_rec.
-               admit.
-             * simpl.
-Admitted.
->>>>>>> 68a82883f523c514bf36b0d39303ee75f673978e
              
 
 
@@ -207,7 +183,15 @@ Proof.
     apply IHe1 in H1. unfold m_subst in H1; unfold m_subst.
     inversion H1.
     -- subst. simpl. default_simp.
+       --- apply rtrans with (n_abs x e1).
+           + apply step_redex. apply step_abs1.
+           + apply refl.
        --- admit.
+    -- admit.
+  - intros. apply rtrans with (n_app e1_1 e1_2).
+    -- apply step_redex. admit.
+    -- admit.
+  - intros. inversion H.
 Admitted.
 
 Lemma lambda_x_Z_comp_eq: Z_comp_eq lx.

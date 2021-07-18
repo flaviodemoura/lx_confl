@@ -1127,8 +1127,17 @@ Lemma fv_nom_abs_subst_aux: forall t u y,
     fv_nom (subst_rec (size t) t u y) = (remove y (fv_nom t)) `union` fv_nom u.
 Proof.
   induction t.
-  - intros. simpl. default_simp.
-    -- Search "union". Admitted.
+  - intros. simpl. case (x == y).
+    -- intros. case (y == x).
+       --- intros. subst. Search "empty".
+           pose proof AtomSetProperties.remove_singleton_empty.
+           assert (remove y (singleton y) = empty). {
+             pose proof singleton_iff.
+             specialize (H y y).
+             apply H in e0; clear H.
+           }
+           
+           
 
 
 (** ** Challenge Exercise [m_subst properties]
