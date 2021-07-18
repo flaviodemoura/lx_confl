@@ -39,7 +39,7 @@ Proof.
            apply notin_union_1 in n0. apply notin_remove_1 in n0.
            inversion n0.
            + subst. rewrite swap_id. apply aeq_refl.
-           +  Admitted.
+           + Admitted.
              
 
 
@@ -126,29 +126,33 @@ Proof.
            (Metatheory.union (fv_nom (P e2))
                              (Metatheory.union (remove x0 (fv_nom n)) (singleton x)))). apply pure_abs. inversion IHe1.
            pose proof pure_m_subst. pose proof pure_swap.
-           specialize (H3 x0 x1 n). apply H3 in H0.
-           Admitted.
-(*           specialize (H2 (P e2) x (swap x0 x1 n)).
-           apply H2 in H0. unfold m_subst in H0.
-           + rewrite swap_size_eq in H0. assumption.
-           + assumption.
-    -- simpl. apply pure_app.
-       --- inversion IHe1. apply IHn1 in H1. pose proof le_plus_l.
-           specialize (H3 (size n1) (size n2)).
-           pose proof subst_size.
-           specialize (H4 (size n1 + size n2) (P e2) x n1).
-           apply H4 in H3. rewrite H3. assumption.
-       --- inversion IHe1. apply IHn2 in H2. pose proof le_plus_r.
-           specialize (H3 (size n1) (size n2)).
-           pose proof subst_size.
-           specialize (H4 (size n1 + size n2) (P e2) x n2).
-           apply H4 in H3. rewrite H3. assumption.
-    -- simpl. case (x == x0).
-       --- intros. assumption.
-       --- intros. destruct (atom_fresh
-           (Metatheory.union (fv_nom (P e2))
-                             (Metatheory.union (Metatheory.union (remove x0 (fv_nom n1)) (fv_nom n2)) (singleton x)))). inversion IHe1.
-Qed. *)
+           specialize (H3 x0 x1 n). apply notin_union_2 in n1.
+           apply notin_union_1 in n1. 
+           case (x0 == x1).
+           + intros; subst. apply IHn in H0.
+             rewrite swap_id. assumption.
+           + intros; subst. pose proof pure_swap.
+             specialize (H x0 x1 n). apply H in H0.
+             clear H3; clear H. unfold m_subst in H2.
+             specialize (H2 (swap x0 x1 n) (P e2) x).
+             pose proof swap_size_eq.
+             specialize (H x0 x1 n). rewrite <- H.
+             apply H2.
+             ++ assumption.
+             ++ assumption.
+    -- simpl. pose proof subst_size. inversion IHe1; subst.
+       apply IHn1 in H2; clear IHn1; apply IHn2 in H3; clear IHn2.
+       apply pure_app.
+       --- specialize (H (size n1 + size n2) (P e2) x n1).
+           pose proof le_plus_l.
+           specialize (H0 (size n1) (size n2)).
+           apply H in H0; clear H. rewrite H0. assumption.
+       --- specialize (H (size n1 + size n2) (P e2) x n2).
+           pose proof le_plus_r.
+           specialize (H0 (size n1) (size n2)).
+           apply H in H0; clear H. rewrite H0. assumption.
+    -- inversion IHe1.
+Qed.
 
 Lemma pure_P_id: forall e, pure e -> P e = e.
 Proof.
@@ -161,7 +165,7 @@ Proof.
   - intros. inversion H.
 Qed.
 
-  Lemma pure_pix: forall e1 x e2, pure e1 -> refltrans (ctx pix) (n_sub e1 x e2) (m_subst e2 x e1).
+Lemma pure_pix: forall e1 x e2, pure e1 -> refltrans (ctx pix) (n_sub e1 x e2) (m_subst e2 x e1).
 Proof.
   induction e1.
   - intros. case (x == x0).
