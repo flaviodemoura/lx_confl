@@ -165,6 +165,32 @@ Proof.
   - intros. inversion H.
 Qed.
 
+(**)
+
+Lemma refltrans_aeq (R: Rel n_sexp): forall a b,
+    aeq a b -> refltrans R a b.
+Admitted.
+
+Lemma refltrans_abs (R: Rel n_sexp): forall e1 e2 x ,
+    refltrans R e1 e2 -> refltrans R (n_abs x e1) (n_abs x e2).
+Admitted.
+    
+Lemma refltrans_app1 (R: Rel n_sexp): forall e1 e2 e3 ,
+    refltrans R e1 e2 -> refltrans R (n_app e1 e3) (n_app e2 e3).
+Admitted.
+
+Lemma refltrans_app2 (R: Rel n_sexp): forall e1 e2 e3,
+    refltrans R e2 e3 -> refltrans R (n_abs e1 e2) (n_abs e1 e3).
+Admitted.
+
+Lemma refltrans_sub1 (R: Rel n_sexp): forall e1 e2 e3 x,
+    refltrans R e2 e3 -> refltrans R (n_sub e1 x e2) (n_sub e1 x e3).
+Admitted.
+
+Lemma refltrans_sub2 (R: Rel n_sexp): forall e1 e2 e3 x,
+    refltrans R e2 e3 -> refltrans R (n_sub e1 x e2) (n_sub e1 x e3).
+Admitted.
+
 Lemma pure_pix: forall e1 x e2, pure e1 -> refltrans (ctx pix) (n_sub e1 x e2) (m_subst e2 x e1).
 Proof.
   induction e1.
@@ -181,13 +207,24 @@ Proof.
            + apply refl.
   - intros. inversion H. subst. specialize (IHe1 x0 e2).
     apply IHe1 in H1. unfold m_subst in H1; unfold m_subst.
-    inversion H1.
-    -- subst. simpl. default_simp.
-       --- apply rtrans with (n_abs x e1).
-           + apply step_redex. apply step_abs1.
-           + apply refl.
-       --- admit.
-    -- admit.
+    case (x == x0).
+    -- intros; subst. apply rtrans with (n_abs x0 e1).
+       --- apply step_redex. apply step_abs1.
+       --- simpl. admit.
+    -- intros. apply rtrans with (n_abs x (n_sub e1 x0 e2)).
+       --- apply step_redex. apply step_abs2. assumption.
+       --- unfold m_subst in IHe1.
+           apply refltrans_composition with (n_abs x (subst_rec (size e1) e1 e2 x0)).
+           + apply refltrans_abs. assumption.
+           + simpl. case (x0 == x).
+             ++ admit.
+             ++ intros. destruct (atom_fresh
+         (Metatheory.union (fv_nom e2)
+            (Metatheory.union (remove x (fv_nom e1))
+               (singleton x0)))). admit.
+           
+                              
+    
   - intros. apply rtrans with (n_app e1_1 e1_2).
     -- apply step_redex. admit.
     -- admit.
