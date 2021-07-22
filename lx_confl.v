@@ -21,25 +21,32 @@ Fixpoint P (t : n_sexp) := match t with
 Lemma pi_P: forall t1 t2, ctx pix t1 t2 -> aeq (P t1) (P t2).
 Proof.
   intros t1 t2 H. induction H.
-  - inversion H.
-    -- subst. simpl. unfold m_subst. simpl. case (y == y).
+  - inversion H; subst.
+    -- simpl. unfold m_subst. simpl. case (y == y).
        --- intros. apply aeq_refl.
        --- contradiction.
-    -- subst. simpl. unfold m_subst. simpl. case (y == x).
+    -- simpl. unfold m_subst. simpl. case (y == x).
        --- intros. symmetry in e0. contradiction.
        --- intros. apply aeq_refl.
-    -- subst. simpl. unfold m_subst. simpl. case (y == y).
+    -- simpl. unfold m_subst. simpl. case (y == y).
        --- intros. apply aeq_refl.
        --- contradiction.
-    -- subst. simpl. unfold m_subst. simpl. case (y == x).
+    -- simpl. unfold m_subst. simpl. case (y == x).
        --- intros. symmetry in e. contradiction.
        --- intros. destruct (atom_fresh
            (Metatheory.union (fv_nom (P e3))
-                             (Metatheory.union (remove x (fv_nom (P e0))) (singleton y)))). apply notin_union_2 in n0.
-           apply notin_union_1 in n0. apply notin_remove_1 in n0.
+                             (Metatheory.union (remove x (fv_nom (P e0))) (singleton y)))).
+           apply notin_union_2 in n0.
+           apply notin_union_1 in n0.
+           apply notin_remove_1 in n0.
            inversion n0.
            + subst. rewrite swap_id. apply aeq_refl.
-           + Admitted.
+           + assert (x0 <> x).
+             { admit. }
+             apply aeq_abs_diff.
+             * assumption.
+             * admit.
+             * Admitted.
              
 
 

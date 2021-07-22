@@ -51,36 +51,8 @@ Inductive n_sexp : Set :=
 
 Inductive pure : n_sexp -> Prop :=
  | pure_var : forall x, pure (n_var x)
- | pure_app : forall e1 e2, pure e1 -> pure e2 -> pure (n_app e1 e2) | pure_abs : forall x e1, pure e1 -> pure (n_abs x e1).
-
-Inductive betax : n_sexp -> n_sexp -> Prop :=
- | step_betax : forall (e1 e2: n_sexp) (x: atom),
-     betax (n_app  (n_abs x e1) e2)  (n_sub e1 x e2).
-
-Inductive pix : n_sexp -> n_sexp -> Prop :=
- | step_var : forall (e: n_sexp) (y: atom),
-     pix (n_sub (n_var y) y e) e
- | step_gc : forall (e: n_sexp) (x y: atom),
-     x <> y -> pix (n_sub (n_var x) y e) (n_var x)
- | step_abs1 : forall (e1 e2: n_sexp) (y : atom),
-     pix (n_sub (n_abs y e1) y e2)  (n_abs y e1)
- | step_abs2 : forall (e1 e2: n_sexp) (x y: atom),
-     x <> y ->
-     pix (n_sub (n_abs x e1) y e2)  (n_abs x (n_sub e1 y e2))
- | step_app : forall (e1 e2 e3: n_sexp) (y: atom),
-     pix (n_sub (n_app e1 e2) y e3) (n_app (n_sub e1 y e3) (n_sub e2 y e3)).
-
-Inductive ctx  (R : n_sexp -> n_sexp -> Prop): n_sexp -> n_sexp -> Prop :=
- | step_redex: forall (e1 e2 : n_sexp), R e1 e2 -> ctx R e1 e2
- | step_abs_in: forall (e e': n_sexp) (x: atom), ctx R e e' -> ctx R (n_abs x e) (n_abs x e')
- | step_app_left: forall (e1 e1' e2: n_sexp) , ctx R e1 e1' -> ctx R (n_app e1 e2) (n_app e1' e2)
- | step_app_right: forall (e1 e2 e2': n_sexp) , ctx R e2 e2' -> ctx R (n_app e1 e2) (n_app e1 e2')
- | step_sub_left: forall (e1 e1' e2: n_sexp) (x : atom) , ctx R e1 e1' -> ctx R (n_sub e1 x e2) (n_sub e1' x e2)
- | step_sub_right: forall (e1 e2 e2': n_sexp) (x:atom), ctx R e2 e2' -> ctx R (n_sub e1 x e2) (n_sub e1 x e2').
-
-Inductive lx: n_sexp -> n_sexp -> Prop :=
-| b_ctx_rule : forall t u, (ctx betax) t u -> lx t u
-| x_ctx_rule : forall t u, (ctx pix) t u -> lx t u.
+ | pure_app : forall e1 e2, pure e1 -> pure e2 -> pure (n_app e1 e2) 
+ | pure_abs : forall x e1, pure e1 -> pure (n_abs x e1).
 
 (** For example, we can encode the expression [(\X.Y X)] as below.  *)
 
@@ -233,6 +205,38 @@ Lemma aeq_refl : forall n, aeq n n.
 Proof.
   induction n; auto.
 Qed.
+
+Inductive betax : n_sexp -> n_sexp -> Prop :=
+ | step_betax : forall (e1 e2: n_sexp) (x: atom),
+     betax (n_app  (n_abs x e1) e2)  (n_sub e1 x e2).
+
+Inductive pix : n_sexp -> n_sexp -> Prop :=
+| step_var : forall (e: n_sexp) (y: atom),
+    pix (n_sub (n_var y) y e) e
+| step_gc : forall (e: n_sexp) (x y: atom),
+    x <> y -> pix (n_sub (n_var x) y e) (n_var x)
+| step_abs1 : forall (e1 e2: n_sexp) (y : atom),
+    pix (n_sub (n_abs y e1) y e2)  (n_abs y e1)
+| step_abs2 : forall (e1 e2: n_sexp) (x y: atom),
+    x <> y ->
+    pix (n_sub (n_abs x e1) y e2)  (n_abs x (n_sub e1 y e2))
+| step_app : forall (e1 e2 e3: n_sexp) (y: atom),
+    pix (n_sub (n_app e1 e2) y e3) (n_app (n_sub e1 y e3) (n_sub e2 y e3)).
+
+Inductive betapi: n_sexp -> n_sexp -> Prop :=
+| aeq_rule: forall t u, aeq t u -> betapi t u
+| b_rule : forall t u, betax t u -> betapi t u
+| x_rule : forall t u, pix t u -> betapi t u.
+
+Inductive ctx  (R : n_sexp -> n_sexp -> Prop): n_sexp -> n_sexp -> Prop :=
+ | step_redex: forall (e1 e2 : n_sexp), R e1 e2 -> ctx R e1 e2
+ | step_abs_in: forall (e e': n_sexp) (x: atom), ctx R e e' -> ctx R (n_abs x e) (n_abs x e')
+ | step_app_left: forall (e1 e1' e2: n_sexp) , ctx R e1 e1' -> ctx R (n_app e1 e2) (n_app e1' e2)
+ | step_app_right: forall (e1 e2 e2': n_sexp) , ctx R e2 e2' -> ctx R (n_app e1 e2) (n_app e1 e2')
+ | step_sub_left: forall (e1 e1' e2: n_sexp) (x : atom) , ctx R e1 e1' -> ctx R (n_sub e1 x e2) (n_sub e1' x e2)
+ | step_sub_right: forall (e1 e2 e2': n_sexp) (x:atom), ctx R e2 e2' -> ctx R (n_sub e1 x e2) (n_sub e1 x e2').
+
+Definition lx t u := ctx betapi t u.
 
 (*************************************************************)
 (** ** Properties about swapping                             *)
