@@ -36,17 +36,21 @@ Proof.
        --- intros. destruct (atom_fresh
            (Metatheory.union (fv_nom (P e3))
                              (Metatheory.union (remove x (fv_nom (P e0))) (singleton y)))).
+           pose proof n0.
            apply notin_union_2 in n0.
            apply notin_union_1 in n0.
            apply notin_remove_1 in n0.
            inversion n0.
            + subst. rewrite swap_id. apply aeq_refl.
-           + assert (x0 <> x).
-             { admit. }
-             apply aeq_abs_diff.
-             * assumption.
-             * admit.
-             * Admitted.
+           + case (x0 == x).
+             ++ intros; subst. rewrite swap_id. apply aeq_refl.
+             ++ intros. apply aeq_abs_diff.
+                +++ assumption.
+                +++ rewrite fv_nom_abs_subst_aux.
+                    apply notin_union_3.
+                    * apply notin_remove_2; assumption.
+                    * apply notin_union_1 in H1; assumption.
+                +++ Admitted.
              
 
 
@@ -217,14 +221,16 @@ Proof.
     case (x == x0).
     -- intros; subst. apply rtrans with (n_abs x0 e1).
        --- apply step_redex. apply step_abs1.
-       --- simpl. admit.
+       --- simpl. case (x0 == x0).
+           + intros. apply refl.
+           + intros; contradiction.
     -- intros. apply rtrans with (n_abs x (n_sub e1 x0 e2)).
        --- apply step_redex. apply step_abs2. assumption.
        --- unfold m_subst in IHe1.
            apply refltrans_composition with (n_abs x (subst_rec (size e1) e1 e2 x0)).
            + apply refltrans_abs. assumption.
            + simpl. case (x0 == x).
-             ++ admit.
+             ++ intros; subst. contradiction.
              ++ intros. destruct (atom_fresh
          (Metatheory.union (fv_nom e2)
             (Metatheory.union (remove x (fv_nom e1))
@@ -245,11 +251,15 @@ Proof.
   split.
   - intros x y. split.
     + intros. inversion H.
-      ++ subst. apply union_right. assumption.
-      ++ subst. apply union_left. assumption.
+      ++ subst. apply union_right. apply step_redex. admit.
+      ++ subst. apply union_left. admit.
+      ++ subst. admit.
+      ++ subst. admit.
+      ++ subst. admit.
+      ++ subst. admit.
     + intros. apply union_or in H. inversion H.
-      ++ apply x_ctx_rule. assumption.
-      ++ apply b_ctx_rule. assumption.        
+      ++ admit.
+      ++ admit.        
   - split.
     + intros. induction H.
       ++ inversion H.

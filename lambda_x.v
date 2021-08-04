@@ -206,6 +206,8 @@ Proof.
   induction n; auto.
 Qed.
 
+(*Lemma aeq_swap : forall t1 x1 x2, x1 <> x2 -> x2 `notin` (fv_nom t1) -> aeq (swap x1 x2 t1) t1. *)
+
 Inductive betax : n_sexp -> n_sexp -> Prop :=
  | step_betax : forall (e1 e2: n_sexp) (x: atom),
      betax (n_app  (n_abs x e1) e2)  (n_sub e1 x e2).
@@ -1127,14 +1129,32 @@ Proof.
   - intros. inversion H1.
 Qed.
 
+
+Lemma remove_singleton: forall t,
+    AtomSetImpl.Empty (remove t (singleton t)).
+Proof.
+  Admitted.
+
 Lemma fv_nom_abs_subst_aux: forall t u y,
-    fv_nom (subst_rec (size t) t u y) = (remove y (fv_nom t)) `union` (fv_nom u).
+    fv_nom (subst_rec (size t) t u y) [=] (remove y (fv_nom t)) `union` (fv_nom u).
 Proof.
   induction t.
+  - simpl subst_rec. intros. case (x == y).
+    -- intros; subst. case (y == y).
+       --- intros. simpl. (*Search "union".*)
+           pose proof AtomSetProperties.empty_union_1.
+           specialize (H (remove y (singleton y)) (fv_nom u)).
+           pose proof remove_singleton. specialize (H0 y).
+           apply H in H0. symmetry in H0. assumption.
+       --- intros; contradiction.
+    -- intros; case (y == x).
+       --- intros.  symmetry in e; contradiction.
+       --- intros. admit.
   - intros. simpl. case (y == x).
-    -- intros. subst. admit.
-    -- intros. admit.
-  - intros. Admitted.
+    -- intros; subst. admit.
+    -- admit.
+  - admit.
+  - Admitted.
            
            
 
