@@ -21,10 +21,10 @@ Require Export Metalib.Metatheory.
 
 (** Although we are not using LNgen, some of the tactics from
     its library are useful for automating reasoning about
-    names (i.e. atoms).  *)
+    names (i.e. atoms). *)
 Require Export Metalib.LibLNgen.
-Require Import Nominal.
 
+(* Require Import Nominal. *)
 
 (** Some fresh atoms *)
 Notation X := (fresh nil).
@@ -206,6 +206,14 @@ Proof.
   induction n; auto.
 Qed.
 
+Lemma aeq_sym: forall t1 t2, aeq t1 t2 -> aeq t2 t1.
+Proof.
+ Admitted.
+  
+Lemma aeq_trans: forall t1 t2 t3, aeq t1 t2 -> aeq t2 t3 -> aeq t1 t3.
+Proof.
+Admitted.
+
 (*Lemma aeq_swap : forall t1 x1 x2, x1 <> x2 -> x2 `notin` (fv_nom t1) -> aeq (swap x1 x2 t1) t1. *)
 
 Inductive betax : n_sexp -> n_sexp -> Prop :=
@@ -226,12 +234,11 @@ Inductive pix : n_sexp -> n_sexp -> Prop :=
     pix (n_sub (n_app e1 e2) y e3) (n_app (n_sub e1 y e3) (n_sub e2 y e3)).
 
 Inductive betapi: n_sexp -> n_sexp -> Prop :=
-| aeq_rule: forall t u, aeq t u -> betapi t u
 | b_rule : forall t u, betax t u -> betapi t u
 | x_rule : forall t u, pix t u -> betapi t u.
 
 Inductive ctx  (R : n_sexp -> n_sexp -> Prop): n_sexp -> n_sexp -> Prop :=
- | step_redex: forall (e1 e2 : n_sexp), R e1 e2 -> ctx R e1 e2
+ | step_redex: forall (e1 e2 e3 e4: n_sexp), aeq e1 e2 -> R e2 e3 -> aeq e3 e4 -> ctx R e1 e4
  | step_abs_in: forall (e e': n_sexp) (x: atom), ctx R e e' -> ctx R (n_abs x e) (n_abs x e')
  | step_app_left: forall (e1 e1' e2: n_sexp) , ctx R e1 e1' -> ctx R (n_app e1 e2) (n_app e1' e2)
  | step_app_right: forall (e1 e2 e2': n_sexp) , ctx R e2 e2' -> ctx R (n_app e1 e2) (n_app e1 e2')
@@ -240,6 +247,26 @@ Inductive ctx  (R : n_sexp -> n_sexp -> Prop): n_sexp -> n_sexp -> Prop :=
 
 Definition lx t u := ctx betapi t u.
 
+(* Reflexive transitive closure modulo alpha equivalence 
+
+Inductive refltrans (R: n_sexp -> n_sexp -> Prop) : n_sexp -> n_sexp -> Prop :=
+| refl: forall a b, aeq a b -> (refltrans R) a b
+| step: forall a b c, aeq a b -> R b c -> refltrans R a c
+| rtrans: forall a b c, refltrans R a b -> refltrans R b c -> refltrans R a c.
+
+Lemma red_rel: forall a b c d, aeq a b -> pix b c -> aeq c d -> refltrans pix a d.
+Proof.
+  intros a b c d H1 H2 H3.
+  apply rtrans with c.
+  + apply step with b; assumption.
+  + apply refl.
+    assumption.
+Qed. 
+
+Não resolve porque precisamos da alpha-equiv em um passo de redução
+
+*)
+  
 (*************************************************************)
 (** ** Properties about swapping                             *)
 (*************************************************************)

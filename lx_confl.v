@@ -18,11 +18,47 @@ Fixpoint P (t : n_sexp) := match t with
                            | n_sub t1 x t2 => m_subst (P t2) x (P t1)
                            end.
 
+Lemma aeq_P: forall t1 t2, aeq t1 t2 -> aeq (P t1) (P t2).
+Proof.
+  intros t1 t2 H.
+  induction H.
+  - simpl.
+    apply aeq_refl.    
+Admitted.
+
+Lemma aeq_nvar: forall t x, aeq t (n_var x) -> t = n_var x.
+Proof.
+  induction t.
+  - intros x' H.
+    inversion H; subst.
+    reflexivity.
+  - intros x' H.
+    inversion H.
+  - intros x H.
+    inversion H.
+  - intros x' H.
+    inversion H.
+Qed.
+
 Lemma pi_P: forall t1 t2, ctx pix t1 t2 -> aeq (P t1) (P t2).
 Proof.
-  intros t1 t2 H. induction H.
-  - inversion H; subst.
-    -- simpl. unfold m_subst. simpl. case (y == y).
+  intros t1 t2 H.
+  induction H.
+  - inversion H0; subst.
+    -- inversion H; subst.
+       --- apply aeq_nvar in H5; subst.
+           simpl.
+           unfold m_subst.
+           simpl.
+           destruct (y == y).
+           ---- apply aeq_P.
+                apply aeq_trans with e3; assumption.
+           ---- contradiction.
+       --- Admitted.
+
+(*         apply aeq_P.
+       apply
+      simpl. unfold m_subst. simpl. case (y == y).
        --- intros. apply aeq_refl.
        --- contradiction.
     -- simpl. unfold m_subst. simpl. case (y == x).
@@ -52,14 +88,6 @@ Proof.
                     * apply notin_union_1 in H1; assumption.
                 +++ Admitted.
              
-
-
-
-(*
-
-
-
-
                         
     -- subst. simpl. unfold m_subst. simpl.
        assert (subst_rec (size (P e0) + size (P e3)) (P e0) (P e4) y = subst_rec (size (P e0)) (P e0) (P e4) y). {
