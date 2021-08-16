@@ -44,17 +44,31 @@ Lemma pi_P: forall t1 t2, ctx pix t1 t2 -> aeq (P t1) (P t2).
 Proof.
   intros t1 t2 H.
   induction H.
-  - inversion H0; subst.
+  - induction H0.
     -- inversion H; subst.
-       --- apply aeq_nvar in H5; subst.
+       --- apply aeq_nvar in H4; subst.
            simpl.
            unfold m_subst.
            simpl.
            destruct (y == y).
            ---- apply aeq_P.
-                apply aeq_trans with e3; assumption.
+                apply aeq_trans with e; assumption.
            ---- contradiction.
-       --- Admitted.
+       --- replace (swap y x (n_var y)) with (n_var x) in H8.
+           ---- apply aeq_nvar in H8; subst.
+                simpl.
+                unfold m_subst.
+                simpl.
+                destruct (x == x).
+                ----- apply aeq_P.
+                      apply aeq_trans with e; assumption.
+                ----- contradiction.
+           ---- simpl.
+                unfold swap_var.
+                destruct (y == y).
+                ----- reflexivity.
+                ----- contradiction.
+    -- Admitted.
 
 (*         apply aeq_P.
        apply
