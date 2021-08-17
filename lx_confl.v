@@ -23,15 +23,39 @@ Proof.
   intros t1 t2 H.
   induction H.
   - simpl.
-    apply aeq_refl.    
+    apply aeq_refl.
+  - simpl; apply aeq_abs_same. assumption.
+  - simpl. apply aeq_abs_diff.
+    -- assumption.
+    -- admit.
+    -- admit.
+  - simpl. apply aeq_app.
+    -- assumption.
+    -- assumption.
+  - admit.
+  - admit.
 Admitted.
 
-Lemma aeq_nvar: forall t x, aeq t (n_var x) -> t = n_var x.
+Lemma aeq_nvar_1: forall t x, aeq t (n_var x) -> t = n_var x.
 Proof.
   induction t.
   - intros x' H.
     inversion H; subst.
     reflexivity.
+  - intros x' H.
+    inversion H.
+  - intros x H.
+    inversion H.
+  - intros x' H.
+    inversion H.
+Qed.
+
+Lemma aeq_nvar_2: forall t x, t = n_var x -> aeq t (n_var x).
+Proof.
+  induction t.
+  - intros x' H.
+    inversion H; subst.
+    apply aeq_refl.
   - intros x' H.
     inversion H.
   - intros x H.
@@ -46,7 +70,7 @@ Proof.
   induction H.
   - induction H0.
     -- inversion H; subst.
-       --- apply aeq_nvar in H4; subst.
+       --- apply aeq_nvar_1 in H4; subst.
            simpl.
            unfold m_subst.
            simpl.
@@ -55,7 +79,7 @@ Proof.
                 apply aeq_trans with e; assumption.
            ---- contradiction.
        --- replace (swap y x (n_var y)) with (n_var x) in H8.
-           ---- apply aeq_nvar in H8; subst.
+           ---- apply aeq_nvar_1 in H8; subst.
                 simpl.
                 unfold m_subst.
                 simpl.
@@ -68,7 +92,59 @@ Proof.
                 destruct (y == y).
                 ----- reflexivity.
                 ----- contradiction.
-    -- Admitted.
+    -- apply aeq_P in H. simpl in H. unfold m_subst in H.
+       simpl in H. case (y == x) in H.
+       --- symmetry in e0; contradiction.
+       --- apply aeq_trans with (n_var x).
+           ---- assumption.
+           ---- apply aeq_P in H1. simpl in H1. assumption.
+    -- apply aeq_P in H. simpl in H. unfold m_subst in H.
+       simpl in H. case (y == y) in H.
+       --- apply aeq_P in H1. simpl in H1. pose proof aeq_trans.
+           specialize (H0 (P e1) (n_abs y (P e0)) (P e4)).
+           apply H0 in H.
+           ---- assumption.
+           ---- apply H0 in H.
+                ----- assumption.
+                ----- apply H1.
+       --- contradiction.
+    -- apply aeq_P in H. simpl in H. unfold m_subst in H.
+       simpl in H. case (y == x) in H.
+       --- symmetry in e; contradiction.
+       --- destruct (atom_fresh
+             (Metatheory.union (fv_nom (P e2))
+                (Metatheory.union (remove x (fv_nom (P e0)))
+                                  (singleton y)))).
+           apply aeq_trans with (n_abs x0
+                                       (subst_rec (size (P e0)) (swap x x0 (P e0)) (P e2) y)).
+           ---- assumption.
+           ---- apply aeq_P in H1. simpl in H1.
+                unfold m_subst in H1. simpl in H1. admit.
+    -- apply aeq_P in H. simpl in H. unfold m_subst in H.
+       simpl in H.
+       apply aeq_P in H1. simpl in H1. unfold m_subst in H1.
+       simpl in H1. pose proof subst_size; pose proof H0.
+       specialize (H0 (size (P e0) + size (P e2)) (P e3) y (P e0)).
+       specialize (H2 (size (P e0) + size (P e2)) (P e3) y (P e2)).
+       pose proof le_plus_l. pose proof le_plus_r.
+       specialize (H3 (size (P e0)) (size (P e2))).
+       specialize (H4 (size (P e0)) (size (P e2))).
+       apply H0 in H3; clear H0. apply H2 in H4; clear H2.
+       rewrite H3 in H; clear H3. rewrite H4 in H; clear H4.
+       apply aeq_trans with (n_app (subst_rec (size (P e0)) (P e0) (P e3) y)
+                                   (subst_rec (size (P e2)) (P e2) (P e3) y)).
+       --- assumption.
+       --- assumption.
+  - simpl. apply aeq_abs_same. assumption.
+  - simpl. apply aeq_app.
+    -- assumption.
+    -- apply aeq_refl.
+  - simpl. apply aeq_app.
+    -- apply aeq_refl.
+    -- assumption.
+  - admit.
+  - admit.
+    
 
 (*         apply aeq_P.
        apply
@@ -249,12 +325,12 @@ Proof.
   induction e1.
   - intros. case (x == x0).
     -- intros; subst. apply rtrans with e2.
-       --- apply step_redex. apply step_var.
+       --- admit. (*apply step_redex. apply step_var.*)
        --- unfold m_subst. simpl. destruct (x0 == x0).
            + apply refl.
            + contradiction.
     -- intros. apply rtrans with (n_var x).
-       --- apply step_redex. apply step_gc. assumption.
+       --- admit. (*apply step_redex. apply step_gc. assumption.*)
        --- unfold m_subst. simpl. destruct (x0 == x).
            + symmetry in e. contradiction.
            + apply refl.
@@ -262,12 +338,12 @@ Proof.
     apply IHe1 in H1. unfold m_subst in H1; unfold m_subst.
     case (x == x0).
     -- intros; subst. apply rtrans with (n_abs x0 e1).
-       --- apply step_redex. apply step_abs1.
+       --- admit. (*apply step_redex. apply step_abs1.*)
        --- simpl. case (x0 == x0).
            + intros. apply refl.
            + intros; contradiction.
     -- intros. apply rtrans with (n_abs x (n_sub e1 x0 e2)).
-       --- apply step_redex. apply step_abs2. assumption.
+       --- admit. (*apply step_redex. apply step_abs2. assumption.*)
        --- unfold m_subst in IHe1.
            apply refltrans_composition with (n_abs x (subst_rec (size e1) e1 e2 x0)).
            + apply refltrans_abs. assumption.
@@ -281,7 +357,7 @@ Proof.
                               
     
   - intros. apply rtrans with (n_app e1_1 e1_2).
-    -- apply step_redex. admit.
+    -- admit.
     -- admit.
   - intros. inversion H.
 Admitted.
@@ -293,7 +369,7 @@ Proof.
   split.
   - intros x y. split.
     + intros. inversion H.
-      ++ subst. apply union_right. apply step_redex. admit.
+      ++ subst. apply union_right. admit.
       ++ subst. apply union_left. admit.
       ++ subst. admit.
       ++ subst. admit.
@@ -309,26 +385,8 @@ Proof.
          +++ simpl. unfold m_subst. simpl. default_simp.
          +++ simpl. unfold m_subst. simpl. default_simp.
          +++ simpl. unfold m_subst. simpl. default_simp.
-         ++++ inversion H.
-         +++++ subst. apply notin_union_2 in n.
-               apply notin_union_1 in n.
-               apply notin_remove_1 in n. inversion n.
-         ++++++ contradiction.
-         ++++++ contradiction.
-         +++++ subst. apply notin_union_2 in n.
-               apply notin_union_1 in n.
-               apply notin_remove_1 in n. inversion n.
-         ++++++ symmetry in H1; assumption.
-         ++++++ admit.
-         ++++ case (x == x0).
-         +++++ intros. subst. rewrite swap_id. reflexivity.
-         +++++ intros. apply notin_union_2 in n.
-               apply notin_union_1 in n.
-               apply notin_remove_1 in n. inversion n.
-         ++++++ contradiction.
-         ++++++ admit.
-
-         +++ admit.
+         +++ simpl. unfold m_subst. simpl. default_simp. admit.
+         +++ simpl. unfold m_subst. simpl. default_simp. admit.
       ++ admit.
       ++ admit.
       ++ admit.
