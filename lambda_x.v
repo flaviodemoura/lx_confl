@@ -206,14 +206,44 @@ Proof.
   induction n; auto.
 Qed.
 
-Lemma aeq_sym: forall t1 t2, aeq t1 t2 -> aeq t2 t1.
+Lemma aux_not_equal : forall (x:atom) (y:atom),
+    x <> y -> y <> x.
 Proof.
- Admitted.
-  
+  intros. unfold not. intros. unfold not in H.
+  assert (x = y). {
+    rewrite H0. reflexivity.
+  }
+  contradiction.
+Qed.
+
 Lemma aeq_trans: forall t1 t2 t3, aeq t1 t2 -> aeq t2 t3 -> aeq t1 t3.
 Proof.
+         
 Admitted.
 
+Lemma aeq_sym: forall t1 t2, aeq t1 t2 -> aeq t2 t1.
+Proof.
+  intros. induction H.
+  - apply aeq_refl.
+  - apply aeq_abs_same. assumption.
+  - apply aeq_abs_diff.
+    -- apply aux_not_equal. assumption.
+    -- admit.
+    -- admit.
+  - apply aeq_app.
+    -- assumption.
+    -- assumption.
+  - apply aeq_sub_same.
+    -- assumption.
+    -- assumption.
+  - apply aeq_sub_diff.
+    -- assumption.
+    -- apply aux_not_equal. assumption.
+    -- admit.
+    -- admit.
+Admitted.
+
+      
 (*Lemma aeq_swap : forall t1 x1 x2, x1 <> x2 -> x2 `notin` (fv_nom t1) -> aeq (swap x1 x2 t1) t1. *)
 
 Inductive betax : n_sexp -> n_sexp -> Prop :=
@@ -390,16 +420,6 @@ Proof.
   - intros. simpl. rewrite IHt1. rewrite IHt2. reflexivity.
   - intros. simpl. rewrite IHt1. rewrite IHt2. unfold swap_var.
     default_simp.    
-Qed.
-
-Lemma aux_not_equal : forall (x:atom) (y:atom),
-    x <> y -> y <> x.
-Proof.
-  intros. unfold not. intros. unfold not in H.
-  assert (x = y). {
-    rewrite H0. reflexivity.
-  }
-  contradiction.
 Qed.
 
 Lemma notin_fv_nom_equivariance : forall x0 x y t ,
