@@ -295,7 +295,18 @@ Qed.
 
 Não resolve porque precisamos da alpha-equiv em um passo de redução
 
-*)
+ *)
+
+Lemma step_redex_R : forall (R : n_sexp -> n_sexp -> Prop) e1 e2,
+    R e1 e2 -> ctx R e1 e2.
+Proof.
+  intros. pose proof step_redex. specialize (H0 R e1 e1 e2 e2).
+  apply H0.
+  - apply aeq_refl.
+  - assumption.
+  - apply aeq_refl.
+Qed.
+  
   
 (*************************************************************)
 (** ** Properties about swapping                             *)

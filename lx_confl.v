@@ -144,97 +144,7 @@ Proof.
     -- assumption.
   - admit.
   - admit.
-    
-
-(*         apply aeq_P.
-       apply
-      simpl. unfold m_subst. simpl. case (y == y).
-       --- intros. apply aeq_refl.
-       --- contradiction.
-    -- simpl. unfold m_subst. simpl. case (y == x).
-       --- intros. symmetry in e0. contradiction.
-       --- intros. apply aeq_refl.
-    -- simpl. unfold m_subst. simpl. case (y == y).
-       --- intros. apply aeq_refl.
-       --- contradiction.
-    -- simpl. unfold m_subst. simpl. case (y == x).
-       --- intros. symmetry in e. contradiction.
-       --- intros. destruct (atom_fresh
-           (Metatheory.union (fv_nom (P e3))
-                             (Metatheory.union (remove x (fv_nom (P e0))) (singleton y)))).
-           pose proof n0.
-           apply notin_union_2 in n0.
-           apply notin_union_1 in n0.
-           apply notin_remove_1 in n0.
-           inversion n0.
-           + subst. rewrite swap_id. apply aeq_refl.
-           + case (x0 == x).
-             ++ intros; subst. rewrite swap_id. apply aeq_refl.
-             ++ intros. apply aeq_abs_diff.
-                +++ assumption.
-                +++ rewrite fv_nom_abs_subst_aux.
-                    apply notin_union_3.
-                    * apply notin_remove_2; assumption.
-                    * apply notin_union_1 in H1; assumption.
-                +++ Admitted.
-             
-                        
-    -- subst. simpl. unfold m_subst. simpl.
-       assert (subst_rec (size (P e0) + size (P e3)) (P e0) (P e4) y = subst_rec (size (P e0)) (P e0) (P e4) y). {
-         apply subst_size. apply le_plus_l.       
-       }
-       assert ((subst_rec (size (P e0) + size (P e3)) (P e3) (P e4) y = subst_rec (size (P e3)) (P e3) (P e4) y)). {
-         apply subst_size. apply le_plus_r.
-       }
-       rewrite H0; rewrite H1. apply aeq_refl.
-  - inversion H.
-    -- subst. simpl. simpl in IHstep. apply aeq_abs_same. apply IHstep.
-    -- subst. simpl. simpl in IHstep. apply aeq_abs_same. apply IHstep.
-    -- subst. simpl. simpl in IHstep. apply aeq_abs_same. apply IHstep.
-    -- subst. simpl. simpl in IHstep. apply aeq_abs_same. apply IHstep.
-    -- subst. simpl. simpl in IHstep. apply aeq_abs_same. apply IHstep.
-    -- subst. simpl. simpl in IHstep. apply aeq_abs_same. apply IHstep.
-  - inversion H.
-    -- subst. simpl. simpl in IHstep. apply aeq_app.
-       --- apply IHstep.
-       --- apply aeq_refl.
-    -- subst. simpl. simpl in IHstep. apply aeq_app.
-       --- apply IHstep.
-       --- apply aeq_refl.
-    -- subst. simpl. simpl in IHstep. apply aeq_app.
-       --- apply IHstep.
-       --- apply aeq_refl.
-    -- subst. simpl. simpl in IHstep. apply aeq_app.
-       --- apply IHstep.
-       --- apply aeq_refl.
-    -- subst. simpl. simpl in IHstep. apply aeq_app.
-       --- apply IHstep.
-       --- apply aeq_refl.
-    -- subst. simpl. simpl in IHstep. apply aeq_app.
-       --- apply IHstep.
-       --- apply aeq_refl.
-  - inversion H.
-    -- subst. simpl. simpl in IHstep. apply aeq_app.
-       --- apply aeq_refl.
-       --- apply IHstep.
-    -- subst. simpl. simpl in IHstep. apply aeq_app.
-       --- apply aeq_refl.
-       --- apply IHstep.
-    -- subst. simpl. simpl in IHstep. apply aeq_app.
-       --- apply aeq_refl.
-       --- apply IHstep.
-    -- subst. simpl. simpl in IHstep. apply aeq_app.
-       --- apply aeq_refl.
-       --- apply IHstep.
-    -- subst. simpl. simpl in IHstep. apply aeq_app.
-       --- apply aeq_refl.
-       --- apply IHstep.
-    -- subst. simpl. simpl in IHstep. apply aeq_app.
-       --- apply aeq_refl.
-       --- apply IHstep.
-  - admit.
-  - admit.
-Admitted.*)
+Admitted.
 
 Lemma pure_P: forall e, pure (P e).
 Proof.
@@ -309,7 +219,11 @@ Lemma refltrans_app1 (R: Rel n_sexp): forall e1 e2 e3 ,
 Admitted.
 
 Lemma refltrans_app2 (R: Rel n_sexp): forall e1 e2 e3,
-    refltrans R e2 e3 -> refltrans R (n_abs e1 e2) (n_abs e1 e3).
+    refltrans R e2 e3 -> refltrans R (n_app e1 e2) (n_app e1 e3).
+Admitted.
+
+Lemma refltrans_app3 (R: Rel n_sexp): forall e1 e2 e3 e4,
+    refltrans R e1 e2 -> refltrans R e3 e4 -> refltrans R (n_app e1 e3) (n_app e2 e4).
 Admitted.
 
 Lemma refltrans_sub1 (R: Rel n_sexp): forall e1 e2 e3 x,
@@ -325,12 +239,12 @@ Proof.
   induction e1.
   - intros. case (x == x0).
     -- intros; subst. apply rtrans with e2.
-       --- admit. (*apply step_redex. apply step_var.*)
+       --- apply step_redex_R. apply step_var.
        --- unfold m_subst. simpl. destruct (x0 == x0).
            + apply refl.
            + contradiction.
     -- intros. apply rtrans with (n_var x).
-       --- admit. (*apply step_redex. apply step_gc. assumption.*)
+       --- apply step_redex_R. apply step_gc. assumption.
        --- unfold m_subst. simpl. destruct (x0 == x).
            + symmetry in e. contradiction.
            + apply refl.
@@ -338,12 +252,12 @@ Proof.
     apply IHe1 in H1. unfold m_subst in H1; unfold m_subst.
     case (x == x0).
     -- intros; subst. apply rtrans with (n_abs x0 e1).
-       --- admit. (*apply step_redex. apply step_abs1.*)
+       --- apply step_redex_R. apply step_abs1.
        --- simpl. case (x0 == x0).
            + intros. apply refl.
            + intros; contradiction.
     -- intros. apply rtrans with (n_abs x (n_sub e1 x0 e2)).
-       --- admit. (*apply step_redex. apply step_abs2. assumption.*)
+       --- apply step_redex_R. apply step_abs2. assumption.
        --- unfold m_subst in IHe1.
            apply refltrans_composition with (n_abs x (subst_rec (size e1) e1 e2 x0)).
            + apply refltrans_abs. assumption.
@@ -353,12 +267,31 @@ Proof.
          (Metatheory.union (fv_nom e2)
             (Metatheory.union (remove x (fv_nom e1))
                (singleton x0)))). admit.
-           
-                              
-    
-  - intros. apply rtrans with (n_app e1_1 e1_2).
-    -- admit.
-    -- admit.
+  - intros.
+    apply refltrans_composition with (n_app (m_subst e2 x e1_1) (m_subst e2 x e1_2)).
+    -- apply rtrans with (n_app (n_sub e1_1 x e2) (n_sub e1_2 x e2)).
+       --- apply step_redex_R. apply step_app.
+       --- inversion H; subst.
+           specialize (IHe1_1 x e2).
+           specialize (IHe1_2 x e2).
+           apply IHe1_1 in H2; clear IHe1_1.
+           apply IHe1_2 in H3; clear IHe1_2. apply refltrans_app3.
+           + assumption.
+           + assumption.
+    -- apply refltrans_composition with (m_subst e2 x (n_app e1_1 e1_2)).
+       --- unfold m_subst. simpl. pose proof subst_size.
+           pose proof H0.
+           specialize (H0 (size e1_1 + size e1_2) e2 x e1_1).
+           specialize (H1 (size e1_1 + size e1_2) e2 x e1_2).
+           assert (size e1_1 <= size e1_1 + size e1_2). {
+             apply le_plus_l.
+           }
+           assert (size e1_2 <= size e1_1 + size e1_2). {
+             apply le_plus_r.
+           }
+           apply H0 in H2; clear H0. apply H1 in H3; clear H1.
+           rewrite H2; rewrite H3. apply refl.         
+       --- apply refl.
   - intros. inversion H.
 Admitted.
 
