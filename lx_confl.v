@@ -213,18 +213,53 @@ Admitted.
 Lemma refltrans_abs (R: Rel n_sexp): forall e1 e2 x ,
     refltrans R e1 e2 -> refltrans R (n_abs x e1) (n_abs x e2).
 Admitted.
+
+Lemma refltrans_composition3 (R: Rel n_sexp): forall t u v,
+    refltrans R t u -> refltrans R v t -> refltrans R v u.
+Proof.
+  intros. induction H0.
+  - assumption.
+  - apply rtrans with b.
+    -- assumption.
+    -- apply IHrefltrans. assumption.
+Qed.
     
 Lemma refltrans_app1 (R: Rel n_sexp): forall e1 e2 e3 ,
     refltrans R e1 e2 -> refltrans R (n_app e1 e3) (n_app e2 e3).
+Proof.
+  intros e1 e2 e3. intro H. induction H.
+  - apply refl.
+  - apply refltrans_composition with (n_app b e3).
+    -- admit.
+    -- assumption.
 Admitted.
-
+       
 Lemma refltrans_app2 (R: Rel n_sexp): forall e1 e2 e3,
     refltrans R e2 e3 -> refltrans R (n_app e1 e2) (n_app e1 e3).
+Proof.
+  intros e1 e2 e3. intro H. induction H.
+  - apply refl.
+  - apply refltrans_composition with (n_app e1 b).
+    -- admit.
+    -- assumption.
 Admitted.
 
-Lemma refltrans_app3 (R: Rel n_sexp): forall e1 e2 e3 e4,
-    refltrans R e1 e2 -> refltrans R e3 e4 -> refltrans R (n_app e1 e3) (n_app e2 e4).
-Admitted.
+Lemma refltrans_app3: forall e1 e2 e3 e4,
+    refltrans (ctx pix) e1 e2 -> refltrans (ctx pix) e3 e4 -> refltrans (ctx pix) (n_app e1 e3) (n_app e2 e4).
+Proof.
+  intros. induction H0.
+  - induction H.
+    -- apply refl.
+    -- apply refltrans_app1.
+       apply rtrans with b.
+       --- assumption.
+       --- assumption.
+  - apply refltrans_composition with (n_app e1 b).
+    -- apply refltrans_app2. apply rtrans with (ctx pix) a b b in H0.
+       --- assumption.
+       --- apply refl.
+    -- assumption.
+Qed.
 
 Lemma refltrans_sub1 (R: Rel n_sexp): forall e1 e2 e3 x,
     refltrans R e2 e3 -> refltrans R (n_sub e1 x e2) (n_sub e1 x e3).
