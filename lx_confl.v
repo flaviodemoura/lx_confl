@@ -64,20 +64,36 @@ Proof.
     inversion H.
 Qed.
 
+(**)
+
 Lemma pi_P: forall t1 t2, refltrans (ctx pix) t1 t2 -> aeq (P t1) (P t2).
 Proof.
-  intros t1 t2 H.
-  induction H.
+  intros t1 t2 H. induction H.
   - apply aeq_refl.
-  - induction H.
-    -- inversion H1; subst.
-       --- Admitted.
-
-
-
-
-
-    
+  - apply aeq_trans with (P b).
+    -- induction H.
+       --- inversion H1; subst.
+           + apply aeq_P in H. simpl in H.
+             apply aeq_P in H2.
+             assert (aeq (m_subst (P e3) y (n_var y)) (P e3)). {
+               admit.
+             }
+             admit.
+           + admit.
+           + apply aeq_P in H. simpl in H.
+             assert (aeq (m_subst (P e5) y (n_abs y (P e0))) (n_abs y (P e0))). {
+             admit.  
+             }
+             admit.
+           + admit.
+           + admit.
+       --- admit.
+       --- admit.
+       --- admit.
+       --- admit.
+       --- admit.
+    -- assumption.
+Admitted.      
   (*- induction H0.
     -- inversion H; subst.
        --- apply aeq_nvar_1 in H4; subst.
@@ -295,7 +311,7 @@ Proof.
        --- unfold m_subst. simpl. destruct (x0 == x).
            + symmetry in e. contradiction.
            + apply refl.
-  - intros. inversion H. subst. specialize (IHe1 x0 e2).
+  - intros. inversion H; subst. specialize (IHe1 x0 e2).
     apply IHe1 in H1. unfold m_subst in H1; unfold m_subst.
     case (x == x0).
     -- intros; subst. apply rtrans with (n_abs x0 e1).
@@ -304,7 +320,8 @@ Proof.
            + intros. apply refl.
            + intros; contradiction.
     -- intros. apply rtrans with (n_abs x (n_sub e1 x0 e2)).
-       --- apply step_redex_R. apply step_abs2. assumption.
+       --- apply step_redex_R. apply step_abs2.
+           + assumption.
        --- simpl. case (x0 == x).
            + intro Hneq; symmetry in Hneq; contradiction.
            + intros. destruct (atom_fresh
@@ -313,18 +330,25 @@ Proof.
                               (singleton x0)))).
              apply refltrans_composition with (n_abs x (subst_rec (size e1) e1 e2 x0)).
              ++ apply refltrans_abs. assumption.
-             ++ admit.
+             ++ apply rtrans with (n_abs x1 (subst_rec (size e1) (swap x x1 e1) e2 x0)).
+                +++ admit.
+                  (*assert (aeq (n_abs x (subst_rec (size e1) e1 e2 x0))
+                                (n_abs x1 (subst_rec (size e1) (swap x x1 e1) e2 x0))). {
+                      apply aeq_abs_diff.
+                      - admit.
+                      - pose proof n1.
+                        apply notin_union_2 in n1.
+                        apply notin_union_1 in n1.
+                        apply notin_remove_1 in n1.
+                        inversion n1; subst.
+                        -- admit.
+                        -- pose proof fv_nom_abs_subst_aux.
+                           specialize (H3 e1 e2 x0).
+                   }*)
+                +++ apply refl.
+
+
                 
-
-
-           (*apply refltrans_composition with (n_abs x (subst_rec (size e1) e1 e2 x0)).
-           + apply refltrans_abs. assumption.
-           + simpl. case (x0 == x).
-             ++ intros; subst. contradiction.
-             ++ intros. destruct (atom_fresh
-         (Metatheory.union (fv_nom e2)
-            (Metatheory.union (remove x (fv_nom e1))
-               (singleton x0)))). admit.*)
   - intros.
     apply refltrans_composition with (n_app (m_subst e2 x e1_1) (m_subst e2 x e1_2)).
     -- apply rtrans with (n_app (n_sub e1_1 x e2) (n_sub e1_2 x e2)).

@@ -206,6 +206,11 @@ Proof.
   induction n; auto.
 Qed.
 
+Lemma aeq_var_2 : forall x y, aeq (n_var x) (n_var y) -> x = y.
+Proof.
+  intros. inversion H; subst. reflexivity.
+Qed.
+
 Lemma aux_not_equal : forall (x:atom) (y:atom),
     x <> y -> y <> x.
 Proof.
@@ -215,34 +220,6 @@ Proof.
   }
   contradiction.
 Qed.
-
-Lemma aeq_trans: forall t1 t2 t3, aeq t1 t2 -> aeq t2 t3 -> aeq t1 t3.
-Proof.
-         
-Admitted.
-
-Lemma aeq_sym: forall t1 t2, aeq t1 t2 -> aeq t2 t1.
-Proof.
-  intros. induction H.
-  - apply aeq_refl.
-  - apply aeq_abs_same. assumption.
-  - apply aeq_abs_diff.
-    -- apply aux_not_equal. assumption.
-    -- admit.
-    -- admit.
-  - apply aeq_app.
-    -- assumption.
-    -- assumption.
-  - apply aeq_sub_same.
-    -- assumption.
-    -- assumption.
-  - apply aeq_sub_diff.
-    -- assumption.
-    -- apply aux_not_equal. assumption.
-    -- admit.
-    -- admit.
-Admitted.
-
       
 (*Lemma aeq_swap : forall t1 x1 x2, x1 <> x2 -> x2 `notin` (fv_nom t1) -> aeq (swap x1 x2 t1) t1. *)
 
@@ -258,7 +235,7 @@ Inductive pix : n_sexp -> n_sexp -> Prop :=
 | step_abs1 : forall (e1 e2: n_sexp) (y : atom),
     pix (n_sub (n_abs y e1) y e2)  (n_abs y e1)
 | step_abs2 : forall (e1 e2: n_sexp) (x y: atom),
-    x <> y -> x `notin` fv_nom e2 ->
+    x <> y ->
     pix (n_sub (n_abs x e1) y e2)  (n_abs x (n_sub e1 y e2))
 | step_app : forall (e1 e2 e3: n_sexp) (y: atom),
     pix (n_sub (n_app e1 e2) y e3) (n_app (n_sub e1 y e3) (n_sub e2 y e3)).
@@ -268,6 +245,7 @@ Inductive betapi: n_sexp -> n_sexp -> Prop :=
 | x_rule : forall t u, pix t u -> betapi t u.
 
 Inductive ctx  (R : n_sexp -> n_sexp -> Prop): n_sexp -> n_sexp -> Prop :=
+ | step_aeq: forall e1 e2, aeq e1 e2 -> ctx R e1 e2
  | step_redex: forall (e1 e2 e3 e4: n_sexp), aeq e1 e2 -> R e2 e3 -> aeq e3 e4 -> ctx R e1 e4
  | step_abs_in: forall (e e': n_sexp) (x: atom), ctx R e e' -> ctx R (n_abs x e) (n_abs x e')
  | step_app_left: forall (e1 e1' e2: n_sexp) , ctx R e1 e1' -> ctx R (n_app e1 e2) (n_app e1' e2)
@@ -296,6 +274,28 @@ Qed.
 Não resolve porque precisamos da alpha-equiv em um passo de redução
 
  *)
+
+Lemma aeq_sym: forall t1 t2, aeq t1 t2 -> aeq t2 t1.
+Proof.
+  intros. induction H.
+  - apply aeq_refl.
+  - apply aeq_abs_same. assumption.
+  - apply aeq_abs_diff.
+    -- apply aux_not_equal. assumption.
+    -- admit.
+    -- admit.
+  - apply aeq_app.
+    -- assumption.
+    -- assumption.
+  - apply aeq_sub_same.
+    -- assumption.
+    -- assumption.
+  - apply aeq_sub_diff.
+    -- assumption.
+    -- apply aux_not_equal. assumption.
+    -- admit.
+    -- admit.
+Admitted.
 
 Lemma step_redex_R : forall (R : n_sexp -> n_sexp -> Prop) e1 e2,
     R e1 e2 -> ctx R e1 e2.
@@ -337,8 +337,8 @@ Lemma shuffle_swap : forall w y n z,
     (swap w y (swap y z n)) = (swap w z (swap w y n)).
 Proof.
   induction n; intros; simpl; unfold swap_var; default_simp.
-Qed. 
-
+Qed.
+         
 (*************************************************************)
 (** ** Exercises                                             *)
 (*************************************************************)
@@ -455,6 +455,29 @@ Proof.
        --- assumption.
        --- assumption.
 Qed.
+
+Lemma aeq_trans: forall t1 t2 t3, aeq t1 t2 -> aeq t2 t3 -> aeq t1 t3.
+Proof.
+  intros. generalize dependent t3. induction H.
+  - intros. assumption.
+  - intros. inversion H0; subst.
+    -- apply aeq_abs_same. specialize (IHaeq t4). apply IHaeq.
+       assumption.
+    -- apply aeq_abs_diff.
+       --- assumption.
+       --- assumption.
+       --- specialize (IHaeq (swap y x t4)). apply IHaeq.
+           assumption.
+  - intros. inversion H2; subst.
+    -- apply aeq_abs_diff.
+       --- assumption.
+       --- admit.
+       --- specialize (IHaeq (swap y x t4)). apply IHaeq. admit.
+          
+
+
+         
+Admitted.
 
 (* HINT: For a helpful fact about sets of atoms, check AtomSetImpl.union_1 *)
 
@@ -977,7 +1000,7 @@ Fixpoint subst_rec (n:nat) (t:n_sexp) (u :n_sexp) (x:atom)  : n_sexp :=
             else
               (* rename to avoid capture *)
               let (z,_) :=
-                  atom_fresh (fv_nom u `union` fv_nom t `union` {{x}}) in
+                  atom_fresh (fv_nom u `union` fv_nom t `union` {{x}} `union` fv_nom t2) in
                  n_sub  (subst_rec m (swap y z t1) u x) z (subst_rec m t2 u x) 
            end
   end.
@@ -990,6 +1013,17 @@ Definition m_subst (u : n_sexp) (x:atom) (t:n_sexp) :=
 (** This next lemma uses course of values induction [lt_wf_ind] to prove that
     the size of the term [t] is enough "fuel" to completely calculate a
     substitution. Providing larger numbers produces the same result. *)
+
+Lemma Sn_le_Sm__n_le_m : forall n m,
+  S n <= S m -> n <= m.
+Proof.
+  intros n m H. inversion H.
+  - apply le_n.
+  - apply (le_trans n (S n) m).
+    -- apply le_S. reflexivity.
+    -- assumption.
+Qed.
+    
 Lemma subst_size : forall n (u : n_sexp) (x:atom) (t:n_sexp),
     size t <= n -> subst_rec n t u x = subst_rec (size t) t u x.
 Proof.
@@ -1013,7 +1047,7 @@ Proof.
            assert (size t1 <= size t1 + size t2). {
              apply le_plus_l.
            }
-           Search "lt". apply Sn_le_Sm__n_le_m in SZ.
+           apply Sn_le_Sm__n_le_m in SZ.
            apply le_lt_n_Sm in SZ.
            specialize (IH (size t1 + size t2) SZ u x (swap x0 x1 t1)).
            rewrite swap_size_eq in IH. apply IH in H.
@@ -1131,16 +1165,8 @@ Proof.
       rewrite swap_size_eq.
       pose proof subst_size.
       specialize (H (size t1 + size t2) u x (swap y x0 t1)).
-      rewrite H.
-    --- rewrite swap_size_eq.
-        assert (size t2 <= size t1 + size t2). {
-          apply le_plus_r.
-        }
-        pose proof subst_size.
-        specialize (H1 (size t1 + size t2) u x t2).
-        apply H1 in H0; clear H1. rewrite H0. reflexivity.
-    --- rewrite swap_size_eq. apply le_plus_l.
-Qed.
+      admit.
+Admitted.
 
 Lemma pure_m_subst : forall t u x, pure u -> pure t -> pure (m_subst u x t).
 Proof.
@@ -1385,7 +1411,7 @@ Proof.
               }
     contradiction.
   - destruct t.
-    + intros. unfold subst. simpl. case (x == x0).
+    + intros. unfold m_subst. simpl. case (x == x0).
     -- intros. simpl in H0. pose proof singleton_iff.
        specialize (H1 x0 x). symmetry in e; apply H1 in e. 
        contradiction.
@@ -1472,8 +1498,8 @@ Proof.
          (union (fv_nom u)
             (union (union (remove x0 (fv_nom t1)) (fv_nom t2))
                    (singleton x)))). case (x1 == x0).
-         --- intros; subst. apply aeq_sub_same.
-             ---- rewrite swap_id.  pose proof le_plus_l.
+         --- intros; subst. admit.
+             (*---- rewrite swap_id.  pose proof le_plus_l.
                   specialize (H1 (size t1) (size t2)).
                   pose proof subst_size.
                   specialize (H2 (size t1 + size t2) u x t1).
@@ -1500,8 +1526,9 @@ Proof.
              ------- assumption.
              ------ simpl in H0. apply notin_union_2 in H0.
              assumption.
-             ----- assumption.
-         --- intros. apply aeq_sub_diff.
+             ----- assumption.*)
+         --- intros. admit.
+             (*apply aeq_sub_diff.
              ---- pose proof subst_size.
                   specialize (H1 (size t1 + size t2) u x t2).
                   pose proof le_plus_r.
@@ -1558,8 +1585,8 @@ Proof.
              -------- contradiction.
              -------- case (x == x1) in H3.
              --------- contradiction.
-             --------- assumption.
-Qed.                     
+             --------- assumption.*)
+Admitted.                     
 
 Lemma subst_fresh_eq : forall (x : atom) t u,  x `notin` fv_nom t -> aeq (m_subst u x t) t.
 Proof.
