@@ -38,7 +38,15 @@ Proof.
   auto.
 Qed.
 
-
+Lemma aux_not_equal : forall (x:atom) (y:atom),
+    x <> y -> y <> x.
+Proof.
+  intros. unfold not. intros. unfold not in H.
+  assert (x = y). {
+    rewrite H0. reflexivity.
+  }
+  contradiction.
+Qed.
 (*************************************************************)
 (** * A nominal representation of lambda_x terms             *)
 (*************************************************************)
@@ -160,154 +168,6 @@ Proof.
   intros. simpl; unfold swap_var; default_simp.
 Qed.
 
-
-(** We define the "alpha-equivalence" relation that declares
-    when two nominal terms are equivalent (up to renaming of
-    bound variables).
-
-    Note the two different rules for [n_abs]: either the
-    binders are the same and we can directly compare the
-    bodies, or the binders differ, but we can swap one side to
-    make it look like the other.  *)
-
-Inductive aeq : n_sexp -> n_sexp -> Prop :=
- | aeq_var : forall x,
-     aeq (n_var x) (n_var x)
- | aeq_abs_same : forall x t1 t2,
-     aeq t1 t2 -> aeq (n_abs x t1) (n_abs x t2)
- | aeq_abs_diff : forall x y t1 t2,
-     x <> y ->
-     x `notin` fv_nom t2 ->
-     aeq t1 (swap y x t2) ->
-     aeq (n_abs x t1) (n_abs y t2)
- | aeq_app : forall t1 t2 t1' t2',
-     aeq t1 t1' -> aeq t2 t2' ->
-     aeq (n_app t1 t2) (n_app t1' t2')
- | aeq_sub_same : forall t1 t2 t1' t2' x,
-     aeq t1 t1' -> aeq t2 t2' ->
-     aeq (n_sub t1 x t2) (n_sub t1' x t2')
- | aeq_sub_diff : forall t1 t2 t1' t2' x y,
-     aeq t2 t2' -> x <> y ->
-     x `notin` fv_nom t1' -> aeq t1 (swap y x t1') ->
-     aeq (n_sub t1 x t2) (n_sub t1' y t2').
-
-Hint Constructors aeq.
-
-
-Example aeq1 : forall x y, x <> y -> aeq (n_abs x (n_var x)) (n_abs y (n_var y)).
-Proof.
-  intros.
-  eapply aeq_abs_diff; auto.
-  simpl; unfold swap_var; default_simp.
-Qed.
-
-Lemma aeq_refl : forall n, aeq n n.
-Proof.
-  induction n; auto.
-Qed.
-
-Lemma aeq_var_2 : forall x y, aeq (n_var x) (n_var y) -> x = y.
-Proof.
-  intros. inversion H; subst. reflexivity.
-Qed.
-
-Lemma aux_not_equal : forall (x:atom) (y:atom),
-    x <> y -> y <> x.
-Proof.
-  intros. unfold not. intros. unfold not in H.
-  assert (x = y). {
-    rewrite H0. reflexivity.
-  }
-  contradiction.
-Qed.
-      
-(*Lemma aeq_swap : forall t1 x1 x2, x1 <> x2 -> x2 `notin` (fv_nom t1) -> aeq (swap x1 x2 t1) t1. *)
-
-Inductive betax : n_sexp -> n_sexp -> Prop :=
- | step_betax : forall (e1 e2: n_sexp) (x: atom),
-     betax (n_app  (n_abs x e1) e2)  (n_sub e1 x e2).
-
-Inductive pix : n_sexp -> n_sexp -> Prop :=
-| step_var : forall (e: n_sexp) (y: atom),
-    pix (n_sub (n_var y) y e) e
-| step_gc : forall (e: n_sexp) (x y: atom),
-    x <> y -> pix (n_sub (n_var x) y e) (n_var x)
-| step_abs1 : forall (e1 e2: n_sexp) (y : atom),
-    pix (n_sub (n_abs y e1) y e2)  (n_abs y e1)
-| step_abs2 : forall (e1 e2: n_sexp) (x y: atom),
-    x <> y ->
-    pix (n_sub (n_abs x e1) y e2)  (n_abs x (n_sub e1 y e2))
-| step_app : forall (e1 e2 e3: n_sexp) (y: atom),
-    pix (n_sub (n_app e1 e2) y e3) (n_app (n_sub e1 y e3) (n_sub e2 y e3)).
-
-Inductive betapi: n_sexp -> n_sexp -> Prop :=
-| b_rule : forall t u, betax t u -> betapi t u
-| x_rule : forall t u, pix t u -> betapi t u.
-
-Inductive ctx  (R : n_sexp -> n_sexp -> Prop): n_sexp -> n_sexp -> Prop :=
- | step_aeq: forall e1 e2, aeq e1 e2 -> ctx R e1 e2
- | step_redex: forall (e1 e2 e3 e4: n_sexp), aeq e1 e2 -> R e2 e3 -> aeq e3 e4 -> ctx R e1 e4
- | step_abs_in: forall (e e': n_sexp) (x: atom), ctx R e e' -> ctx R (n_abs x e) (n_abs x e')
- | step_app_left: forall (e1 e1' e2: n_sexp) , ctx R e1 e1' -> ctx R (n_app e1 e2) (n_app e1' e2)
- | step_app_right: forall (e1 e2 e2': n_sexp) , ctx R e2 e2' -> ctx R (n_app e1 e2) (n_app e1 e2')
- | step_sub_left: forall (e1 e1' e2: n_sexp) (x : atom) , ctx R e1 e1' -> ctx R (n_sub e1 x e2) (n_sub e1' x e2)
- | step_sub_right: forall (e1 e2 e2': n_sexp) (x:atom), ctx R e2 e2' -> ctx R (n_sub e1 x e2) (n_sub e1 x e2').
-
-Definition lx t u := ctx betapi t u.
-
-(* Reflexive transitive closure modulo alpha equivalence 
-
-Inductive refltrans (R: n_sexp -> n_sexp -> Prop) : n_sexp -> n_sexp -> Prop :=
-| refl: forall a b, aeq a b -> (refltrans R) a b
-| step: forall a b c, aeq a b -> R b c -> refltrans R a c
-| rtrans: forall a b c, refltrans R a b -> refltrans R b c -> refltrans R a c.
-
-Lemma red_rel: forall a b c d, aeq a b -> pix b c -> aeq c d -> refltrans pix a d.
-Proof.
-  intros a b c d H1 H2 H3.
-  apply rtrans with c.
-  + apply step with b; assumption.
-  + apply refl.
-    assumption.
-Qed. 
-
-Não resolve porque precisamos da alpha-equiv em um passo de redução
-
- *)
-
-Lemma aeq_sym: forall t1 t2, aeq t1 t2 -> aeq t2 t1.
-Proof.
-  intros. induction H.
-  - apply aeq_refl.
-  - apply aeq_abs_same. assumption.
-  - apply aeq_abs_diff.
-    -- apply aux_not_equal. assumption.
-    -- admit.
-    -- admit.
-  - apply aeq_app.
-    -- assumption.
-    -- assumption.
-  - apply aeq_sub_same.
-    -- assumption.
-    -- assumption.
-  - apply aeq_sub_diff.
-    -- assumption.
-    -- apply aux_not_equal. assumption.
-    -- admit.
-    -- admit.
-Admitted.
-
-Lemma step_redex_R : forall (R : n_sexp -> n_sexp -> Prop) e1 e2,
-    R e1 e2 -> ctx R e1 e2.
-Proof.
-  intros. pose proof step_redex. specialize (H0 R e1 e1 e2 e2).
-  apply H0.
-  - apply aeq_refl.
-  - assumption.
-  - apply aeq_refl.
-Qed.
-  
-  
 (*************************************************************)
 (** ** Properties about swapping                             *)
 (*************************************************************)
@@ -338,7 +198,7 @@ Lemma shuffle_swap : forall w y n z,
 Proof.
   induction n; intros; simpl; unfold swap_var; default_simp.
 Qed.
-         
+
 (*************************************************************)
 (** ** Exercises                                             *)
 (*************************************************************)
@@ -455,29 +315,6 @@ Proof.
        --- assumption.
        --- assumption.
 Qed.
-
-Lemma aeq_trans: forall t1 t2 t3, aeq t1 t2 -> aeq t2 t3 -> aeq t1 t3.
-Proof.
-  intros. generalize dependent t3. induction H.
-  - intros. assumption.
-  - intros. inversion H0; subst.
-    -- apply aeq_abs_same. specialize (IHaeq t4). apply IHaeq.
-       assumption.
-    -- apply aeq_abs_diff.
-       --- assumption.
-       --- assumption.
-       --- specialize (IHaeq (swap y x t4)). apply IHaeq.
-           assumption.
-  - intros. inversion H2; subst.
-    -- apply aeq_abs_diff.
-       --- assumption.
-       --- admit.
-       --- specialize (IHaeq (swap y x t4)). apply IHaeq. admit.
-          
-
-
-         
-Admitted.
 
 (* HINT: For a helpful fact about sets of atoms, check AtomSetImpl.union_1 *)
 
@@ -749,6 +586,169 @@ Proof.
                     * contradiction.
                     * right. assumption.
 Qed.
+
+(** We define the "alpha-equivalence" relation that declares
+    when two nominal terms are equivalent (up to renaming of
+    bound variables).
+
+    Note the two different rules for [n_abs]: either the
+    binders are the same and we can directly compare the
+    bodies, or the binders differ, but we can swap one side to
+    make it look like the other.  *)
+
+Inductive aeq : n_sexp -> n_sexp -> Prop :=
+ | aeq_var : forall x,
+     aeq (n_var x) (n_var x)
+ | aeq_abs_same : forall x t1 t2,
+     aeq t1 t2 -> aeq (n_abs x t1) (n_abs x t2)
+ | aeq_abs_diff : forall x y t1 t2,
+     x <> y ->
+     x `notin` fv_nom t2 ->
+     aeq t1 (swap y x t2) ->
+     aeq (n_abs x t1) (n_abs y t2)
+ | aeq_app : forall t1 t2 t1' t2',
+     aeq t1 t1' -> aeq t2 t2' ->
+     aeq (n_app t1 t2) (n_app t1' t2')
+ | aeq_sub_same : forall t1 t2 t1' t2' x,
+     aeq t1 t1' -> aeq t2 t2' ->
+     aeq (n_sub t1 x t2) (n_sub t1' x t2')
+ | aeq_sub_diff : forall t1 t2 t1' t2' x y,
+     aeq t2 t2' -> x <> y ->
+     x `notin` fv_nom t1' -> aeq t1 (swap y x t1') ->
+     aeq (n_sub t1 x t2) (n_sub t1' y t2').
+
+Hint Constructors aeq.
+
+
+Example aeq1 : forall x y, x <> y -> aeq (n_abs x (n_var x)) (n_abs y (n_var y)).
+Proof.
+  intros.
+  eapply aeq_abs_diff; auto.
+  simpl; unfold swap_var; default_simp.
+Qed.
+
+Lemma aeq_var_2 : forall x y, aeq (n_var x) (n_var y) -> x = y.
+Proof.
+  intros. inversion H; subst. reflexivity.
+Qed.
+
+
+(** aeq is an equivalence relation. *)
+
+Lemma aeq_refl : forall n, aeq n n.
+Proof.
+  induction n; auto.
+Qed.
+Lemma aeq_sym: forall t1 t2, aeq t1 t2 -> aeq t2 t1.
+Proof.
+  induction 1.
+  - apply aeq_refl.
+  - apply aeq_abs_same; assumption.
+  - apply aeq_abs_diff.
+    -- apply aux_not_equal; assumption.
+    -- admit.
+    -- admit.
+  - apply aeq_app.
+    -- assumption.
+    -- assumption.
+  - apply aeq_sub_same.
+    -- assumption.
+    -- assumption.
+  - apply aeq_sub_diff.
+    -- assumption.
+    -- apply aux_not_equal. assumption.
+    -- admit.
+    -- admit.
+Admitted.
+
+Lemma aeq_trans: forall t1 t2 t3, aeq t1 t2 -> aeq t2 t3 -> aeq t1 t3.
+Proof.
+  intros. generalize dependent t3. induction H.
+  - intros. assumption.
+  - intros. inversion H0; subst.
+    -- apply aeq_abs_same. specialize (IHaeq t4). apply IHaeq.
+       assumption.
+    -- apply aeq_abs_diff.
+       --- assumption.
+       --- assumption.
+       --- specialize (IHaeq (swap y x t4)). apply IHaeq.
+           assumption.
+  - intros. inversion H2; subst.
+    -- apply aeq_abs_diff.
+       --- assumption.
+       --- admit.
+       --- specialize (IHaeq (swap y x t4)). apply IHaeq. admit.
+          
+
+
+         
+Admitted.
+
+(*Lemma aeq_swap : forall t1 x1 x2, x1 <> x2 -> x2 `notin` (fv_nom t1) -> aeq (swap x1 x2 t1) t1.*)
+
+Inductive betax : n_sexp -> n_sexp -> Prop :=
+ | step_betax : forall (e1 e2: n_sexp) (x: atom),
+     betax (n_app  (n_abs x e1) e2)  (n_sub e1 x e2).
+
+Inductive pix : n_sexp -> n_sexp -> Prop :=
+| step_var : forall (e: n_sexp) (y: atom),
+    pix (n_sub (n_var y) y e) e
+| step_gc : forall (e: n_sexp) (x y: atom),
+    x <> y -> pix (n_sub (n_var x) y e) (n_var x)
+| step_abs1 : forall (e1 e2: n_sexp) (y : atom),
+    pix (n_sub (n_abs y e1) y e2)  (n_abs y e1)
+| step_abs2 : forall (e1 e2: n_sexp) (x y: atom),
+    x <> y ->
+    pix (n_sub (n_abs x e1) y e2)  (n_abs x (n_sub e1 y e2))
+| step_app : forall (e1 e2 e3: n_sexp) (y: atom),
+    pix (n_sub (n_app e1 e2) y e3) (n_app (n_sub e1 y e3) (n_sub e2 y e3)).
+
+Inductive betapi: n_sexp -> n_sexp -> Prop :=
+| b_rule : forall t u, betax t u -> betapi t u
+| x_rule : forall t u, pix t u -> betapi t u.
+
+Inductive ctx  (R : n_sexp -> n_sexp -> Prop): n_sexp -> n_sexp -> Prop :=
+ | step_aeq: forall e1 e2, aeq e1 e2 -> ctx R e1 e2
+ | step_redex: forall (e1 e2 e3 e4: n_sexp), aeq e1 e2 -> R e2 e3 -> aeq e3 e4 -> ctx R e1 e4
+ | step_abs_in: forall (e e': n_sexp) (x: atom), ctx R e e' -> ctx R (n_abs x e) (n_abs x e')
+ | step_app_left: forall (e1 e1' e2: n_sexp) , ctx R e1 e1' -> ctx R (n_app e1 e2) (n_app e1' e2)
+ | step_app_right: forall (e1 e2 e2': n_sexp) , ctx R e2 e2' -> ctx R (n_app e1 e2) (n_app e1 e2')
+ | step_sub_left: forall (e1 e1' e2: n_sexp) (x : atom) , ctx R e1 e1' -> ctx R (n_sub e1 x e2) (n_sub e1' x e2)
+ | step_sub_right: forall (e1 e2 e2': n_sexp) (x:atom), ctx R e2 e2' -> ctx R (n_sub e1 x e2) (n_sub e1 x e2').
+
+Definition lx t u := ctx betapi t u.
+
+(* Reflexive transitive closure modulo alpha equivalence 
+
+Inductive refltrans (R: n_sexp -> n_sexp -> Prop) : n_sexp -> n_sexp -> Prop :=
+| refl: forall a b, aeq a b -> (refltrans R) a b
+| step: forall a b c, aeq a b -> R b c -> refltrans R a c
+| rtrans: forall a b c, refltrans R a b -> refltrans R b c -> refltrans R a c.
+
+Lemma red_rel: forall a b c d, aeq a b -> pix b c -> aeq c d -> refltrans pix a d.
+Proof.
+  intros a b c d H1 H2 H3.
+  apply rtrans with c.
+  + apply step with b; assumption.
+  + apply refl.
+    assumption.
+Qed. 
+
+Não resolve porque precisamos da alpha-equiv em um passo de redução
+
+ *)
+
+Lemma step_redex_R : forall (R : n_sexp -> n_sexp -> Prop) e1 e2,
+    R e1 e2 -> ctx R e1 e2.
+Proof.
+  intros. pose proof step_redex. specialize (H0 R e1 e1 e2 e2).
+  apply H0.
+  - apply aeq_refl.
+  - assumption.
+  - apply aeq_refl.
+Qed.
+  
+
 (*
 (*************************************************************)
 (** * An abstract machine for cbn evaluation                 *)
