@@ -192,12 +192,20 @@ Proof.
   induction n; intros; simpl; unfold swap_var; default_simp.
 Qed. 
 
+Lemma fv_nom_swap_remove: forall t x y y0, x <> y ->  x <> y0 -> x `notin` fv_nom (swap y0 y t) -> x `notin` fv_nom t.
+Proof.
+Admitted.
+  
 Lemma shuffle_swap : forall w y n z,
     w <> z -> y <> z ->
     (swap w y (swap y z n)) = (swap w z (swap w y n)).
 Proof.
   induction n; intros; simpl; unfold swap_var; default_simp.
 Qed.
+
+Lemma swap_comp: forall t x y y0,  (swap y x (swap y0 y t)) = (swap y0 x t).
+Proof.
+Admitted.  
 
 (*************************************************************)
 (** ** Exercises                                             *)
@@ -632,6 +640,20 @@ Proof.
   intros. inversion H; subst. reflexivity.
 Qed.
 
+Lemma aeq_fv_nom:forall t1 t2, aeq t1 t2 -> fv_nom t1 = fv_nom t2.
+Proof.
+Admitted.  
+
+Lemma aeq_swap1: forall t1 t2 x y, aeq t1 t2 -> aeq (swap x y t1) (swap x y t2).
+Proof.
+Admitted.
+Lemma aeq_swap2: forall t1 t2 x y, aeq (swap x y t1) (swap x y t2) -> aeq t1 t2.
+Proof.
+Admitted.
+
+Corollary aeq_swap: forall t1 t2 x y, aeq t1 t2 <-> aeq (swap x y t1) (swap x y t2).
+Proof.
+Admitted.
 
 (** aeq is an equivalence relation. *)
 
@@ -639,6 +661,7 @@ Lemma aeq_refl : forall n, aeq n n.
 Proof.
   induction n; auto.
 Qed.
+
 Lemma aeq_sym: forall t1 t2, aeq t1 t2 -> aeq t2 t1.
 Proof.
   induction 1.
@@ -646,8 +669,13 @@ Proof.
   - apply aeq_abs_same; assumption.
   - apply aeq_abs_diff.
     -- apply aux_not_equal; assumption.
-    -- admit.
-    -- admit.
+    -- apply fv_nom_swap with x y t2 in H0.
+       apply aeq_fv_nom in H1.
+       rewrite H1; assumption.
+    -- apply aeq_swap2 with x y.
+       rewrite swap_involutive.
+       rewrite swap_symmetric.
+       assumption.
   - apply aeq_app.
     -- assumption.
     -- assumption.
@@ -676,12 +704,24 @@ Proof.
   - intros. inversion H2; subst.
     -- apply aeq_abs_diff.
        --- assumption.
-       --- admit.
-       --- specialize (IHaeq (swap y x t4)). apply IHaeq. admit.
-          
-
-
-         
+       --- apply aeq_fv_nom in H6.
+           rewrite <- H6; assumption.
+       --- apply IHaeq.
+           apply aeq_swap; assumption.
+    -- case (x == y0).
+       --- intro Heq; subst.
+           apply aeq_abs_same.
+           apply IHaeq.
+           admit.
+       --- intro Hneq.
+           apply aeq_abs_diff.
+           ---- assumption.
+           ---- apply aeq_fv_nom in H8.
+                rewrite H8 in H0.
+                apply fv_nom_swap_remove in H0; assumption.
+           ---- apply IHaeq.
+                apply aeq_swap1 with t2 (swap y0 y t4) y x in H8.
+                rewrite swap_comp in H8; assumption. 
 Admitted.
 
 (*Lemma aeq_swap : forall t1 x1 x2, x1 <> x2 -> x2 `notin` (fv_nom t1) -> aeq (swap x1 x2 t1) t1.*)
