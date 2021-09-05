@@ -91,6 +91,17 @@ Proof.
   fsetdec.
 Qed.
 
+Lemma notin_singleton_is_false: forall x,
+    x `notin` (singleton x) -> False.
+Proof.
+  intros. intros. apply notin_singleton_1 in H. contradiction.
+Qed.
+
+Lemma remove_singleton: forall t1 t2,
+    remove t1 (singleton t1) = remove t2 (singleton t2).
+Proof.
+Admitted.
+
 (** What makes this a *nominal* representation is that our
     operations are based on the following swapping function for
     names.  Note that this operation is symmetric: [x] becomes
@@ -209,6 +220,19 @@ Admitted.
 
 Lemma remove_fv_swap: forall x y t, x `notin` fv_nom t -> remove x (fv_nom (swap y x t)) = remove y (fv_nom t).
 Proof.
+  intros x y t. induction t.
+  - intro. simpl. unfold swap_var. case (x0 == y); intros; subst.
+    -- simpl. pose proof remove_singleton.
+       specialize (H0 x y); assumption.
+    -- case (x0 == x); intros; subst.
+       --- simpl in H. apply notin_singleton_is_false in H.
+           inversion H.
+       --- admit.
+  - intros; simpl. unfold swap_var. case (x0 == y); intros; subst.
+    -- admit.
+    -- admit.
+  - admit.
+  - admit.       
 Admitted.
 
 (*************************************************************)
@@ -1266,12 +1290,6 @@ Proof.
   - intros. inversion H1.
 Qed.
 
-
-Lemma remove_singleton: forall t,
-    AtomSetImpl.Empty (remove t (singleton t)).
-Proof.
-  Admitted.
-
 Lemma fv_nom_abs_subst_aux: forall t u y,
     fv_nom (subst_rec (size t) t u y) [=] (remove y (fv_nom t)) `union` (fv_nom u).
 Proof.
@@ -1550,7 +1568,7 @@ Proof.
       -- intros; destruct (atom_fresh
          (union (fv_nom u)
             (union (union (remove x0 (fv_nom t1)) (fv_nom t2))
-                   (singleton x)))). case (x1 == x0).
+                  (singleton x)))). case (x1 == x0).
          --- intros; subst. admit.
              (*---- rewrite swap_id.  pose proof le_plus_l.
                   specialize (H1 (size t1) (size t2)).
