@@ -205,7 +205,11 @@ Qed.
 
 Lemma swap_comp: forall t x y y0,  (swap y x (swap y0 y t)) = (swap y0 x t).
 Proof.
-Admitted.  
+Admitted.
+
+Lemma remove_fv_swap: forall x y t, x `notin` fv_nom t -> remove x (fv_nom (swap y x t)) = remove y (fv_nom t).
+Proof.
+Admitted.
 
 (*************************************************************)
 (** ** Exercises                                             *)
@@ -642,7 +646,16 @@ Qed.
 
 Lemma aeq_fv_nom:forall t1 t2, aeq t1 t2 -> fv_nom t1 = fv_nom t2.
 Proof.
-Admitted.  
+  intros. induction H.
+  - reflexivity.
+  - simpl. rewrite IHaeq. reflexivity.
+  - simpl. inversion H1; subst; rewrite IHaeq; apply remove_fv_swap; assumption.
+  - simpl. rewrite IHaeq1; rewrite IHaeq2. reflexivity.
+  - simpl. rewrite IHaeq1; rewrite IHaeq2. reflexivity.
+  - simpl. pose proof remove_fv_swap.
+    specialize (H3 x y t1'). apply H3 in H1.
+    inversion H2; subst; rewrite IHaeq1; rewrite IHaeq2; rewrite H1; reflexivity.
+Qed.  
 
 Lemma aeq_swap1: forall t1 t2 x y, aeq t1 t2 -> aeq (swap x y t1) (swap x y t2).
 Proof.
