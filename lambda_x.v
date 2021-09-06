@@ -890,11 +890,37 @@ Admitted.
 
 Lemma aeq_swap2: forall t1 t2 x y, aeq (swap x y t1) (swap x y t2) -> aeq t1 t2.
 Proof.
+  intros. induction t1.
+  - induction t2.
+    -- simpl in H. unfold swap_var in H. default_simp.
+    -- simpl in H. inversion H.
+    -- simpl in H. inversion H.
+    -- simpl in H. inversion H.
+  - induction t2.
+    -- simpl in H. inversion H.
+    -- simpl in H. unfold swap_var in H. simpl in IHt1.
+       simpl in IHt2. unfold swap_var in IHt1.
+       unfold swap_var in IHt2. admit.
+    -- simpl in H. inversion H.
+    -- simpl in H. inversion H.
+  - induction t2.
+    -- simpl in H. inversion H.
+    -- simpl in H. inversion H.
+    -- simpl in H. admit.
+    -- simpl in H. inversion H.
+  - induction t2.
+    -- simpl in H. inversion H.
+    -- simpl in H. inversion H.
+    -- simpl in H. inversion H.
+    -- simpl in H. unfold swap_var in H. admit.
 Admitted.
 
 Corollary aeq_swap: forall t1 t2 x y, aeq t1 t2 <-> aeq (swap x y t1) (swap x y t2).
 Proof.
-Admitted.
+  intros. split.
+  - apply aeq_swap1.
+  - apply aeq_swap2.
+Qed.
 
 Lemma aeq_sym: forall t1 t2, aeq t1 t2 -> aeq t2 t1.
 Proof.
