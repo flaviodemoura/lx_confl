@@ -945,9 +945,11 @@ Proof.
   - apply aeq_sub_diff.
     -- assumption.
     -- apply aux_not_equal. assumption.
-    -- admit.
-    -- admit.
-Admitted.
+    -- apply aeq_fv_nom in H2. rewrite H2.
+       apply fv_nom_swap. assumption.
+    -- rewrite swap_symmetric. apply aeq_swap2 with y x.
+       rewrite swap_involutive. assumption.
+Qed.
 
 Lemma aeq_trans: forall t1 t2 t3, aeq t1 t2 -> aeq t2 t3 -> aeq t1 t3.
 Proof.
