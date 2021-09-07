@@ -232,6 +232,12 @@ Qed.
 Lemma double_remove: forall x s,
            remove x (remove x s) = remove x s.
 Proof.
+  intros. pose proof AtomSetProperties.remove_equal.
+  assert (x `notin` remove x s). {
+    apply AtomSetImpl.remove_1. reflexivity.
+  }
+  specialize (H (remove x s) x). apply H in H0. (*assumption.*)
+  admit.
 Admitted.
 
 Lemma remove_symmetric: forall x y s,
