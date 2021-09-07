@@ -971,18 +971,70 @@ Proof.
     -- case (x == y0).
        --- intro Heq; subst.
            apply aeq_abs_same.
-           apply IHaeq.
-           admit.
+           apply IHaeq. apply aeq_sym in H2.
+           inversion H2; subst.
+           + contradiction.
+           + apply aeq_sym. assumption.
        --- intro Hneq.
            apply aeq_abs_diff.
-           ---- assumption.
-           ---- apply aeq_fv_nom in H8.
+           + assumption.
+           + apply aeq_fv_nom in H8.
                 rewrite H8 in H0.
                 apply fv_nom_swap_remove in H0; assumption.
-           ---- apply IHaeq.
+           + apply IHaeq.
                 apply aeq_swap1 with t2 (swap y0 y t4) y x in H8.
-                rewrite swap_comp in H8; assumption. 
-Admitted.
+                rewrite swap_comp in H8; assumption.
+  - intros. inversion H1; subst. apply aeq_app.
+    -- apply IHaeq1 with t1'0 in H4. assumption.
+    -- apply IHaeq2 with t2'0 in H6. assumption.
+  - intros. inversion H1; subst.
+    -- apply IHaeq1 with t1'0 in H6.
+       apply IHaeq2 with t2'0 in H7.
+       apply aeq_sub_same.
+       --- assumption.
+       --- assumption.
+    -- apply aeq_sub_diff.
+       --- apply IHaeq2 with t2'0 in H5. assumption.
+       --- assumption.
+       --- assumption.
+       --- apply IHaeq1 with (swap y x t1'0) in H9. assumption.
+  - intros. inversion H3; subst.
+    -- apply aeq_sub_diff.
+       --- apply IHaeq1 with t2'0 in H9. assumption.
+       --- assumption.
+       --- apply aeq_fv_nom in H8. rewrite <- H8. assumption.
+       --- apply IHaeq2. apply aeq_swap1. assumption.
+    -- case (x == y0); intros; subst.
+       --- apply aeq_sub_same.
+           + assert (t1'0 = swap y y0 (swap y y0 t1'0)). {
+               rewrite swap_involutive. reflexivity.
+             }
+             rewrite H4. apply IHaeq2. rewrite <- H4.
+             apply aeq_swap2 with y y0.
+             rewrite swap_involutive.
+             rewrite swap_symmetric.
+             assumption.
+           + apply IHaeq1. assumption.
+       --- apply aeq_sub_diff.
+           + apply IHaeq1 with t2'0 in H7. assumption.
+           + assumption.
+           + apply aeq_swap1 with t1' (swap y0 y t1'0) y0 y in H11.
+             rewrite swap_involutive in H11.
+             apply aeq_fv_nom in H11. rewrite <- H11.
+             apply fv_nom_swap_remove with y0 y.
+             ++ assumption.
+             ++ assumption.
+             ++ rewrite swap_symmetric. rewrite swap_involutive.
+                assumption.
+           + apply IHaeq2. apply aeq_swap2 with y x.
+             rewrite swap_involutive.
+             assert (swap y x (swap y0 x t1'0) = swap y0 y t1'0). {
+               pose proof swap_comp.
+               specialize (H4 t1'0 y x y0).
+               rewrite swap_symmetric in H4. assumption.
+             }
+             rewrite H4. assumption.
+Qed.
 
 (*Lemma aeq_swap : forall t1 x1 x2, x1 <> x2 -> x2 `notin` (fv_nom t1) -> aeq (swap x1 x2 t1) t1.*)
 
