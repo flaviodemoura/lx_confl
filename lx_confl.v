@@ -105,6 +105,23 @@ Proof.
     -- admit.
 Admitted.
 
+Lemma notin_P: forall x t,
+    x `notin` fv_nom t -> x `notin` fv_nom (P t).
+Proof.
+  intros. induction t.
+  - simpl. simpl in H. assumption.
+  - simpl. simpl in H. case (x == x0); intros; subst.
+    -- apply notin_remove_3. reflexivity.
+    -- apply notin_remove_2. apply IHt. apply notin_remove_1 in H.
+       inversion H; subst.
+       --- contradiction.
+       --- assumption.
+  - simpl. apply notin_union; simpl in H.
+    -- apply notin_union_1 in H. apply IHt1. assumption.
+    -- apply notin_union_2 in H. apply IHt2. assumption.
+  - admit.
+Admitted.
+
 Lemma aeq_P: forall t1 t2, aeq t1 t2 -> aeq (P t1) (P t2).
 Proof.
   intros t1 t2 H.
@@ -114,7 +131,7 @@ Proof.
   - simpl; apply aeq_abs_same. assumption.
   - simpl. apply aeq_abs_diff.
     -- assumption.
-    -- admit.
+    -- apply notin_P. assumption.
     -- pose proof aeq_swap_P. specialize (H2 y x t2).
        pose proof aeq_trans.
        specialize (H3 (P t1) (P (swap y x t2)) (swap y x (P t2))).
@@ -122,7 +139,14 @@ Proof.
   - simpl. apply aeq_app.
     -- assumption.
     -- assumption.
-  - admit.
+  - simpl. induction t1.
+    -- simpl. simpl in IHaeq1. inversion IHaeq1; subst.
+       case (x == x0). intros; subst.
+       --- repeat rewrite subst_eq_var. assumption.
+       --- admit.
+    -- admit.
+    -- admit.
+    -- admit.
   - admit.
 Admitted.
 
@@ -153,23 +177,6 @@ Proof.
   - intros x' H.
     inversion H.
 Qed.
-
-Lemma notin_P: forall x t,
-    x `notin` fv_nom t -> x `notin` fv_nom (P t).
-Proof.
-  intros. induction t.
-  - simpl. simpl in H. assumption.
-  - simpl. simpl in H. case (x == x0); intros; subst.
-    -- apply notin_remove_3. reflexivity.
-    -- apply notin_remove_2. apply IHt. apply notin_remove_1 in H.
-       inversion H; subst.
-       --- contradiction.
-       --- assumption.
-  - simpl. apply notin_union; simpl in H.
-    -- apply notin_union_1 in H. apply IHt1. assumption.
-    -- apply notin_union_2 in H. apply IHt2. assumption.
-  - admit.
-Admitted.
 
 Lemma double_P: forall t, P (P t) = P t.
 Proof.
