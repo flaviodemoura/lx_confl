@@ -28,7 +28,79 @@ Proof.
     -- assumption.
     -- assumption.
   - simpl. unfold swap_var. default_simp.
-    -- admit.
+    -- case (x == y); intros; subst.
+       --- repeat rewrite swap_id. apply aeq_refl.
+       --- induction t1.
+           + simpl. unfold swap_var. default_simp.
+             ++ repeat rewrite subst_eq_var. assumption.
+             ++ repeat rewrite subst_neq_var.
+                +++ simpl. unfold swap_var. default_simp.
+                +++ assumption.
+                +++ assumption.
+             ++ repeat rewrite subst_neq_var.
+                +++ simpl. unfold swap_var. default_simp.
+                +++ apply aux_not_equal; assumption.
+                +++ apply aux_not_equal; assumption.
+           + simpl. unfold swap_var. default_simp.
+             ++ repeat rewrite subst_abs. default_simp.
+                unfold swap_var. default_simp. unfold swap_var in IHt1.
+                default_simp.
+             ++ repeat rewrite subst_abs. default_simp.
+                unfold swap_var. default_simp.
+                +++ case (x0 == y); intros; subst.
+                    * apply aeq_abs_same. admit.
+                    * apply aeq_abs_diff.
+                      ** assumption.
+                      ** admit.
+                      ** admit.
+                +++ repeat rewrite swap_id. 
+                    case (x == x0); intros; subst.
+                    * repeat rewrite swap_id. apply aeq_abs_same.
+                      apply IHt0. unfold swap_var in IHt1.
+                      default_simp. admit.
+                    * admit.
+                +++ case (x0 == x1); intros; subst.
+                    * apply aeq_abs_same. admit.
+                    * apply aeq_abs_diff.
+                      ** assumption.
+                      ** admit.
+                      ** admit.
+              ++ repeat rewrite subst_abs. default_simp.
+                unfold swap_var. default_simp.
+                +++ case (x1 == y); intros; subst.
+                    * apply aeq_abs_same. admit.
+                    * apply aeq_abs_diff.
+                      ** assumption.
+                      ** admit.
+                      ** admit.
+                +++ repeat rewrite swap_id. 
+                    case (x == x1); intros; subst.
+                    * repeat rewrite swap_id. apply aeq_abs_same.
+                      admit.
+                    * admit.
+                +++ case (x1 == x2); intros; subst.
+                    * apply aeq_abs_same. admit.
+                    * apply aeq_abs_diff.
+                      ** assumption.
+                      ** admit.
+                      ** admit.
+           + simpl. rewrite subst_app. apply aeq_app.
+             ++ unfold m_subst in IHt1_1.
+                assert (size (P t1_1) <= (size (P t1_1) + size (P t1_2))). {
+                  apply le_plus_l.
+      }
+                apply subst_size with (size (P t1_1) + size (P t1_2)) (P t2) x (P t1_1) in H. rewrite H. apply IHt1_1. simpl in IHt1.
+                admit.
+             ++ unfold m_subst in IHt1_2.
+                assert (size (P t1_2) <= (size (P t1_1) + size (P t1_2))). {
+                  apply le_plus_r.
+      }
+                apply subst_size with (size (P t1_1) + size (P t1_2)) (P t2) x (P t1_2) in H. rewrite H. apply IHt1_2. simpl in IHt2.
+                admit. 
+           + simpl. unfold swap_var. default_simp.
+             ++ admit.
+             ++ admit.
+             ++ admit.
     -- admit.
     -- admit.
 Admitted.
