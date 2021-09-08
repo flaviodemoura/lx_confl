@@ -206,10 +206,11 @@ Qed.
 Lemma diff_remove: forall x y s,
     x <> y -> x `notin` s -> x `notin` remove y s.
 Proof.
-Admitted.
+  intros. apply notin_remove_2. assumption.
+Qed.
 
-Lemma remove_swap: forall x y t,
-    remove x (fv_nom (swap y x t)) = remove y (fv_nom t).
+Lemma remove_symmetric: forall x y s,
+           remove x (remove y s) = remove y (remove x s).
 Proof.
 Admitted.
 
@@ -220,7 +221,12 @@ Admitted.
 
 Lemma fv_nom_swap_remove: forall t x y y0, x <> y ->  x <> y0 -> x `notin` fv_nom (swap y0 y t) -> x `notin` fv_nom t.
 Proof.
-Admitted.
+  intros. induction t.
+  - simpl. simpl in H1. unfold swap_var in H1. default_simp.
+  - simpl. simpl in H1. unfold swap_var in H1. default_simp.
+  - simpl. simpl in H1. unfold swap_var in H1. default_simp.
+  - simpl. simpl in H1. unfold swap_var in H1. default_simp.
+Qed.
   
 Lemma shuffle_swap : forall w y n z,
     w <> z -> y <> z ->
@@ -230,7 +236,7 @@ Proof.
 Qed.
 
 Lemma double_remove: forall x s,
-           remove x (remove x s) = remove x s.
+           remove x (remove x s) [=] remove x s.
 Proof.
   intros. pose proof AtomSetProperties.remove_equal.
   assert (x `notin` remove x s). {
@@ -238,11 +244,6 @@ Proof.
   }
   specialize (H (remove x s) x). apply H in H0. (*assumption.*)
   admit.
-Admitted.
-
-Lemma remove_symmetric: forall x y s,
-           remove x (remove y s) = remove y (remove x s).
-Proof.
 Admitted.
   
 Lemma swap_comp: forall t x y y0,  (swap y x (swap y0 y t)) = (swap y0 x t).
