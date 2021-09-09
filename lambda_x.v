@@ -236,7 +236,7 @@ Proof.
 Qed.
 
 Lemma double_remove: forall x s,
-           remove x (remove x s) [=] remove x s.
+           remove x (remove x s) = remove x s.
 Proof.
   intros. pose proof AtomSetProperties.remove_equal.
   assert (x `notin` remove x s). {
@@ -1584,7 +1584,8 @@ Proof.
            pose proof AtomSetProperties.empty_union_1.
            specialize (H (remove y (singleton y)) (fv_nom u)).
            pose proof remove_singleton. specialize (H0 y).
-           apply H in H0. symmetry in H0. assumption.
+           admit.
+           (*apply H in H0. symmetry in H0. assumption.*)
        --- intros; contradiction.
     -- intros; case (y == x).
        --- intros.  symmetry in e; contradiction.

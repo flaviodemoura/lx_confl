@@ -316,7 +316,37 @@ Proof.
                          *** admit.
                          *** admit.    
              ++ simpl. admit.
-           + admit.
+           + simpl. inversion H2; subst.
+             +++ apply aeq_P in H. apply aeq_P in H2.
+                 simpl in H2. simpl in H.
+                 unfold m_subst in H; unfold m_subst in H2.
+                 simpl in H. default_simp.
+                 case (x == x0); intros; subst.
+                 * rewrite swap_id in H.
+                   apply aeq_trans with (P e1) (n_abs x0 (subst_rec (size (P e0)) (P e0) (P e5) y)) (n_abs x0 (P t2)) in H.
+                   ** assumption.
+                   ** assumption.
+                 * pose proof subst_fresh_eq.
+                   unfold m_subst in H4. inversion H7; subst.
+                   ** simpl. simpl in H2. admit.
+                   ** simpl. simpl in H2. admit. (*Igual a de cima*)
+             +++ simpl. apply aeq_P in H9.
+                 assert (P (swap y0 x t2) = swap y0 x (P t2)).
+                 admit.
+                 rewrite H4 in H9. simpl in H9.
+                 apply aeq_P in H. simpl in H.
+                 apply notin_P in H7. admit.
+
+
+
+
+
+
+
+
+
+
+                        
            + admit.
        --- admit.
        --- admit.
@@ -624,13 +654,16 @@ Proof.
   exists (ctx pix), (ctx betax), P, B.
   split.
   - intros x y. split.
-    + intros. inversion H.
-      ++ subst. apply union_right. admit.
-      ++ subst. apply union_left. admit.
+    + intros. unfold lx in H. inversion H; subst.
+      ++ admit.
+      ++ inversion H1; subst.
+         +++ apply union_right. admit.
+         +++ admit.
       ++ subst. admit.
       ++ subst. admit.
       ++ subst. admit.
       ++ subst. admit.
+      ++ admit.
     + intros. apply union_or in H. inversion H.
       ++ admit.
       ++ admit.        
@@ -638,11 +671,11 @@ Proof.
     + intros. induction H.
       ++ inversion H.
          +++ simpl. unfold m_subst. simpl. default_simp.
-         +++ simpl. unfold m_subst. simpl. default_simp.
-         +++ simpl. unfold m_subst. simpl. default_simp.
-         +++ simpl. unfold m_subst. simpl. default_simp.
          +++ simpl. unfold m_subst. simpl. default_simp. admit.
-         +++ simpl. unfold m_subst. simpl. default_simp. admit.
+         +++ simpl. unfold m_subst. simpl. admit.
+         +++ simpl. unfold m_subst. simpl. admit.
+         +++ simpl. unfold m_subst. simpl. admit.
+         +++ simpl. unfold m_subst. simpl. admit.
       ++ admit.
       ++ admit.
       ++ admit.
@@ -755,7 +788,7 @@ Proof.
         
 
 
-
+    ++ admit.
     + split.
       * admit.
       * split.
