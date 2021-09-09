@@ -241,14 +241,96 @@ Proof.
                          *** assumption.
                 +++ simpl. unfold m_subst. simpl. default_simp.
                     inversion H2; subst.
-                    * simpl. admit.
-                    * simpl. admit.
+                    * simpl. case (x0 == y); intros; subst.
+                      ** apply aeq_abs_same.
+                         rewrite swap_symmetric in H10.
+                         apply aeq_swap1 with t0 (swap x y e0) x y in H10.
+                         rewrite swap_involutive in H10.
+                         apply aeq_trans with (swap x y t0) e0 t3 in H10.
+                         *** apply aeq_P in H10.
+                             pose proof aeq_swap_P.
+                             specialize (H3 x y t0).
+                             apply aeq_sym in H3.
+                             apply aeq_sym in H10.
+                             apply aeq_trans with (P t3) (P (swap x y t0)) (swap x y (P t0)) in H10.
+                         **** pose proof swap_size_eq. 
+                              specialize (H4 x y (P t0)).
+                              rewrite <- H4.
+                              pose proof subst_fresh_eq_aux.
+                              specialize (H7 (size (swap x y (P t0))) y (swap x y (P t0)) (P t2)).
+                              unfold m_subst in H7.
+                              assert (size (swap x y (P t0)) <= size (swap x y (P t0))). {
+                                default_simp.
+                     }
+                              apply H7 in H12; clear H7.
+                              apply aeq_sym in H12.
+                              apply aeq_trans with (P t3) (swap x y (P t0)) (subst_rec (size (swap x y (P t0))) 
+             (swap x y (P t0)) (P t2) y) in H10.
+                         ***** apply aeq_sym. assumption.
+                         ***** assumption.
+                         ***** apply notin_union_2 in n.
+                               apply notin_union_2 in n.
+                               apply notin_singleton_1 in n.
+                               contradiction. 
+                         **** apply aeq_sym. assumption.
+                         *** assumption.
+                      ** apply aeq_abs_diff.
+                         *** assumption.
+                         *** admit.
+                         *** apply aeq_swap1 with e0 t3 y x0 in H11.
+                             admit.
+                    * simpl. case (x0 == y0); intros; subst.
+                      ** apply aeq_abs_same.
+                         apply aeq_swap1 with t0 (swap y x e0) y x in H10.
+                         rewrite swap_involutive in H10.
+                         apply aeq_trans with (swap y x t0) e0 (swap y0 y t3) in H10.
+                         *** apply aeq_swap1 with (swap y x t0) (swap y0 y t3) y0 y in H10.
+                             rewrite swap_involutive in H10.
+                             apply aeq_P in H10.
+                             assert ((P (swap y0 y (swap y x t0)) = (swap y0 y (swap y x (P t0))))). admit. (*esta definido com aeq nao como igualdade sintatica*)
+                             rewrite H3 in H10.
+                             assert (swap y x (P t0) = (swap x y (P t0))). apply swap_symmetric; reflexivity.
+                             rewrite H4 in H10.
+                             assert ((swap y0 y (swap x y (P t0))) = (swap y y0 (swap x y (P t0)))). apply swap_symmetric; reflexivity.
+                             rewrite H12 in H10.
+                             rewrite swap_comp in H10.
+                             pose proof subst_fresh_eq_aux.
+                             specialize (H14 (size (swap x y0 (P t0))) y (swap x y0 (P t0)) (P t2)).
+                             pose proof swap_size_eq.
+                             specialize (H15 x y0 (P t0)).
+                             rewrite <- H15.
+                             assert (size (swap x y0 (P t0)) <= size (swap x y0 (P t0))). default_simp.
+                             apply H14 in H16; clear H14.
+                             unfold m_subst in H16.
+                             apply aeq_sym in H10.
+                             apply aeq_sym in H16.
+                             apply aeq_sym.
+                             apply aeq_trans with (P t3) (swap x y0 (P t0)) (subst_rec (size (swap x y0 (P t0))) (swap x y0 (P t0)) (P t2) y) in H10.
+                         **** assumption.
+                         **** assumption.
+                         **** admit.
+
+                         *** assumption.
+                      ** apply aeq_abs_diff.
+                         *** assumption.
+                         *** admit.
+                         *** admit.    
              ++ simpl. admit.
            + admit.
            + admit.
        --- admit.
        --- admit.
-       --- admit.
+       --- simpl. apply aeq_app.
+           + apply aeq_refl.
+           + apply IHctx.
+             ++ admit.
+             ++ admit.
+                
+
+
+
+
+         
        --- admit.
        --- admit.
      -- assumption. 
