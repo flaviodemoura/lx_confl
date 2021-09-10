@@ -1595,9 +1595,6 @@ Proof.
     -- admit.
   - admit.
   - Admitted.
-           
-           
-
 
 (** ** Challenge Exercise [m_subst properties]
 

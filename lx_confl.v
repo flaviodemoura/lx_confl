@@ -101,7 +101,31 @@ Proof.
              ++ admit.
              ++ admit.
              ++ admit.
-    -- admit.
+    -- induction t1.
+       --- simpl. unfold swap_var. default_simp.
+           + admit.
+           + repeat rewrite subst_eq_var. assumption.
+           + admit.
+       --- simpl. unfold swap_var. default_simp.
+           + unfold swap_var in IHt1. default_simp.
+             repeat rewrite subst_abs. default_simp.
+             unfold swap_var. default_simp.
+             ++ rewrite swap_id. admit.
+             ++ admit.
+             ++ admit.
+           + unfold swap_var in IHt1. default_simp.
+             repeat rewrite subst_abs. default_simp.
+             unfold swap_var. default_simp.
+           + unfold swap_var in IHt1. default_simp.
+             repeat rewrite subst_abs. default_simp.
+             unfold swap_var. default_simp.
+             ++ admit.
+             ++ admit.
+             ++ admit.
+       --- simpl in IHt1. simpl. admit.
+       --- admit.    
+
+
     -- admit.
 Admitted.
 
@@ -144,9 +168,15 @@ Proof.
        case (x == x0). intros; subst.
        --- repeat rewrite subst_eq_var. assumption.
        --- admit.
-    -- admit.
-    -- admit.
-    -- admit.
+    -- simpl. simpl in IHaeq1.
+       unfold m_subst; unfold m_subst in IHt1.
+       simpl. default_simp.
+       --- admit.
+       --- admit.
+    -- simpl. simpl in IHaeq1.
+       unfold m_subst; unfold m_subst in IHt1_1; unfold m_subst in IHt1_2.
+       simpl. admit.
+    -- simpl. admit.
   - admit.
 Admitted.
 
