@@ -389,9 +389,33 @@ Proof.
                 +++ assumption.
                 +++ assumption.
              ++ simpl. apply aeq_P in H2. simpl in H2.
-                inversion H2; subst.
-                admit.
-       --- admit.
+                inversion H2; subst. apply aeq_P in H.
+                simpl in H. unfold m_subst in H. simpl in H.
+                unfold m_subst in H2.
+                pose proof subst_size; pose proof subst_size.
+                specialize (H3 (size (P e0) + size (P e5)) (P e6) y (P e0)).
+                specialize (H4 (size (P e0) + size (P e5)) (P e6) y (P e5)).
+                assert (size (P e0) <= size (P e0) + size (P e5)). {
+                  apply le_plus_l.
+                }
+                assert (size (P e5) <= size (P e0) + size (P e5)). {
+                  apply le_plus_r.
+                }
+                apply H3 in H12; clear H3.
+                apply H4 in H13; clear H4.
+                rewrite H12 in H; rewrite H13 in H.
+                rewrite H5. unfold m_subst.
+                apply aeq_trans with (subst_rec (size (P t1)) (P t1) (P t2) x) (n_app (subst_rec (size (P e0)) (P e0) (P e6) y)
+           (subst_rec (size (P e5)) (P e5) (P e6) y)) (P e4) in H.
+                +++ assumption.
+                +++ assumption.
+       --- simpl. apply aeq_abs_same. simpl in IHrefltrans.
+           inversion IHrefltrans; subst.
+           + apply IHctx.
+             ++ admit.
+             ++ admit.
+           + admit.
+
        --- admit.
        --- simpl. apply aeq_app.
            + apply aeq_refl.
@@ -552,6 +576,7 @@ Admitted.*)
 
 Lemma refltrans_abs (R: Rel n_sexp): forall e1 e2 x ,
     refltrans (ctx R) e1 e2 -> refltrans (ctx R) (n_abs x e1) (n_abs x e2).
+  Proof.
 Admitted.
 
 Lemma refltrans_composition3 (R: Rel n_sexp): forall t u v,
@@ -577,7 +602,7 @@ Proof.
 Qed.
        
 Lemma refltrans_app2 (R: Rel n_sexp): forall e1 e2 e3,
-    refltrans R e2 e3 -> refltrans R (n_app e1 e2) (n_app e1 e3).
+    refltrans (ctx R) e2 e3 -> refltrans (ctx R) (n_app e1 e2) (n_app e1 e3).
 Proof.
   intros e1 e2 e3. intro H. induction H.
   - apply refl.
