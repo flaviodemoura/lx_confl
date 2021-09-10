@@ -366,18 +366,31 @@ Proof.
                  rewrite H4 in H9. simpl in H9.
                  apply aeq_P in H. simpl in H.
                  apply notin_P in H7. admit.
-
-
-
-
-
-
-
-
-
-
-                        
-           + admit.
+           + inversion H; subst.
+             ++ simpl. apply aeq_P in H2. simpl in H2.
+                apply aeq_P in H. simpl in H.
+                unfold m_subst in H; unfold m_subst in H2.
+                simpl in H.
+                pose proof subst_size; pose proof subst_size.
+                specialize (H3 (size (P e0) + size (P e5)) (P e6) y (P e0)).
+                specialize (H4 (size (P e0) + size (P e5)) (P e6) y (P e5)).
+                assert (size (P e0) <= size (P e0) + size (P e5)). {
+                  apply le_plus_l.
+                }
+                assert (size (P e5) <= size (P e0) + size (P e5)). {
+                  apply le_plus_r.
+                }
+                apply H3 in H5; clear H3.
+                apply H4 in H7; clear H4.
+                rewrite H5 in H; rewrite H7 in H.
+                unfold m_subst.
+                apply aeq_trans with (subst_rec (size (P t1)) (P t1) (P t2) y) (n_app (subst_rec (size (P e0)) (P e0) (P e6) y)
+           (subst_rec (size (P e5)) (P e5) (P e6) y)) (P e4) in H.
+                +++ assumption.
+                +++ assumption.
+             ++ simpl. apply aeq_P in H2. simpl in H2.
+                inversion H2; subst.
+                admit.
        --- admit.
        --- admit.
        --- simpl. apply aeq_app.
