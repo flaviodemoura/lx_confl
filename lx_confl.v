@@ -208,14 +208,6 @@ Proof.
     inversion H.
 Qed.
 
-Lemma double_P: forall t, P (P t) = P t.
-Proof.
-  intros; induction t.
-  - simpl. reflexivity.
-  - simpl. rewrite IHt. reflexivity.
-  - simpl. rewrite IHt1; rewrite IHt2. reflexivity.
-  - admit.
-Admitted.
 (**)
 
 Lemma pi_P: forall t1 t2, refltrans (ctx pix) t1 t2 -> aeq (P t1) (P t2).
