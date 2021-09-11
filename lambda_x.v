@@ -210,12 +210,12 @@ Proof.
 Qed.
 
 Lemma remove_symmetric: forall x y s,
-           remove x (remove y s) = remove y (remove x s).
+           remove x (remove y s) [=] remove y (remove x s).
 Proof.
 Admitted.
 
 Lemma swap_remove_reduction: forall x y t,
-    remove x (remove y (fv_nom (swap y x t))) = remove x (remove y (fv_nom t)).
+    remove x (remove y (fv_nom (swap y x t))) [=] remove x (remove y (fv_nom t)).
 Proof.
 Admitted.
 
@@ -236,13 +236,14 @@ Proof.
 Qed.
 
 Lemma double_remove: forall x s,
-           remove x (remove x s) = remove x s.
+           remove x (remove x s) [=] remove x s.
 Proof.
   intros. pose proof AtomSetProperties.remove_equal.
   assert (x `notin` remove x s). {
     apply AtomSetImpl.remove_1. reflexivity.
   }
-  specialize (H (remove x s) x). apply H in H0. (*assumption.*)
+  specialize (H (remove x s) x). apply H in H0. Search "Equal". unfold AtomSetImpl.Equal in H0.
+  (*assumption.*)
   admit.
 Admitted.
   
@@ -268,15 +269,19 @@ Proof.
   - intros; simpl. unfold swap_var. case (x0 == y); intros; subst.
     -- case (x == y); intros; subst.
        --- rewrite swap_id. reflexivity.
-       --- rewrite double_remove. symmetry; rewrite double_remove.
+       --- admit.
+         (*rewrite double_remove. symmetry; rewrite double_remove.
            symmetry; apply IHt. simpl in H.
            apply notin_remove_1 in H. inversion H.
            + symmetry in H0; contradiction.
-           + assumption.
+           + assumption.*)
     -- case (x0 == x); intros; subst.
-       --- rewrite swap_remove_reduction. rewrite remove_symmetric.
-           reflexivity.
-       --- admit.
+       --- (*rewrite swap_remove_reduction. rewrite remove_symmetric.
+           reflexivity.*) admit.
+       --- simpl in H. apply notin_remove_1 in H.
+           inversion H; subst.
+           + contradiction.
+           + admit.
   - intros. simpl. simpl in H. pose proof H.
     apply notin_union_1 in H; apply notin_union_2 in H0.
     apply IHt1 in H; apply IHt2 in H0.
@@ -1655,7 +1660,7 @@ Proof.
                   (union (union (remove x (fv_nom t1)) (fv_nom t2)) (singleton y)))).
            case (x == x0).
              ---- intros; subst. rewrite swap_id.
-                  apply aeq_sub_same.
+                  apply aeq_subsame.
                   ----- specialize (IHn t1 y); apply IHn.
                         apply Sn_le_Sm__n_le_m in SZ.
                         transitivity (size t1 + size t2).
