@@ -23,6 +23,16 @@ Lemma notin_swap: forall x y z t,
 Proof.
 Admitted.
 
+Lemma notin_fv_subst_eq: forall x u t,
+    x `notin` fv_nom t -> x `notin` fv_nom (m_subst u x t).
+Proof.
+Admitted.
+
+Lemma notin_fv_subst_neq: forall x y u t,
+    x `notin` fv_nom u -> x `notin` fv_nom t -> x `notin` fv_nom (m_subst u y t).
+Proof.
+Admitted.
+  
 Lemma aeq_subst: forall t1 t1' t2 t2' x,
     aeq t1 t1' -> aeq t2 t2' -> aeq (m_subst t1 x t2) (m_subst t1' x t2').
 Proof.
@@ -42,6 +52,11 @@ Lemma subst_swap: forall u t x y,
 Proof.
 Admitted.
 
+Lemma subst_swap_reduction: forall u t x y z,
+    (swap x y (m_subst u z t)) = (m_subst (swap x y u) (swap_var x y z) (swap x y t)).
+Proof.
+Admitted.
+  
 Lemma aeq_swap_P: forall x y t,
     aeq (P (swap x y t)) (swap x y (P t)).
 Proof.
@@ -53,105 +68,32 @@ Proof.
     -- assumption.
   - simpl. unfold swap_var. default_simp.
     -- case (x == y); intros; subst.
-       --- repeat rewrite swap_id. apply aeq_refl.
-       --- induction t1.
-           + simpl. unfold swap_var. default_simp.
-             ++ repeat rewrite subst_eq_var. assumption.
-             ++ repeat rewrite subst_neq_var.
-                +++ simpl. unfold swap_var. default_simp.
-                +++ assumption.
-                +++ assumption.
-             ++ repeat rewrite subst_neq_var.
-                +++ simpl. unfold swap_var. default_simp.
-                +++ apply aux_not_equal; assumption.
-                +++ apply aux_not_equal; assumption.
-           + simpl. unfold swap_var. default_simp.
-             ++ repeat rewrite subst_abs. default_simp.
-                unfold swap_var. default_simp. unfold swap_var in IHt1.
-                default_simp.
-             ++ repeat rewrite subst_abs. default_simp.
-                unfold swap_var. default_simp.
-                +++ case (x0 == y); intros; subst.
-                    * apply aeq_abs_same. admit.
-                    * apply aeq_abs_diff.
-                      ** assumption.
-                      ** admit.
-                      ** admit.
-                +++ repeat rewrite swap_id. 
-                    case (x == x0); intros; subst.
-                    * repeat rewrite swap_id. apply aeq_abs_same.
-                      apply IHt0. unfold swap_var in IHt1.
-                      default_simp. admit.
-                    * admit.
-                +++ case (x0 == x1); intros; subst.
-                    * apply aeq_abs_same. admit.
-                    * apply aeq_abs_diff.
-                      ** assumption.
-                      ** admit.
-                      ** admit.
-              ++ repeat rewrite subst_abs. default_simp.
-                unfold swap_var. default_simp.
-                +++ case (x1 == y); intros; subst.
-                    * apply aeq_abs_same. admit.
-                    * apply aeq_abs_diff.
-                      ** assumption.
-                      ** admit.
-                      ** admit.
-                +++ repeat rewrite swap_id. 
-                    case (x == x1); intros; subst.
-                    * repeat rewrite swap_id. apply aeq_abs_same.
-                      admit.
-                    * admit.
-                +++ case (x1 == x2); intros; subst.
-                    * apply aeq_abs_same. admit.
-                    * apply aeq_abs_diff.
-                      ** assumption.
-                      ** admit.
-                      ** admit.
-           + simpl. rewrite subst_app. apply aeq_app.
-             ++ unfold m_subst in IHt1_1.
-                assert (size (P t1_1) <= (size (P t1_1) + size (P t1_2))). {
-                  apply le_plus_l.
-      }
-                apply subst_size with (size (P t1_1) + size (P t1_2)) (P t2) x (P t1_1) in H. rewrite H. apply IHt1_1. simpl in IHt1.
-                admit.
-             ++ unfold m_subst in IHt1_2.
-                assert (size (P t1_2) <= (size (P t1_1) + size (P t1_2))). {
-                  apply le_plus_r.
-      }
-                apply subst_size with (size (P t1_1) + size (P t1_2)) (P t2) x (P t1_2) in H. rewrite H. apply IHt1_2. simpl in IHt2.
-                admit. 
-           + simpl. unfold swap_var. default_simp.
-             ++ admit.
-             ++ admit.
-             ++ admit.
-    -- induction t1.
-       --- simpl. unfold swap_var. default_simp.
-           + admit.
-           + repeat rewrite subst_eq_var. assumption.
-           + admit.
-       --- simpl. unfold swap_var. default_simp.
-           + unfold swap_var in IHt1. default_simp.
-             repeat rewrite subst_abs. default_simp.
-             unfold swap_var. default_simp.
-             ++ rewrite swap_id. admit.
-             ++ admit.
-             ++ admit.
-           + unfold swap_var in IHt1. default_simp.
-             repeat rewrite subst_abs. default_simp.
-             unfold swap_var. default_simp.
-           + unfold swap_var in IHt1. default_simp.
-             repeat rewrite subst_abs. default_simp.
-             unfold swap_var. default_simp.
-             ++ admit.
-             ++ admit.
-             ++ admit.
-       --- simpl in IHt1. simpl. admit.
-       --- admit.    
-
-
-    -- admit.
-Admitted.
+       --- repeat rewrite swap_id. apply aeq_subst.
+           + apply aeq_refl.
+           + apply aeq_refl.
+       --- pose proof subst_swap_reduction.
+           specialize (H (P t2) (P t1) x y x). rewrite H.
+           unfold swap_var; unfold swap_var in H; default_simp.
+           apply aeq_subst.
+           + assumption.
+           + assumption.
+    -- pose proof subst_swap_reduction.
+       assert ((swap x y (m_subst (P t2) y (P t1)) = (swap y x (m_subst (P t2) y (P t1))))). rewrite swap_symmetric; reflexivity.
+       rewrite H0.
+       specialize (H (P t2) (P t1) y x y). rewrite H.
+       unfold swap_var; unfold swap_var in H; default_simp.
+       apply aeq_subst.
+       --- apply aeq_sym. rewrite swap_symmetric.
+           apply aeq_sym. assumption.
+       --- apply aeq_sym. rewrite swap_symmetric.
+           apply aeq_sym. assumption.
+    -- pose proof subst_swap_reduction.
+       specialize (H (P t2) (P t1) x y x0).
+       unfold swap_var; unfold swap_var in H; default_simp.
+       rewrite H. apply aeq_subst.
+       --- assumption.
+       --- assumption.
+Qed.           
 
 Lemma notin_P: forall x t,
     x `notin` fv_nom t -> x `notin` fv_nom (P t).
@@ -167,13 +109,7 @@ Proof.
   - simpl. apply notin_union; simpl in H.
     -- apply notin_union_1 in H. apply IHt1. assumption.
     -- apply notin_union_2 in H. apply IHt2. assumption.
-  - simpl in H. simpl. assert (fv_nom (m_subst (P t2) x0 (P t1)) = Metatheory.union (remove x0 (fv_nom (P t2))) (fv_nom (P t1))). admit.
-    rewrite H0. apply notin_union_3.
-    -- case (x == x0); intros; subst.
-       --- apply notin_remove_3; reflexivity.
-       --- apply notin_remove_2. apply IHt2.
-           apply notin_union_2 in H. assumption.
-    -- admit.
+  - admit.
 (*
 
 
@@ -257,7 +193,17 @@ Proof.
     -- assumption.
   - simpl. apply aeq_subst.
     -- assumption.
-    -- assumption.               
+    -- assumption.
+  - simpl. pose proof subst_swap.
+    specialize (H3 (P t2') (P t1') x y). rewrite <- H3.
+    apply aeq_subst.
+    -- assumption.
+    -- rewrite swap_symmetric. pose proof aeq_swap_P.
+       specialize (H4 y x t1').
+       apply aeq_trans with (P t1) (P (swap y x t1')) (swap y x (P t1')) in IHaeq2.
+       --- assumption.
+       --- assumption.
+Qed.       
     (*induction t1'.
     -- simpl. simpl in IHaeq1. inversion IHaeq1; subst.
        case (x == x0). intros; subst.
@@ -310,7 +256,6 @@ Proof.
     -- simpl. admit.
   - admit.
 Admitted.*)
-Qed.
 
 Lemma aeq_nvar_1: forall t x, aeq t (n_var x) -> t = n_var x.
 Proof.
