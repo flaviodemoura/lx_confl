@@ -216,31 +216,105 @@ Proof.
   intros. apply notin_remove_2. assumption.
 Qed.
 
+Lemma remove_singleton_neq: forall x y,
+    x <> y -> remove y (singleton x) [=] singleton x.
+Proof.
+  intros. 
+  pose proof notin_singleton_2. specialize (H0 x y).
+  apply H0 in H.
+  Search "remove".
+  apply AtomSetProperties.remove_equal in H. assumption.
+Qed.
+
+Lemma double_remove: forall x s,
+           remove x (remove x s) [=] remove x s.
+Proof.
+  intros. pose proof AtomSetProperties.remove_equal.
+  assert (x `notin` remove x s). {
+    apply AtomSetImpl.remove_1. reflexivity.
+  }
+  specialize (H (remove x s) x). apply H in H0. assumption.
+Qed.
+
+Lemma remove_empty: forall x,
+    remove x empty [=] empty.
+Proof.
+  intros. pose proof notin_empty. specialize (H x).
+  apply AtomSetProperties.remove_equal in H.
+  assumption.
+Qed.
+
+Lemma diff_equal: forall s s' t,
+    s [=] s' -> AtomSetImpl.diff s t [=] AtomSetImpl.diff s' t.
+Proof.
+intros. rewrite H. reflexivity.
+Qed.
+
 Lemma remove_symmetric: forall x y s,
            remove x (remove y s) [=] remove y (remove x s).
-Proof.
-  intros. case (x == y); intros; subst.
-  - reflexivity.
-  - admit.
+Proof.    
 Admitted.
 
 Lemma swap_remove_reduction: forall x y t,
     remove x (remove y (fv_nom (swap y x t))) [=] remove x (remove y (fv_nom t)).
 Proof.
   induction t.
-  - intros x' y y' H1 H2 H3.
-    simpl in *.
-    unfold swap_var in H3.
-    destruct (x == y').
-    + subst.
-      auto.
-    + destruct (x == y).
-      * subst.
-        auto.
-      * assumption.
-  - intros x' y y' H1 H2 H3.
-    simpl in *.
-Admitted.
+  - rewrite remove_symmetric. simpl. unfold swap_var. default_simp.
+    -- repeat rewrite remove_singleton_empty.
+       repeat rewrite remove_empty. reflexivity.
+    -- rewrite remove_symmetric. rewrite remove_singleton_empty.
+       rewrite remove_symmetric. rewrite remove_singleton_empty.
+       repeat rewrite remove_empty. reflexivity.
+    -- rewrite remove_symmetric. reflexivity.
+  - simpl. unfold swap_var. default_simp.
+    -- rewrite double_remove. rewrite remove_symmetric.
+       rewrite double_remove. rewrite remove_symmetric.
+       assumption.
+    -- rewrite double_remove. symmetry.
+       rewrite remove_symmetric. rewrite double_remove.
+       rewrite remove_symmetric. symmetry.
+       assumption.
+    -- assert (remove y (remove x0 (fv_nom (swap y x t))) [=] remove x0 (remove y (fv_nom (swap y x t)))). {
+         rewrite remove_symmetric. reflexivity.
+       }
+       assert (remove y (remove x0 (fv_nom  t)) [=] remove x0 (remove y (fv_nom t))). {
+         rewrite remove_symmetric. reflexivity.
+       }
+       rewrite H; rewrite H0. rewrite remove_symmetric.
+       symmetry. rewrite remove_symmetric. rewrite IHt.
+       reflexivity.       
+  - simpl. repeat rewrite remove_union_distrib.
+    apply Equal_union_compat.
+    -- assumption.
+    -- assumption.
+  - simpl. unfold swap_var. default_simp.
+    -- repeat rewrite remove_union_distrib.
+       apply Equal_union_compat.
+       --- rewrite remove_symmetric. rewrite double_remove.
+           rewrite double_remove. rewrite remove_symmetric.
+           assumption.
+       --- assumption.
+    -- repeat rewrite remove_union_distrib.
+       apply Equal_union_compat.
+       --- rewrite double_remove. symmetry.
+           rewrite remove_symmetric.
+           rewrite double_remove. rewrite remove_symmetric.
+           symmetry. assumption.
+       --- assumption.
+    -- repeat rewrite remove_union_distrib.
+       apply Equal_union_compat.
+       --- assert (remove y (remove x0 (fv_nom (swap y x t1))) [=] remove x0 (remove y (fv_nom (swap y x t1)))). {
+         rewrite remove_symmetric. reflexivity.
+           }
+           assert (remove y (remove x0 (fv_nom  t1)) [=] remove x0 (remove y (fv_nom t1))). {
+         rewrite remove_symmetric. reflexivity.
+           }
+           rewrite H; rewrite H0.
+           rewrite remove_symmetric. symmetry.
+           rewrite remove_symmetric. symmetry.
+           rewrite IHt1. reflexivity.
+       --- assumption.
+Qed.
 
 Lemma fv_nom_swap_remove: forall t x y y0, x <> y ->  x <> y0 -> x `notin` fv_nom (swap y0 y t) -> x `notin` fv_nom t.
 Proof.
@@ -256,16 +330,6 @@ Lemma shuffle_swap : forall w y n z,
     (swap w y (swap y z n)) = (swap w z (swap w y n)).
 Proof.
   induction n; intros; simpl; unfold swap_var; default_simp.
-Qed.
-
-Lemma double_remove: forall x s,
-           remove x (remove x s) [=] remove x s.
-Proof.
-  intros. pose proof AtomSetProperties.remove_equal.
-  assert (x `notin` remove x s). {
-    apply AtomSetImpl.remove_1. reflexivity.
-  }
-  specialize (H (remove x s) x). apply H in H0. assumption.
 Qed.
 
 Lemma swap_comp: forall t x y y0,  (swap y x (swap y0 y t)) = (swap y0 x t).
