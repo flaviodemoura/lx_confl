@@ -15,9 +15,9 @@ Require Import Coq.Logic.Decidable.
 (* *********************************************************************** *)
 (** * Hints for [equiv] *)
 
-Hint Extern 0 (?x === ?x) => reflexivity.
-Hint Extern 1 (_ === _) => (symmetry; trivial; fail).
-Hint Extern 1 (_ =/= _) => (symmetry; trivial; fail).
+Hint Extern 0 (?x === ?x) => reflexivity : core. 
+Hint Extern 1 (_ === _) => (symmetry; trivial; fail) : core.
+Hint Extern 1 (_ =/= _) => (symmetry; trivial; fail) : core.
 
 
 (* *********************************************************************** *)
@@ -76,11 +76,23 @@ Class EqDec_eq (A : Type) :=
 Instance EqDec_eq_of_EqDec (A : Type) `(@EqDec A eq eq_equivalence) : EqDec_eq A.
 Proof. trivial. Defined.
 
+(** We can also provide a reflexivity theorem for rewriting with, since types
+    with decidable equality satisfy UIP/Axiom K and so we know that we can
+    rewrite the equality proof to `eq_refl`. *)
+
+Theorem eq_dec_refl {A : Type} `{EqDec_eq A} (x : A) : eq_dec x x = left eq_refl.
+Proof.
+  destruct (eq_dec x x); [|contradiction].
+  f_equal; apply (Eqdep_dec.UIP_dec eq_dec).
+Qed.
+
 (* ********************************************************************** *)
 (** * Decidable equality *)
 
 (** We prefer that "==" refer to decidable equality at [eq], as
     defined by the [EqDec_eq] class from the CoqEqDec library. *)
+
+Declare Scope coqeqdec_scope.
 
 Notation " x  == y " := (eq_dec x y) (at level 70) : coqeqdec_scope.
 

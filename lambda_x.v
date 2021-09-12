@@ -10,10 +10,7 @@
 (** * Imports                                                *)
 (*************************************************************)
 
-(** Some of our proofs are by induction on the *size* of
-    terms. We'll use Coq's [omega] tactic to easily dispatch
-    reasoning about natural numbers. *)
-Require Export Omega.
+Require Export Lia.
 
 (** We will use the [atom] type from the metatheory library to
     represent variable names. *)
@@ -230,6 +227,19 @@ Admitted.
 Lemma swap_remove_reduction: forall x y t,
     remove x (remove y (fv_nom (swap y x t))) [=] remove x (remove y (fv_nom t)).
 Proof.
+  induction t.
+  - intros x' y y' H1 H2 H3.
+    simpl in *.
+    unfold swap_var in H3.
+    destruct (x == y').
+    + subst.
+      auto.
+    + destruct (x == y).
+      * subst.
+        auto.
+      * assumption.
+  - intros x' y y' H1 H2 H3.
+    simpl in *.
 Admitted.
 
 Lemma fv_nom_swap_remove: forall t x y y0, x <> y ->  x <> y0 -> x `notin` fv_nom (swap y0 y t) -> x `notin` fv_nom t.
@@ -784,7 +794,7 @@ Proof.
   intros. inversion H; subst. reflexivity.
 Qed.
 
-Lemma aeq_fv_nom:forall t1 t2, aeq t1 t2 -> fv_nom t1 = fv_nom t2.
+Lemma aeq_fv_nom:forall t1 t2, aeq t1 t2 -> fv_nom t1 [=] fv_nom t2.
 Proof.
   intros. induction H.
   - reflexivity.
