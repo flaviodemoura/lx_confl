@@ -32,10 +32,36 @@ Lemma notin_fv_subst_neq: forall x y u t,
     x `notin` fv_nom u -> x `notin` fv_nom t -> x `notin` fv_nom (m_subst u y t).
 Proof.
 Admitted.
+
+Lemma subst_swap_reduction: forall u t x y z,
+    (swap x y (m_subst u z t)) = (m_subst (swap x y u) (swap_var x y z) (swap x y t)).
+Proof.
+Admitted.
   
 Lemma aeq_subst: forall t1 t1' t2 t2' x,
     aeq t1 t1' -> aeq t2 t2' -> aeq (m_subst t1 x t2) (m_subst t1' x t2').
 Proof.
+  intros t1 t1' t2 t2' x H H0. induction H0.
+  - case (x == x0); intros; subst.
+    -- repeat rewrite subst_eq_var. assumption.
+    -- repeat rewrite subst_neq_var.
+       --- apply aeq_refl.
+       --- assumption.
+       --- assumption.
+  - repeat rewrite subst_abs; default_simp.
+    case (x1 == x2); intros; subst.
+    -- apply aeq_abs_same.
+       apply notin_union_2 in n. apply notin_union_1 in n.
+       apply notin_union_2 in n0. apply notin_union_1 in n0.
+       admit.
+    -- apply aeq_abs_diff.
+       --- assumption.
+       --- admit.
+       --- admit.
+  - admit.
+  - admit.
+  - admit.
+  - admit.
 Admitted.
 
 Lemma subst_notin: forall x u t,
@@ -52,10 +78,7 @@ Lemma subst_swap: forall u t x y,
 Proof.
 Admitted.
 
-Lemma subst_swap_reduction: forall u t x y z,
-    (swap x y (m_subst u z t)) = (m_subst (swap x y u) (swap_var x y z) (swap x y t)).
-Proof.
-Admitted.
+
   
 Lemma aeq_swap_P: forall x y t,
     aeq (P (swap x y t)) (swap x y (P t)).
