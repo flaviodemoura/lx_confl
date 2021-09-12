@@ -9,7 +9,7 @@
 
 Require Export Metalib.LibDefaultSimp.
 Require Import Metalib.Metatheory.
-Require Import Omega.
+Require Import Lia.
 
 
 (* ********************************************************************** *)
@@ -46,8 +46,12 @@ Ltac generalize_wrt x :=
     over should come first. *)
 
 Ltac apply_mutual_ind ind :=
-  let H := fresh in
-  first [ (* apply ind
+  match goal with 
+     [ |- (and _ _) ]  => apply ind 
+   | [ |- (prod _ _) ]  => apply ind 
+   | _ => 
+     let H := fresh in
+     first [ (* apply ind
         | *) intros H; induction H using ind
         | intros ? H; induction H using ind
         | intros ? ? H; induction H using ind
@@ -57,7 +61,8 @@ Ltac apply_mutual_ind ind :=
         | intros ? ? ? ? ? ? H; induction H using ind
         | intros ? ? ? ? ? ? ? H; induction H using ind
         | intros ? ? ? ? ? ? ? ? H; induction H using ind
-        ].
+        ]
+     end.
 
 (** Renames the last hypothesis to the given identifier. *)
 
@@ -124,9 +129,9 @@ Proof. fsetdec. Qed.
 
 Hint Resolve sym_eq : brute_force.
 
-Hint Extern 5 (_ = _ :> nat) => omega : brute_force.
-Hint Extern 5 (_ < _)        => omega : brute_force.
-Hint Extern 5 (_ <= _)       => omega : brute_force.
+Hint Extern 5 (_ = _ :> nat) => lia : brute_force.
+Hint Extern 5 (_ < _)        => lia : brute_force.
+Hint Extern 5 (_ <= _)       => lia : brute_force.
 
 Hint Rewrite @remove_union_distrib : lngen.
 

@@ -10,10 +10,7 @@
 (** * Imports                                                *)
 (*************************************************************)
 
-(** Some of our proofs are by induction on the *size* of
-    terms. We'll use Coq's [omega] tactic to easily dispatch
-    reasoning about natural numbers. *)
-Require Export Omega.
+Require Export Lia.
 
 (** We will use the [atom] type from the metatheory library to
     represent variable names. *)
@@ -194,8 +191,21 @@ Qed.
 
 Lemma fv_nom_swap_remove: forall t x y y0, x <> y ->  x <> y0 -> x `notin` fv_nom (swap y0 y t) -> x `notin` fv_nom t.
 Proof.
+  induction t.
+  - intros x' y y' H1 H2 H3.
+    simpl in *.
+    unfold swap_var in H3.
+    destruct (x == y').
+    + subst.
+      auto.
+    + destruct (x == y).
+      * subst.
+        auto.
+      * assumption.
+  - intros x' y y' H1 H2 H3.
+    simpl in *.
 Admitted.
-  
+
 Lemma shuffle_swap : forall w y n z,
     w <> z -> y <> z ->
     (swap w y (swap y z n)) = (swap w z (swap w y n)).
@@ -640,8 +650,15 @@ Proof.
   intros. inversion H; subst. reflexivity.
 Qed.
 
-Lemma aeq_fv_nom:forall t1 t2, aeq t1 t2 -> fv_nom t1 = fv_nom t2.
+Lemma aeq_fv_nom:forall t1 t2, aeq t1 t2 -> fv_nom t1 [=] fv_nom t2.
 Proof.
+  induction 1.
+  - reflexivity.
+  - simpl.
+    rewrite IHaeq.
+    reflexivity.
+  - simpl.
+    rewrite IHaeq.
 Admitted.  
 
 Lemma aeq_swap1: forall t1 t2 x y, aeq t1 t2 -> aeq (swap x y t1) (swap x y t2).
@@ -684,9 +701,16 @@ Proof.
     -- assumption.
   - apply aeq_sub_diff.
     -- assumption.
-    -- apply aux_not_equal. assumption.
+    -- apply aux_not_equal; assumption.
     -- admit.
-    -- admit.
+    -- assert (H': aeq (swap y x (swap y x t1')) (swap y x t1)).
+       {
+         apply aeq_swap.
+         assumption.
+       }
+       rewrite swap_involutive in H'.
+       rewrite swap_symmetric in H'.
+       assumption.
 Admitted.
 
 Lemma aeq_trans: forall t1 t2 t3, aeq t1 t2 -> aeq t2 t3 -> aeq t1 t3.
@@ -712,7 +736,14 @@ Proof.
        --- intro Heq; subst.
            apply aeq_abs_same.
            apply IHaeq.
-           admit.
+           assert (H8':  aeq (swap y0 y t2) (swap y0 y (swap y0 y t4))).
+           {
+             apply aeq_swap.
+             assumption.
+           }
+           rewrite swap_involutive in H8'.
+           rewrite swap_symmetric in H8'.
+           assumption.
        --- intro Hneq.
            apply aeq_abs_diff.
            ---- assumption.
@@ -721,8 +752,56 @@ Proof.
                 apply fv_nom_swap_remove in H0; assumption.
            ---- apply IHaeq.
                 apply aeq_swap1 with t2 (swap y0 y t4) y x in H8.
-                rewrite swap_comp in H8; assumption. 
-Admitted.
+                rewrite swap_comp in H8; assumption.
+  - intros t3 Haeq.
+    inversion Haeq; subst; clear Haeq.
+    apply aeq_app.
+    + apply IHaeq1; assumption.
+    + apply IHaeq2; assumption.
+  - intros t3 Haeq.
+    inversion Haeq; subst; clear Haeq.
+    + apply aeq_sub_same.
+      * apply IHaeq1; assumption.
+      * apply IHaeq2; assumption.
+    + apply aeq_sub_diff.
+      * apply IHaeq2; assumption.
+      * assumption.
+      * assumption.
+      * apply IHaeq1; assumption.
+  - intros t3 Haeq.
+    inversion Haeq; subst; clear Haeq.
+    + apply aeq_sub_diff.
+      * apply IHaeq1; assumption.
+      * assumption.
+      * apply aeq_fv_nom in H7.
+        rewrite <- H7; assumption.
+      * apply IHaeq2.
+        apply aeq_swap; assumption.
+    + case (x == y0).
+      * intro Heq; subst.
+        apply aeq_sub_same.
+        ** apply IHaeq2.
+           assert (H10':  aeq (swap y0 y t1') (swap y0 y (swap y0 y t1'0))).
+           {
+             apply aeq_swap.
+             assumption.
+           }
+           rewrite swap_involutive in H10'.
+           rewrite swap_symmetric in H10'.
+           assumption.           
+        ** apply IHaeq1; assumption.
+      * intro Hdiff.
+        apply aeq_sub_diff.
+        ** apply IHaeq1; assumption.
+        ** assumption.
+        ** apply aeq_fv_nom in H10.
+           rewrite H10 in H1.
+           apply fv_nom_swap_remove in H1; assumption.
+        ** apply IHaeq2.
+           assert (H10': aeq (swap y x t1') (swap y x (swap y0 y t1'0))).
+           *** apply aeq_swap; assumption.
+           *** rewrite swap_comp in H10'; assumption.
+Qed.
 
 (*Lemma aeq_swap : forall t1 x1 x2, x1 <> x2 -> x2 `notin` (fv_nom t1) -> aeq (swap x1 x2 t1) t1.*)
 
