@@ -210,6 +210,13 @@ Proof.
   induction n; intros; simpl; unfold swap_var; default_simp.
 Qed.
 
+Lemma fv_nom_swap_2 : forall z y n,
+  z `notin` fv_nom (swap y z n) ->
+  y `notin` fv_nom n.
+Proof.
+  intros. induction n; simpl in *; unfold swap_var in H; default_simp.
+Qed.
+  
 Lemma diff_remove: forall x y s,
     x <> y -> x `notin` s -> x `notin` remove y s.
 Proof.
@@ -1178,26 +1185,103 @@ Proof.
     -- admit.   
 Admitted.
 
+Lemma aeq_same_abs: forall x t1 t2,
+    aeq (n_abs x t1) (n_abs x t2) -> aeq t1 t2.
+Proof.
+  intros. inversion H.
+  - assumption.
+  - rewrite swap_id in H6; assumption.
+Qed.  
+
+Lemma aeq_diff_abs: forall x y t1 t2,
+    aeq (n_abs x t1) (n_abs y t2) -> aeq t1 (swap x y t2).
+Proof.
+  intros. inversion H.
+  - rewrite swap_id; assumption.
+  - rewrite swap_symmetric; assumption.
+Qed.
+
 Lemma aeq_swap2: forall t1 t2 x y, aeq (swap x y t1) (swap x y t2) -> aeq t1 t2.
 Proof.
-  intros. induction t1.
-  - induction t2.
+  induction t1.
+  - intros. induction t2.
     -- simpl in H. unfold swap_var in H. default_simp.
     -- simpl in H. inversion H.
     -- simpl in H. inversion H.
     -- simpl in H. inversion H.
-  - induction t2.
-    -- simpl in H. inversion H.
-    -- simpl in H. unfold swap_var in H. simpl in IHt1.
-       simpl in IHt2. unfold swap_var in IHt1.
-       unfold swap_var in IHt2. 
-       admit.
+  - intros. induction t2.
     -- simpl in H. inversion H.
     -- simpl in H. inversion H.
-  - induction t2.
+       --- unfold swap_var in *. default_simp.
+           + specialize (IHt1 t2 x0 y). apply aeq_abs_same.
+             apply IHt1. assumption.
+           + specialize (IHt1 t2 x0 y). apply aeq_abs_same.
+             apply IHt1. assumption.
+           + specialize (IHt1 t2 x0 y). apply aeq_abs_same.
+             apply IHt1. assumption.
+       --- unfold swap_var in *. default_simp.
+           + apply aeq_abs_diff.
+             ++ assumption.
+             ++ apply fv_nom_swap_2 with x0.
+                rewrite swap_symmetric; assumption.
+             ++ specialize (IHt1 (swap x0 y t2) x0 y).
+                apply IHt1.
+                assert (swap x0 y (swap x0 y t2) = swap y x0 (swap x0 y t2)).
+                rewrite swap_symmetric; reflexivity.
+                rewrite H0. assumption.
+           + apply aeq_abs_diff.
+             ++ assumption.
+             ++ apply fv_nom_swap_remove with x0 y.
+                +++ assumption.
+                +++ assumption.
+                +++ rewrite swap_symmetric; assumption.
+             ++ specialize (IHt1 (swap x0 x t2) x0 y).
+                apply IHt1. admit.
+           + apply aeq_abs_diff.
+             ++ apply aux_not_equal; assumption.
+             ++ apply fv_nom_swap_2 with y. assumption.
+             ++ specialize (IHt1 (swap y x0 t2) x0 y).
+                apply IHt1.
+                assert (swap y x0 t2 = swap x0 y t2).
+                rewrite swap_symmetric; reflexivity.
+                rewrite H0. assumption.
+           + apply aeq_abs_diff.
+             ++ assumption.
+             ++ apply fv_nom_swap_remove with x0 y.
+                +++ assumption.
+                +++ assumption.
+                +++ rewrite swap_symmetric; assumption.
+             ++ specialize (IHt1 (swap y x t2) x0 x).
+                apply IHt1.
+                admit.
+           + apply aeq_abs_diff.
+             ++ apply aux_not_equal. assumption.
+             ++ apply fv_nom_swap_2 with y. assumption.
+             ++ specialize (IHt1 (swap x1 x0 t2) x1 y).
+                apply IHt1.
+                admit.
+           + apply aeq_abs_diff.
+             ++ apply aux_not_equal. assumption.
+             ++ apply fv_nom_swap_2 with x0.
+                rewrite swap_symmetric; assumption.
+             ++ specialize (IHt1 (swap x1 y t2) x1 x0).
+                apply IHt1.
+                admit.
+           + apply aeq_abs_diff.
+             ++ assumption.
+             ++ apply fv_nom_swap_remove with x0 y.
+                +++ assumption.
+                +++ assumption.
+                +++ rewrite swap_symmetric; assumption.
+             ++ specialize (IHt1 (swap x1 x t2) x0 y).
+                apply IHt1.
+                admit.
     -- simpl in H. inversion H.
     -- simpl in H. inversion H.
-    -- simpl in H. admit.
+  - intros. induction t2.
+    -- simpl in H. inversion H.
+    -- simpl in H. inversion H.
+    -- simpl in H. inversion H. admit.
     -- simpl in H. inversion H.
   - induction t2.
     -- simpl in H. inversion H.
