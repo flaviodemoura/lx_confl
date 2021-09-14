@@ -252,8 +252,36 @@ Qed.
 
 Lemma remove_symmetric: forall x y s,
            remove x (remove y s) [=] remove y (remove x s).
-Proof.    
-Admitted.
+Proof.
+  intros. split.
+  - intros. case (a == x); intros; case (a == y); intros; subst.
+    apply AtomSetImpl.remove_3 in H.
+    -- rewrite double_remove. assumption.
+    -- apply remove_iff in H. inversion H. contradiction.
+    -- apply remove_iff in H. inversion H.
+       apply remove_iff in H0. inversion H0.
+       contradiction.
+    -- pose proof H. apply AtomSetImpl.remove_3 in H.
+       apply AtomSetImpl.remove_2.
+       --- apply aux_not_equal; assumption.
+       --- apply AtomSetImpl.remove_2.
+           + apply aux_not_equal; assumption.
+           + apply AtomSetImpl.remove_3 in H. assumption.
+  - intros. case (a == x); intros; case (a == y); intros; subst.
+    apply AtomSetImpl.remove_3 in H.
+    -- rewrite double_remove. assumption.
+    -- apply remove_iff in H. inversion H.
+       apply remove_iff in H0. inversion H0.
+       contradiction.
+    -- apply remove_iff in H. inversion H. contradiction.
+    -- pose proof H. apply AtomSetImpl.remove_3 in H.
+       apply AtomSetImpl.remove_2.
+       --- apply aux_not_equal; assumption.
+       --- apply AtomSetImpl.remove_2.
+           + apply aux_not_equal; assumption.
+           + apply AtomSetImpl.remove_3 in H. assumption.
+Qed.
+
 
 Lemma swap_remove_reduction: forall x y t,
     remove x (remove y (fv_nom (swap y x t))) [=] remove x (remove y (fv_nom t)).
@@ -985,11 +1013,35 @@ Proof.
        --- admit.
        --- admit.
        --- admit.
-Admitted.             
-
+Admitted.
+  
 Lemma swap_comp: forall t x y z,
-    x <> y -> x `notin` fv_nom t -> y `notin` fv_nom t -> swap y x (swap z y t) = swap z x t.
+    x `notin` fv_nom t -> y `notin` fv_nom t -> aeq (swap y x (swap y z t)) (swap x z t).
 Proof.
+  intros.
+  case (z == x); case (y == x); case (z == y); intros; subst.
+  - repeat rewrite swap_id. apply aeq_refl.
+  - repeat rewrite swap_id. apply aeq_refl.
+  - repeat rewrite swap_id. apply aeq_refl.
+  - repeat rewrite swap_id. rewrite swap_involutive. apply aeq_refl.
+  - repeat rewrite swap_id. apply aeq_refl.
+  - rewrite swap_id. rewrite swap_symmetric. apply aeq_refl.
+  - rewrite swap_id. rewrite swap_symmetric. apply aeq_refl.
+  - induction t.
+    -- simpl. unfold swap_var. default_simp.
+       --- apply notin_singleton_1 in H. contradiction.
+       --- apply notin_singleton_1 in H0. contradiction.
+    -- admit.
+    -- simpl in *. apply aeq_app.
+       --- apply notin_union_1 in H; apply notin_union_1 in H0.
+           apply IHt1.
+       ---- assumption.
+       ---- assumption.
+       --- apply notin_union_2 in H; apply notin_union_2 in H0.
+           apply IHt2.
+       ---- assumption.
+       ---- assumption.
+    -- admit.   
 Admitted.
 
 Lemma aeq_swap2: forall t1 t2 x y, aeq (swap x y t1) (swap x y t2) -> aeq t1 t2.
@@ -1004,7 +1056,8 @@ Proof.
     -- simpl in H. inversion H.
     -- simpl in H. unfold swap_var in H. simpl in IHt1.
        simpl in IHt2. unfold swap_var in IHt1.
-       unfold swap_var in IHt2. admit.
+       unfold swap_var in IHt2. 
+       admit.
     -- simpl in H. inversion H.
     -- simpl in H. inversion H.
   - induction t2.
@@ -1093,6 +1146,8 @@ Proof.
              ++ inversion H2; subst.
                 +++ apply IHaeq. apply aeq_swap1. assumption.
                 +++ admit.
+             ++ admit.
+             ++ admit.
   - intros. inversion H1; subst. apply aeq_app.
     -- apply IHaeq1 with t1'0 in H4. assumption.
     -- apply IHaeq2 with t2'0 in H6. assumption.
@@ -1138,7 +1193,7 @@ Proof.
            + apply IHaeq2. apply aeq_swap2 with y x.
              rewrite swap_involutive.
              admit.
-Qed.
+Admitted.
 
 (*Lemma aeq_swap : forall t1 x1 x2, x1 <> x2 -> x2 `notin` (fv_nom t1) -> aeq (swap x1 x2 t1) t1.*)
 
@@ -1485,20 +1540,20 @@ Lemma subst_size : forall n (u : n_sexp) (x:atom) (t:n_sexp),
 Proof.
   intro n. eapply (lt_wf_ind n). clear n.
   intros n IH u x t SZ.
-  destruct t; simpl in *; destruct n; try omega.
+  destruct t; simpl in *; destruct n; try lia.
   - default_simp.
   - default_simp.
     rewrite <- (swap_size_eq x0 x1).
     rewrite <- (swap_size_eq x0 x1) in SZ.
-    apply IH. omega. omega.
+    apply IH. lia. lia.
   - simpl.
-    rewrite (IH n); try omega.
-    rewrite (IH n); try omega.
-    rewrite (IH (size t1 + size t2)); try omega.
-    rewrite (IH (size t1 + size t2)); try omega.
+    rewrite (IH n); try lia.
+    rewrite (IH n); try lia.
+    rewrite (IH (size t1 + size t2)); try lia.
+    rewrite (IH (size t1 + size t2)); try lia.
     auto.
   - default_simp.
-    -- rewrite (IH n); try omega.
+    -- rewrite (IH n); try lia.
        --- rewrite swap_size_eq.
            assert (size t1 <= size t1 + size t2). {
              apply le_plus_l.
@@ -1515,7 +1570,7 @@ Proof.
            transitivity (size t1 + size t2).
            + assumption.
            + assumption.
-   -- rewrite (IH n); try omega.
+   -- rewrite (IH n); try lia.
        --- rewrite plus_comm. rewrite plus_comm in SZ.
            assert (size t2 <= size t2 + size t1). {
              apply le_plus_l.
@@ -1698,7 +1753,7 @@ Proof.
 Lemma subst_same_aux : forall n, forall t y, size t <= n -> aeq (m_subst (n_var y) y t)  t.
 Proof.
   intro n. induction n.
-  - intros t y SZ. destruct t; simpl in SZ; omega.
+  - intros t y SZ. destruct t; simpl in SZ; lia.
   - intros t y SZ. destruct t; simpl in SZ.
     -- unfold m_subst. simpl. case (y == x).
        --- intros. rewrite e. apply aeq_var.
@@ -2038,7 +2093,7 @@ Admitted.
 
 Lemma subst_fresh_eq : forall (x : atom) t u,  x `notin` fv_nom t -> aeq (m_subst u x t) t.
 Proof.
-  intros. apply subst_fresh_eq_aux with (n := size t). omega. auto.
+  intros. apply subst_fresh_eq_aux with (n := size t). lia. auto.
 Qed.
 
 
