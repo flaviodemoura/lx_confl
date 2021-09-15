@@ -23,12 +23,38 @@ Lemma subst_swap_reduction: forall u t x y z,
 Proof.
   intros. induction t.
   - unfold m_subst. simpl in *; unfold swap_var. default_simp.
+  - unfold m_subst. simpl in *; unfold swap_var. admit.
   - unfold m_subst. simpl in *; unfold swap_var. default_simp.
+    -- unfold m_subst in *. unfold swap_var in *. default_simp.
+       assert (size t1 <= size t1 + size t2). apply le_plus_l.
+       rewrite subst_size.
+       --- symmetry.
+           assert (size (swap x y t1) <= size (swap x y t1) + size (swap x y t2)). apply le_plus_l.
+           rewrite subst_size.
+           + symmetry. assumption.
+           + assumption.
+       --- assumption.      
+    -- unfold m_subst in *. unfold swap_var in *. default_simp.
+       assert (size t2 <= size t1 + size t2). apply le_plus_r.
+       rewrite subst_size.
+       --- symmetry.
+           assert (size (swap x y t2) <= size (swap x y t1) + size (swap x y t2)). apply le_plus_r.
+           rewrite subst_size.
+           + symmetry. assumption.
+           + assumption.
+       --- assumption.      
+  - admit.
 Admitted.
 
-Lemma aeq_m_subst_1: forall t1 t2 t3 x,
+Lemma aeq_m_subst_1: forall t1 t2 x t3,
     aeq t1 t2 -> aeq (m_subst t3 x t1) (m_subst t3 x t2).
 Proof.
+  intros. induction H.
+  - unfold m_subst. simpl. default_simp. apply aeq_refl.
+  - unfold m_subst. simpl. default_simp.
+    case (x1 == x2); intros; subst.
+    -- apply aeq_abs_same. unfold m_subst in IHaeq.
+       apply IHaeq.
 Admitted.
 
 Lemma aeq_m_subst_2: forall t1 t2 t3 x,
@@ -114,68 +140,6 @@ Proof.
     -- apply notin_union_1 in H. apply IHt1. assumption.
     -- apply notin_union_2 in H. apply IHt2. assumption.
   - admit.
-(*
-
-
-         
-    case (x == x0); intros; subst.
-    -- simpl. induction t1.
-       --- simpl. case (x == x0); intros; subst.
-           + rewrite subst_eq_var. apply IHt2.
-             apply notin_union_2 in H. assumption.
-           + rewrite subst_neq_var.
-             ++ apply notin_union_1 in H.
-                apply notin_remove_1 in H.
-                inversion H; subst.
-                +++ simpl. apply notin_singleton_2. assumption.
-                +++ assumption.
-             ++ apply aux_not_equal; assumption.
-       --- simpl. rewrite subst_abs. default_simp.
-           case (x0 == x1); intros; subst.
-           + repeat apply notin_union_2 in n.
-             apply notin_singleton_1 in n. contradiction.
-           + apply notin_remove_2.
-             assert (m_subst (P t2) x0 (swap x x1 (P t1)) = m_subst (P t2) x0 (P t1)). admit.
-             rewrite H0. apply IHt0.
-             ++ intros. apply notin_remove_1 in IHt1.
-                inversion IHt1; subst.
-                +++ contradiction.
-                +++ assumption.
-                +++ apply notin_remove_2. assumption.
-             ++ apply notin_union_3.
-                +++ apply notin_remove_3. reflexivity.
-                +++ apply notin_union_2 in H. assumption.
-       --- simpl. apply notin_union_3.
-           + unfold m_subst in IHt1_1.
-             assert (size (P t1_1) <= size (P t1_1) + size (P t1_2)). apply le_plus_l. 
-             pose proof subst_size.
-             specialize (H1 (size (P t1_1) + size (P t1_2)) (P t2) x0 (P t1_1)).
-             apply H1 in H0; clear H1. rewrite H0. apply IHt1_1.
-             ++ intros. simpl in IHt1. apply notin_union_1 in IHt1.
-                +++ assumption.
-                +++ apply notin_union_3.
-                    * assumption.
-                    * admit.
-             ++ apply notin_union_3.
-                +++ apply notin_remove_3. reflexivity.
-                +++ apply notin_union_2 in H. assumption.
-          + unfold m_subst in IHt1_2.
-             assert (size (P t1_2) <= size (P t1_1) + size (P t1_2)). apply le_plus_r. 
-             pose proof subst_size.
-             specialize (H1 (size (P t1_1) + size (P t1_2)) (P t2) x0 (P t1_2)).
-             apply H1 in H0; clear H1. rewrite H0. apply IHt1_2.
-             ++ intros. simpl in IHt1. apply notin_union_2 in IHt1.
-                +++ assumption.
-                +++ apply notin_union_3.
-                    * admit.
-                    * assumption.
-             ++ apply notin_union_3.
-                +++ apply notin_remove_3. reflexivity.
-                +++ apply notin_union_2 in H. assumption.
-       --- admit.    
-    --*)
-
-
 Admitted.
 
 Lemma aeq_P: forall t1 t2, aeq t1 t2 -> aeq (P t1) (P t2).
@@ -208,58 +172,6 @@ Proof.
        --- assumption.
        --- assumption.
 Qed.       
-    (*induction t1'.
-    -- simpl. simpl in IHaeq1. inversion IHaeq1; subst.
-       case (x == x0). intros; subst.
-       --- repeat rewrite subst_eq_var. assumption.
-       --- intros. repeat rewrite subst_neq_var.
-           + apply aeq_refl.
-           + assumption.
-           + assumption.
-
-
-    -- simpl. simpl in IHaeq1. rewrite subst_abs. default_simp.
-       --- inversion IHaeq1; subst.
-           + unfold m_subst. simpl. default_simp.
-           + unfold m_subst. simpl. default_simp.
-             case (x0 == x2); intros; subst.
-             ++ repeat apply notin_union_2 in n0.
-                apply notin_singleton_1 in n0. contradiction.
-             ++ apply aeq_abs_diff.
-                +++ apply aux_not_equal; assumption.
-                +++ case (x2 == x); intros; subst.
-                    * assumption.
-                    * admit.
-                      +++ admit.
-       --- inversion IHaeq1; subst.
-           + unfold m_subst. simpl. default_simp.
-             case (x1 == x2); intros; subst.
-             ++ apply aeq_abs_same. rewrite swap_size_eq.
-                admit.
-             ++ apply aeq_abs_diff.
-                +++ apply aux_not_equal; assumption.
-                +++ admit.
-                +++ admit.
-
-
-
-                
-           + unfold m_subst. simpl. default_simp.
-             case (x0 == x2); intros; subst.
-             ++ contradiction.
-             ++ case (x1 == x2); intros; subst.
-                +++ apply aeq_abs_same. admit.
-                +++ apply aeq_abs_diff.
-                    * apply aux_not_equal; assumption.
-                    * admit.
-                    * admit.
-             ++ admit.
-    -- simpl. simpl in IHaeq1.
-       unfold m_subst; unfold m_subst in IHt1'1; unfold m_subst in IHt1'2.
-       simpl. admit.
-    -- simpl. admit.
-  - admit.
-Admitted.*)
 
 Lemma aeq_nvar_1: forall t x, aeq t (n_var x) -> t = n_var x.
 Proof.
