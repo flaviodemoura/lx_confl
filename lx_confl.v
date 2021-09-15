@@ -19,38 +19,11 @@ Fixpoint P (t : n_sexp) := match t with
                            end.
 
 Lemma subst_swap_reduction: forall u t x y z,
-    (swap x y (m_subst u z t)) = (m_subst (swap x y u) (swap_var x y z) (swap x y t)).
+    x <> z -> y <> z -> (swap x y (m_subst u z t)) = (m_subst (swap x y u) (swap_var x y z) (swap x y t)).
 Proof.
   intros. induction t.
-  - simpl. unfold swap_var. default_simp.
-    -- repeat unfold m_subst. simpl. default_simp.
-    -- repeat unfold m_subst. simpl. default_simp.
-       unfold swap_var. default_simp.
-    -- repeat unfold m_subst. simpl. default_simp.
-       unfold swap_var. default_simp.
-    -- repeat unfold m_subst. simpl. default_simp.
-       unfold swap_var. default_simp.
-    -- repeat unfold m_subst. simpl. default_simp.
-    -- repeat unfold m_subst. simpl. default_simp.
-       unfold swap_var. default_simp.
-    -- repeat unfold m_subst. simpl. default_simp.
-       unfold swap_var. default_simp.
-    -- repeat unfold m_subst. simpl. default_simp.
-       unfold swap_var. default_simp.
-    -- repeat unfold m_subst. simpl. default_simp.
-       unfold swap_var. default_simp.
-  - simpl. unfold swap_var. unfold swap_var in IHt.
-    default_simp.
-    -- repeat unfold m_subst. simpl. default_simp.
-       unfold swap_var. default_simp.
-    -- repeat rewrite subst_abs. default_simp.
-       --- unfold swap_var; default_simp.
-           + repeat apply notin_union_2 in n0.
-             apply notin_singleton_1 in n0. contradiction.
-           + case (x == x1); intros; subst.
-             ++ reflexivity.
-             ++ 
-         
+  - unfold m_subst. simpl in *; unfold swap_var. default_simp.
+  - unfold m_subst. simpl in *; unfold swap_var. default_simp.
 Admitted.
 
 Lemma aeq_m_subst_1: forall t1 t2 t3 x,

@@ -1155,35 +1155,7 @@ Proof.
          rewrite H4 in IHaeq2. rewrite H5.
          rewrite H3. assumption.
 Qed.
-  
-Lemma swap_comp: forall t x y z,
-    x `notin` fv_nom t -> y `notin` fv_nom t -> aeq (swap y x (swap y z t)) (swap x z t).
-Proof.
-  intros.
-  case (z == x); case (y == x); case (z == y); intros; subst.
-  - repeat rewrite swap_id. apply aeq_refl.
-  - repeat rewrite swap_id. apply aeq_refl.
-  - repeat rewrite swap_id. apply aeq_refl.
-  - repeat rewrite swap_id. rewrite swap_involutive. apply aeq_refl.
-  - repeat rewrite swap_id. apply aeq_refl.
-  - rewrite swap_id. rewrite swap_symmetric. apply aeq_refl.
-  - rewrite swap_id. rewrite swap_symmetric. apply aeq_refl.
-  - induction t.
-    -- simpl. unfold swap_var. default_simp.
-       --- apply notin_singleton_1 in H. contradiction.
-       --- apply notin_singleton_1 in H0. contradiction.
-    -- admit.
-    -- simpl in *. apply aeq_app.
-       --- apply notin_union_1 in H; apply notin_union_1 in H0.
-           apply IHt1.
-       ---- assumption.
-       ---- assumption.
-       --- apply notin_union_2 in H; apply notin_union_2 in H0.
-           apply IHt2.
-       ---- assumption.
-       ---- assumption.
-    -- admit.   
-Admitted.
+
 
 Lemma aeq_same_abs: forall x t1 t2,
     aeq (n_abs x t1) (n_abs x t2) -> aeq t1 t2.
@@ -1474,6 +1446,30 @@ Proof.
        rewrite swap_involutive. assumption.
 Qed.
 
+Lemma swap_reduction: forall x y t,
+    x `notin` fv_nom t -> y `notin` fv_nom t -> swap x y t = t.
+Proof.
+  Admitted.
+
+  
+Lemma swap_comp: forall t x y z,
+    x <> z -> y <> z -> x `notin` fv_nom t -> y `notin` fv_nom t -> swap y x (swap y z t) = (swap x z t).
+Proof.
+  intros.
+  assert (swap y x (swap y z t) = swap x y (swap y z t)).
+  rewrite swap_symmetric; reflexivity.
+  rewrite H3. rewrite shuffle_swap.
+  - assert (swap x y t = t). {
+      rewrite swap_reduction.
+      -- reflexivity.
+      -- assumption.
+      -- assumption.
+    }
+    rewrite H4. reflexivity.
+  - assumption.
+  - assumption.
+Qed.
+    
 Lemma aeq_trans: forall t1 t2 t3, aeq t1 t2 -> aeq t2 t3 -> aeq t1 t3.
 Proof.
   intros. generalize dependent t3. induction H.
@@ -1511,9 +1507,24 @@ Proof.
              apply fv_nom_swap_remove in H0.
              ++ inversion H2; subst.
                 +++ apply IHaeq. apply aeq_swap1. assumption.
-                +++ admit.
-             ++ admit.
-             ++ admit.
+                +++ apply IHaeq.
+                * apply aeq_swap2 with y x.
+                  rewrite swap_involutive.
+                  assert (swap y0 x t4 = swap x y0 t4).
+                  rewrite swap_symmetric; reflexivity.
+                  rewrite H3. rewrite shuffle_swap.
+                  ** assert (swap y x t4 = t4). {
+                     rewrite swap_reduction.
+                     *** reflexivity.
+                     *** assumption.
+                     *** assumption.
+                         }
+                     rewrite H4. rewrite swap_symmetric.
+                     assumption.
+                  ** assumption.
+                  ** assumption.
+             ++ assumption.
+             ++ assumption.                 
   - intros. inversion H1; subst. apply aeq_app.
     -- apply IHaeq1 with t1'0 in H4. assumption.
     -- apply IHaeq2 with t2'0 in H6. assumption.
@@ -1556,11 +1567,28 @@ Proof.
              ++ assumption.
              ++ rewrite swap_symmetric. rewrite swap_involutive.
                 assumption.
-           + apply IHaeq2. apply aeq_swap2 with y x.
+           + assert (x `notin` fv_nom t1'0). {
+               apply aeq_swap1 with t1' (swap y0 y t1'0) y0 y in H11.
+               rewrite swap_involutive in H11.
+               apply aeq_fv_nom in H11. rewrite <- H11.
+               apply fv_nom_swap_remove with y0 y.
+               ++ assumption.
+               ++ assumption.
+               ++ rewrite swap_symmetric. rewrite swap_involutive.
+                  assumption.
+             }
+             apply IHaeq2. apply aeq_swap2 with y x.
              rewrite swap_involutive.
-             admit.
-Admitted.
-
+             rewrite swap_symmetric.
+             assert (swap y0 x t1'0 = swap x y0 t1'0).
+             rewrite swap_symmetric; reflexivity.
+             rewrite H5. rewrite swap_comp.
+             ++ rewrite swap_symmetric; assumption.
+             ++ assumption.
+             ++ assumption.
+             ++ assumption.
+             ++ assumption.
+Qed.
 (*Lemma aeq_swap : forall t1 x1 x2, x1 <> x2 -> x2 `notin` (fv_nom t1) -> aeq (swap x1 x2 t1) t1.*)
 
 Inductive betax : n_sexp -> n_sexp -> Prop :=
