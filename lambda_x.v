@@ -1201,6 +1201,12 @@ Proof.
   - rewrite swap_symmetric; assumption.
 Qed.
 
+Lemma swap_symmetric_2: forall x y x' y' t,
+    x <> x' -> y <> y' -> x <> y'-> y <> x' -> swap x y (swap x' y' t) = swap x' y' (swap x y t). 
+Proof.
+  intros. induction t; simpl in *; unfold swap_var in *; default_simp.
+Qed.
+
 Lemma aeq_swap2: forall t1 t2 x y, aeq (swap x y t1) (swap x y t2) -> aeq t1 t2.
 Proof.
   induction t1.
@@ -1236,7 +1242,15 @@ Proof.
                 +++ assumption.
                 +++ rewrite swap_symmetric; assumption.
              ++ specialize (IHt1 (swap x0 x t2) x0 y).
-                apply IHt1. admit.
+                apply IHt1.
+                assert (swap x0 y (swap x0 x t2) = swap y x0 (swap x0 x t2)).
+                rewrite swap_symmetric; reflexivity.
+                rewrite H0. rewrite shuffle_swap.
+                +++ assert (swap x0 y t2 = swap y x0 t2).
+                    rewrite swap_symmetric; reflexivity.
+                    rewrite <- H1. assumption.
+                +++ apply aux_not_equal; assumption.
+                +++ apply aux_not_equal; assumption.
            + apply aeq_abs_diff.
              ++ apply aux_not_equal; assumption.
              ++ apply fv_nom_swap_2 with y. assumption.
@@ -1251,22 +1265,44 @@ Proof.
                 +++ assumption.
                 +++ assumption.
                 +++ rewrite swap_symmetric; assumption.
-             ++ specialize (IHt1 (swap y x t2) x0 x).
-                apply IHt1.
-                admit.
+             ++ specialize (IHt1 (swap y x t2) x0 y).
+                apply IHt1. rewrite shuffle_swap.
+                +++ assumption.
+                +++ apply aux_not_equal; assumption.
+                +++ apply aux_not_equal; assumption.
            + apply aeq_abs_diff.
              ++ apply aux_not_equal. assumption.
              ++ apply fv_nom_swap_2 with y. assumption.
-             ++ specialize (IHt1 (swap x1 x0 t2) x1 y).
+             ++ specialize (IHt1 (swap x1 x0 t2) x0 y).
                 apply IHt1.
-                admit.
+                assert (swap x0 y (swap x1 x0 t2) = swap y x0 (swap x1 x0 t2)).
+                rewrite swap_symmetric; reflexivity.
+                rewrite H0.
+                assert (swap x1 x0 t2 = swap x0 x1 t2).
+                rewrite swap_symmetric; reflexivity.
+                rewrite H1. rewrite shuffle_swap.
+                +++ assert (swap x1 y (swap y x0 t2) = swap y x1 (swap y x0 t2)).
+                    rewrite swap_symmetric; reflexivity.
+                    rewrite <- H2.
+                    assert (swap y x0 t2 = swap x0 y t2).
+                    rewrite swap_symmetric; reflexivity.
+                    rewrite H3. assumption.
+                +++ apply aux_not_equal; assumption.
+                +++ apply aux_not_equal; assumption.
            + apply aeq_abs_diff.
              ++ apply aux_not_equal. assumption.
              ++ apply fv_nom_swap_2 with x0.
                 rewrite swap_symmetric; assumption.
-             ++ specialize (IHt1 (swap x1 y t2) x1 x0).
+             ++ specialize (IHt1 (swap x1 y t2) x0 y).
                 apply IHt1.
-                admit.
+                assert (swap x1 y t2 = swap y x1 t2).
+                rewrite swap_symmetric; reflexivity.
+                rewrite H0. rewrite shuffle_swap.
+                +++ assert (swap x0 x1 (swap x0 y t2) = swap x1 x0 (swap x0 y t2)).
+                    rewrite swap_symmetric; reflexivity.
+                    rewrite H1. assumption.
+                +++ apply aux_not_equal; assumption.
+                +++ apply aux_not_equal; assumption.
            + apply aeq_abs_diff.
              ++ assumption.
              ++ apply fv_nom_swap_remove with x0 y.
@@ -1274,21 +1310,133 @@ Proof.
                 +++ assumption.
                 +++ rewrite swap_symmetric; assumption.
              ++ specialize (IHt1 (swap x1 x t2) x0 y).
-                apply IHt1.
-                admit.
+                apply IHt1. rewrite swap_symmetric_2.
+                +++ assumption.
+                +++ apply aux_not_equal; assumption.
+                +++ apply aux_not_equal; assumption.
+                +++ apply aux_not_equal; assumption.
+                +++ apply aux_not_equal; assumption.
     -- simpl in H. inversion H.
     -- simpl in H. inversion H.
   - intros. induction t2.
     -- simpl in H. inversion H.
     -- simpl in H. inversion H.
-    -- simpl in H. inversion H. admit.
     -- simpl in H. inversion H.
-  - induction t2.
+       apply aeq_app.
+       --- apply IHt1_1 with x y. assumption.
+       --- apply IHt1_2 with x y. assumption.
+    -- simpl in H. inversion H.
+  - intros. induction t2.
     -- simpl in H. inversion H.
     -- simpl in H. inversion H.
     -- simpl in H. inversion H.
-    -- simpl in H. unfold swap_var in H. admit.
-Admitted.
+    -- simpl in H. inversion H.
+       --- simpl in *; unfold swap_var in *. default_simp.
+           + apply aeq_sub_same.
+             ++ apply IHt1_1 with x0 y. assumption.
+             ++ apply IHt1_2 with x0 y. assumption.
+           + apply aeq_sub_same.
+             ++ apply IHt1_1 with x0 y. assumption.
+             ++ apply IHt1_2 with x0 y. assumption.
+           + apply aeq_sub_same.
+             ++ apply IHt1_1 with x0 y. assumption.
+             ++ apply IHt1_2 with x0 y. assumption.
+       --- simpl in *; unfold swap_var in *. default_simp.
+           + apply aeq_sub_diff.
+             ++ apply IHt1_2 with x0 y. assumption.
+             ++ assumption.
+             ++ apply fv_nom_swap_2 with x0.
+                rewrite swap_symmetric; assumption.
+             ++ apply IHt1_1 with x0 y.
+                assert (swap y x0 (swap x0 y t2_1) = swap x0 y (swap x0 y t2_1)).
+                rewrite swap_symmetric; reflexivity.
+                rewrite <- H0. assumption.
+           + apply aeq_sub_diff.
+             ++ apply IHt1_2 with x0 y. assumption.
+             ++ assumption.
+             ++ apply fv_nom_swap_remove with x0 y.
+                +++ assumption.
+                +++ assumption.
+                +++ rewrite swap_symmetric; assumption.
+             ++ apply IHt1_1 with x0 y.
+                assert (swap x0 y (swap x0 x t2_1) = swap y x0 (swap x0 x t2_1)).
+                rewrite swap_symmetric; reflexivity.
+                rewrite H0. rewrite shuffle_swap.
+                +++ assert (swap y x0 t2_1 = swap x0 y t2_1).
+                    rewrite swap_symmetric; reflexivity.
+                    rewrite H1. assumption.
+                +++ apply aux_not_equal; assumption.
+                +++ apply aux_not_equal; assumption.
+           + apply aeq_sub_diff.
+             ++ apply IHt1_2 with x0 y. assumption.
+             ++ apply aux_not_equal; assumption.
+             ++ apply fv_nom_swap_2 with y. assumption.
+             ++ apply IHt1_1 with x0 y.
+                assert (swap y x0 t2_1 = swap x0 y t2_1).
+                rewrite swap_symmetric; reflexivity.
+                rewrite H0. assumption.
+           + apply aeq_sub_diff.
+             ++ apply IHt1_2 with x0 y. assumption.
+             ++ assumption.
+             ++ apply fv_nom_swap_remove with x0 y.
+                +++ assumption.
+                +++ assumption.
+                +++ rewrite swap_symmetric; assumption.
+             ++ specialize (IHt1_1 (swap y x t2_1) x0 y).
+                apply IHt1_1. rewrite shuffle_swap.
+                +++ assumption.
+                +++ apply aux_not_equal; assumption.
+                +++ apply aux_not_equal; assumption.
+           + apply aeq_sub_diff.
+             ++ apply IHt1_2 with x0 y. assumption.
+             ++ apply aux_not_equal. assumption.
+             ++ apply fv_nom_swap_2 with y. assumption.
+             ++ specialize (IHt1_1 (swap x1 x0 t2_1) x0 y).
+                apply IHt1_1.
+                assert (swap x0 y (swap x1 x0 t2_1) = swap y x0 (swap x1 x0 t2_1)).
+                rewrite swap_symmetric; reflexivity.
+                rewrite H0.
+                assert (swap x1 x0 t2_1 = swap x0 x1 t2_1).
+                rewrite swap_symmetric; reflexivity.
+                rewrite H1. rewrite shuffle_swap.
+                +++ assert (swap x1 y (swap y x0 t2_1) = swap y x1 (swap y x0 t2_1)).
+                    rewrite swap_symmetric; reflexivity.
+                    rewrite <- H2.
+                    assert (swap y x0 t2_1 = swap x0 y t2_1).
+                    rewrite swap_symmetric; reflexivity.
+                    rewrite H3. assumption.
+                +++ apply aux_not_equal; assumption.
+                +++ apply aux_not_equal; assumption.
+           + apply aeq_sub_diff.
+             ++ apply IHt1_2 with x0 y. assumption.
+             ++ apply aux_not_equal. assumption.
+             ++ apply fv_nom_swap_2 with x0.
+                rewrite swap_symmetric; assumption.
+             ++ specialize (IHt1_1 (swap x1 y t2_1) x0 y).
+                apply IHt1_1.
+                assert (swap x1 y t2_1 = swap y x1 t2_1).
+                rewrite swap_symmetric; reflexivity.
+                rewrite H0. rewrite shuffle_swap.
+                +++ assert (swap x0 x1 (swap x0 y t2_1) = swap x1 x0 (swap x0 y t2_1)).
+                    rewrite swap_symmetric; reflexivity.
+                    rewrite H1. assumption.
+                +++ apply aux_not_equal; assumption.
+                +++ apply aux_not_equal; assumption.
+           + apply aeq_sub_diff.
+             ++ apply IHt1_2 with x0 y. assumption.
+             ++ assumption.
+             ++ apply fv_nom_swap_remove with x0 y.
+                +++ assumption.
+                +++ assumption.
+                +++ rewrite swap_symmetric; assumption.
+             ++ specialize (IHt1_1 (swap x1 x t2_1) x0 y).
+                apply IHt1_1. rewrite swap_symmetric_2.
+                +++ assumption.
+                +++ apply aux_not_equal; assumption.
+                +++ apply aux_not_equal; assumption.
+                +++ apply aux_not_equal; assumption.
+                +++ apply aux_not_equal; assumption.
+Qed.
 
 Corollary aeq_swap: forall t1 t2 x y, aeq t1 t2 <-> aeq (swap x y t1) (swap x y t2).
 Proof.
