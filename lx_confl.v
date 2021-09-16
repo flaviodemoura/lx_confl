@@ -19,7 +19,7 @@ Fixpoint P (t : n_sexp) := match t with
                            end.
 
 Lemma subst_swap_reduction: forall u t x y z,
-    x <> z -> y <> z -> (swap x y (m_subst u z t)) = (m_subst (swap x y u) (swap_var x y z) (swap x y t)).
+    (swap x y (m_subst u z t)) = (m_subst (swap x y u) (swap_var x y z) (swap x y t)).
 Proof.
   intros. induction t.
   - unfold m_subst. simpl in *; unfold swap_var. default_simp.
@@ -43,7 +43,7 @@ Proof.
            + symmetry. assumption.
            + assumption.
        --- assumption.      
-  - admit.
+    -- admit.
 Admitted.
 
 Lemma aeq_m_subst_1: forall t1 t2 x t3,
@@ -54,7 +54,6 @@ Proof.
   - unfold m_subst. simpl. default_simp.
     case (x1 == x2); intros; subst.
     -- apply aeq_abs_same. unfold m_subst in IHaeq.
-       apply IHaeq.
 Admitted.
 
 Lemma aeq_m_subst_2: forall t1 t2 t3 x,
@@ -106,7 +105,7 @@ Proof.
            unfold swap_var; unfold swap_var in H; default_simp.
            apply aeq_subst.
            + assumption.
-           + assumption.
+           + assumption. 
     -- pose proof subst_swap_reduction.
        assert ((swap x y (m_subst (P t2) y (P t1)) = (swap y x (m_subst (P t2) y (P t1))))). rewrite swap_symmetric; reflexivity.
        rewrite H0.
@@ -325,8 +324,6 @@ Proof.
            (subst_rec (size (P e5)) (P e5) (P e6) y)) (P e4) in H.
                 +++ assumption.
                 +++ assumption.
-
-
        --- simpl. apply aeq_abs_same. simpl in IHrefltrans.
            inversion IHrefltrans; subst.
            + apply IHctx.
@@ -340,93 +337,10 @@ Proof.
            + apply IHctx.
              ++ admit.
              ++ admit.
-                
-
-
-
-
-         
        --- admit.
        --- admit.
      -- assumption. 
-Admitted.      
-  (*- induction H0.
-    -- inversion H; subst.
-       --- apply aeq_nvar_1 in H4; subst.
-           simpl.
-           unfold m_subst.
-           simpl.
-           destruct (y == y).
-           ---- apply aeq_P.
-                apply aeq_trans with e; assumption.
-           ---- contradiction.
-       --- replace (swap y x (n_var y)) with (n_var x) in H8.
-           ---- apply aeq_nvar_1 in H8; subst.
-                simpl.
-                unfold m_subst.
-                simpl.
-                destruct (x == x).
-                ----- apply aeq_P.
-                      apply aeq_trans with e; assumption.
-                ----- contradiction.
-           ---- simpl.
-                unfold swap_var.
-                destruct (y == y).
-                ----- reflexivity.
-                ----- contradiction.
-    -- apply aeq_P in H. simpl in H. unfold m_subst in H.
-       simpl in H. case (y == x) in H.
-       --- symmetry in e0; contradiction.
-       --- apply aeq_trans with (n_var x).
-           ---- assumption.
-           ---- apply aeq_P in H1. simpl in H1. assumption.
-    -- apply aeq_P in H. simpl in H. unfold m_subst in H.
-       simpl in H. case (y == y) in H.
-       --- apply aeq_P in H1. simpl in H1. pose proof aeq_trans.
-           specialize (H0 (P e1) (n_abs y (P e0)) (P e4)).
-           apply H0 in H.
-           ---- assumption.
-           ---- apply H0 in H.
-                ----- assumption.
-                ----- apply H1.
-       --- contradiction.
-    -- apply aeq_P in H. simpl in H. unfold m_subst in H.
-       simpl in H. case (y == x) in H.
-       --- symmetry in e; contradiction.
-       --- destruct (atom_fresh
-             (Metatheory.union (fv_nom (P e2))
-                (Metatheory.union (remove x (fv_nom (P e0)))
-                                  (singleton y)))).
-           apply aeq_trans with (n_abs x0
-                                       (subst_rec (size (P e0)) (swap x x0 (P e0)) (P e2) y)).
-           ---- assumption.
-           ---- apply aeq_P in H1. simpl in H1.
-                unfold m_subst in H1. simpl in H1. admit.
-    -- apply aeq_P in H. simpl in H. unfold m_subst in H.
-       simpl in H.
-       apply aeq_P in H1. simpl in H1. unfold m_subst in H1.
-       simpl in H1. pose proof subst_size; pose proof H0.
-       specialize (H0 (size (P e0) + size (P e2)) (P e3) y (P e0)).
-       specialize (H2 (size (P e0) + size (P e2)) (P e3) y (P e2)).
-       pose proof le_plus_l. pose proof le_plus_r.
-       specialize (H3 (size (P e0)) (size (P e2))).
-       specialize (H4 (size (P e0)) (size (P e2))).
-       apply H0 in H3; clear H0. apply H2 in H4; clear H2.
-       rewrite H3 in H; clear H3. rewrite H4 in H; clear H4.
-       apply aeq_trans with (n_app (subst_rec (size (P e0)) (P e0) (P e3) y)
-                                   (subst_rec (size (P e2)) (P e2) (P e3) y)).
-       --- assumption.
-       --- assumption.
-  - simpl. apply aeq_abs_same. assumption.
-  - simpl. apply aeq_app.
-    -- assumption.
-    -- apply aeq_refl.
-  - simpl. apply aeq_app.
-    -- apply aeq_refl.
-    -- assumption.
-  - admit.
-  - admit.
-Admitted.*)
+Admitted.
 
 Lemma pure_P: forall e, pure (P e).
 Proof.
@@ -487,10 +401,6 @@ Proof.
 Qed.
 
 (**)
-
-(*Lemma refltrans_aeq (R: Rel n_sexp): forall a b,
-    aeq a b -> refltrans (ctx R) a b.
-Admitted.*)
 
 Lemma refltrans_abs (R: Rel n_sexp): forall e1 e2 x ,
     refltrans (ctx R) e1 e2 -> refltrans (ctx R) (n_abs x e1) (n_abs x e2).
@@ -577,35 +487,18 @@ Proof.
            + intros. apply refl.
            + intros; contradiction.
     -- intros. apply rtrans with (n_abs x (n_sub e1 x0 e2)).
-       --- apply step_redex_R. apply step_abs2.
-           + assumption.
-       --- simpl. case (x0 == x).
-           + intro Hneq; symmetry in Hneq; contradiction.
-           + intros. destruct (atom_fresh
-         (Metatheory.union (fv_nom e2)
-            (Metatheory.union (remove x (fv_nom e1))
-                              (singleton x0)))).
+       --- apply step_redex_R. apply step_abs2. assumption.
+       --- simpl. default_simp. intros.
              apply refltrans_composition with (n_abs x (subst_rec (size e1) e1 e2 x0)).
              ++ apply refltrans_abs. assumption.
              ++ apply rtrans with (n_abs x1 (subst_rec (size e1) (swap x x1 e1) e2 x0)).
-                +++ admit.
-                  (*assert (aeq (n_abs x (subst_rec (size e1) e1 e2 x0))
-                                (n_abs x1 (subst_rec (size e1) (swap x x1 e1) e2 x0))). {
-                      apply aeq_abs_diff.
-                      - admit.
-                      - pose proof n1.
-                        apply notin_union_2 in n1.
-                        apply notin_union_1 in n1.
-                        apply notin_remove_1 in n1.
-                        inversion n1; subst.
-                        -- admit.
-                        -- pose proof fv_nom_abs_subst_aux.
-                           specialize (H3 e1 e2 x0).
-                   }*)
+                +++ apply step_aeq. case (x == x1); intros; subst.
+                    * rewrite swap_id. apply aeq_refl.
+                    * apply aeq_abs_diff.
+                      ** assumption.
+                      ** admit.
+                      ** admit.
                 +++ apply refl.
-
-
-                
   - intros.
     apply refltrans_composition with (n_app (m_subst e2 x e1_1) (m_subst e2 x e1_2)).
     -- apply rtrans with (n_app (n_sub e1_1 x e2) (n_sub e1_2 x e2)).
@@ -667,113 +560,6 @@ Proof.
       ++ admit.
       ++ admit.
       ++ admit.
-
-    (*inversion H.
-      ++ subst. inversion H0.
-         +++ simpl. unfold m_subst. simpl. case (y == y).
-         ++++ intros; reflexivity.
-         ++++ intros; contradiction.
-
-         +++ simpl. unfold m_subst. simpl. case (y == x).
-         ++++ intros; subst. contradiction.
-         ++++ intros; reflexivity.
-
-         +++ simpl. unfold m_subst. simpl. case (y == y).
-         ++++ intros; reflexivity.
-         ++++ intros; contradiction.
-
-         +++ simpl. unfold m_subst. simpl. case (y == x).
-         ++++ intros; subst. contradiction.
-         ++++ intros. destruct  (atom_fresh
-       (Metatheory.union (fv_nom (P e2))
-          (Metatheory.union (remove x (fv_nom (P e1)))
-                            (singleton y)))).
-              admit.
-
-         +++ simpl. unfold m_subst. simpl.
-             assert (size (P e1) <= size (P e1) + size (P e2)). {
-               apply le_plus_l.
-             }
-             assert (size (P e2) <= size (P e1) + size (P e2)). {
-               apply le_plus_r.
-             }
-             pose proof subst_size. pose proof H5.
-             specialize (H5 (size (P e1) + size (P e2)) (P e3) y (P e1)).
-             specialize (H6 (size (P e1) + size (P e2)) (P e3) y (P e2)).
-             apply H5 in H3; clear H5; apply H6 in H4; clear H6.
-             rewrite H3; rewrite H4. reflexivity.*)
-
-
-             
-      (*++ subst. inversion H0.
-         +++ simpl. unfold m_subst. simpl. case (y == y).
-         ++++ intros; reflexivity.
-         ++++ intros; contradiction.
-
-         +++ simpl. unfold m_subst. simpl. case (y == x).
-         ++++ intros; subst. contradiction.
-         ++++ intros; reflexivity.
-
-         +++ simpl. unfold m_subst. simpl. case (y == y).
-         ++++ intros; reflexivity.
-         ++++ intros; contradiction.
-
-         +++ simpl. unfold m_subst. simpl. case (y == x).
-         ++++ intros; subst. contradiction.
-         ++++ intros. destruct  (atom_fresh
-       (Metatheory.union (fv_nom (P e2))
-          (Metatheory.union (remove x (fv_nom (P e1)))
-                            (singleton y)))).
-              admit.
-
-         +++ simpl. unfold m_subst. simpl.
-             assert (size (P e1) <= size (P e1) + size (P e2)). {
-               apply le_plus_l.
-             }
-             assert (size (P e2) <= size (P e1) + size (P e2)). {
-               apply le_plus_r.
-             }
-             pose proof subst_size. pose proof H5.
-             specialize (H5 (size (P e1) + size (P e2)) (P e3) y (P e1)).
-             specialize (H6 (size (P e1) + size (P e2)) (P e3) y (P e2)).
-             apply H5 in H3; clear H5; apply H6 in H4; clear H6.
-             rewrite H3; rewrite H4. reflexivity.
-
-      ++ subst. simpl. inversion H0.
-         +++ subst. inversion H1.
-         ++++ subst. simpl. unfold m_subst; simpl. case (y == y).
-         +++++ intros; reflexivity.
-         +++++ intros; contradiction.
-         ++++ simpl. unfold m_subst. simpl. case (y == x0).
-         +++++ intros. subst; contradiction.
-         +++++ intros; reflexivity.
-         ++++ simpl. unfold m_subst. simpl. case (y == y).
-         +++++ intros; reflexivity.
-         +++++ intros; contradiction.
-         ++++ simpl. unfold m_subst. simpl. case (y == x0).
-         +++++ intros. symmetry in e0; contradiction.
-         +++++ intros. destruct (atom_fresh
-         (Metatheory.union (fv_nom (P e2))
-            (Metatheory.union (remove x0 (fv_nom (P e1)))
-                              (singleton y)))). admit.
-         ++++ simpl. unfold m_subst. simpl.
-              assert (size (P e1) <= size (P e1) + size (P e2)). {
-               apply le_plus_l.
-             }
-             assert (size (P e2) <= size (P e1) + size (P e2)). {
-               apply le_plus_r.
-             }
-             pose proof subst_size. pose proof H6.
-             specialize (H6 (size (P e1) + size (P e2)) (P e3) y (P e1)).
-             specialize (H7 (size (P e1) + size (P e2)) (P e3) y (P e2)).
-             apply H6 in H4; clear H6; apply H7 in H5; clear H7.
-             rewrite H4; rewrite H5. reflexivity.
-
-        +++ simpl. subst. inversion H1.
-        ++++ subst.*)
-        
-
-
     ++ admit.
     + split.
       * admit.
