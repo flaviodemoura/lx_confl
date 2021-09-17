@@ -46,6 +46,19 @@ Proof.
     -- admit.
 Admitted.
 
+Lemma aeq_size: forall t1 t2,
+    aeq t1 t2 -> size t1 = size t2.
+Proof.
+  intros. induction H.
+  - simpl. reflexivity.
+  - simpl. rewrite IHaeq. reflexivity.
+  - simpl. rewrite IHaeq. rewrite swap_size_eq. reflexivity.
+  - simpl. rewrite IHaeq1; rewrite IHaeq2. reflexivity.
+  - simpl. rewrite IHaeq1; rewrite IHaeq2. reflexivity.
+  - simpl. rewrite swap_size_eq in IHaeq2.
+    rewrite IHaeq1; rewrite IHaeq2. reflexivity.
+Qed.
+
 Lemma aeq_m_subst_1: forall t1 t2 x t3,
     aeq t1 t2 -> aeq (m_subst t3 x t1) (m_subst t3 x t2).
 Proof.
@@ -54,6 +67,18 @@ Proof.
   - unfold m_subst. simpl. default_simp.
     case (x1 == x2); intros; subst.
     -- apply aeq_abs_same. unfold m_subst in IHaeq.
+       pose proof H. apply aeq_size in H0. rewrite H0.
+       apply aeq_swap1 with t1 t2 x0 x2 in H. admit.
+    -- apply aeq_abs_diff.
+       --- assumption.
+       --- admit.
+       --- pose proof subst_swap_reduction.
+           unfold m_subst in H0.
+           assert (size t2 = size (swap x0 x2 t2)).
+           rewrite swap_size_eq; reflexivity.
+           rewrite H1. rewrite H0. case (x2 == x1); intros; subst.
+           + unfold swap_var. default_simp.
+           + admit.
 Admitted.
 
 Lemma aeq_m_subst_2: forall t1 t2 t3 x,
@@ -73,15 +98,54 @@ Qed.
 Lemma subst_notin: forall x u t,
     x `notin` fv_nom u -> x `notin` fv_nom t -> x `notin` fv_nom (m_subst u x t).
 Proof.
+  intros. induction t.
+  - unfold m_subst; simpl. default_simp.
+  - unfold m_subst; simpl. default_simp.
+    unfold m_subst in IHt. apply notin_remove_1 in H0.
+    inversion H0.
+    -- symmetry in H1; contradiction.
+    -- apply IHt in H1. case (x == x1); intros.
+       --- apply notin_remove_3; symmetry; assumption.
+       --- apply notin_remove_2. admit.
+  - unfold m_subst in *; simpl in *. apply notin_union_3.
+    -- apply notin_union_1 in H0.
+       assert (size t1 <= size t1 + size t2). apply le_plus_l.
+       apply subst_size with (size t1 + size t2) u x t1 in H1.
+       rewrite H1. apply IHt1. assumption.
+    -- apply notin_union_2 in H0.
+       assert (size t2 <= size t1 + size t2). apply le_plus_r.
+       apply subst_size with (size t1 + size t2) u x t2 in H1.
+       rewrite H1. apply IHt2. assumption.
+  - unfold m_subst in *; simpl in *. default_simp.
+    apply notin_union_3.
+    -- case (x == x1); intros; subst.
+       --- apply notin_remove_3. reflexivity.
+       --- apply notin_remove_2. apply notin_union_1 in H0.
+           apply notin_remove_1 in H0. inversion H0.
+           + symmetry in H1; contradiction.
+           + admit.
+    -- apply notin_union_2 in H0.
+       assert (size t2 <= size t1 + size t2). apply le_plus_r.
+       apply subst_size with (size t1 + size t2) u x t2 in H1.
+       rewrite H1. apply IHt2. assumption.
 Admitted.
 
 Lemma size_P: forall t, size (P t) = size t.
 Proof.
+  intros; induction t.
+  - simpl; reflexivity.
+  - simpl. rewrite IHt; reflexivity.
+  - simpl. rewrite IHt1; rewrite IHt2. reflexivity.
+  - simpl. unfold m_subst; simpl. admit. (*rever definição*)
 Admitted.
 
 Lemma subst_swap: forall u t x y,
     m_subst u x (swap x y t) = m_subst u y t.
 Proof.
+  intros. induction t.
+  - simpl; unfold swap_var; unfold m_subst; simpl. default_simp.
+    admit.
+    (*rever definição*)
 Admitted.
 
 
@@ -206,8 +270,72 @@ Lemma pi_P: forall t1 t2, refltrans (ctx pix) t1 t2 -> aeq (P t1) (P t2).
 Proof.
   intros t1 t2 H. induction H.
   - apply aeq_refl.
-  - apply aeq_trans with (P b).
-    -- induction H.
+  - apply refltrans_composition with (ctx pix) a b c in H0.
+    -- inversion H; subst.
+       --- apply aeq_P in H1. apply aeq_trans with (P b).
+           + assumption.
+           + assumption.
+       --- inversion H2; subst.
+           + inversion H1; subst.
+             ++ simpl. apply aeq_P in H7. simpl in H7.
+                inversion H7; subst. rewrite subst_eq_var.
+                apply aeq_P in H3; apply aeq_P in H9.
+                apply aeq_trans with (P e3).
+                +++ assumption.
+                +++ apply aeq_trans with (P b).
+                    * assumption.
+                    * assumption.
+             ++ simpl. simpl in H11. unfold swap_var in H11.
+                default_simp. rewrite subst_eq_var.
+                apply aeq_P in H3; apply aeq_P in H7.
+                apply aeq_trans with (P e3).
+                +++ assumption.
+                +++ apply aeq_trans with (P b).
+                    * assumption.
+                    * assumption.
+           + apply aeq_P in H1. simpl in H1.
+             unfold m_subst in H1. simpl in H1. default_simp.
+             apply aeq_trans with (n_var x).
+             ++ assumption.
+             ++ assumption.
+           + apply aeq_P in H1. simpl in H1.
+             unfold m_subst in H1. simpl in H1. default_simp.
+             apply aeq_P in H3. simpl in H3.
+             apply aeq_trans with (n_abs y (P e1)).
+             ++ assumption.
+             ++ apply aeq_trans with (P b).
+                +++ assumption.
+                +++ assumption.
+           + apply aeq_P in H1. simpl in H1.
+             unfold m_subst in H1. simpl in H1. default_simp.
+             apply aeq_P in H3. simpl in H3.
+             assert (n_abs x0
+                           (subst_rec (size (P e1)) (swap x x0 (P e1)) (P e0) y) = n_abs x (m_subst (P e0) y (P e1))). admit.
+             rewrite H5 in H1.
+             apply aeq_trans with (n_abs x (m_subst (P e0) y (P e1))).
+             ++ assumption.
+             ++ apply aeq_trans with (P b).
+                +++ assumption.
+                +++ assumption.
+           + apply aeq_P in H1. simpl in H1.
+             unfold m_subst in H1. simpl in H1. default_simp.
+             apply aeq_P in H6; apply aeq_P in H8.
+             simpl in H6; simpl in H8. unfold m_subst in *. admit.
+       --- admit.    
+       --- admit.
+       --- admit.
+       --- admit.
+       --- admit.
+
+
+
+
+
+    -- apply rtrans with b.
+       --- assumption.
+       --- apply refl.
+Admitted.      
+(*      induction H.
        --- apply aeq_P in H. assumption.
        --- inversion H1; subst.
            + inversion H; subst.
@@ -340,7 +468,7 @@ Proof.
        --- admit.
        --- admit.
      -- assumption. 
-Admitted.
+Admitted.*)
 
 Lemma pure_P: forall e, pure (P e).
 Proof.

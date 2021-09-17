@@ -2052,7 +2052,8 @@ Lemma subst_sub : forall u x y t1 t2,
        else let (z,_) := atom_fresh (fv_nom u `union` fv_nom (n_sub t1 y t2) `union` {{x}}) in
             n_sub (m_subst u x (swap y z t1)) z (m_subst u x t2).
 Proof.
-  intros. case (x == y).
+  intros. 
+  case (x == y).
   - intro H; subst.
     unfold m_subst.
     simpl.
@@ -2065,7 +2066,9 @@ Proof.
     simpl.
     case (x == y).
     -- intro H; contradiction.
-    -- intro Hneq'.
+    -- intro Hneq'. default_simp.
+       --- admit.
+       --- 
       destruct (atom_fresh (union (fv_nom u) (union (union (remove y (fv_nom t1)) (fv_nom t2)) (singleton x)))).
       rewrite swap_size_eq.
       pose proof subst_size.
@@ -2117,28 +2120,6 @@ Proof.
     --- assumption.
   - intros. inversion H1.
 Qed.
-
-Lemma fv_nom_abs_subst_aux: forall t u y,
-    fv_nom (subst_rec (size t) t u y) [=] (remove y (fv_nom t)) `union` (fv_nom u).
-Proof.
-  induction t.
-  - simpl subst_rec. intros. case (x == y).
-    -- intros; subst. case (y == y).
-       --- intros. simpl. (*Search "union".*)
-           pose proof AtomSetProperties.empty_union_1.
-           specialize (H (remove y (singleton y)) (fv_nom u)).
-           pose proof remove_singleton. specialize (H0 y).
-           admit.
-           (*apply H in H0. symmetry in H0. assumption.*)
-       --- intros; contradiction.
-    -- intros; case (y == x).
-       --- intros.  symmetry in e; contradiction.
-       --- intros. admit.
-  - intros. simpl. case (y == x).
-    -- intros; subst. admit.
-    -- admit.
-  - admit.
-  - Admitted.
 
 (** ** Challenge Exercise [m_subst properties]
 
