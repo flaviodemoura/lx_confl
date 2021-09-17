@@ -2403,7 +2403,10 @@ Proof.
                   inversion H0.
              ----- symmetry in H2; contradiction.
              ----- apply IHn.
-             ------ admit.
+             ------ apply le_S_n in H.
+                    apply Nat.le_trans with (size t1 + size t2).
+             ------- apply le_plus_l.
+             ------- assumption.
              ------ assumption.
              ---- assert (size t2 <= size t1 + size t2).
                   apply le_plus_r.
@@ -2415,7 +2418,10 @@ Proof.
                   inversion H0.
              ----- symmetry in H3; contradiction.
              ----- apply IHn.
-             ------ admit.
+             ------ apply le_S_n in H.
+                    apply Nat.le_trans with (size t1 + size t2).
+             ------- apply le_plus_r.
+             ------- assumption.
              ------ repeat apply notin_union_2 in H2. assumption.
          --- assert (size (swap x0 x1 t1) <= size t1 + size t2). {
                rewrite swap_size_eq.
@@ -2427,7 +2433,10 @@ Proof.
              rewrite H1; rewrite H2.
              apply aeq_sub_diff.
              ---- apply IHn.
-             ----- admit.
+             ----- apply le_S_n in H.
+                   apply Nat.le_trans with (size t1 + size t2).
+             ------ apply le_plus_r.
+             ------ assumption.
              ----- repeat apply notin_union_2 in H0. assumption.
              ---- assumption.
              ---- apply notin_union_2 in n0.
@@ -2437,8 +2446,12 @@ Proof.
              ------ symmetry in H3; contradiction.
              ------ assumption.
              ---- apply IHn.
-             ----- admit.
+             ----- rewrite swap_size_eq. apply le_S_n in H.
+                   apply Nat.le_trans with (size t1 + size t2).
+             ------- apply le_plus_l.
+             ------- assumption.
              ----- apply notin_union_1 in H0.
+                   pose proof n0.
                    apply notin_union_2 in n0.
                    repeat apply notin_union_1 in n0.
                    apply notin_remove_1 in H0.
@@ -2447,8 +2460,15 @@ Proof.
              ------ contradiction.
              ------ contradiction.
              ------ contradiction.
-             ------ admit.
-Admitted.                     
+             ------ apply notin_union_2 in H3.
+                    apply notin_union_2 in H3.
+                    apply notin_union_1 in H3.
+                    apply notin_singleton_1 in H3.
+                    apply fv_nom_remove_swap.
+             ------- assumption.       
+             ------- assumption.
+             ------- assumption.
+Qed.                     
 
 Lemma subst_fresh_eq : forall (x : atom) t u,  x `notin` fv_nom t -> aeq (m_subst u x t) t.
 Proof.
