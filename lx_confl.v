@@ -275,7 +275,7 @@ Proof.
        --- apply aeq_P in H1. apply aeq_trans with (P b).
            + assumption.
            + assumption.
-       --- inversion H2; subst.
+               inversion H2; subst.
            + inversion H1; subst.
              ++ simpl. apply aeq_P in H7. simpl in H7.
                 inversion H7; subst. rewrite subst_eq_var.
@@ -320,17 +320,121 @@ Proof.
            + apply aeq_P in H1. simpl in H1.
              unfold m_subst in H1. simpl in H1. default_simp.
              apply aeq_P in H6; apply aeq_P in H8.
-             simpl in H6; simpl in H8. unfold m_subst in *. admit.
-       --- admit.    
+             simpl in H6; simpl in H8. unfold m_subst in *.
+             inversion H1; subst.
+             assert (aeq t1 (P t1')). {
+               apply aeq_trans with (subst_rec (size (P e1) + size (P e0)) (P e1) (P e4) y).
+               ++ assumption.
+               ++ assert (size (P e1) <= size (P e1) + size (P e0)).
+                  apply le_plus_l.
+                  pose proof subst_size.
+                  specialize (H4 (size (P e1) + size (P e0)) (P e4) y (P e1)). apply H4 in H3; rewrite H3. assumption.
+             }
+             assert (aeq t2 (P t2')). {
+               apply aeq_trans with (subst_rec (size (P e1) + size (P e0)) (P e0) (P e4) y).
+               ++ assumption.
+               ++ assert (size (P e0) <= size (P e1) + size (P e0)).
+                  apply le_plus_r.
+                  pose proof subst_size.
+                  specialize (H9 (size (P e1) + size (P e0)) (P e4) y (P e0)). apply H9 in H4; rewrite H4. assumption.
+             }
+             assert (aeq (n_app t1 t2) (n_app (P t1') (P t2'))). {
+               apply aeq_app; assumption.
+             }
+             apply aeq_trans with (n_app (P t1') (P t2')).
+             ++ assumption.
+             ++ assumption.
+       --- simpl in *. inversion H1; subst.
+           + apply aeq_P in H2.
+             apply aeq_abs_same with x (P e) (P e') in H2.
+             apply aeq_trans with (n_abs x (P e')).
+             ++ assumption.
+             ++ assumption.
+           + inversion H3; subst.
+             ++ apply aeq_P in H2. simpl in H2.
+                rewrite subst_eq_var in H2.
+                apply aeq_P in H4.
+                apply aeq_abs_same with x (P e) (P e3) in H2.
+                apply aeq_abs_same with x (P e3) (P e') in H4.
+                apply aeq_trans with (n_abs x (P e')).
+                +++ apply aeq_trans with (n_abs x (P e3)).
+                    * assumption.
+                    * assumption.
+                +++ assumption.
+             ++ apply aeq_P in H2. simpl in H2.
+                rewrite subst_neq_var in H2.
+                +++ apply aeq_P in H4. simpl in H4.
+                    apply aeq_abs_same with x (P e) (n_var x0) in H2.
+                    apply aeq_abs_same with x (n_var x0) (P e') in H4.
+                    apply aeq_trans with (n_abs x (n_var x0)).
+                    * assumption.
+                    * apply aeq_trans with (n_abs x (P e')).
+                      ** assumption.
+                      ** assumption.
+                +++ apply aux_not_equal; assumption.
+             ++ apply aeq_P in H2. simpl in H2.
+                rewrite subst_abs in H2.
+                default_simp. apply aeq_P in H4. simpl in H4.
+                apply aeq_abs_same with x (P e) (n_abs y (P e1)) in H2.
+                apply aeq_abs_same with x (n_abs y (P e1)) (P e') in H4.
+                apply aeq_trans with (n_abs x (n_abs y (P e1))).
+                    * assumption.
+                    * apply aeq_trans with (n_abs x (P e')).
+                      ** assumption.
+                      ** assumption.
+             ++ apply aeq_P in H2. simpl in H2.
+                rewrite subst_abs in H2.
+                default_simp. apply aeq_P in H4. simpl in H4.
+                assert (n_abs x1 (m_subst (P e0) y (swap x0 x1 (P e1))) = n_abs x0 (m_subst (P e0) y (P e1))). admit.
+                rewrite H6 in H2.
+                apply aeq_abs_same with x (P e) (n_abs x0 (m_subst (P e0) y (P e1))) in H2.
+                apply aeq_abs_same with x (n_abs x0 (m_subst (P e0) y (P e1))) (P e') in H4.
+                
+                apply aeq_trans with (n_abs x (n_abs x0 (m_subst (P e0) y (P e1)))).
+                    * assumption.
+                    * apply aeq_trans with (n_abs x (P e')).
+                      ** assumption.
+                      ** assumption.
+             ++ apply aeq_P in H2. simpl in H2.
+                rewrite subst_app in H2. apply aeq_P in H4.
+                simpl in H4.
+                apply aeq_abs_same with x (P e) (n_app (m_subst (P e4) y (P e1))
+            (m_subst (P e4) y (P e0))) in H2.
+                apply aeq_abs_same with x (n_app (m_subst (P e4) y (P e1))
+            (m_subst (P e4) y (P e0))) (P e') in H4.
+                apply aeq_trans with (n_abs x
+            (n_app (m_subst (P e4) y (P e1))
+               (m_subst (P e4) y (P e0)))).
+                    * assumption.
+                    * apply aeq_trans with (n_abs x (P e')).
+                      ** assumption.
+                      ** assumption.
+           + simpl in *. inversion H2; subst.
+             ++ apply aeq_abs_same with x0 e0 e'0 in H3.
+                apply aeq_abs_same with x (n_abs x0 e0) (n_abs x0 e'0) in H3.
+                apply aeq_P in H3. simpl in H3.
+                apply aeq_trans with (n_abs x (n_abs x0 (P e'0))).
+                +++ assumption.
+                +++ assumption.
+             ++ inversion H4; subst.
+                +++ admit.
+                +++ admit.
+                +++ admit.
+                +++ admit.
+                +++ admit.
+             ++ admit.
+             ++ admit.
+             ++ admit.
+             ++ admit.
+             ++ admit.
+           + admit.  
+           + admit.
+           + admit.
+           + admit.
        --- admit.
        --- admit.
        --- admit.
        --- admit.
-
-
-
-
-
     -- apply rtrans with b.
        --- assumption.
        --- apply refl.
