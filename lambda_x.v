@@ -1709,8 +1709,8 @@ Proof.
 Qed.
     
 Lemma aeq_trans: forall t1 t2 t3, aeq t1 t2 -> aeq t2 t3 -> aeq t1 t3.
-Proof.
-  induction t1.
+Proof.           
+  (*induction t1.
   - intros. inversion H; subst. assumption.
   - intros. inversion H; subst.
     -- inversion H0; subst.
@@ -1745,8 +1745,8 @@ Proof.
              ++ assumption.
            + apply aeq_abs_diff.
              ++ assumption.
-             ++ admit.
-             ++ 
+             ++  
+             ++ *)
              
   intros. generalize dependent t3. induction H.
   - intros. assumption.
@@ -1791,12 +1791,7 @@ Proof.
                     rewrite H3.
 
                     rewrite shuffle_swap.
-                    ** apply aeq_sym.
-                       pose proof swap_reduction.
-                       specialize (H4 y x t4).
-                       apply H4 in H11.
-                       *** admit.
-                       *** assumption.
+                    ** admit.
                     ** assumption.
                     ** assumption.
              ++ assumption.
@@ -1858,13 +1853,8 @@ Proof.
              rewrite swap_symmetric.
              assert (swap y0 x t1'0 = swap x y0 t1'0).
              rewrite swap_symmetric; reflexivity.
-             rewrite H5. rewrite swap_comp.
-             ++ rewrite swap_symmetric; assumption.
-             ++ assumption.
-             ++ assumption.
-             ++ assumption.
-             ++ assumption.
-Qed.
+             rewrite H5. admit.
+Admitted.
 (*Lemma aeq_swap : forall t1 x1 x2, x1 <> x2 -> x2 `notin` (fv_nom t1) -> aeq (swap x1 x2 t1) t1.*)
 
 Inductive betax : n_sexp -> n_sexp -> Prop :=
@@ -2073,18 +2063,37 @@ Fixpoint num_occ x t : nat :=
   | n_sub t1 y t2 => if(x == y) then num_occ x t2 else (num_occ x t1) + (num_occ x t2)
   end.
 
+Lemma swap_same_occ: forall x y t,
+    num_occ y (swap x y t) = num_occ x t.
+Proof.
+  induction t; simpl; unfold swap_var; default_simp.
+Qed.
+
+Lemma swap_diff_occ: forall x y z t,
+    x <> y -> x <> z -> num_occ x (swap y z t) = num_occ x t.
+Proof.
+  induction t; simpl; unfold swap_var; default_simp.
+Qed.
+    
 Fixpoint size (t : n_sexp) : nat :=
   match t with
   | n_var x => 1
   | n_abs x t => 1 + size t
   | n_app t1 t2 => 1 + size t1 + size t2
-  | n_sub t1 x t2 => size t1 + (num_occ x t1) * ((size t2) - 1))
+  | n_sub t1 x t2 => size t1 + ((num_occ x t1) * ((size t2) - 1))
   end.  
    
 Lemma swap_size_eq : forall x y t,
     size (swap x y t) = size t.
 Proof.
   induction t; simpl; auto.
+  unfold swap_var. rewrite IHt1; rewrite IHt2. default_simp.
+  - rewrite swap_same_occ. reflexivity.
+  - rewrite swap_symmetric. rewrite swap_same_occ. reflexivity.
+  - rewrite swap_diff_occ.
+    -- reflexivity.
+    -- assumption.
+    -- assumption.
 Qed.
 
 Lemma strong_induction :
@@ -2148,16 +2157,19 @@ Proof.
   - intros. apply Hsub.
     + apply H with ((size t2)).
       ++ simpl in Heqn. rewrite Heqn.
-          apply le_lt_n_Sm.
-         apply le_plus_r.
+
+          admit. 
+         (*apply le_lt_n_Sm.
+         apply le_plus_r.*)
       ++ reflexivity.
     + intros. apply H with ((size (swap x0 y t0))).
       ++ rewrite swap_size_eq. rewrite H0.
          simpl in Heqn. rewrite Heqn.
-         apply le_lt_n_Sm.
-         apply le_plus_l.
+         admit.
+         (*apply le_lt_n_Sm.
+         apply le_plus_l.*)
       ++ reflexivity.
-Qed.
+Admitted.
 
 Hint Rewrite swap_size_eq.
 
@@ -2230,8 +2242,8 @@ Proof.
     rewrite (IH (size t1 + size t2)); try lia.
     rewrite (IH (size t1 + size t2)); try lia.
     auto.
-  - default_simp.
-    -- rewrite (IH n); try lia.
+  - Search "<=". apply le_n_0_eq in SZ. rewrite <- SZ. reflexivity.
+  - (*rewrite (IH n); try lia.
        --- rewrite swap_size_eq.
            assert (size t1 <= size t1 + size t2). {
              apply le_plus_l.
@@ -2257,8 +2269,9 @@ Proof.
            apply le_lt_n_Sm in SZ.
            specialize (IH (size t2 + size t1) SZ u x t2).
            apply IH in H.
-           symmetry in H. assumption.       
-Qed.
+           symmetry in H. assumption.       *)
+    admit.
+Admitted.
 
 (** ** Challenge Exercise [m_subst]
 
@@ -2342,7 +2355,7 @@ Proof.
     unfold m_subst.
     simpl.
     case (y == y).
-    -- intro H; reflexivity.
+    -- admit.
     -- intro H.
       contradiction.      
   - intro Hneq.
@@ -2350,14 +2363,7 @@ Proof.
     simpl.
     case (x == y).
     -- intro H; contradiction.
-    -- intro Hneq'. default_simp.
-       --- admit.
-       --- 
-      destruct (atom_fresh (union (fv_nom u) (union (union (remove y (fv_nom t1)) (fv_nom t2)) (singleton x)))).
-      rewrite swap_size_eq.
-      pose proof subst_size.
-      specialize (H (size t1 + size t2) u x (swap y x0 t1)).
-      admit.
+    -- intro Hneq'. default_simp. admit.
 Admitted.
 
 Lemma pure_m_subst : forall t u x, pure u -> pure t -> pure (m_subst u x t).
@@ -2412,7 +2418,7 @@ Qed.
 Lemma subst_same_aux : forall n, forall t y, size t <= n -> aeq (m_subst (n_var y) y t)  t.
 Proof.
   intro n. induction n.
-  - intros t y SZ. destruct t; simpl in SZ; lia.
+  - intros t y SZ. destruct t; simpl in SZ; default_simp. admit.
   - intros t y SZ. destruct t; simpl in SZ.
     -- unfold m_subst. simpl. case (y == x).
        --- intros. rewrite e. apply aeq_var.
@@ -2466,22 +2472,23 @@ Proof.
              ---- intros; subst. rewrite swap_id.
                   apply aeq_sub_same.
                   ----- specialize (IHn t1 y); apply IHn.
-                        apply Sn_le_Sm__n_le_m in SZ.
+                        admit.
+                        (*apply Sn_le_Sm__n_le_m in SZ.
                         transitivity (size t1 + size t2).
                   ------ apply le_plus_l.
-                  ------ assumption.
-                  ----- specialize (IHn t2 y); apply IHn.
-                        apply Sn_le_Sm__n_le_m in SZ.
+                  ------ assumption.*)
+                  ----- specialize (IHn t2 y); apply IHn. admit.
+                        (*apply Sn_le_Sm__n_le_m in SZ.
                         transitivity (size t1 + size t2).
                   ------ apply le_plus_r.
-                  ------ assumption.
+                  ------ assumption.*)
              ---- intro Hneq'.
                   apply aeq_sub_diff.
                   ----- specialize (IHn t2 y); apply IHn.
-                        apply Sn_le_Sm__n_le_m in SZ.
+                        (*apply Sn_le_Sm__n_le_m in SZ.
                         transitivity (size t1 + size t2).
                   ------ apply le_plus_r.
-                  ------ assumption.
+                  ------ assumption.*) admit.
                   ----- apply aux_not_equal in Hneq'; assumption.
                   ----- apply notin_union_2 in n0.
                         repeat apply notin_union_1 in n0.
@@ -2490,11 +2497,11 @@ Proof.
                    ------ assumption.
                    ----- specialize (IHn (swap x x0 t1) y).
                          apply IHn. rewrite swap_size_eq.
-                         apply Sn_le_Sm__n_le_m in SZ.
+                         (*apply Sn_le_Sm__n_le_m in SZ.
                          transitivity (size t1 + size t2).
                    ------ apply le_plus_l.
-                   ------ assumption.
-Qed.
+                   ------ assumption.*) admit.
+Admitted.
 
 Lemma subst_same : forall t y, aeq (m_subst (n_var y) y t)  t.
 Proof.
@@ -2533,24 +2540,25 @@ Proof.
    unfold lt; unfold lt in IHt1; unfold lt in IHt2.
    inversion IHt1.
     -- inversion IHt2.
-       --- simpl. default_simp.
-       --- simpl. default_simp.
+       --- simpl. default_simp. admit.
+       --- simpl. default_simp. admit.
     -- inversion IHt2.
        --- assert (S m + 1 = 1 + S m). {
              apply plus_comm.
            }
-           subst. simpl. default_simp. rewrite H3. default_simp.
+           subst. simpl. default_simp. (*rewrite H3. default_simp.*)
+           admit.
        --- simpl. assert (m + S m0 = S m0 + m). {
              apply plus_comm.
            }
-           rewrite H3. simpl. default_simp. repeat apply le_S.
+           (*rewrite H3. simpl. default_simp. repeat apply le_S.
            default_simp. assert (m0 <= m0 + m). {
              apply le_plus_l.
            }
            transitivity (m0).
            + assumption.
-           + assumption.
-Qed.
+           + assumption.*) admit.
+Admitted.
 
 
 Lemma subst_fresh_eq_aux : forall n, forall (x : atom) t u, size t <= n ->
@@ -2655,8 +2663,8 @@ Proof.
          --- assumption.
       -- assumption.
     + intros. unfold m_subst; simpl. default_simp.
-      -- apply aeq_refl.
-      -- case (x1 == x0); intros; subst.
+      -- (*apply aeq_refl.*) admit.
+      (*-- case (x1 == x0); intros; subst.
          --- apply aeq_sub_same.
              ---- rewrite swap_id.
                   assert (size t1 <= size t1 + size t2).
@@ -2732,8 +2740,8 @@ Proof.
                     apply fv_nom_remove_swap.
              ------- assumption.       
              ------- assumption.
-             ------- assumption.
-Qed.                     
+             ------- assumption.*)
+Admitted.                     
 
 Lemma subst_fresh_eq : forall (x : atom) t u,  x `notin` fv_nom t -> aeq (m_subst u x t) t.
 Proof.
