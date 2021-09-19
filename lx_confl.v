@@ -18,6 +18,12 @@ Fixpoint P (t : n_sexp) := match t with
                            | n_sub t1 x t2 => m_subst (P t2) x (P t1)
                            end.
 
+Lemma size_m_subst: forall t1 t2 x,
+    size (m_subst t2 x t1) = size (n_sub t1 x t2).
+Proof.
+  induction t1.
+  - intros. simpl. unfold m_subst. simpl. case (x == x0)
+
 Lemma subst_swap_reduction: forall u t x y z,
     (swap x y (m_subst u z t)) = (m_subst (swap x y u) (swap_var x y z) (swap x y t)).
 Proof.
@@ -139,6 +145,7 @@ Proof.
   - simpl. unfold m_subst; simpl. admit. (*rever definição*)
 Admitted.
 
+(*t = n_app x y*)
 Lemma subst_swap: forall u t x y,
     m_subst u x (swap x y t) = m_subst u y t.
 Proof.
