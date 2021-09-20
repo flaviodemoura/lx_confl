@@ -2114,7 +2114,7 @@ Proof.
     apply lt_le_trans with m; assumption.
 Qed.
 
-Lemma n_sexp_induction :
+(*Lemma n_sexp_induction :
  forall P : n_sexp -> Prop,
  (forall x, P (n_var x)) ->
  (forall t1 z,
@@ -2157,7 +2157,7 @@ Proof.
   - intros. apply Hsub.
     + apply H with ((size t2)).
       ++ simpl in Heqn. rewrite Heqn.
-
+         Search "le_lt_n_Sm".
           admit. 
          (*apply le_lt_n_Sm.
          apply le_plus_r.*)
@@ -2169,7 +2169,7 @@ Proof.
          (*apply le_lt_n_Sm.
          apply le_plus_l.*)
       ++ reflexivity.
-Admitted.
+Admitted.*)
 
 Hint Rewrite swap_size_eq.
 
@@ -2224,7 +2224,25 @@ Proof.
     -- apply le_S. reflexivity.
     -- assumption.
 Qed.
-    
+
+Lemma plus_gt_compat: forall n m q, n > q -> n + m > q.
+Proof.
+Admitted.
+
+
+
+
+Lemma size_gt_0: forall t, size t > 0.
+Proof.
+  induction t.
+  - simpl. apply gt_Sn_O.
+  - simpl. apply gt_Sn_O.
+  - simpl. apply gt_Sn_O.
+  - simpl. apply gt_le_S in IHt2.  destruct IHt2.
+    -- simpl. rewrite <- mult_n_O. rewrite <- plus_n_O. assumption.
+    -- apply plus_gt_compat. assumption.
+Qed.
+       
 Lemma subst_size : forall n (u : n_sexp) (x:atom) (t:n_sexp),
     size t <= n -> subst_rec n t u x = subst_rec (size t) t u x.
 Proof.
@@ -2243,7 +2261,22 @@ Proof.
     rewrite (IH (size t1 + size t2)); try lia.
     auto.
   - Search "<=". apply le_n_0_eq in SZ. rewrite <- SZ. reflexivity.
-  - (*rewrite (IH n); try lia.
+  -
+    pose proof SZ as SZ0.
+    destruct SZ.
+    -- reflexivity.
+    -- case (x == x0); intros; subst.
+       --- admit.
+       --- assert (1 <= size (n_sub t1 x0 t2)). admit.
+           Search "<=". 
+           (*default_simp. simpl.
+           
+      apply le_lt_n_Sm in SZ.
+       specialize (IH (size t1 + num_occ x0 t1 * (size t2 - 1)) SZ u x (n_sub t1 x0 t2)). *)
+
+
+
+    (*rewrite (IH n); try lia.
        --- rewrite swap_size_eq.
            assert (size t1 <= size t1 + size t2). {
              apply le_plus_l.
