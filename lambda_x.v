@@ -1747,6 +1747,34 @@ Qed.*)
     so that means we can prove such properties by induction on
     that size.  *)
 
+Fixpoint num_occ x t : nat :=
+  match t with
+  | n_var y => if(x == y) then 1 else 0
+  | n_abs y t1 => if(x == y) then 0 else num_occ x t1
+  | n_app t1 t2 => (num_occ x t1) + (num_occ x t2)
+  | n_sub t1 y t2 => if(x == y) then num_occ x t2 else (num_occ x t1) + (num_occ x t2)
+  end.
+
+Lemma swap_same_occ: forall x y t,
+    num_occ y (swap x y t) = num_occ x t.
+Proof.
+  induction t; simpl; unfold swap_var; default_simp.
+Qed.
+
+Lemma swap_diff_occ: forall x y z t,
+    x <> y -> x <> z -> num_occ x (swap y z t) = num_occ x t.
+Proof.
+  induction t; simpl; unfold swap_var; default_simp.
+Qed.
+    
+Fixpoint size' (t : n_sexp) : nat :=
+  match t with
+  | n_var x => 1
+  | n_abs x t => 1 + size' t
+  | n_app t1 t2 => 1 + size' t1 + size' t2
+  | n_sub t1 x t2 => size' t1 + ((num_occ x t1) * ((size' t2) - 1))
+  end.  
+
 Fixpoint size (t : n_sexp) : nat :=
   match t with
   | n_var x => 1
