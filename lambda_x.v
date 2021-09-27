@@ -1433,11 +1433,39 @@ Proof.
        rewrite swap_involutive. assumption.
 Qed.
 
-Lemma swap_reduction: forall x y t,
-    x `notin` fv_nom t -> y `notin` fv_nom t -> swap x y t = t.
+(*
+Lemma swap_reduction: forall t x y,
+    x `notin` fv_nom t -> y `notin` fv_nom t -> aeq (swap x y t)  t.
 Proof.
+  induction t.
+  - intros x' y H1 H2.
+    simpl.
+    unfold swap_var.
+    destruct (x == x'); subst.
+    + admit. (* ok. contradiction in H1. *)
+    + destruct (x == y); subst.
+      * admit. (* ok. contradiction in H2. *)
+      * reflexivity.
+  - intros x' y H1 H2.
+    simpl in *.
+    apply notin_remove_1 in H1.
+    apply notin_remove_1 in H2.
+    destruct H1.
+    + subst.
+      destruct H2.
+      * subst.
+        rewrite swap_id.
+        unfold swap_var.
+        destruct (y == y).
+        ** reflexivity.
+        ** contradiction.        
+      * rewrite IHt.
+    +
+    unfold swap_var.
+    destruct (x == x'); subst.
+    + rewrite IHt.
+    +
   Admitted.
-
   
 Lemma swap_comp: forall t x y z,
     x <> z -> y <> z -> x `notin` fv_nom t -> y `notin` fv_nom t -> swap y x (swap y z t) = (swap x z t).
@@ -1456,40 +1484,52 @@ Proof.
   - assumption.
   - assumption.
 Qed.
+*)
     
 Lemma aeq_trans: forall t1 t2 t3, aeq t1 t2 -> aeq t2 t3 -> aeq t1 t3.
 Proof.
-  intros. generalize dependent t3. induction H.
-  - intros. assumption.
-  - intros. inversion H0; subst.
-    -- apply aeq_abs_same. specialize (IHaeq t4). apply IHaeq.
-       assumption.
+  intros t1 t2 t3 H1 H2.
+  generalize dependent t3.
+  induction H1.
+  - intros t3 H; assumption.
+  - intros t3 H. inversion H; subst.
+    -- apply aeq_abs_same.
+       apply IHaeq; assumption.
     -- apply aeq_abs_diff.
        --- assumption.
        --- assumption.
-       --- specialize (IHaeq (swap y x t4)). apply IHaeq.
-           assumption.
-  - intros. inversion H2; subst.
+       --- apply IHaeq; assumption.
+  - intros t3 Haeq.
+    inversion Haeq; subst; clear Haeq.
     -- apply aeq_abs_diff.
        --- assumption.
-       --- apply aeq_fv_nom in H6.
-           rewrite <- H6; assumption.
+       --- apply aeq_fv_nom in H5.
+           rewrite <- H5; assumption.
        --- apply IHaeq.
            apply aeq_swap; assumption.
-    -- case (x == y0).
+    -- case (x == y0). (***)
        --- intro Heq; subst.
            apply aeq_abs_same.
-           apply IHaeq. apply aeq_sym in H2.
-           inversion H2; subst.
-           + contradiction.
-           + apply aeq_sym. assumption.
+           apply IHaeq. apply aeq_sym in H7.
+           apply aeq_sym.
+           apply aeq_swap1 with (swap y0 y t4) t2 y0 y in H7.
+           rewrite swap_involutive in H7.
+           rewrite swap_symmetric; assumption.
        --- intro Hneq.
            apply aeq_abs_diff.
-           + assumption.
-           + apply aeq_fv_nom in H8.
-                rewrite H8 in H0.
+           ---- assumption.
+           ---- apply aeq_fv_nom in H7.
+                rewrite H7 in H0.
                 apply fv_nom_swap_remove in H0; assumption.
-           + apply aeq_fv_nom in H8.
+           ---- inversion Haeq; subst.
+                ----- contradiction.
+                ----- apply IHaeq.
+                apply aeq_swap1 with t2 (swap y0 y t4) y x in H7.
+                replace (swap y0 y t4) with (swap y y0 t4) in H7.
+                ----- rewrite <- shuffle_swap in H7.
+                ----- 
+
+             apply aeq_fv_nom in H7.
              rewrite H8 in H0.
              apply fv_nom_swap_remove in H0.
              ++ inversion H2; subst.
