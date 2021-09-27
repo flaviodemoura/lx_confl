@@ -1433,7 +1433,6 @@ Proof.
        rewrite swap_involutive. assumption.
 Qed.
 
-(*
 Lemma swap_reduction: forall t x y,
     x `notin` fv_nom t -> y `notin` fv_nom t -> aeq (swap x y t)  t.
 Proof.
@@ -1442,11 +1441,14 @@ Proof.
     simpl.
     unfold swap_var.
     destruct (x == x'); subst.
-    + admit. (* ok. contradiction in H1. *)
+    + apply notin_singleton_is_false in H1.
+      contradiction.
     + destruct (x == y); subst.
-      * admit. (* ok. contradiction in H2. *)
-      * reflexivity.
-  - intros x' y H1 H2.
+      * apply notin_singleton_is_false in H2.
+        contradiction. 
+      * apply aeq_refl.
+  - Admitted.
+(* intros x' y H1 H2.
     simpl in *.
     apply notin_remove_1 in H1.
     apply notin_remove_1 in H2.
@@ -1465,15 +1467,15 @@ Proof.
     destruct (x == x'); subst.
     + rewrite IHt.
     +
-  Admitted.
-  
+
 Lemma swap_comp: forall t x y z,
     x <> z -> y <> z -> x `notin` fv_nom t -> y `notin` fv_nom t -> swap y x (swap y z t) = (swap x z t).
 Proof.
   intros.
   assert (swap y x (swap y z t) = swap x y (swap y z t)).
   rewrite swap_symmetric; reflexivity.
-  rewrite H3. rewrite shuffle_swap.
+  rewrite H3.
+  rewrite shuffle_swap.
   - assert (swap x y t = t). {
       rewrite swap_reduction.
       -- reflexivity.
@@ -1485,7 +1487,58 @@ Proof.
   - assumption.
 Qed.
 *)
-    
+(* false: take t = y or t = x
+Lemma swap_trans: forall t x y z, (swap x y (swap y z t)) = swap x z t.
+Proof.
+  induction t.
+  - intros. simpl. unfold swap_var. default_simp.
+    + apply notin_singleton_is_false in H.
+      contradiction.
+    + apply notin_singleton_is_false in H0.
+      contradiction.
+  - intros. simpl. unfold swap_var.
+    case (x == y).
+    + intro H'; subst.
+      case (z == x0).
+      * intro H'; subst.
+        case (y == x0).
+        ** intro H'; subst.
+           rewrite swap_involutive.
+           rewrite swap_id.
+           reflexivity.
+        ** intro H'.
+           rewrite IHt.
+           *** reflexivity.
+           *** simpl in H.
+               apply notin_remove_1 in H.
+               destruct H.
+               **** contradiction.
+               **** assumption.
+           *** simpl in H0.
+               apply notin_remove_1 in H0.
+               destruct H0.
+               **** contradiction.
+               **** assumption.
+      * intro H; case (z == y).
+        ** intro H'; subst.
+           case (y == x0).
+           *** intro H'; contradiction.
+           *** intro H'; case (y == y).
+               **** intro H''; reflexivity.
+               **** intro H''; contradiction.
+        ** intro H'; case (y == x0).
+           *** intro H''; subst.
+               reflexivity.
+           *** intro H''; case (y == z).
+               **** intro H'''; subst.
+                    contradiction.
+               **** Admitted.
+
+  - intros. simpl. unfold swap_var. default_simp.
+  - intros. simpl. unfold swap_var. default_simp.
+ *)
+
+  
 Lemma aeq_trans: forall t1 t2 t3, aeq t1 t2 -> aeq t2 t3 -> aeq t1 t3.
 Proof.
   intros t1 t2 t3 H1 H2.
@@ -1507,10 +1560,11 @@ Proof.
            rewrite <- H5; assumption.
        --- apply IHaeq.
            apply aeq_swap; assumption.
-    -- case (x == y0). (***)
+    -- case (x == y0).
        --- intro Heq; subst.
            apply aeq_abs_same.
-           apply IHaeq. apply aeq_sym in H7.
+           apply IHaeq.
+           apply aeq_sym in H7.
            apply aeq_sym.
            apply aeq_swap1 with (swap y0 y t4) t2 y0 y in H7.
            rewrite swap_involutive in H7.
@@ -1521,15 +1575,11 @@ Proof.
            ---- apply aeq_fv_nom in H7.
                 rewrite H7 in H0.
                 apply fv_nom_swap_remove in H0; assumption.
-           ---- inversion Haeq; subst.
-                ----- contradiction.
-                ----- apply IHaeq.
+           ---- apply IHaeq.
                 apply aeq_swap1 with t2 (swap y0 y t4) y x in H7.
-                replace (swap y0 y t4) with (swap y y0 t4) in H7.
-                ----- rewrite <- shuffle_swap in H7.
-                ----- 
+                Admitted.
 
-             apply aeq_fv_nom in H7.
+(*             apply aeq_fv_nom in H7.
              rewrite H8 in H0.
              apply fv_nom_swap_remove in H0.
              ++ inversion H2; subst.
@@ -1616,7 +1666,8 @@ Proof.
              ++ assumption.
              ++ assumption.
 Qed.
-(*Lemma aeq_swap : forall t1 x1 x2, x1 <> x2 -> x2 `notin` (fv_nom t1) -> aeq (swap x1 x2 t1) t1.*)
+
+Lemma aeq_swap : forall t1 x1 x2, x1 <> x2 -> x2 `notin` (fv_nom t1) -> aeq (swap x1 x2 t1) t1. *)
 
 Inductive betax : n_sexp -> n_sexp -> Prop :=
  | step_betax : forall (e1 e2: n_sexp) (x: atom),
