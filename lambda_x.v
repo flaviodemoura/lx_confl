@@ -1433,6 +1433,122 @@ Proof.
        rewrite swap_involutive. assumption.
 Qed.
 
+Lemma aeq_abs: forall t x y, y `notin` fv_nom t -> aeq (n_abs y (swap x y t)) (n_abs x t).
+Proof.
+  induction t.
+  - intros x' y H.
+    simpl in *.
+    unfold swap_var.
+    case (x == x').
+    + intro Heq; subst.
+      apply notin_singleton_1' in H.
+      apply aeq_abs_diff.
+      * intro H'; subst.
+        contradiction.
+      * simpl.
+        apply notin_singleton_2; assumption.
+      * simpl.
+        unfold swap_var.
+        case (x' == x').
+        ** intro H'; subst.
+           apply aeq_refl.
+        ** intro H'; contradiction.
+    + intro H'.
+      case (x == y).
+      * intro H''; subst.
+        apply notin_singleton_is_false in H.
+        contradiction. 
+      * intro H''.
+        case (y == x').
+        ** intro H'''; subst.
+           apply aeq_refl.
+        ** intro H'''.
+           apply aeq_abs_diff.
+           *** assumption.      
+           *** assumption.
+           *** simpl.
+               unfold swap_var.
+               case (x == x').
+               **** intro H''''.
+                    contradiction.
+               **** intro H''''.
+                    case (x == y).
+                    ***** intro H'''''; contradiction.
+                    ***** intro H'''''; apply aeq_refl.
+  - intros x' y H.
+    case (y == x').
+    + intro H'; subst.
+      apply aeq_abs_same.
+      rewrite swap_id.
+      apply aeq_refl.
+    + intro H'.
+      apply aeq_abs_diff.
+      * assumption.
+      * assumption.
+      * apply aeq_refl.
+  - intros x y H.
+    simpl in *.
+    assert (H' := H).
+    apply notin_union_1 in H.
+    apply notin_union_2 in H'.
+    case (y == x).
+    + intro H''; subst.
+      repeat rewrite swap_id.
+      apply aeq_refl.
+    + intro H''.
+      apply aeq_abs_diff.
+      * assumption.
+      * simpl.
+        apply notin_union_3; assumption.
+      * simpl.
+        apply aeq_app; apply aeq_refl.
+  - intros x' y H.
+    simpl in *.
+    assert (H' := H).
+    apply notin_union_1 in H.
+    apply notin_union_2 in H'.
+    apply notin_remove_1 in H.
+    destruct H.
+    + subst.
+      case (y == x').
+      * intro H''; subst.
+        apply aeq_abs_same.
+        repeat rewrite swap_id.
+        unfold swap_var.
+        case (x' == x').
+        ** intro H''; apply aeq_refl.
+        ** intro H''; contradiction.
+      * intro H''.
+        apply aeq_abs_diff.
+        ** assumption.
+        ** simpl.
+           apply notin_union.
+           *** apply AtomSetImpl.remove_1.
+               reflexivity.
+           *** assumption.
+        ** simpl.
+           apply aeq_refl.
+    + case (y == x').
+      * intro H''; subst.
+        repeat rewrite swap_id.
+        unfold swap_var.
+        destruct (x == x'); subst; apply aeq_refl.
+      * intro H''.
+        apply aeq_abs_diff.
+        ** assumption.
+        ** simpl.
+           apply notin_union.
+           *** apply notin_remove_2; assumption.
+           *** assumption.           
+        ** simpl.
+           apply aeq_refl.
+Qed.
+
+Lemma aeq_sub: forall t1 t2 x y, y `notin` fv_nom t1 -> aeq (n_sub (swap x y t1) y (swap x y t2)) (n_sub t1 x t2).
+Proof.
+ (* to be prove in the same style of aeq_abs. *)
+Admitted.
+  
 Lemma swap_reduction: forall t x y,
     x `notin` fv_nom t -> y `notin` fv_nom t -> aeq (swap x y t)  t.
 Proof.
@@ -1447,47 +1563,106 @@ Proof.
       * apply notin_singleton_is_false in H2.
         contradiction. 
       * apply aeq_refl.
-  - Admitted.
-(* intros x' y H1 H2.
+  - intros x' y H1 H2.
     simpl in *.
+    unfold swap_var.
     apply notin_remove_1 in H1.
     apply notin_remove_1 in H2.
     destruct H1.
-    + subst.
-      destruct H2.
+    + destruct (x == x').
       * subst.
-        rewrite swap_id.
-        unfold swap_var.
-        destruct (y == y).
-        ** reflexivity.
-        ** contradiction.        
-      * rewrite IHt.
-    +
+        destruct H2.
+        ** subst.
+           rewrite swap_id.
+           apply aeq_refl.
+        ** apply aeq_abs; assumption.
+      * contradiction.
+    + destruct (x == x').
+      * subst.
+        destruct H2.
+        ** subst.
+           rewrite swap_id.
+           apply aeq_refl.
+        ** apply aeq_abs; assumption.
+      * destruct H2.
+        ** subst.
+           destruct (y == y).
+           *** rewrite swap_symmetric.
+               apply aeq_abs; assumption.
+           *** contradiction.
+        ** destruct (x == y).
+           *** subst.
+               rewrite swap_symmetric.
+               apply aeq_abs; assumption.
+           *** apply aeq_abs_same.
+               apply IHt; assumption.
+  - intros x y H1 H2.
+    simpl in *.
+    assert (H1' := H1).
+    apply notin_union_1 in H1.
+    apply notin_union_2 in H1'.
+    assert (H2' := H2).
+    apply notin_union_1 in H2.
+    apply notin_union_2 in H2'.
+    apply aeq_app.
+    + apply IHt1; assumption.
+    + apply IHt2; assumption.
+  - intros x' y H1 H2.
+    simpl in *.
+    assert (H1' := H1).
+    apply notin_union_1 in H1.
+    apply notin_union_2 in H1'.
+    assert (H2' := H2).
+    apply notin_union_1 in H2.
+    apply notin_union_2 in H2'.
+    apply notin_remove_1 in H1.
+    apply notin_remove_1 in H2.
     unfold swap_var.
-    destruct (x == x'); subst.
-    + rewrite IHt.
-    +
-
-Lemma swap_comp: forall t x y z,
-    x <> z -> y <> z -> x `notin` fv_nom t -> y `notin` fv_nom t -> swap y x (swap y z t) = (swap x z t).
-Proof.
-  intros.
-  assert (swap y x (swap y z t) = swap x y (swap y z t)).
-  rewrite swap_symmetric; reflexivity.
-  rewrite H3.
-  rewrite shuffle_swap.
-  - assert (swap x y t = t). {
-      rewrite swap_reduction.
-      -- reflexivity.
-      -- assumption.
-      -- assumption.
-    }
-    rewrite H4. reflexivity.
-  - assumption.
-  - assumption.
+    destruct H1.
+    + subst.
+      destruct (x' == x').
+      * destruct H2.
+        ** subst.
+           repeat rewrite swap_id.
+           apply aeq_refl.
+        ** apply aeq_sub; assumption.
+      * contradiction.
+    + destruct (x == x').
+      * subst.
+        destruct H2.
+        ** subst.
+           repeat rewrite swap_id.
+           apply aeq_refl.
+        ** apply aeq_sub; assumption.
+      * destruct H2.
+        ** subst.
+           destruct (y == y).
+           *** rewrite swap_symmetric.
+               replace (swap x' y t2) with (swap y x' t2).
+               **** apply aeq_sub; assumption.
+               **** apply swap_symmetric.             
+           *** contradiction.
+        ** destruct (x == y).
+           *** subst.
+               rewrite swap_symmetric.
+               replace (swap x' y t2) with (swap y x' t2).
+               **** apply aeq_sub; assumption.
+               **** apply swap_symmetric.
+           *** rewrite swap_symmetric.
+               replace (swap x' y t2) with (swap y x' t2).
+               **** apply aeq_sub_same.
+                    ***** apply IHt1; assumption.
+                    ***** apply IHt2; assumption.
+               **** apply swap_symmetric.
 Qed.
-*)
-(* false: take t = y or t = x
+
+(*
+Lemma swap_comp: forall t x y z,
+    x <> z -> y <> z -> x `notin` fv_nom t -> y `notin` fv_nom t -> aeq (swap y x (swap y z t)) (swap x z t).
+Proof.
+Admitted.
+
+false: take t = y or t = x
 Lemma swap_trans: forall t x y z, (swap x y (swap y z t)) = swap x z t.
 Proof.
   induction t.
@@ -1577,6 +1752,7 @@ Proof.
                 apply fv_nom_swap_remove in H0; assumption.
            ---- apply IHaeq.
                 apply aeq_swap1 with t2 (swap y0 y t4) y x in H7.
+                
                 Admitted.
 
 (*             apply aeq_fv_nom in H7.
