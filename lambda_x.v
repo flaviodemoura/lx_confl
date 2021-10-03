@@ -841,6 +841,135 @@ Proof.
                     * right. assumption.
 Qed.
 
+(*************************************************************)
+(** * Size based reasoning                                   *)
+(*************************************************************)
+
+
+(** Some properties about nominal terms require calling the
+    induction hypothesis not on a direct subterm, but on one
+    that has first had a swapping applied to it.
+    However, swapping names does not change the size of terms,
+    so that means we can prove such properties by induction on
+    that size.  *)
+
+Fixpoint num_occ x t : nat :=
+  match t with
+  | n_var y => if(x == y) then 1 else 0
+  | n_abs y t1 => if(x == y) then 0 else num_occ x t1
+  | n_app t1 t2 => (num_occ x t1) + (num_occ x t2)
+  | n_sub t1 y t2 => if(x == y) then num_occ x t2 else (num_occ x t1) + (num_occ x t2)
+  end.
+
+Lemma swap_same_occ: forall x y t,
+    num_occ y (swap x y t) = num_occ x t.
+Proof.
+  induction t; simpl; unfold swap_var; default_simp.
+Qed.
+
+Lemma swap_diff_occ: forall x y z t,
+    x <> y -> x <> z -> num_occ x (swap y z t) = num_occ x t.
+Proof.
+  induction t; simpl; unfold swap_var; default_simp.
+Qed.
+    
+Fixpoint size' (t : n_sexp) : nat :=
+  match t with
+  | n_var x => 1
+  | n_abs x t => 1 + size' t
+  | n_app t1 t2 => 1 + size' t1 + size' t2
+  | n_sub t1 x t2 => size' t1 + ((num_occ x t1) * ((size' t2) - 1))
+  end.  
+
+Fixpoint size (t : n_sexp) : nat :=
+  match t with
+  | n_var x => 1
+  | n_abs x t => 1 + size t
+  | n_app t1 t2 => 1 + size t1 + size t2
+  | n_sub t1 x t2 => 1 + size t1 + size t2
+  end.
+
+Lemma swap_size_eq : forall x y t,
+    size (swap x y t) = size t.
+Proof.
+  induction t; simpl; auto.
+Qed.
+
+Lemma strong_induction :
+ forall (P:nat->Prop),
+   (forall n, (forall m, m < n -> P m) -> P n) ->
+   (forall n, P n).
+Proof.
+  intros Q IH n.
+  assert (H := nat_ind (fun n => (forall m : nat, m < n -> Q m))).
+  apply IH.
+  apply H.
+  - intros m Hlt; inversion Hlt.
+  - intros n' H' m Hlt.
+    apply IH.
+    intros m0 Hlt'.
+    apply H'.
+    apply lt_n_Sm_le in Hlt.
+    apply lt_le_trans with m; assumption.
+Qed.
+
+Lemma n_sexp_induction :
+ forall P : n_sexp -> Prop,
+ (forall x, P (n_var x)) ->
+ (forall t1 z,
+    (forall t2 x y, size t2 = size t1 ->
+    P (swap x y t2)) -> P (n_abs z t1)) ->
+ (forall t1 t2, P t1 -> P t2 -> P (n_app t1 t2)) ->
+ (forall t1 t3 z, P t3 -> 
+    (forall t2 x y, size t2 = size t1 ->
+    P (swap x y t2)) -> P (n_sub t1 z t3)) -> 
+ (forall t, P t).
+Proof.
+  intros P Hvar Habs Happ Hsub t.
+  remember (size t) as n.
+  generalize dependent t.
+  induction n using strong_induction.
+  intro t; case t.
+  - intros x Hsize.
+    apply Hvar.
+  - intros x t' Hsize.
+    apply Habs.
+    intros t'' x1 x2 Hsize'.
+    apply H with (size t'').
+    + rewrite Hsize'.
+      rewrite Hsize.
+      simpl.
+      apply Nat.lt_succ_diag_r.
+    + symmetry.
+      apply swap_size_eq.
+  - intros. apply Happ.
+    + apply H with ((size t1)).
+      ++ simpl in Heqn. rewrite Heqn.
+         apply le_lt_n_Sm.
+         apply le_plus_l.
+      ++ reflexivity.
+    + apply H with ((size t2)).
+      ++ simpl in Heqn. rewrite Heqn.
+          apply le_lt_n_Sm.
+         apply le_plus_r.
+      ++ reflexivity.
+  - intros. apply Hsub.
+    + apply H with ((size t2)).
+      ++ simpl in Heqn. rewrite Heqn.
+          apply le_lt_n_Sm.
+         apply le_plus_r.
+      ++ reflexivity.
+    + intros. apply H with ((size (swap x0 y t0))).
+      ++ rewrite swap_size_eq. rewrite H0.
+         simpl in Heqn. rewrite Heqn.
+         apply le_lt_n_Sm.
+         apply le_plus_l.
+      ++ reflexivity.
+Qed.
+
+Hint Rewrite swap_size_eq.
+
+
 (** We define the "alpha-equivalence" relation that declares
     when two nominal terms are equivalent (up to renaming of
     bound variables).
@@ -896,6 +1025,31 @@ Proof.
   - simpl. pose proof remove_fv_swap.
     specialize (H3 x y t1'). apply H3 in H1.
     inversion H2; subst; rewrite IHaeq1; rewrite IHaeq2; rewrite H1; reflexivity.
+Qed.  
+
+Lemma aeq_size: forall t1 t2, aeq t1 t2 -> size t1 = size t2.
+Proof.
+  induction 1.
+  - reflexivity.
+  - simpl.
+    rewrite IHaeq; reflexivity.
+  - simpl.
+    rewrite IHaeq.
+    rewrite swap_size_eq.
+    reflexivity.
+  - simpl.
+    rewrite IHaeq1.
+    rewrite IHaeq2.
+    reflexivity.
+  - simpl.
+    rewrite IHaeq1.
+    rewrite IHaeq2.
+    reflexivity.
+  - simpl.
+    rewrite IHaeq1.
+    rewrite IHaeq2.
+    rewrite swap_size_eq.
+    reflexivity.
 Qed.  
 
 (** aeq is an equivalence relation. *)
@@ -1716,7 +1870,68 @@ Proof.
   
 Lemma aeq_trans: forall t1 t2 t3, aeq t1 t2 -> aeq t2 t3 -> aeq t1 t3.
 Proof.
-  intros t1 t2 t3 H1 H2.
+  induction t1 using n_sexp_induction.
+  - intros t2 t3 H1 H2.
+    inversion H1; subst.
+    assumption.
+  - intros t2 t3 H1 H2.
+    inversion H1; subst.
+    + inversion H2; subst.
+      * apply aeq_abs_same.
+        replace t1 with (swap z z t1).
+        ** apply H with t4.
+           *** reflexivity.
+           *** rewrite swap_id; assumption.
+           *** assumption.
+        ** apply swap_id.
+      * apply aeq_abs_diff.
+        ** assumption.
+        ** assumption.
+        ** apply aeq_sym.
+           apply H with t4.
+           *** apply eq_trans with (size t4).
+               **** apply aeq_size in H8.
+                    rewrite swap_size_eq in H8.
+                    symmetry; assumption.
+               **** apply aeq_size in H5.
+                    symmetry; assumption.
+           *** apply aeq_sym; assumption.
+           *** apply aeq_sym; assumption.
+    + inversion H2; subst.
+      * apply aeq_abs_diff.
+        ** assumption.
+        ** apply aeq_fv_nom in H8.
+           rewrite <- H8; assumption.
+        ** apply aeq_sym.
+           apply H with (swap y z t4).
+           *** apply eq_trans with (size t4).
+               **** apply aeq_size in H8.
+                    symmetry; assumption.
+               **** apply aeq_size in H7.
+                    rewrite H7.
+                    rewrite swap_size_eq.
+                    reflexivity.
+           *** apply aeq_sym.
+               apply aeq_swap1; assumption.
+           *** apply aeq_sym; assumption.
+      * case (z == y0).
+        ** intro Heq; subst.
+           apply aeq_abs_same.
+           apply aeq_swap1 with t4 (swap y0 y t2) y0 y in H10.
+           rewrite swap_involutive in H10.
+           apply aeq_sym.
+           replace t2 with (swap y y t2).
+           *** apply H with (swap y0 y t4).
+               **** admit.
+               **** apply aeq_sym.
+                    rewrite swap_id; assumption.
+               **** apply aeq_sym.
+                    rewrite swap_symmetric; assumption.
+           *** apply swap_id.             
+        ** intro Hneq.
+Admitted.
+    
+(*  intros t1 t2 t3 H1 H2.
   generalize dependent t3.
   induction H1.
   - intros t3 H; assumption.
@@ -1755,7 +1970,7 @@ Proof.
                 
                 Admitted.
 
-(*             apply aeq_fv_nom in H7.
+             apply aeq_fv_nom in H7.
              rewrite H8 in H0.
              apply fv_nom_swap_remove in H0.
              ++ inversion H2; subst.
@@ -2002,133 +2217,6 @@ Proof.
 Qed.*)
 
 
-(*************************************************************)
-(** * Size based reasoning                                   *)
-(*************************************************************)
-
-
-(** Some properties about nominal terms require calling the
-    induction hypothesis not on a direct subterm, but on one
-    that has first had a swapping applied to it.
-    However, swapping names does not change the size of terms,
-    so that means we can prove such properties by induction on
-    that size.  *)
-
-Fixpoint num_occ x t : nat :=
-  match t with
-  | n_var y => if(x == y) then 1 else 0
-  | n_abs y t1 => if(x == y) then 0 else num_occ x t1
-  | n_app t1 t2 => (num_occ x t1) + (num_occ x t2)
-  | n_sub t1 y t2 => if(x == y) then num_occ x t2 else (num_occ x t1) + (num_occ x t2)
-  end.
-
-Lemma swap_same_occ: forall x y t,
-    num_occ y (swap x y t) = num_occ x t.
-Proof.
-  induction t; simpl; unfold swap_var; default_simp.
-Qed.
-
-Lemma swap_diff_occ: forall x y z t,
-    x <> y -> x <> z -> num_occ x (swap y z t) = num_occ x t.
-Proof.
-  induction t; simpl; unfold swap_var; default_simp.
-Qed.
-    
-Fixpoint size' (t : n_sexp) : nat :=
-  match t with
-  | n_var x => 1
-  | n_abs x t => 1 + size' t
-  | n_app t1 t2 => 1 + size' t1 + size' t2
-  | n_sub t1 x t2 => size' t1 + ((num_occ x t1) * ((size' t2) - 1))
-  end.  
-
-Fixpoint size (t : n_sexp) : nat :=
-  match t with
-  | n_var x => 1
-  | n_abs x t => 1 + size t
-  | n_app t1 t2 => 1 + size t1 + size t2
-  | n_sub t1 x t2 => 1 + size t1 + size t2
-  end.
-
-Lemma swap_size_eq : forall x y t,
-    size (swap x y t) = size t.
-Proof.
-  induction t; simpl; auto.
-Qed.
-
-Lemma strong_induction :
- forall (P:nat->Prop),
-   (forall n, (forall m, m < n -> P m) -> P n) ->
-   (forall n, P n).
-Proof.
-  intros Q IH n.
-  assert (H := nat_ind (fun n => (forall m : nat, m < n -> Q m))).
-  apply IH.
-  apply H.
-  - intros m Hlt; inversion Hlt.
-  - intros n' H' m Hlt.
-    apply IH.
-    intros m0 Hlt'.
-    apply H'.
-    apply lt_n_Sm_le in Hlt.
-    apply lt_le_trans with m; assumption.
-Qed.
-
-Lemma n_sexp_induction :
- forall P : n_sexp -> Prop,
- (forall x, P (n_var x)) ->
- (forall t1 z,
-    (forall t2 x y, size t2 = size t1 ->
-    P (swap x y t2)) -> P (n_abs z t1)) ->
- (forall t1 t2, P t1 -> P t2 -> P (n_app t1 t2)) ->
- (forall t1 t3 z, P t3 -> 
-    (forall t2 x y, size t2 = size t1 ->
-    P (swap x y t2)) -> P (n_sub t1 z t3)) -> 
- (forall t, P t).
-Proof.
-  intros P Hvar Habs Happ Hsub t.
-  remember (size t) as n.
-  generalize dependent t.
-  induction n using strong_induction.
-  intro t; case t.
-  - intros x Hsize.
-    apply Hvar.
-  - intros x t' Hsize.
-    apply Habs.
-    intros t'' x1 x2 Hsize'.
-    apply H with (size t'').
-    + rewrite Hsize'.
-      rewrite Hsize.
-      simpl.
-      apply Nat.lt_succ_diag_r.
-    + symmetry.
-      apply swap_size_eq.
-  - intros. apply Happ.
-    + apply H with ((size t1)).
-      ++ simpl in Heqn. rewrite Heqn.
-         apply le_lt_n_Sm.
-         apply le_plus_l.
-      ++ reflexivity.
-    + apply H with ((size t2)).
-      ++ simpl in Heqn. rewrite Heqn.
-          apply le_lt_n_Sm.
-         apply le_plus_r.
-      ++ reflexivity.
-  - intros. apply Hsub.
-    + apply H with ((size t2)).
-      ++ simpl in Heqn. rewrite Heqn.
-          apply le_lt_n_Sm.
-         apply le_plus_r.
-      ++ reflexivity.
-    + intros. apply H with ((size (swap x0 y t0))).
-      ++ rewrite swap_size_eq. rewrite H0.
-         simpl in Heqn. rewrite Heqn.
-         apply le_lt_n_Sm.
-         apply le_plus_l.
-      ++ reflexivity.
-Qed.
-
-Hint Rewrite swap_size_eq.
 
 (** ** Capture-avoiding substitution *)
 
