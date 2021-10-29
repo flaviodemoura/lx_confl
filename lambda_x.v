@@ -116,6 +116,10 @@ Qed.
 Definition swap_var (x:atom) (y:atom) (z:atom) :=
   if (z == x) then y else if (z == y) then x else z.
 
+Lemma swap_var_id: forall x y, (swap_var x x y = y).
+Proof.
+Admitted.
+
 (** The main insight of nominal representations is that we can
     rename variables, without capture, using a simple
     structural induction. Note how in the [n_abs] case we swap
@@ -363,6 +367,13 @@ Qed.
 Lemma shuffle_swap : forall w y n z,
     w <> z -> y <> z ->
     (swap w y (swap y z n)) = (swap w z (swap w y n)).
+Proof.
+  induction n; intros; simpl; unfold swap_var; default_simp.
+Qed.
+
+Lemma shuffle_swap' : forall w y n z,
+    w <> z -> y <> z ->
+    (swap w y (swap y z n)) = (swap z w (swap y w n)).
 Proof.
   induction n; intros; simpl; unfold swap_var; default_simp.
 Qed.
@@ -1867,7 +1878,29 @@ Proof.
   - intros. simpl. unfold swap_var. default_simp.
  *)
 
-  
+Lemma aeq_swap_swap: forall t x y z, z `notin` fv_nom t -> x `notin` fv_nom t -> aeq (swap z x (swap x y t)) (swap z y t).
+Proof.
+  induction t.
+  - intros x' y z H1 H2.
+    simpl.
+    unfold swap_var.
+    destruct (x == x').
+    + subst.
+      apply notin_singleton_is_false in H2.
+      contradiction.
+    + destruct (x == y).
+      * subst.
+        destruct (x' == z).
+        ** subst.
+           default_simp.
+        ** default_simp.
+      * default_simp.
+        apply notin_singleton_is_false in H1.
+        contradiction.
+  - intros x' y z H1 H2.
+  Admitted.
+
+
 Lemma aeq_trans: forall t1 t2 t3, aeq t1 t2 -> aeq t2 t3 -> aeq t1 t3.
 Proof.
   induction t1 using n_sexp_induction.
@@ -1922,14 +1955,61 @@ Proof.
            apply aeq_sym.
            replace t2 with (swap y y t2).
            *** apply H with (swap y0 y t4).
-               **** admit.
+               **** apply aeq_size in H7.
+                    rewrite  H7.
+                    apply aeq_size in H10.
+                    rewrite <- H10.
+                    rewrite swap_symmetric.
+                    reflexivity.
                **** apply aeq_sym.
                     rewrite swap_id; assumption.
                **** apply aeq_sym.
                     rewrite swap_symmetric; assumption.
            *** apply swap_id.             
         ** intro Hneq.
-Admitted.
+           apply aeq_abs_diff.
+           *** assumption.
+           *** apply aeq_fv_nom in H10.
+               rewrite H10 in H5.
+               apply fv_nom_swap_remove with y0 y.
+               **** assumption.
+               **** assumption.
+               **** rewrite swap_symmetric.
+                    assumption.
+           *** apply aeq_sym.
+               apply H with (swap y z t4).
+               **** apply aeq_size in H7.
+                    rewrite H7.
+                    rewrite swap_size_eq.
+                    apply aeq_size in H10.
+                    rewrite H10.
+                    symmetry.
+                    apply swap_size_eq.
+               **** apply aeq_swap2 with y z.
+                    rewrite swap_involutive.
+                    apply aeq_sym.
+                    replace (swap y0 z t2) with (swap z y0 t2).
+                    ***** apply aeq_sym.
+                          apply H with (swap y0 y t2).
+                          ****** rewrite swap_size_eq.
+                                 apply aeq_size in H7.
+                                 rewrite H7.
+                                 rewrite swap_size_eq.                     
+                                 apply aeq_size in H10.
+                                 rewrite H10.
+                                 rewrite swap_size_eq; reflexivity.
+                          ****** replace (swap y0 y t2) with (swap y y0 t2).
+                                 apply aeq_swap_swap.
+                                 ******* assumption.
+                                 ******* apply aeq_fv_nom in H10.
+                                         rewrite H10 in H5.
+                                         apply fv_nom_swap_remove with y y0; assumption.
+                                 ******* apply swap_symmetric.
+                          ****** apply aeq_sym; assumption.
+                    ***** rewrite swap_symmetric; reflexivity.
+               **** apply aeq_sym.
+                    assumption.
+  - Admitted.
     
 (*  intros t1 t2 t3 H1 H2.
   generalize dependent t3.
