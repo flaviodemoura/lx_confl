@@ -37,11 +37,8 @@ Qed.
 Lemma aux_not_equal : forall (x:atom) (y:atom),
     x <> y -> y <> x.
 Proof.
-  intros. unfold not. intros. unfold not in H.
-  assert (x = y). {
-    rewrite H0. reflexivity.
-  }
-  contradiction.
+  intros x y H. unfold not in *. intros H0. apply H.
+  symmetry. assumption.
 Qed.
 (*************************************************************)
 (** * A nominal representation of lambda_x terms             *)
@@ -377,9 +374,9 @@ Proof.
        --- simpl in H. apply notin_singleton_is_false in H.
            inversion H.
        --- apply aux_not_equal in n; apply aux_not_equal in n.
-           apply notin_singleton_2 in n.
-           apply notin_singleton_2 in n0.
-           apply AtomSetProperties.remove_equal in n.
+           apply notin_singleton_2 in n;
+           apply notin_singleton_2 in n0;
+           apply AtomSetProperties.remove_equal in n;
            apply AtomSetProperties.remove_equal in n0.
            rewrite n; rewrite n0; reflexivity.
   - intros; simpl. unfold swap_var. case (x0 == y); intros; subst.
@@ -1930,7 +1927,22 @@ Proof.
            *** apply swap_id.             
         ** intro Hneq.
 Admitted.
-    
+
+Fixpoint sum_odd_n (n:nat) : nat :=
+match n with 0 => 0 | S p => 1 + 2 * p + sum_odd_n p end.
+
+Lemma sum_odd_n_pow_2: forall n:nat, sum_odd_n n = n*n.
+Proof.
+  intros. induction n.
+  - simpl. reflexivity.
+  - simpl. rewrite IHn. rewrite plus_0_r.
+    rewrite <- mult_n_Sm.
+    apply eq_S.
+    assert (n * n + n = n + n * n).
+    rewrite plus_comm; reflexivity.
+    rewrite H. rewrite plus_assoc_reverse.
+    reflexivity.
+Qed.
 (*  intros t1 t2 t3 H1 H2.
   generalize dependent t3.
   induction H1.
