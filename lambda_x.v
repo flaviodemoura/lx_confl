@@ -1821,6 +1821,7 @@ Proof.
                **** apply swap_symmetric.
 Qed.
 
+             
 (*
 Lemma swap_comp: forall t x y z,
     x <> z -> y <> z -> x `notin` fv_nom t -> y `notin` fv_nom t -> aeq (swap y x (swap y z t)) (swap x z t).
@@ -1876,11 +1877,31 @@ Proof.
 
   - intros. simpl. unfold swap_var. default_simp.
   - intros. simpl. unfold swap_var. default_simp.
- *)
+
+
+Lemma aeq_diff_abs': forall x y t1 t2, x `notin` fv_nom t2 -> aeq t1 (swap x y t2) -> aeq (n_abs x t1) (n_abs y t2).
+Proof.
+  intros x y t1 t2 Hnotin H.
+  inversion H; subst.
+  - rewrite H2.
+    rewrite swap_symmetric.
+    apply aeq_abs; assumption.
+  - rewrite swap_symmetric; assumption.
+Qed.
+
+
+Lemma aeq_abs_diff_swap: forall t1 t2 x y z, x <> y -> z `notin` fv_nom t1 -> z `notin` fv_nom t2 -> aeq (n_abs x t1) (n_abs y t2) -> aeq (swap x z t1) (swap y z t2).
+Proof.
+  intros t1 t2 x y z Hneq Hnotin1 Hnotin2 Haeq.
+  induction Haeq.
+  -
+  Admitted.
+*)  
+
 
 Lemma aeq_swap_swap: forall t x y z, z `notin` fv_nom t -> x `notin` fv_nom t -> aeq (swap z x (swap x y t)) (swap z y t).
 Proof.
-  induction t.
+  induction t using n_sexp_induction.
   - intros x' y z H1 H2.
     simpl.
     unfold swap_var.
@@ -1897,9 +1918,40 @@ Proof.
       * default_simp.
         apply notin_singleton_is_false in H1.
         contradiction.
-  - intros x' y z H1 H2.
+  - intros x y z' H1 H2.
+    simpl in *.
+    apply notin_remove_1 in H2.
+    destruct H2.
+    + rewrite H0 in *.
+      unfold swap_var.
+      destruct (x == x).
+      * apply notin_remove_1 in H1.
+        destruct H1.
+        ** rewrite H1 in *.
+           default_simp.
+           *** rewrite swap_id.
+               apply aeq_refl.
+           *** rewrite swap_id.
+               apply aeq_refl.
+        ** destruct (x == y).
+           *** default_simp.
+               **** rewrite swap_id.
+                    apply aeq_refl.
+               **** rewrite swap_id.
+                    apply aeq_refl.
+           *** default_simp.
+               **** rewrite swap_id.
+                    rewrite swap_symmetric.
+                    rewrite swap_involutive.
+                    apply aeq_refl.
+               **** rewrite swap_id.
+                    apply aeq_refl.
+               **** apply aeq_abs_diff.
+                    ***** assumption.
+                    ***** rewrite swap_symmetric.
+                          apply fv_nom_swap; assumption.
+                    ***** rewrite <- shuffle_swap'.
   Admitted.
-
 
 Lemma aeq_trans: forall t1 t2 t3, aeq t1 t2 -> aeq t2 t3 -> aeq t1 t3.
 Proof.
@@ -1967,12 +2019,41 @@ Proof.
                     rewrite swap_symmetric; assumption.
            *** apply swap_id.             
         ** intro Hneq.
-           apply aeq_abs_diff.
-           *** assumption.
-           *** apply aeq_fv_nom in H10.
-               rewrite H10 in H5.
-               apply fv_nom_swap_remove with y0 y.
+           apply aeq_fv_nom in H10.
+           assert (H5' := H5).
+           rewrite H10 in H5'.
+           apply fv_nom_swap_remove in H5'.           
+           *** apply aeq_abs_diff.
                **** assumption.
+               **** assumption.
+               **** apply aeq_sym.
+                    apply H with (swap z y t4).
+                    ***** admit.
+                    ***** replace (swap z y t4) with (swap y z t4).
+                          ****** inversion H2; subst.
+                                 ******* apply aeq_sym.
+                                         apply aeq_swap1; assumption.
+                                 ******* apply aeq_sym.
+                                         apply aeq_swap2 with y z.
+                                         rewrite swap_involutive.
+                                         apply aeq_sym.
+                                         apply H with (swap y0 y t2).
+                                         ******** admit.
+                                         ******** replace (swap y0 z t2) with (swap z y0 t2).
+                                                  ********* replace (swap y0 y t2) with (swap y y0 t2). 
+                                                            ********** apply aeq_swap_swap; assumption.
+                                                            ********** apply swap_symmetric.
+                                                  ********* apply swap_symmetric.
+
+                                         ******** apply aeq_sym; assumption.
+                        ****** apply swap_symmetric.
+                  ***** rewrite swap_symmetric.
+                        apply aeq_sym; assumption.
+           *** assumption.
+           *** assumption.
+  - Admitted.
+    
+(*  
                **** assumption.
                **** rewrite swap_symmetric.
                     assumption.
@@ -1999,19 +2080,21 @@ Proof.
                                  rewrite H10.
                                  rewrite swap_size_eq; reflexivity.
                           ****** replace (swap y0 y t2) with (swap y y0 t2).
-                                 apply aeq_swap_swap.
-                                 ******* assumption.
                                  ******* apply aeq_fv_nom in H10.
                                          rewrite H10 in H5.
-                                         apply fv_nom_swap_remove with y y0; assumption.
+                                         apply fv_nom_swap_remove in H5.
+                                         ******** apply aeq_swap_swap; assumption.
+                                         ******** assumption.
+                                         ******** assumption.                                           
                                  ******* apply swap_symmetric.
                           ****** apply aeq_sym; assumption.
                     ***** rewrite swap_symmetric; reflexivity.
                **** apply aeq_sym.
                     assumption.
-  - Admitted.
-    
-(*  intros t1 t2 t3 H1 H2.
+
+
+
+intros t1 t2 t3 H1 H2.
   generalize dependent t3.
   induction H1.
   - intros t3 H; assumption.
