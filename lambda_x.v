@@ -1706,9 +1706,8 @@ Proof.
            apply aeq_refl.
 Qed.
 
-Lemma aeq_sub: forall t1 t2 x y, y `notin` fv_nom t1 -> aeq (n_sub (swap x y t1) y (swap x y t2)) (n_sub t1 x t2).
+Lemma aeq_sub: forall t1 t2 x y, y `notin` fv_nom t1 -> aeq (n_sub (swap x y t1) y t2) (n_sub t1 x t2).
 Proof.
- (* to be prove in the same style of aeq_abs. *)
 Admitted.
   
 Lemma swap_reduction: forall t x y,
@@ -1787,7 +1786,15 @@ Proof.
         ** subst.
            repeat rewrite swap_id.
            apply aeq_refl.
-        ** apply aeq_sub; assumption.
+        ** case (x' == y); intros; subst.
+           *** repeat rewrite swap_id. apply aeq_refl.
+           *** apply aeq_sub_diff.
+           **** apply IHt2.
+           ***** assumption.
+           ***** assumption.
+           **** apply aux_not_equal; assumption.
+           **** assumption.
+           **** apply aeq_refl.
       * contradiction.
     + destruct (x == x').
       * subst.
@@ -1795,20 +1802,40 @@ Proof.
         ** subst.
            repeat rewrite swap_id.
            apply aeq_refl.
-        ** apply aeq_sub; assumption.
+        ** case (x' == y); intros; subst.
+           *** repeat rewrite swap_id. apply aeq_refl.
+           *** apply aeq_sub_diff.
+           **** apply IHt2.
+           ***** assumption.
+           ***** assumption.
+           **** apply aux_not_equal; assumption.
+           **** assumption.
+           **** apply aeq_refl.
       * destruct H2.
         ** subst.
            destruct (y == y).
            *** rewrite swap_symmetric.
                replace (swap x' y t2) with (swap y x' t2).
-               **** apply aeq_sub; assumption.
+               **** apply aeq_sub_diff.
+               ***** apply IHt2.
+               ****** assumption.
+               ****** assumption.
+               ***** apply aux_not_equal; assumption.
+               ***** assumption.
+               ***** apply aeq_refl.
                **** apply swap_symmetric.             
            *** contradiction.
         ** destruct (x == y).
            *** subst.
                rewrite swap_symmetric.
                replace (swap x' y t2) with (swap y x' t2).
-               **** apply aeq_sub; assumption.
+               **** apply aeq_sub_diff.
+               ***** apply IHt2.
+               ****** assumption.
+               ****** assumption.
+               ***** apply aux_not_equal; assumption.
+               ***** assumption.
+               ***** apply aeq_refl.
                **** apply swap_symmetric.
            *** rewrite swap_symmetric.
                replace (swap x' y t2) with (swap y x' t2).
