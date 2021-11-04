@@ -1708,7 +1708,14 @@ Qed.
 
 Lemma aeq_sub: forall t1 t2 x y, y `notin` fv_nom t1 -> aeq (n_sub (swap x y t1) y t2) (n_sub t1 x t2).
 Proof.
-Admitted.
+  intros. case (x == y); intros; subst.
+  - rewrite swap_id; apply aeq_refl.
+  - apply aeq_sub_diff.
+    -- apply aeq_refl.
+    -- apply aux_not_equal; assumption.
+    -- assumption.
+    -- apply aeq_refl.
+Qed.
   
 Lemma swap_reduction: forall t x y,
     x `notin` fv_nom t -> y `notin` fv_nom t -> aeq (swap x y t)  t.
@@ -2018,7 +2025,27 @@ Proof.
                **** assumption.
                **** apply aeq_sym.
                     apply H with (swap z y t4).
-                    ***** admit.
+                    ***** inversion H2; inversion H1; subst.
+                    ****** apply aeq_size in H3.
+                           apply aeq_size in H14.
+                           rewrite <- H3; rewrite H14.
+                           reflexivity.
+                    ****** apply aeq_size in H3.
+                           apply aeq_size in H19.
+                           rewrite swap_size_eq in H19.
+                           rewrite <- H3; rewrite H19.
+                           reflexivity.
+                    ****** apply aeq_size in H14.
+                           apply aeq_size in H16.
+                           rewrite swap_size_eq in H14.
+                           rewrite <- H14; rewrite H16.
+                           reflexivity.
+                    ****** apply aeq_size in H14.
+                           apply aeq_size in H21.
+                           rewrite swap_size_eq in H14.
+                           rewrite swap_size_eq in H21.
+                           rewrite <- H14; rewrite H21.
+                           reflexivity. 
                     ***** replace (swap z y t4) with (swap y z t4).
                           ****** inversion H2; subst.
                                  ******* apply aeq_sym.
@@ -2028,7 +2055,15 @@ Proof.
                                          rewrite swap_involutive.
                                          apply aeq_sym.
                                          apply H with (swap y0 y t2).
-                                         ******** admit.
+                                         ******** rewrite swap_size_eq.
+                                         apply aeq_size in H7.
+                                         rewrite swap_size_eq in H7.
+                                         inversion H2; subst.
+                                         ********* apply aeq_size in H3.
+                                                   rewrite H7; rewrite <- H3.
+                                                   reflexivity.
+                                         ********* apply aeq_size in H17. rewrite swap_size_eq in H17.
+                                                   rewrite H7; rewrite <- H17. reflexivity.
                                          ******** replace (swap y0 z t2) with (swap z y0 t2).
                                                   ********* replace (swap y0 y t2) with (swap y y0 t2). 
                                                             ********** apply aeq_swap_swap; assumption.
@@ -2041,8 +2076,17 @@ Proof.
                         apply aeq_sym; assumption.
            *** assumption.
            *** assumption.
-  - Admitted.
-    
+  - intros. inversion H; subst. inversion H0; subst.
+    apply aeq_app.
+    -- specialize (IHt1_1 t1' t1'0). apply IHt1_1 in H3.
+       --- assumption.
+       --- assumption.
+    -- specialize (IHt1_2 t2' t2'0). apply IHt1_2 in H5.
+       --- assumption.
+       --- assumption.
+  - admit.
+Admitted.
+
 (*  
                **** assumption.
                **** rewrite swap_symmetric.
@@ -2081,21 +2125,7 @@ Proof.
                     ***** rewrite swap_symmetric; reflexivity.
                **** apply aeq_sym.
                     assumption.
-<<<<<<< HEAD
-  - intros. inversion H; subst. inversion H0; subst.
-    apply aeq_app.
-    -- specialize (IHt1_1 t1' t1'0). apply IHt1_1 in H3.
-       --- assumption.
-       --- assumption.
-    -- specialize (IHt1_2 t2' t2'0). apply IHt1_2 in H5.
-       --- assumption.
-       --- assumption.
-  - Admitted.
 
-
-
-      
-(*  intros t1 t2 t3 H1 H2.
 =======
 
 
