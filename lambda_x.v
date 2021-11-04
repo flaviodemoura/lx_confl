@@ -1927,9 +1927,91 @@ Proof.
   induction Haeq.
   -
   Admitted.
-*)  
+ *)
 
-
+Lemma aeq_notin_swap: forall t x y, x `notin` fv_nom t -> y `notin` fv_nom t -> aeq t (swap x y t).
+  induction t.
+  - intros. simpl in *.
+    unfold swap_var. default_simp.
+    -- apply notin_singleton_1 in H. contradiction.
+    -- apply notin_singleton_1 in H0. contradiction.
+  - intros. simpl in *. unfold swap_var.
+    case (x == x0); intros; subst.
+    -- case (y == x0); intros; subst.
+       --- apply aeq_abs_same. rewrite swap_id; apply aeq_refl.
+       --- apply aeq_abs_diff.
+           + apply aux_not_equal. assumption.
+           + apply notin_remove_1 in H0. inversion H0; subst.
+             ++ contradiction.
+             ++ apply fv_nom_swap. assumption.
+           + rewrite swap_symmetric. rewrite swap_involutive.
+             apply aeq_refl.
+    -- case (x == y); intros; subst.
+       --- apply aeq_abs_diff.
+           + assumption.
+           + apply notin_remove_1 in H. inversion H; subst.
+             ++ contradiction.
+             ++ rewrite swap_symmetric. apply fv_nom_swap.
+                assumption.
+           + rewrite swap_involutive. apply aeq_refl.
+       --- apply aeq_abs_same. apply IHt.
+           + apply notin_remove_1 in H. inversion H; subst.
+             ++ contradiction.
+             ++ assumption.
+           + apply notin_remove_1 in H0. inversion H0; subst.
+             ++ contradiction.
+             ++ assumption.
+  - intros. simpl in *. apply aeq_app.
+    -- apply IHt1.
+       --- apply notin_union_1 in H. assumption.
+       --- apply notin_union_1 in H0. assumption.
+    -- apply IHt2.
+       --- apply notin_union_2 in H. assumption.
+       --- apply notin_union_2 in H0. assumption.
+  - intros. simpl in *. unfold swap_var.
+    case (x == x0); intros; subst.
+    -- case (x0 == y); intros; subst.
+       --- repeat rewrite swap_id. apply aeq_refl.
+       --- apply aeq_sub_diff.
+           + apply IHt2.
+             ++ apply notin_union_2 in H. assumption.
+             ++ apply notin_union_2 in H0. assumption.
+           + assumption.
+           + apply notin_union_1 in H0.
+             apply fv_nom_swap. apply notin_remove_1 in H0.
+             inversion H0; subst.
+             ++ contradiction.
+             ++ assumption.
+           + rewrite swap_symmetric. rewrite swap_involutive.
+             apply aeq_refl.
+    -- case (x == y); intros; subst.
+       --- apply aeq_sub_diff.
+           + apply IHt2.
+             ++ apply notin_union_2 in H. assumption.
+             ++ apply notin_union_2 in H0. assumption.
+           + assumption.
+           + apply notin_union_1 in H.
+             rewrite swap_symmetric. apply fv_nom_swap.
+             apply notin_remove_1 in H.
+             inversion H; subst.
+             ++ contradiction.
+             ++ assumption.
+           + rewrite swap_involutive. apply aeq_refl.
+       --- apply aeq_sub_same.
+           + apply IHt1.
+             ++ apply notin_union_1 in H. apply notin_remove_1 in H.
+                inversion H; subst.
+                +++ contradiction.
+                +++ assumption.
+             ++ apply notin_union_1 in H0. apply notin_remove_1 in H0.
+                inversion H0; subst.
+                +++ contradiction.
+                +++ assumption.
+           + apply IHt2.
+             ++ apply notin_union_2 in H. assumption.
+             ++ apply notin_union_2 in H0. assumption.
+Qed.
+    
 Lemma aeq_swap_swap: forall t x y z, z `notin` fv_nom t -> x `notin` fv_nom t -> aeq (swap z x (swap x y t)) (swap z y t).
 Proof.
   intros. case (x == z); intros; subst.
@@ -2084,7 +2166,132 @@ Proof.
     -- specialize (IHt1_2 t2' t2'0). apply IHt1_2 in H5.
        --- assumption.
        --- assumption.
-  - admit.
+  - intros. inversion H0; subst.
+    -- inversion H1; subst.
+       --- apply aeq_sub_same.
+           + specialize (H t1_1 z z).
+             assert (size t1_1 = size t1_1). reflexivity.
+             apply H with t1' t1'0 in H2; clear H.
+             ++ rewrite swap_id in H2. assumption.
+             ++ rewrite swap_id. assumption.
+             ++ assumption.
+           + specialize (IHt1_1 t2' t2'0). apply IHt1_1.
+             ++ assumption.
+             ++ assumption.
+       --- apply aeq_sub_diff.
+           + specialize (H t1'0 y z).
+             assert (size t1_1 = size t1'0). {
+               apply aeq_size in H6; apply aeq_size in H11.
+               rewrite swap_size_eq in H11. rewrite <- H11.
+               assumption.
+             }
+             symmetry in H2.
+             apply H with t1' (swap y z t1'0) in H2.
+             ++ specialize (IHt1_1 t2' t2'0). apply IHt1_1.
+                +++ assumption.
+                +++ assumption.
+             ++ apply H with (swap y z t1'0) t1' in H2.
+                +++ assumption.
+                +++ apply aeq_refl.
+                +++ apply aeq_sym. assumption.
+             ++ assumption.
+           + assumption.
+           + assumption.
+           + specialize (H (swap y z t1_1) y z).
+             rewrite swap_size_eq in H.
+             assert (size t1_1 = size t1_1). reflexivity.
+             apply H with t1' (swap y z t1'0) in H2; clear H.
+             ++ rewrite swap_involutive in H2. assumption.
+             ++ rewrite swap_involutive. assumption.
+             ++ assumption.
+    -- inversion H1; subst.            
+       --- apply aeq_sub_diff.
+           + specialize (IHt1_1 t2' t2'0). apply IHt1_1.
+             ++ assumption.
+             ++ assumption.
+           + assumption.
+           + apply aeq_fv_nom in H10. rewrite H10 in H8.
+             assumption.
+           + specialize (H (swap y z t1_1) y z).
+             assert (size (swap y z t1_1) = size t1_1).
+             rewrite swap_size_eq; reflexivity.
+             apply H with (swap y z t1') (swap y z t1'0) in H2.
+             ++ rewrite swap_involutive in H2. assumption.
+             ++ rewrite swap_involutive. assumption.
+             ++ apply aeq_swap. assumption.     
+       --- case (z == y0); intros; subst.
+           + apply aeq_sub_same.
+             specialize (H t1_1 y0 y).
+             assert (size t1_1 = size t1_1). reflexivity.
+             apply aeq_swap2 with y0 y.
+             apply H with (swap y y0 (swap y y0 t1')) (swap y y0 t1'0) in H2.
+             ++ apply aeq_sym; rewrite swap_symmetric; apply aeq_sym.
+                assumption.
+             ++ rewrite swap_involutive. apply aeq_swap2 with y y0.
+                rewrite swap_symmetric. rewrite swap_involutive.
+                assumption.
+             ++ rewrite swap_involutive. rewrite swap_symmetric.
+                assumption.
+             ++ specialize (IHt1_1 t2' t2'0). apply IHt1_1.
+                +++ assumption.
+                +++ assumption.
+           + apply aeq_sub_diff.
+             ++ specialize (IHt1_1 t2' t2'0). apply IHt1_1.
+                +++ assumption.
+                +++ assumption.
+             ++ assumption.
+             ++ apply aeq_fv_nom in H13.
+                rewrite H13 in H8.
+                apply fv_nom_swap_remove in H8.
+                +++ assumption.
+                +++ assumption.
+                +++ assumption.
+             ++ apply aeq_swap1 with t1' (swap y0 y t1'0) y z in H13.
+                assert (swap y0 y t1'0 = swap y y0 t1'0).
+                rewrite swap_symmetric; reflexivity.
+                rewrite H2 in H13.
+                assert (swap y z (swap y y0 t1'0) = swap z y (swap y y0 t1'0)).
+                rewrite swap_symmetric; reflexivity.
+                rewrite H3 in H13.
+                rewrite shuffle_swap in H13.
+                pose proof H as Hcopy.
+                +++ specialize (H t1_1 z y0).
+                    assert (size t1_1 = size t1_1). reflexivity.
+                    apply H with (swap z y0 (swap y z t1')) t1'0 in H4.
+                    * apply aeq_swap2 with y0 z.
+                      rewrite swap_involutive.
+                      rewrite swap_symmetric. assumption.
+                    * apply aeq_swap. assumption.
+                    * apply aeq_sym in H13; rewrite swap_symmetric in H13; apply aeq_sym in H13.
+                      rewrite shuffle_swap in H13.
+                      ** apply aeq_sym in H13; rewrite swap_symmetric in H13; apply aeq_sym in H13.
+                         rewrite shuffle_swap in H13.
+                         *** apply aeq_swap2 in H13.
+                             rewrite swap_symmetric.
+                             assert (swap y z t1' = swap z y t1').
+                             rewrite swap_symmetric; reflexivity.
+                             rewrite H11. rewrite shuffle_swap.
+                         **** pose proof H13.
+                              apply aeq_swap1 with t1' (swap y y0 t1'0) y y0 in H14.
+                              rewrite swap_involutive in H14.
+                              apply aeq_fv_nom in H14.
+                              rewrite <- H14 in H12.
+                              rewrite swap_symmetric in H12.
+                              apply fv_nom_swap_2 in H12.
+                              apply aeq_swap2 with y0 y.
+                              rewrite swap_involutive.
+                              apply aeq_sym; rewrite swap_symmetric; apply aeq_sym.
+                              pose proof aeq_notin_swap.
+                              specialize (H15 t1' y0 z).
+                              admit.
+                         **** apply aux_not_equal; assumption.
+                         **** assumption.
+                         *** apply aux_not_equal; assumption.
+                         *** apply aux_not_equal; assumption.
+                      ** apply aux_not_equal; assumption.
+                      ** assumption. 
+                +++ assumption.
+                +++ assumption.
 Admitted.
 
 (*  
