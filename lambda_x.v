@@ -1877,25 +1877,22 @@ Proof.
 
 Lemma aeq_swap_swap: forall t x y z, z `notin` fv_nom t -> x `notin` fv_nom t -> aeq (swap z x (swap x y t)) (swap z y t).
 Proof.
-  induction t.
-  - intros x' y z H1 H2.
-    simpl.
-    unfold swap_var.
-    destruct (x == x').
-    + subst.
-      apply notin_singleton_is_false in H2.
-      contradiction.
-    + destruct (x == y).
-      * subst.
-        destruct (x' == z).
-        ** subst.
-           default_simp.
-        ** default_simp.
-      * default_simp.
-        apply notin_singleton_is_false in H1.
-        contradiction.
-  - intros x' y z H1 H2.
-  Admitted.
+  intros. case (x == z); intros; subst.
+  - rewrite swap_id; apply aeq_refl.
+  - case (y == z); intros; subst.
+    -- assert (swap x z t = swap z x t).
+       rewrite swap_symmetric; reflexivity.
+       rewrite H1. rewrite swap_involutive; rewrite swap_id.
+       apply aeq_refl.
+    -- case (x == y); intros; subst.
+       --- rewrite swap_id; apply aeq_refl.
+       --- rewrite shuffle_swap.
+           + apply aeq_swap. apply swap_reduction.
+             ++ assumption.
+             ++ assumption.
+           + apply aux_not_equal; assumption.
+           + assumption.
+Qed.
 
 
 Lemma aeq_trans: forall t1 t2 t3, aeq t1 t2 -> aeq t2 t3 -> aeq t1 t3.
@@ -2006,9 +2003,19 @@ Proof.
                     ***** rewrite swap_symmetric; reflexivity.
                **** apply aeq_sym.
                     assumption.
+  - intros. inversion H; subst. inversion H0; subst.
+    apply aeq_app.
+    -- specialize (IHt1_1 t1' t1'0). apply IHt1_1 in H3.
+       --- assumption.
+       --- assumption.
+    -- specialize (IHt1_2 t2' t2'0). apply IHt1_2 in H5.
+       --- assumption.
+       --- assumption.
   - Admitted.
-    
->>>>>>> 770a84d8a55bd36e59dd81c273b154cc0b84356f
+
+
+
+      
 (*  intros t1 t2 t3 H1 H2.
   generalize dependent t3.
   induction H1.
