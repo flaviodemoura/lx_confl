@@ -823,7 +823,7 @@ Proof.
            + intros; contradiction.
     -- intros. apply rtrans with (n_abs x (n_sub e1 x0 e2)).
        --- apply step_redex_R. apply step_abs2. assumption.
-       --- simpl. default_simp. intros.
+       --- simpl. default_simp.
              apply refltrans_composition with (n_abs x (subst_rec (size e1) e1 e2 x0)).
              ++ apply refltrans_abs. assumption.
              ++ apply rtrans with (n_abs x1 (subst_rec (size e1) (swap x x1 e1) e2 x0)).
