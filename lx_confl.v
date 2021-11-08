@@ -364,10 +364,79 @@ Proof.
 Qed.
 
 (**)
-(*Lemma 1 in Nakazawa*)    
-Lemma pi_P: forall t1 t2, refltrans (ctx pix) t1 t2 -> aeq (P t1) (P t2).
+(*Lemma 1 in Nakazawa*)
+Lemma pi_P: forall t1 t2, pix t1 t2 -> P t1 = P t2.
 Proof.
-  (*intros t1 t2 H. induction H.
+  induction 1.
+  - simpl.
+    unfold m_subst.
+    simpl.
+    destruct (y == y).
+    + reflexivity.
+    + contradiction.
+  - simpl.
+    unfold m_subst.
+    simpl.
+    destruct (y == x).
+    + symmetry in e0.
+      contradiction.
+    + reflexivity.
+  - simpl.
+    unfold m_subst.
+    simpl.
+    destruct (y == y).
+    + reflexivity.
+    + contradiction.
+  - simpl.
+    unfold m_subst.
+    simpl.
+    destruct (y == x).
+    + symmetry in e.
+      contradiction.
+    + destruct (atom_fresh (Metatheory.union (fv_nom (P e2)) (Metatheory.union (remove x (fv_nom (P e1))) (singleton y)))).
+      admit.
+  - simpl.
+    unfold m_subst.
+    simpl.
+    admit.
+Admitted.    
+
+Lemma pi_P': forall t1 t2, ctx pix t1 t2 -> (P t1) = (P t2).
+Proof.
+  induction 1.
+Admitted.
+  
+Lemma aeq_to_P: forall t1 t2, aeq t1 t2 -> aeq (P t1) (P t2). 
+Proof.
+Admitted.
+
+Lemma pi_P': forall t1 t2, ctx pix t1 t2 -> aeq (P t1) (P t2).
+Proof.
+  intros t1 t2 H.
+  induction H.
+  - apply aeq_to_P; assumption.
+  - apply pi_P in H0.
+    apply aeq_to_P in H.
+    rewrite H0 in H.
+    apply aeq_to_P in H1.
+    apply aeq_trans with (P e3); assumption.
+  - simpl.
+    apply aeq_abs_same.
+    assumption.
+  - simpl.
+    apply aeq_app.
+    + assumption.
+    + apply aeq_refl.
+  - simpl.
+    apply aeq_app.
+    + apply aeq_refl.
+    + assumption.
+  - simpl.
+      
+(* 
+Lemma pi_P': forall t1 t2, refltrans (ctx pix) t1 t2 -> aeq (P t1) (P t2).
+Proof.
+  intros t1 t2 H. induction H.
   - apply aeq_refl.
   - apply refltrans_composition with (ctx pix) a b c in H0.
     -- inversion H; subst.
