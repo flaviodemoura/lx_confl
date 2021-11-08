@@ -115,7 +115,10 @@ Definition swap_var (x:atom) (y:atom) (z:atom) :=
 
 Lemma swap_var_id: forall x y, (swap_var x x y = y).
 Proof.
-Admitted.
+  intros. unfold swap_var. case (y == x); intros; subst.
+  - reflexivity.
+  - reflexivity.
+Qed.
 
 (** The main insight of nominal representations is that we can
     rename variables, without capture, using a simple
@@ -1597,7 +1600,16 @@ Qed.
 
 Lemma aeq_abs: forall t x y, y `notin` fv_nom t -> aeq (n_abs y (swap x y t)) (n_abs x t).
 Proof.
-  induction t.
+  intros. case (x == y); intros; subst.
+  - rewrite swap_id. apply aeq_refl.
+  - apply aeq_abs_diff.
+    -- apply aux_not_equal. assumption.
+    -- assumption.
+    -- apply aeq_refl.
+Qed.
+
+
+  (*induction t.
   - intros x' y H.
     simpl in *.
     unfold swap_var.
@@ -1704,7 +1716,7 @@ Proof.
            *** assumption.           
         ** simpl.
            apply aeq_refl.
-Qed.
+Qed.*)
 
 Lemma aeq_sub: forall t1 t2 x y, y `notin` fv_nom t1 -> aeq (n_sub (swap x y t1) y t2) (n_sub t1 x t2).
 Proof.
@@ -1928,89 +1940,6 @@ Proof.
   -
   Admitted.
  *)
-
-Lemma aeq_notin_swap: forall t x y, x `notin` fv_nom t -> y `notin` fv_nom t -> aeq t (swap x y t).
-  induction t.
-  - intros. simpl in *.
-    unfold swap_var. default_simp.
-    -- apply notin_singleton_1 in H. contradiction.
-    -- apply notin_singleton_1 in H0. contradiction.
-  - intros. simpl in *. unfold swap_var.
-    case (x == x0); intros; subst.
-    -- case (y == x0); intros; subst.
-       --- apply aeq_abs_same. rewrite swap_id; apply aeq_refl.
-       --- apply aeq_abs_diff.
-           + apply aux_not_equal. assumption.
-           + apply notin_remove_1 in H0. inversion H0; subst.
-             ++ contradiction.
-             ++ apply fv_nom_swap. assumption.
-           + rewrite swap_symmetric. rewrite swap_involutive.
-             apply aeq_refl.
-    -- case (x == y); intros; subst.
-       --- apply aeq_abs_diff.
-           + assumption.
-           + apply notin_remove_1 in H. inversion H; subst.
-             ++ contradiction.
-             ++ rewrite swap_symmetric. apply fv_nom_swap.
-                assumption.
-           + rewrite swap_involutive. apply aeq_refl.
-       --- apply aeq_abs_same. apply IHt.
-           + apply notin_remove_1 in H. inversion H; subst.
-             ++ contradiction.
-             ++ assumption.
-           + apply notin_remove_1 in H0. inversion H0; subst.
-             ++ contradiction.
-             ++ assumption.
-  - intros. simpl in *. apply aeq_app.
-    -- apply IHt1.
-       --- apply notin_union_1 in H. assumption.
-       --- apply notin_union_1 in H0. assumption.
-    -- apply IHt2.
-       --- apply notin_union_2 in H. assumption.
-       --- apply notin_union_2 in H0. assumption.
-  - intros. simpl in *. unfold swap_var.
-    case (x == x0); intros; subst.
-    -- case (x0 == y); intros; subst.
-       --- repeat rewrite swap_id. apply aeq_refl.
-       --- apply aeq_sub_diff.
-           + apply IHt2.
-             ++ apply notin_union_2 in H. assumption.
-             ++ apply notin_union_2 in H0. assumption.
-           + assumption.
-           + apply notin_union_1 in H0.
-             apply fv_nom_swap. apply notin_remove_1 in H0.
-             inversion H0; subst.
-             ++ contradiction.
-             ++ assumption.
-           + rewrite swap_symmetric. rewrite swap_involutive.
-             apply aeq_refl.
-    -- case (x == y); intros; subst.
-       --- apply aeq_sub_diff.
-           + apply IHt2.
-             ++ apply notin_union_2 in H. assumption.
-             ++ apply notin_union_2 in H0. assumption.
-           + assumption.
-           + apply notin_union_1 in H.
-             rewrite swap_symmetric. apply fv_nom_swap.
-             apply notin_remove_1 in H.
-             inversion H; subst.
-             ++ contradiction.
-             ++ assumption.
-           + rewrite swap_involutive. apply aeq_refl.
-       --- apply aeq_sub_same.
-           + apply IHt1.
-             ++ apply notin_union_1 in H. apply notin_remove_1 in H.
-                inversion H; subst.
-                +++ contradiction.
-                +++ assumption.
-             ++ apply notin_union_1 in H0. apply notin_remove_1 in H0.
-                inversion H0; subst.
-                +++ contradiction.
-                +++ assumption.
-           + apply IHt2.
-             ++ apply notin_union_2 in H. assumption.
-             ++ apply notin_union_2 in H0. assumption.
-Qed.
     
 Lemma aeq_swap_swap: forall t x y z, z `notin` fv_nom t -> x `notin` fv_nom t -> aeq (swap z x (swap x y t)) (swap z y t).
 Proof.
@@ -2258,9 +2187,9 @@ Proof.
                     apply aeq_fv_nom in H3.
                     rewrite <- H3 in H12.
                     apply fv_nom_swap_2 in H12.
-                    pose proof aeq_notin_swap.
+                    pose proof swap_reduction.
                     specialize (H4 t1' y0 z).
-                    apply H4 in H12.
+                    apply aeq_sym in H4.
                     * specialize (H' (swap y z t1') y0 z).
                       assert (size (swap y z t1') = size t1_1).
                       apply aeq_size in H9; rewrite H9; reflexivity.
@@ -2280,6 +2209,7 @@ Proof.
                          rewrite swap_involutive.
                          rewrite swap_symmetric.
                          assumption.
+                    * assumption.
                     * assumption.
 Qed.                 
 (*  
@@ -2321,12 +2251,9 @@ Qed.
                **** apply aeq_sym.
                     assumption.
 
-=======
-
 
 
 intros t1 t2 t3 H1 H2.
->>>>>>> de789bbcc6941aad5037cfcdee2c621ee0c2503c
   generalize dependent t3.
   induction H1.
   - intros t3 H; assumption.
