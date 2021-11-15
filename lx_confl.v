@@ -426,7 +426,9 @@ Proof.
             (Metatheory.union (remove x (fv_nom (P t3)))
                               (singleton y)))).
                     case (x0 == y); intros; subst.
-                    * apply aeq_abs_same. admit.
+                    * repeat apply notin_union_2 in n0.
+                      apply notin_singleton_1 in n0.
+                      contradiction.
                     * apply aeq_abs_diff.
                       ** assumption.
                       ** case (x0 == x); intros; subst.
