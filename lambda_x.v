@@ -996,7 +996,7 @@ Inductive aeq : n_sexp -> n_sexp -> Prop :=
      aeq t1 t2 -> aeq (n_abs x t1) (n_abs x t2)
  | aeq_abs_diff : forall x y t1 t2,
      x <> y ->
-     x `notin` fv_nom t2 ->
+     (* x `notin` fv_nom t2 -> remover *)
      aeq t1 (swap y x t2) ->
      aeq (n_abs x t1) (n_abs y t2)
  | aeq_app : forall t1 t2 t1' t2',
