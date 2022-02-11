@@ -2412,18 +2412,18 @@ Inductive pix : n_sexp -> n_sexp -> Prop :=
 | step_abs2 : forall (e1 e2: n_sexp) (x y: atom),
     x <> y -> x `notin` fv_nom e2 ->
     pix (n_sub (n_abs x e1) y e2)  (n_abs x (n_sub e1 y e2))
-
-(*Pegar uma variável que não esteja livre tanto em e1 quanto em e2 e
-  fazer um swap dessa variável com o x em e1. Estou considerando que é possível uma
-  abstração conter dentro dela uma outra abstração com a mesma variável.
-  ex: \x -> x (\x -> x z)*)
-
 | step_abs3 : forall (e1 e2: n_sexp) (x y z: atom),
-    x <> y -> x `in` fv_nom e2 ->
-    z `notin` fv_nom e1 -> z `notin` fv_nom e2 -> 
-    pix (n_sub (n_abs x e1) y e2)  (n_abs z (n_sub (swap x z e1) y e2))
+    x <> y -> x `in` fv_nom e2 -> z `notin` fv_nom e1 -> z `notin` fv_nom e2 -> 
+                   pix (n_sub (n_abs x e1) y e2)  (n_abs z (n_sub (swap x z e1) y e2))
 | step_app : forall (e1 e2 e3: n_sexp) (y: atom),
     pix (n_sub (n_app e1 e2) y e3) (n_app (n_sub e1 y e3) (n_sub e2 y e3)).
+
+
+(* Pegar uma variável que não esteja livre tanto em e1 quanto em e2 e
+  fazer um swap dessa variável com o x em e1. Estou considerando que é  possível uma
+  abstração conter dentro dela uma outra abstração com a mesma variável.
+  ex: \x -> x (\x -> x z) *)
+
 
 Inductive betapi: n_sexp -> n_sexp -> Prop :=
 | b_rule : forall t u, betax t u -> betapi t u
@@ -2618,7 +2618,7 @@ Proof.
     -- assumption.
 Qed.
     
-Lemma subst_size : forall n (u : n_sexp) (x:atom) (t:n_sexp),
+Lemma subst_size : forall (n:nat) (u : n_sexp) (x:atom) (t:n_sexp),
     size t <= n -> subst_rec n t u x = subst_rec (size t) t u x.
 Proof.
   intro n. eapply (lt_wf_ind n). clear n.
@@ -2754,7 +2754,11 @@ Proof.
     case (x == y).
     -- intro H; contradiction.
     -- intro Hneq'.
-      destruct (atom_fresh (union (fv_nom u) (union (union (remove y (fv_nom t1)) (fv_nom t2)) (singleton x)))).
+       destruct (atom_fresh (union (fv_nom u) (union (union (remove y (fv_nom t1)) (fv_nom t2)) (singleton x)))).
+       destruct (atom_fresh
+       (union (fv_nom u)
+          (union (union (remove y (fv_nom t1)) (fv_nom t2))
+             (union (singleton x) (fv_nom t2))))).
       rewrite swap_size_eq.
       pose proof subst_size.
       specialize (H (size t1 + size t2) u x (swap y x0 t1)).
