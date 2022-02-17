@@ -995,8 +995,7 @@ Inductive aeq : n_sexp -> n_sexp -> Prop :=
  | aeq_abs_same : forall x t1 t2,
      aeq t1 t2 -> aeq (n_abs x t1) (n_abs x t2)
  | aeq_abs_diff : forall x y t1 t2,
-     x <> y ->
-     (* x `notin` fv_nom t2 -> remover *)
+     x <> y -> x `notin` fv_nom t2 ->
      aeq t1 (swap y x t2) ->
      aeq (n_abs x t1) (n_abs y t2)
  | aeq_app : forall t1 t2 t1' t2',
@@ -1006,8 +1005,8 @@ Inductive aeq : n_sexp -> n_sexp -> Prop :=
      aeq t1 t1' -> aeq t2 t2' ->
      aeq (n_sub t1 x t2) (n_sub t1' x t2')
  | aeq_sub_diff : forall t1 t2 t1' t2' x y,
-     aeq t2 t2' -> x <> y ->
-     x `notin` fv_nom t1' -> aeq t1 (swap y x t1') ->
+     aeq t2 t2' -> x <> y -> x `notin` fv_nom t1' ->
+     aeq t1 (swap y x t1') ->
      aeq (n_sub t1 x t2) (n_sub t1' y t2').
 
 Hint Constructors aeq.
@@ -1030,7 +1029,7 @@ Proof.
   intros. induction H.
   - reflexivity.
   - simpl. rewrite IHaeq. reflexivity.
-  - simpl. inversion H1; subst; rewrite IHaeq; apply remove_fv_swap; assumption.
+  - simpl. inversion H1;subst; rewrite IHaeq; apply remove_fv_swap; assumption.
   - simpl. rewrite IHaeq1; rewrite IHaeq2. reflexivity.
   - simpl. rewrite IHaeq1; rewrite IHaeq2. reflexivity.
   - simpl. pose proof remove_fv_swap.
@@ -2465,7 +2464,6 @@ Proof.
   - assumption.
   - apply aeq_refl.
 Qed.
-  
 
 (*
 (*************************************************************)
@@ -2617,7 +2615,7 @@ Proof.
     -- apply le_S. reflexivity.
     -- assumption.
 Qed.
-    
+
 Lemma subst_size : forall (n:nat) (u : n_sexp) (x:atom) (t:n_sexp),
     size t <= n -> subst_rec n t u x = subst_rec (size t) t u x.
 Proof.
@@ -2733,6 +2731,33 @@ Proof.
           (union (remove y (fv_nom t1)) (singleton x)))). 
        specialize (H0 x0). rewrite H0. reflexivity.
 Qed.
+
+(*
+Lemma subst_sub' : forall u x y t1 t2,
+    m_subst u x (n_sub t1 y t2) =
+       if (x == y) then (n_sub t1 y t2)
+       else let (z,_) := atom_fresh (fv_nom u `union` fv_nom (n_sub t1 y t2) `union` {{x}}) in
+            n_sub (m_subst u x (swap y z t1)) z (m_subst u x t2).
+Proof.
+  intros. case (x == y).
+  - intro H; subst.
+    unfold m_subst.
+    simpl.
+    case (y == y).
+    -- intro H; reflexivity.
+    -- intro H.
+      contradiction.      
+  - intro Hneq.
+    unfold m_subst.
+    simpl.
+    case (x == y).
+    -- intro H; contradiction.
+    -- intro Hneq'.
+       destruct (atom_fresh (union (fv_nom u)
+        (union (union (remove y (fv_nom t1)) (fv_nom t2)) (singleton x)))).
+       pose proof subst_size. rewrite H. rewrite (H _ _ _ t2). reflexivity.
+       { apply le_plus_r. } { rewrite swap_size_eq. apply le_plus_l. }
+Qed. *)
 
 Lemma subst_sub : forall u x y t1 t2,
     m_subst u x (n_sub t1 y t2) =
