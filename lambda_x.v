@@ -2588,11 +2588,11 @@ Fixpoint subst_rec (n:nat) (t:n_sexp) (u :n_sexp) (x:atom)  : n_sexp :=
           | n_app t1 t2 =>
             n_app (subst_rec m t1 u x) (subst_rec m t2 u x)
           | n_sub t1 y t2 =>
-            if (x == y) then t
+            if (x == y) then n_sub t1 y (subst_rec m t2 u x)
             else
               (* rename to avoid capture *)
               let (z,_) :=
-                  atom_fresh (fv_nom u `union` fv_nom t `union` {{x}} `union` fv_nom t2) in
+                  atom_fresh (fv_nom u `union` fv_nom t `union` {{x}}) in
                  n_sub  (subst_rec m (swap y z t1) u x) z (subst_rec m t2 u x) 
            end
   end.
@@ -2626,7 +2626,7 @@ Proof.
   - default_simp.
     rewrite <- (swap_size_eq x0 x1).
     rewrite <- (swap_size_eq x0 x1) in SZ.
-    apply IH. lia. lia.
+    apply IH; lia. 
   - simpl.
     rewrite (IH n); try lia.
     rewrite (IH n); try lia.
@@ -2635,32 +2635,33 @@ Proof.
     auto.
   - default_simp.
     -- rewrite (IH n); try lia.
-       --- rewrite swap_size_eq.
-           assert (size t1 <= size t1 + size t2). {
-             apply le_plus_l.
-           }
-           apply Sn_le_Sm__n_le_m in SZ.
-           apply le_lt_n_Sm in SZ.
-           specialize (IH (size t1 + size t2) SZ u x (swap x0 x1 t1)).
-           rewrite swap_size_eq in IH. apply IH in H.
-           symmetry in H. assumption.
-       --- rewrite swap_size_eq. apply Sn_le_Sm__n_le_m in SZ.
-           assert (size t1 <= size t1 + size t2). {
-             apply le_plus_l.
-           }
-           transitivity (size t1 + size t2).
-           + assumption.
-           + assumption.
+       symmetry.
+       apply IH.
+       --- apply Nat.lt_le_trans with (S (size t1 + size t2)).
+           ---- lia.
+           ---- assumption.
+       --- lia.
    -- rewrite (IH n); try lia.
-       --- rewrite plus_comm. rewrite plus_comm in SZ.
-           assert (size t2 <= size t2 + size t1). {
-             apply le_plus_l.
-           }
-           Search "lt". apply Sn_le_Sm__n_le_m in SZ.
-           apply le_lt_n_Sm in SZ.
-           specialize (IH (size t2 + size t1) SZ u x t2).
-           apply IH in H.
-           symmetry in H. assumption.       
+      --- rewrite (swap_size_eq x0 x1).
+          symmetry.
+          rewrite <- (swap_size_eq x0 x1) at 2.    
+          apply IH.
+          ---- apply Nat.lt_le_trans with (S (size t1 + size t2)).
+               ----- lia.
+               ----- assumption.
+          ---- rewrite (swap_size_eq x0 x1).
+               lia.
+      --- rewrite (swap_size_eq x0 x1).
+          apply le_trans with (size t1 + size t2).
+          ---- lia.
+          ---- lia.
+   -- rewrite (IH n); try lia.
+      symmetry.
+      apply IH.
+      --- apply Nat.lt_le_trans with (S (size t1 + size t2)).
+          ---- lia.
+          ---- assumption.
+      --- lia.
 Qed.
 
 (** ** Challenge Exercise [m_subst]
@@ -2732,10 +2733,9 @@ Proof.
        specialize (H0 x0). rewrite H0. reflexivity.
 Qed.
 
-(*
-Lemma subst_sub' : forall u x y t1 t2,
+Lemma subst_sub : forall u x y t1 t2,
     m_subst u x (n_sub t1 y t2) =
-       if (x == y) then (n_sub t1 y t2)
+       if (x == y) then (n_sub t1 y (m_subst u x t2))
        else let (z,_) := atom_fresh (fv_nom u `union` fv_nom (n_sub t1 y t2) `union` {{x}}) in
             n_sub (m_subst u x (swap y z t1)) z (m_subst u x t2).
 Proof.
@@ -2744,7 +2744,10 @@ Proof.
     unfold m_subst.
     simpl.
     case (y == y).
-    -- intro H; reflexivity.
+    -- intro H.
+       rewrite subst_size.
+       --- reflexivity.
+       ---  lia.
     -- intro H.
       contradiction.      
   - intro Hneq.
@@ -2757,38 +2760,7 @@ Proof.
         (union (union (remove y (fv_nom t1)) (fv_nom t2)) (singleton x)))).
        pose proof subst_size. rewrite H. rewrite (H _ _ _ t2). reflexivity.
        { apply le_plus_r. } { rewrite swap_size_eq. apply le_plus_l. }
-Qed. *)
-
-Lemma subst_sub : forall u x y t1 t2,
-    m_subst u x (n_sub t1 y t2) =
-       if (x == y) then (n_sub t1 y t2)
-       else let (z,_) := atom_fresh (fv_nom u `union` fv_nom (n_sub t1 y t2) `union` {{x}}) in
-            n_sub (m_subst u x (swap y z t1)) z (m_subst u x t2).
-Proof.
-  intros. case (x == y).
-  - intro H; subst.
-    unfold m_subst.
-    simpl.
-    case (y == y).
-    -- intro H; reflexivity.
-    -- intro H.
-      contradiction.      
-  - intro Hneq.
-    unfold m_subst.
-    simpl.
-    case (x == y).
-    -- intro H; contradiction.
-    -- intro Hneq'.
-       destruct (atom_fresh (union (fv_nom u) (union (union (remove y (fv_nom t1)) (fv_nom t2)) (singleton x)))).
-       destruct (atom_fresh
-       (union (fv_nom u)
-          (union (union (remove y (fv_nom t1)) (fv_nom t2))
-             (union (singleton x) (fv_nom t2))))).
-      rewrite swap_size_eq.
-      pose proof subst_size.
-      specialize (H (size t1 + size t2) u x (swap y x0 t1)).
-      admit.
-Admitted.
+Qed. 
 
 Lemma pure_m_subst : forall t u x, pure u -> pure t -> pure (m_subst u x t).
 Proof.
@@ -2839,23 +2811,14 @@ Lemma fv_nom_abs_subst_aux: forall t u y,
     fv_nom (subst_rec (size t) t u y) [=] (remove y (fv_nom t)) `union` (fv_nom u).
 Proof.
   induction t.
-  - simpl subst_rec. intros. case (x == y).
-    -- intros; subst. case (y == y).
-       --- intros. simpl. (*Search "union".*)
-           pose proof AtomSetProperties.empty_union_1.
-           specialize (H (remove y (singleton y)) (fv_nom u)).
-           pose proof remove_singleton. specialize (H0 y).
-           admit.
-           (*apply H in H0. symmetry in H0. assumption.*)
-       --- intros; contradiction.
-    -- intros; case (y == x).
-       --- intros.  symmetry in e; contradiction.
-       --- intros. admit.
-  - intros. simpl. case (y == x).
-    -- intros; subst. admit.
-    -- admit.
-  - admit.
-  - Admitted.
+  - simpl subst_rec. intros.
+    destruct (y == x).
+    -- subst.
+       rewrite remove_singleton_empty.
+       symmetry.
+       apply AtomSetProperties.empty_union_1.
+       apply AtomSetImpl.empty_1.
+    --  Admitted.
 
 (** ** Challenge Exercise [m_subst properties]
     Now show the following property by induction on the size of terms. *)
