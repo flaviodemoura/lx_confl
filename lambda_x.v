@@ -2807,18 +2807,24 @@ Proof.
   - intros. inversion H1.
 Qed.
 
+(* Não é possível provar esse lema porque ele não é correto,
+   pois se não existirem y em t não ocorrera a substituição
+   por u e as variáveis livres de u não estarão no conjunto
+   de variáveis livres*)
+
+(*
 Lemma fv_nom_abs_subst_aux: forall t u y,
     fv_nom (subst_rec (size t) t u y) [=] (remove y (fv_nom t)) `union` (fv_nom u).
 Proof.
-  induction t.
-  - simpl subst_rec. intros.
-    destruct (y == x).
+  intros. induction t.
+  - simpl subst_rec. destruct (y == x).
     -- subst.
        rewrite remove_singleton_empty.
        symmetry.
        apply AtomSetProperties.empty_union_1.
        apply AtomSetImpl.empty_1.
-    --  Admitted.
+    -- Admitted.
+*)
 
 (** ** Challenge Exercise [m_subst properties]
     Now show the following property by induction on the size of terms. *)
@@ -2869,8 +2875,12 @@ Proof.
        ---- apply le_plus_r.
        ---- assumption.
     -- rewrite subst_sub. case (y == x).
-       --- intro Heq; subst.
-           apply aeq_refl.
+       --- intro Heq; subst. apply aeq_sub_same.
+           ---- apply aeq_refl.
+           ---- apply IHn. apply le_S_n in SZ.
+                apply (Nat.le_trans (size t2) (size t1 + size t2) n).
+                ----- lia.
+                ----- assumption.
        --- intro Hneq.
            simpl.
            destruct (atom_fresh
@@ -3069,7 +3079,16 @@ Proof.
          --- assumption.
       -- assumption.
     + intros. unfold m_subst; simpl. default_simp.
-      -- apply aeq_refl.
+      -- apply aeq_sub_same.
+         --- apply aeq_refl.
+         --- rewrite subst_size.
+             ---- apply IHn.
+                  ----- apply le_S_n in H.
+                        apply (le_trans (size t2) (size t1 + size t2) n).
+                        ------ lia.
+                        ------ assumption.
+                  ----- apply (notin_union_2 _ _ _ H0).
+             ---- lia.
       -- case (x1 == x0); intros; subst.
          --- apply aeq_sub_same.
              ---- rewrite swap_id.
@@ -3141,13 +3160,12 @@ Proof.
              ------ contradiction.
              ------ apply notin_union_2 in H3.
                     apply notin_union_2 in H3.
-                    apply notin_union_1 in H3.
                     apply notin_singleton_1 in H3.
                     apply fv_nom_remove_swap.
-             ------- assumption.       
              ------- assumption.
              ------- assumption.
-Qed.                     
+             ------- assumption.
+Qed.
 
 Lemma subst_fresh_eq : forall (x : atom) t u,  x `notin` fv_nom t -> aeq (m_subst u x t) t.
 Proof.
