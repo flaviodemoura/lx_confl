@@ -347,11 +347,13 @@ Proof.
     inversion H.
 Qed.
 
+(*
 Lemma pi_P': forall t1 t2, ctx pix t1 t2 -> (P t1) = (P t2).
 Proof.
   induction 1.
 Admitted.
-  
+ *)
+
 Lemma aeq_to_P: forall t1 t2, aeq t1 t2 -> aeq (P t1) (P t2). 
 Proof.
 Admitted.
@@ -376,7 +378,7 @@ Proof.
        apply aeq_trans with (P (swap y x t1')); assumption. 
 Qed.
              (**)
-(*Lemma 1 in Nakazawa*)    
+(*Lemma 5.3 in Nakazawa*)    
 Lemma pi_P: forall t1 t2, (ctx pix) t1 t2 -> aeq (P t1) (P t2).
 Proof.
   intros. induction H.
