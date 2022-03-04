@@ -146,28 +146,7 @@ Proof.
        --- admit.
        --- admit.
        --- admit.
-       --- admit.
-    -- unfold m_subst. simpl. default_simp.
-       --- admit.
-       --- admit.
-       --- admit.
-       --- admit.
-       --- admit.
-       --- admit.
-       --- admit.
-       --- admit.
-       --- admit.
-    -- unfold m_subst. simpl. default_simp.
-       --- admit.
-       --- admit.
-       --- admit.
-       --- admit.
-       --- admit.
-       --- admit.
-       --- admit.
-       --- admit.
-       --- admit.
-Admitted.
+       --- Admitted.
 
 Lemma aeq_m_subst_1: forall t1 t2 x t3,
     aeq t1 t2 -> aeq (m_subst t3 x t1) (m_subst t3 x t2).
@@ -246,7 +225,8 @@ Proof.
            + assumption.
            + assumption. 
     -- pose proof subst_swap_reduction.
-       assert ((swap x y (m_subst (P t2) y (P t1)) = (swap y x (m_subst (P t2) y (P t1))))). rewrite swap_symmetric; reflexivity.
+       assert ((swap x y (m_subst (P t2) y (P t1)) = (swap y x (m_subst (P t2) y (P t1))))).
+       rewrite swap_symmetric; reflexivity.
        rewrite H0.
        specialize (H (P t2) (P t1) y x y). rewrite H.
        unfold swap_var; unfold swap_var in H; default_simp.
@@ -263,28 +243,56 @@ Proof.
        --- assumption.
 Qed.
 
-Lemma fv_nom_m_subst: forall t u x,
+Lemma fv_nom_m_subst: forall t u x, x `in` fv_nom t ->
     fv_nom (m_subst u x t) [=] fv_nom (n_sub t x u).
 Proof.
+  induction t.
+  -
+    (* intros u x'.
+    simpl.
+    case (x === x').
+    + intro Heq; subst.
+      unfold m_subst.
+      simpl.
+      destruct (x' == x').
+      * admit. (* ok *)
+      * contradiction.
+    + intro Hdiff.
+      unfold m_subst.
+      simpl. *)
   Admitted.
 
 Lemma notin_P: forall x t,
     x `notin` fv_nom t -> x `notin` fv_nom (P t).
 Proof.
-  intros. induction t.
-  - simpl. simpl in H. assumption.
-  - simpl. simpl in H. case (x == x0); intros; subst.
+  intros x t Hnot.
+  induction t.
+  - simpl. simpl in Hnot.
+    assumption.
+  - simpl.
+    simpl in Hnot.
+    case (x == x0); intros; subst.
     -- apply notin_remove_3. reflexivity.
-    -- apply notin_remove_2. apply IHt. apply notin_remove_1 in H.
-       inversion H; subst.
+    -- apply notin_remove_2. apply IHt.
+       apply notin_remove_1 in Hnot.
+       inversion Hnot; subst.
        --- contradiction.
        --- assumption.
-  - simpl. apply notin_union; simpl in H.
-    -- apply notin_union_1 in H. apply IHt1. assumption.
-    -- apply notin_union_2 in H. apply IHt2. assumption.
-  - simpl. simpl in H. pose proof H. apply notin_union_1 in H.
-    apply notin_union_2 in H0.
-             rewrite fv_nom_m_subst. simpl. apply notin_union_3.
+  - simpl. apply notin_union; simpl in Hnot.
+    -- apply notin_union_1 in Hnot.
+       apply IHt1. assumption.
+    -- apply notin_union_2 in Hnot.
+       apply IHt2. assumption.
+  - simpl. simpl in Hnot.
+    pose proof Hnot.
+    apply notin_union_1 in Hnot.
+    apply notin_union_2 in H.
+    unfold m_subst.
+    (* paramos aqui *)
+(*    pose proof notin_diff_1.
+    specialize (H0 x0
+    case (x0 `in` fv_nom t1).
+    rewrite fv_nom_m_subst. simpl. apply notin_union_3.
     -- case (x == x0); intros; subst.
        --- apply notin_remove_3. reflexivity.
        --- apply notin_remove_2. apply IHt1.
@@ -292,7 +300,7 @@ Proof.
            + contradiction.
            + assumption.
     -- apply IHt2. assumption.
-Qed.
+Qed. *)
 
 Lemma notin_P_2: forall x t,
     x `notin` fv_nom (P t) -> x `notin` fv_nom t.
@@ -317,7 +325,7 @@ Proof.
            + contradiction.
            + apply IHt1; assumption.
     -- apply notin_union_2 in H. apply IHt2; assumption.
-Qed.
+Qed. *)
 
 Lemma aeq_nvar_1: forall t x, aeq t (n_var x) -> t = n_var x.
 Proof.
@@ -354,16 +362,16 @@ Proof.
 Admitted.
  *)
 
-Lemma aeq_to_P: forall t1 t2, aeq t1 t2 -> aeq (P t1) (P t2). 
-Proof.
-Admitted.
-
 Lemma aeq_P: forall t1 t2, aeq t1 t2 -> aeq (P t1) (P t2).
 Proof.
-  intros. induction H.
+  intros t1 t2 H.
+  induction H.
   - apply aeq_refl.
-  - simpl. apply aeq_abs_same. assumption.
-  - simpl. apply aeq_abs_diff.
+  - simpl.
+    apply aeq_abs_same.
+    assumption.
+  - simpl.
+    apply aeq_abs_diff.
     -- assumption.
     -- apply notin_P. assumption.
     -- pose proof aeq_swap_P. specialize (H2 y x t2).
@@ -376,9 +384,9 @@ Proof.
     -- rewrite swap_symmetric.
        pose proof aeq_swap_P. specialize (H3 y x t1').
        apply aeq_trans with (P (swap y x t1')); assumption. 
-Qed.
+Qed. *)
              (**)
-(*Lemma 5.3 in Nakazawa*)    
+(*Lemma 5.3(1) in Nakazawa*)    
 Lemma pi_P: forall t1 t2, (ctx pix) t1 t2 -> aeq (P t1) (P t2).
 Proof.
   intros. induction H.
@@ -386,7 +394,8 @@ Proof.
   - inversion H0; subst.
     -- inversion H; subst.
        --- inversion H5; subst. simpl.
-           unfold m_subst. simpl. case (y == y); intros; subst.
+           unfold m_subst. simpl.
+           destruct (y == y). 
            + apply aeq_P.
              apply aeq_trans with e3; assumption.
            + contradiction.
