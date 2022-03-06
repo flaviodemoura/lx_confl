@@ -288,6 +288,14 @@ Proof.
     apply notin_union_1 in Hnot.
     apply notin_union_2 in H.
     unfold m_subst.
+    destruct (P t1) eqn:T.
+    -- simpl. case (x0 == x1).
+       --- intros. apply IHt2. assumption.
+       --- intros. apply IHt1. default_simp.
+
+
+
+
     (* paramos aqui *)
 (*    pose proof notin_diff_1.
     specialize (H0 x0
