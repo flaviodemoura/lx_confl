@@ -243,24 +243,73 @@ Proof.
        --- assumption.
 Qed.
 
-Lemma fv_nom_m_subst: forall t u x, x `in` fv_nom t ->
-    fv_nom (m_subst u x t) [=] fv_nom (n_sub t x u).
+Lemma aux: forall t u x0 x x1, x0 <> x -> x0 <> x1 ->
+  remove x1 (remove x (fv_nom (subst_rec (size t) (swap x x1 t) u x0))) [=]
+  remove x1 (remove x (fv_nom (subst_rec (size t) t u x0))).
+Proof.
+  induction t;intros.
+  - simpl. unfold swap_var. default_simp.
+    -- reflexivity.
+    -- rewrite remove_symmetric. rewrite remove_singleton_empty.
+       rewrite remove_singleton_empty. rewrite (remove_empty x2).
+       apply remove_empty.
+    -- rewrite (remove_symmetric x2 x1 (singleton x2)).
+       rewrite remove_singleton_empty.
+       rewrite remove_singleton_empty.
+       rewrite (remove_empty x1). apply remove_empty.
+    -- reflexivity.
+  - simpl. unfold swap_var. default_simp.
+    -- rewrite (remove_symmetric x1 x). rewrite remove_symmetric.
+       rewrite (remove_symmetric x1 x). rewrite (remove_symmetric x2 x).
+       rewrite swap_remove_reduction. reflexivity.
+    -- admit.
+Admitted.
+
+
+Lemma fv_nom_m_subst_notin: forall t u x, x `notin` fv_nom t ->
+    fv_nom (m_subst u x t) [=] remove x (fv_nom t).
+Proof.
+  intros t. induction t.
+  - intros. unfold m_subst. simpl in *. case (x0 == x).
+    -- intros. rewrite e in H. apply notin_singleton_is_false in H.
+       contradiction.
+    -- intros. rewrite remove_singleton_neq.
+       --- simpl. reflexivity.
+       --- default_simp.
+  - intros. unfold m_subst. simpl. case (x0 == x).
+    -- intros. simpl. rewrite e. rewrite double_remove.
+       reflexivity.
+    -- intros. destruct (atom_fresh (Metatheory.union (fv_nom u)
+       (Metatheory.union (remove x (fv_nom t)) (singleton x0)))).
+       simpl. simpl in H. apply (diff_remove_2 _ _ _ n) in H.
+       apply (IHt u) in H. pose proof n0.
+       apply (AtomSetProperties.Equal_remove x) in H.
+       apply (AtomSetProperties.Equal_remove x1) in H.
+       unfold m_subst in H. apply notin_union_2 in n0.
+       apply notin_union_2 in n0.
+       apply notin_singleton_1 in n0.
+       rewrite <- (aux _ _ _ _ _ n n0) in H.
+       rewrite double_remove in H. rewrite H.
+Admitted.
+
+Lemma fv_nom_m_subst_in: forall t u x, x `in` fv_nom t ->
+    fv_nom (m_subst u x t) [=] fv_nom (n_sub t x u). 
 Proof.
   induction t.
-  -
-    (* intros u x'.
-    simpl.
-    case (x === x').
-    + intro Heq; subst.
-      unfold m_subst.
-      simpl.
-      destruct (x' == x').
-      * admit. (* ok *)
-      * contradiction.
-    + intro Hdiff.
-      unfold m_subst.
-      simpl. *)
-  Admitted.
+  - intros. unfold m_subst. simpl. case (x0 == x);intros.
+    -- rewrite e. rewrite remove_singleton_empty. symmetry.
+       apply AtomSetProperties.empty_union_1.
+       apply AtomSetImpl.empty_1.
+    -- simpl in H. apply AtomSetImpl.singleton_1 in H.
+       rewrite H in n. contradiction.
+  - intros. simpl in H. unfold m_subst. simpl. case (x0 == x);intros.
+    -- rewrite e in H. apply AtomSetProperties.Dec.F.remove_iff in H.
+       destruct H. contradiction.
+    -- destruct (atom_fresh (Metatheory.union (fv_nom u)
+       (Metatheory.union (remove x (fv_nom t)) (singleton x0)))).
+       simpl. admit.
+  - intros. simpl. simpl in H.
+Admitted.
 
 Lemma notin_P: forall x t,
     x `notin` fv_nom t -> x `notin` fv_nom (P t).
@@ -288,11 +337,20 @@ Proof.
     apply notin_union_1 in Hnot.
     apply notin_union_2 in H.
     unfold m_subst.
-    destruct (P t1) eqn:T.
+    destruct t1 eqn:T.
     -- simpl. case (x0 == x1).
        --- intros. apply IHt2. assumption.
-       --- intros. apply IHt1. default_simp.
-
+       --- intros. simpl in *. assert (H': x1 <> x0).
+           ---- auto.
+           ---- apply remove_singleton_neq in H'. rewrite <- H'.
+                assumption.
+    -- simpl in *. case (x0 == x1).
+       --- intros. simpl. apply IHt1. rewrite e in Hnot.
+           rewrite <- double_remove. assumption.
+       --- intros. destruct (atom_fresh
+           (Metatheory.union (fv_nom (P t2))
+           (Metatheory.union (remove x1 (fv_nom (P n))) (singleton x0)))).
+           simpl.
 
 
 

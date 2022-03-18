@@ -224,7 +224,6 @@ Proof.
   intros. 
   pose proof notin_singleton_2. specialize (H0 x y).
   apply H0 in H.
-  Search "remove".
   apply AtomSetProperties.remove_equal in H. assumption.
 Qed.
 
@@ -244,6 +243,12 @@ Proof.
   intros. pose proof notin_empty. specialize (H x).
   apply AtomSetProperties.remove_equal in H.
   assumption.
+Qed.
+
+Lemma diff_remove_2: forall x y s,
+  x <> y -> x `notin` remove y s -> x `notin` s.
+Proof.
+  intros. default_simp.
 Qed.
 
 Lemma diff_equal: forall s s' t,
