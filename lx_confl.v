@@ -265,10 +265,27 @@ Proof.
     -- admit.
 Admitted.
 
-
+(*
+Lemma fv_nom_m_subst_notin: forall t u x, x `notin` fv_nom t ->
+    fv_nom (m_subst u x t) [=] fv_nom t.
+*)
 Lemma fv_nom_m_subst_notin: forall t u x, x `notin` fv_nom t ->
     fv_nom (m_subst u x t) [=] remove x (fv_nom t).
 Proof.
+(* sugestão: indução no tamanho de t. *)
+  induction t using n_sexp_induction.
+  - admit.
+  - intros.
+    unfold m_subst in *.
+    simpl in *.
+    case (x == z).
+    + intro; subst.
+      admit.
+    + intro Hneq.
+      destruct (atom_fresh (Metatheory.union (fv_nom u) (Metatheory.union (remove z (fv_nom t)) (singleton x)))).
+      simpl.
+      Admitted.
+    
   intros t. induction t.
   - intros. unfold m_subst. simpl in *. case (x0 == x).
     -- intros. rewrite e in H. apply notin_singleton_is_false in H.
@@ -336,23 +353,24 @@ Lemma notin_P: forall x t,
 Proof.
   intros x t Hnot.
   induction t.
-  - simpl. simpl in Hnot.
+  - simpl in *.
     assumption.
-  - simpl.
-    simpl in Hnot.
+  - simpl in *.
     case (x == x0); intros; subst.
-    -- apply notin_remove_3. reflexivity.
-    -- apply notin_remove_2. apply IHt.
+    -- apply notin_remove_3; reflexivity.
+    -- apply notin_remove_2.
+       apply IHt.
        apply notin_remove_1 in Hnot.
        inversion Hnot; subst.
        --- contradiction.
        --- assumption.
-  - simpl. apply notin_union; simpl in Hnot.
+  - simpl in *.
+    apply notin_union.
     -- apply notin_union_1 in Hnot.
-       apply IHt1. assumption.
+       apply IHt1; assumption.
     -- apply notin_union_2 in Hnot.
-       apply IHt2. assumption.
-  - simpl. simpl in Hnot.
+       apply IHt2; assumption.
+  - simpl in *.
     pose proof Hnot.
     apply notin_union_1 in Hnot.
     apply notin_union_2 in H.

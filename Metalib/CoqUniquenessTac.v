@@ -10,7 +10,7 @@
 Require Import Coq.Lists.List.
 Require Import Coq.Logic.Eqdep_dec.
 
-Require Import Coq.omega.Omega.
+Require Import Coq.micromega.Lia.
 
 
 (* *********************************************************************** *)

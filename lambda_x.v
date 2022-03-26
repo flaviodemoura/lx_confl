@@ -63,7 +63,6 @@ Definition demo_rep1 := n_abs X (n_app (n_var Y) (n_var X)).
 
 Definition demo_rep2 := n_abs Z (n_app (n_var Y) (n_var Z)).
 
-
 (** As usual, the free variable function needs to remove the
     bound variable in the [n_abs] case. *)
 Fixpoint fv_nom (n : n_sexp) : atoms :=
