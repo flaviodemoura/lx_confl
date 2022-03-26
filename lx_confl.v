@@ -282,14 +282,34 @@ Proof.
     -- intros. destruct (atom_fresh (Metatheory.union (fv_nom u)
        (Metatheory.union (remove x (fv_nom t)) (singleton x0)))).
        simpl. simpl in H. apply (diff_remove_2 _ _ _ n) in H.
-       apply (IHt u) in H. pose proof n0.
+       pose proof H.
+       apply (IHt u) in H. rewrite remove_symmetric.
+       rewrite <- H. unfold m_subst. remember (swap x x1 t) as t1.
+       induction t1.
+       --- unfold swap in Heqt1. destruct t;try(discriminate Heqt1).
+           rewrite Heqt1. unfold swap_var. case (x3 == x);intros. 
+           ---- rewrite e. simpl. apply notin_union_2 in n0.
+                apply notin_union_2 in n0.
+                apply notin_singleton_1 in n0. default_simp.
+                apply remove_singleton.
+           ---- pose proof n0. apply notin_union_2 in n0.
+                apply notin_union_1 in n0. simpl in n0.
+                rewrite (remove_singleton_neq _ _ n1) in n0.
+                apply notin_singleton_1 in n0.
+                apply notin_singleton_1 in H0. default_simp.
+                rewrite (remove_singleton_neq _ _ n1).
+                rewrite (remove_singleton_neq _ _ n0). reflexivity.
+       --- unfold swap in Heqt1. destruct t eqn:Ht;try(discriminate Heqt1).
+           
+
+     (*apply (IHt u) in H. pose proof n0.
        apply (AtomSetProperties.Equal_remove x) in H.
        apply (AtomSetProperties.Equal_remove x1) in H.
        unfold m_subst in H. apply notin_union_2 in n0.
        apply notin_union_2 in n0.
        apply notin_singleton_1 in n0.
        rewrite <- (aux _ _ _ _ _ n n0) in H.
-       rewrite double_remove in H. rewrite H.
+       rewrite double_remove in H. rewrite H.*)
 Admitted.
 
 Lemma fv_nom_m_subst_in: forall t u x, x `in` fv_nom t ->
