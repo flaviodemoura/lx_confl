@@ -274,60 +274,70 @@ Lemma fv_nom_m_subst_notin: forall t u x, x `notin` fv_nom t ->
 Proof.
 (* sugestão: indução no tamanho de t. *)
   induction t using n_sexp_induction.
-  - admit.
-  - intros.
-    unfold m_subst in *.
-    simpl in *.
+  - intros. unfold m_subst. simpl in *.
+    apply notin_singleton_1 in H. default_simp.
+    rewrite (remove_singleton_neq _ _ H). reflexivity.
+  - intros. unfold m_subst in *. simpl in *.
     case (x == z).
-    + intro; subst.
-      admit.
-    + intro Hneq.
-      destruct (atom_fresh (Metatheory.union (fv_nom u) (Metatheory.union (remove z (fv_nom t)) (singleton x)))).
-      simpl.
-      Admitted.
-    
-  intros t. induction t.
-  - intros. unfold m_subst. simpl in *. case (x0 == x).
-    -- intros. rewrite e in H. apply notin_singleton_is_false in H.
-       contradiction.
-    -- intros. rewrite remove_singleton_neq.
-       --- simpl. reflexivity.
-       --- default_simp.
-  - intros. unfold m_subst. simpl. case (x0 == x).
-    -- intros. simpl. rewrite e. rewrite double_remove.
+    -- intro; subst. simpl. rewrite double_remove.
        reflexivity.
-    -- intros. destruct (atom_fresh (Metatheory.union (fv_nom u)
-       (Metatheory.union (remove x (fv_nom t)) (singleton x0)))).
-       simpl. simpl in H. apply (diff_remove_2 _ _ _ n) in H.
-       pose proof H.
-       apply (IHt u) in H. rewrite remove_symmetric.
-       rewrite <- H. unfold m_subst. remember (swap x x1 t) as t1.
-       induction t1.
-       --- unfold swap in Heqt1. destruct t;try(discriminate Heqt1).
-           rewrite Heqt1. unfold swap_var. case (x3 == x);intros. 
-           ---- rewrite e. simpl. apply notin_union_2 in n0.
-                apply notin_union_2 in n0.
-                apply notin_singleton_1 in n0. default_simp.
-                apply remove_singleton.
-           ---- pose proof n0. apply notin_union_2 in n0.
-                apply notin_union_1 in n0. simpl in n0.
-                rewrite (remove_singleton_neq _ _ n1) in n0.
-                apply notin_singleton_1 in n0.
-                apply notin_singleton_1 in H0. default_simp.
-                rewrite (remove_singleton_neq _ _ n1).
-                rewrite (remove_singleton_neq _ _ n0). reflexivity.
-       --- unfold swap in Heqt1. destruct t eqn:Ht;try(discriminate Heqt1).
-           
-
-     (*apply (IHt u) in H. pose proof n0.
-       apply (AtomSetProperties.Equal_remove x) in H.
-       apply (AtomSetProperties.Equal_remove x1) in H.
-       unfold m_subst in H. apply notin_union_2 in n0.
-       apply notin_union_2 in n0.
-       apply notin_singleton_1 in n0.
-       rewrite <- (aux _ _ _ _ _ n n0) in H.
-       rewrite double_remove in H. rewrite H.*)
-Admitted.
+    -- intro Hneq. destruct (atom_fresh
+       (Metatheory.union (fv_nom u) (Metatheory.union (remove z (fv_nom t))
+       (singleton x)))). simpl. assert
+       (H': size (swap z x0 t) = size t). apply swap_size_eq.
+       assert (H'': size t = size t). reflexivity.
+       apply (diff_remove_2 _ _ _ Hneq) in H0.
+       pose proof n. apply notin_union_2 in n.
+       apply notin_union_2 in n. apply notin_singleton_1 in n.
+       apply (fv_nom_remove_swap _ _ _ _ n Hneq) in H0.
+       apply (H t z x0 H'' u x) in H0. rewrite H' in H0.
+       rewrite H0. rewrite remove_symmetric.
+       apply notin_union_2 in H1. apply notin_union_1 in H1.
+       case (x0 == z);intros.
+       --- rewrite e. rewrite swap_id. reflexivity.
+       --- apply (diff_remove_2 _ _ _ n0) in H1.
+           rewrite (remove_fv_swap _ _ _ H1). reflexivity.
+  - intros. unfold m_subst in *. simpl. simpl in H.
+    assert (H1: size t1 <= size t1 + size t2). lia.
+    assert (H2: size t2 <= size t1 + size t2). lia.
+    rewrite (subst_size _ _ _ _ H1). pose proof H.
+    rewrite (subst_size _ _ _ _ H2).
+    apply notin_union_2 in H. apply notin_union_1 in H0.
+    apply (IHt1 u) in H0. apply (IHt2 u) in H. rewrite H.
+    rewrite H0. rewrite remove_union_distrib. reflexivity.
+  - intros. unfold m_subst in *. assert (Ht1: size t1 = size t1).
+    reflexivity. simpl. destruct (x == z).
+    -- simpl. assert (H': size t2 <= size t1 + size t2).
+       lia. rewrite (subst_size _ _ _ _ H'). simpl in H0.
+       apply notin_union_2 in H0. pose proof H0.
+       apply (IHt1 u) in H0. rewrite H0. rewrite e.
+       rewrite remove_union_distrib. rewrite double_remove.
+       reflexivity.
+    -- destruct (atom_fresh (Metatheory.union (fv_nom u)
+       (Metatheory.union (Metatheory.union (remove z (fv_nom t1))
+       (fv_nom t2)) (singleton x)))). simpl.
+       assert (Hs: size (swap z x0 t1) <= size t1 + size t2).
+       --- rewrite swap_size_eq. lia.
+       --- rewrite (subst_size _ _ _ _ Hs).
+           simpl in H0. pose proof H0. apply notin_union_1 in H0.
+           apply (diff_remove_2 _ _ _ n) in H0.
+           apply notin_union_2 in n0. pose proof n0.
+           apply notin_union_2 in n0. apply notin_singleton_1 in n0.
+           apply (fv_nom_remove_swap _ _ _ _ n0 n) in H0.
+           apply (H t1 z x0 Ht1 u x) in H0. rewrite H0.
+           assert (H': size t2 <= size t1 + size t2). lia.
+           rewrite (subst_size _ _ _ _ H').
+           apply notin_union_2 in H1. apply (IHt1 u) in H1.
+           rewrite H1. case (x0 == z);intros.
+        ---- rewrite e. rewrite swap_id.
+             rewrite remove_union_distrib.
+             rewrite remove_symmetric. reflexivity.
+        ---- rewrite remove_symmetric. apply notin_union_1 in H2.
+             apply notin_union_1 in H2.
+             apply (diff_remove_2 _ _ _ n1) in H2.
+             rewrite (remove_fv_swap _ _ _ H2).
+             rewrite remove_union_distrib. reflexivity.
+Qed.
 
 Lemma fv_nom_m_subst_in: forall t u x, x `in` fv_nom t ->
     fv_nom (m_subst u x t) [=] fv_nom (n_sub t x u). 
