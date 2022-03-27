@@ -243,28 +243,6 @@ Proof.
        --- assumption.
 Qed.
 
-Lemma aux: forall t u x0 x x1, x0 <> x -> x0 <> x1 ->
-  remove x1 (remove x (fv_nom (subst_rec (size t) (swap x x1 t) u x0))) [=]
-  remove x1 (remove x (fv_nom (subst_rec (size t) t u x0))).
-Proof.
-  induction t;intros.
-  - simpl. unfold swap_var. default_simp.
-    -- reflexivity.
-    -- rewrite remove_symmetric. rewrite remove_singleton_empty.
-       rewrite remove_singleton_empty. rewrite (remove_empty x2).
-       apply remove_empty.
-    -- rewrite (remove_symmetric x2 x1 (singleton x2)).
-       rewrite remove_singleton_empty.
-       rewrite remove_singleton_empty.
-       rewrite (remove_empty x1). apply remove_empty.
-    -- reflexivity.
-  - simpl. unfold swap_var. default_simp.
-    -- rewrite (remove_symmetric x1 x). rewrite remove_symmetric.
-       rewrite (remove_symmetric x1 x). rewrite (remove_symmetric x2 x).
-       rewrite swap_remove_reduction. reflexivity.
-    -- admit.
-Admitted.
-
 (*
 Lemma fv_nom_m_subst_notin: forall t u x, x `notin` fv_nom t ->
     fv_nom (m_subst u x t) [=] fv_nom t.
@@ -342,6 +320,55 @@ Qed.
 Lemma fv_nom_m_subst_in: forall t u x, x `in` fv_nom t ->
     fv_nom (m_subst u x t) [=] fv_nom (n_sub t x u). 
 Proof.
+  induction t using n_sexp_induction.
+  - intros. unfold m_subst. simpl.
+    apply AtomSetImpl.singleton_1 in H. rewrite H.
+    destruct (x0 == x0).
+    -- rewrite remove_singleton_empty.
+       rewrite AtomSetProperties.empty_union_1.
+       reflexivity. apply AtomSetImpl.empty_1.
+    -- contradiction.
+  - intros. unfold m_subst in *. simpl. case (x == z);intros.
+    -- simpl in H0. rewrite e in H0. apply remove_iff in H0.
+       destruct H0. contradiction.
+    -- destruct (atom_fresh (Metatheory.union (fv_nom u)
+       (Metatheory.union (remove z (fv_nom t)) (singleton x)))).
+       simpl. assert (Ht: size t = size t). reflexivity.
+       simpl in H0. apply AtomSetImpl.remove_3 in H0.
+       pose proof n0.
+       apply notin_union_2 in n0. pose proof n0.
+       apply notin_union_2 in n0. apply notin_singleton_1 in n0.
+       assert (n': z <> x). auto.
+       assert (H': x `in` remove z (fv_nom t)).
+       apply (AtomSetImpl.remove_2 n' H0).
+       assert (n'': x0 <> x). auto.
+       assert (H'': x `in` remove x0 (remove z (fv_nom t))).
+       apply (AtomSetImpl.remove_2 n'' H').
+       rewrite <- swap_remove_reduction in H''.
+       apply AtomSetImpl.remove_3 in H''.
+       apply AtomSetImpl.remove_3 in H''.
+       apply (H t z x0 Ht u x) in H''. rewrite swap_size_eq in H''.
+       rewrite H''. simpl. rewrite remove_union_distrib.
+       rewrite remove_symmetric. apply notin_union_1 in H2.
+       case (x0 == z);intros.
+      --- rewrite e. rewrite swap_id. apply notin_union_1 in H1.
+          rewrite e in H1.
+          rewrite (AtomSetProperties.remove_equal H1).
+          reflexivity.
+      --- apply (diff_remove_2 _ _ _ n1) in H2.
+          rewrite (remove_fv_swap _ _ _ H2).
+          apply notin_union_1 in H1.
+          rewrite (AtomSetProperties.remove_equal H1). reflexivity.
+  - unfold m_subst in *. intros. simpl.
+    assert (Ht1: size t1 <= size t1 + size t2). lia.
+    assert (Ht2: size t2 <= size t1 + size t2). lia.
+    rewrite (subst_size _ _ _ _ Ht1). simpl in H.
+    rewrite (subst_size _ _ _ _ Ht2).
+    apply AtomSetImpl.union_1 in H. destruct H.
+    -- apply (IHt1 u) in H.
+
+
+
   induction t.
   - intros. unfold m_subst. simpl. case (x0 == x);intros.
     -- rewrite e. rewrite remove_singleton_empty. symmetry.
