@@ -493,7 +493,7 @@ Proof.
                      rewrite (remove_fv_swap _ z _ H4). simpl.
                      rewrite <- AtomSetProperties.union_assoc.
                      rewrite remove_union_distrib. reflexivity.
-Qed.  
+Qed.
 
 Lemma notin_P: forall x t,
     x `notin` fv_nom t -> x `notin` fv_nom (P t).
@@ -551,7 +551,7 @@ Qed.
            + contradiction.
            + assumption.
     -- apply IHt2. assumption.
-Qed. *)
+Qed.
 
 Lemma notin_P_2: forall x t,
     x `notin` fv_nom (P t) -> x `notin` fv_nom t.
@@ -635,94 +635,78 @@ Proof.
     -- rewrite swap_symmetric.
        pose proof aeq_swap_P. specialize (H3 y x t1').
        apply aeq_trans with (P (swap y x t1')); assumption. 
-Qed. *)
-             (**)
+Qed.
+
+Lemma swap_m_subst: forall t u x y z, swap x y (m_subst u z t) = m_subst (swap x y u) (swap_var x y z) (swap x y t).
+Proof.
+Admitted.
+  
+Lemma abs_swap: forall t x y, y `notin` fv_nom t -> aeq (n_abs y (swap x y t)) (n_abs x t). 
+Proof.
+ Admitted.
+
+(**)
 (*Lemma 5.3(1) in Nakazawa*)    
 Lemma pi_P: forall t1 t2, (ctx pix) t1 t2 -> aeq (P t1) (P t2).
 Proof.
   intros. induction H.
-  - apply aeq_P. assumption.
+  - apply aeq_P.
+    assumption.
   - inversion H0; subst.
-    -- inversion H; subst.
-       --- inversion H5; subst. simpl.
-           unfold m_subst. simpl.
-           destruct (y == y). 
-           + apply aeq_P.
-             apply aeq_trans with e3; assumption.
-           + contradiction.
-       --- simpl; unfold m_subst. inversion H9; subst.
-           simpl. unfold swap_var in *.
-           case (y == y); intros; subst.
-           + case (x == x); intros; subst.
-             ++ apply aeq_P. apply aeq_trans with e3; assumption.
-             ++ contradiction.
-           + contradiction.
-    -- inversion H1; subst. inversion H; subst.
-       --- simpl.  unfold m_subst. inversion H6; subst.
-           simpl. case (y == x); intros; subst.
-           + contradiction.
-           + apply aeq_refl.
-       --- simpl. simpl in H10. unfold swap_var in H10.
-           destruct (x == y) in H10; subst.
-           + contradiction.
-           + destruct (x == x0) in H10; subst.
-             ++ simpl in H9. apply notin_singleton_1 in H9.
-                contradiction.
-             ++ inversion H10; subst.
-                unfold m_subst; simpl.
-                case (x0 == x); intros; subst.
-                +++ contradiction.
-                +++ apply aeq_refl.
-    -- inversion H1; subst.
-       --- inversion H; subst.
-           + simpl; unfold m_subst.
-             inversion H6; subst.
-             ++ simpl. case (y == y); intros; subst.
-                +++ apply aeq_abs_same. apply aeq_P.
-                    apply aeq_trans with e0; assumption.
-                +++ contradiction.
-             ++ simpl. case (y == x); intros; subst.
-                +++ contradiction.
-                +++ destruct (atom_fresh
-         (Metatheory.union (fv_nom (P t0))
-            (Metatheory.union (remove x (fv_nom (P t3)))
-                              (singleton y)))).
-                    case (x0 == y); intros; subst.
-                    * repeat apply notin_union_2 in n0.
-                      apply notin_singleton_1 in n0.
-                      contradiction.
-                    * apply aeq_abs_diff.
-                      ** assumption.
-                      ** case (x0 == x); intros; subst.
-                         *** apply aeq_fv_nom in H5.
-                             rewrite H5 in H9.
-                             apply notin_P.
-                             assumption.
-                         *** apply notin_union_2 in n0.
-                             apply notin_union_1 in n0.
-                             apply notin_remove_1 in n0.
-                             inversion n0; subst.
-                         **** contradiction.    
-                         **** apply aeq_swap1 with t3 (swap y x e0) y x in H10.
-                              rewrite swap_involutive in H10.
-                              assert (aeq (swap y x t3) t2).
-                              apply aeq_trans with e0; assumption.
-                              apply aeq_P in H3.
-                              apply aeq_fv_nom in H3.
-                              rewrite <- H3.
-                              pose proof aeq_swap_P.
-                              specialize (H7 y x t3).
-                              apply aeq_fv_nom in H7.
-                              rewrite H7.
-                              apply fv_nom_swap_remove with y x.                             ***** assumption.
-                         ***** assumption.
-                         ***** rewrite swap_symmetric.
-                               rewrite swap_involutive.
-                               assumption.
-                      ** admit.
-           + simpl. admit.
-       --- admit.    
-    -- admit.   
+    -- apply aeq_trans with (P e3).
+       --- apply aeq_P in H.
+           simpl in H.
+           unfold m_subst in H.
+           simpl in H.
+           destruct (y == y).
+           ---- assumption.
+           ---- contradiction.
+       --- apply aeq_P; assumption.
+    -- apply aeq_P in H.
+       simpl in H.
+       unfold m_subst in H.
+       simpl in H.
+       destruct (y == x).
+       --- symmetry in e0.
+           contradiction.
+       --- apply aeq_trans with (n_var x).
+           ---- assumption.
+           ---- apply aeq_P in H1.
+                simpl in H1.
+                assumption.
+    -- admit.
+    -- apply aeq_P in H.
+       simpl in H.
+       unfold m_subst in H.
+       simpl in H.
+       destruct (y == x).
+       --- symmetry in e; contradiction.
+       --- destruct (atom_fresh (Metatheory.union (fv_nom (P e5)) (Metatheory.union (remove x (fv_nom (P e0))) (singleton y)))).
+           apply aeq_trans with (n_abs x0 (subst_rec (size (P e0)) (swap x x0 (P e0)) (P e5) y)).
+           ---- assumption.
+           ---- apply aeq_P in H1.
+                simpl in H1.
+                unfold m_subst in H1.
+                apply aeq_trans with (n_abs x (subst_rec (size (P e0)) (P e0) (P e5) y)).
+                ----- 
+
+                  
+                  apply abs_swap.
+              
+
+
+                  case ( x == x0 ).
+                ------ intro Heq; subst.
+                rewrite swap_id.
+                apply aeq_refl.
+                ------ intro Hneq.
+                apply aeq_sym.
+                apply aeq_abs_diff.
+                ------- assumption.
+                ------- admit.
+                ------- 
+                ----- assumption.
+    -- admit.
     -- admit.
   - simpl. apply aeq_abs_same. assumption.
   - simpl. apply aeq_app. 
