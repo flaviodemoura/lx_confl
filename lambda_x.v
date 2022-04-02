@@ -63,6 +63,7 @@ Definition demo_rep1 := n_abs X (n_app (n_var Y) (n_var X)).
 
 Definition demo_rep2 := n_abs Z (n_app (n_var Y) (n_var Z)).
 
+
 (** As usual, the free variable function needs to remove the
     bound variable in the [n_abs] case. *)
 Fixpoint fv_nom (n : n_sexp) : atoms :=
@@ -118,6 +119,18 @@ Proof.
   - reflexivity.
   - reflexivity.
 Qed.
+
+Lemma in_or_notin: forall x s, x `in` s \/ x `notin` s.
+Proof.
+  intros. pose proof notin_diff_1. specialize (H x s s).
+  rewrite AtomSetProperties.diff_subset_equal in H.
+  - assert (H1: x `notin`empty). default_simp. apply H in H1.
+    destruct H1.
+    -- right. apply H0.
+    -- left. apply H0.
+  - reflexivity.
+Qed.
+   
 
 (** The main insight of nominal representations is that we can
     rename variables, without capture, using a simple
