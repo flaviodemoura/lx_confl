@@ -639,11 +639,45 @@ Qed.
 
 Lemma swap_m_subst: forall t u x y z, swap x y (m_subst u z t) = m_subst (swap x y u) (swap_var x y z) (swap x y t).
 Proof.
+  induction t using n_sexp_induction.
+  - unfold m_subst. simpl. unfold swap_var.
+    default_simp.
+  - intros. unfold m_subst in *. simpl. case (z0 == z);intro.
+    -- case (swap_var x y z0 == swap_var x y z);intro.
+       --- simpl. reflexivity.
+       --- default_simp.
+    -- case (swap_var x y z0 == swap_var x y z);intro.
+       --- unfold swap_var in e. default_simp.
+       --- admit.
+  - intros. unfold m_subst in *. simpl.
+    assert (H1: size t1 <= size t1 + size t2). lia.
+    assert (H2: size t2 <= size t1 + size t2). lia.
+    assert (H3: size (swap x y t1) <= size (swap x y t1) + size (swap x y t2)). lia.
+    assert (H4: size (swap x y t2) <= size (swap x y t1) + size (swap x y t2)). lia.
+    rewrite (subst_size _ _ _ _ H1). rewrite (subst_size _ _ _ _ H2).
+    rewrite (subst_size _ _ _ _ H3). rewrite (subst_size _ _ _ _ H4).
+    rewrite IHt1. rewrite IHt2. reflexivity.
+  - intros. unfold m_subst in *. simpl. destruct (z0 == z);intros.
+    -- destruct (swap_var x y z0 == swap_var x y z);intros.
+       --- simpl. assert (H1: size t2 <= size t1 + size t2). lia.
+           assert (H2: size (swap x y t2) <= 
+           size (swap x y t1) + size (swap x y t2)). lia.
+           rewrite (subst_size _ _ _ _ H1). rewrite (subst_size _ _ _ _ H2).
+           rewrite IHt1. reflexivity.
+       --- unfold swap_var in n. default_simp.
+    -- destruct (swap_var x y z0 == swap_var x y z);intros.
+       --- unfold swap_var in e. default_simp.
+       --- admit.
 Admitted.
+           
   
 Lemma abs_swap: forall t x y, y `notin` fv_nom t -> aeq (n_abs y (swap x y t)) (n_abs x t). 
 Proof.
- Admitted.
+  intros. destruct (y == x).
+  - rewrite e. rewrite swap_id. apply aeq_refl.
+  - apply (aeq_abs_diff _ _ _ _ n H). apply aeq_refl.
+Qed.
+
 
 (**)
 (*Lemma 5.3(1) in Nakazawa*)    
@@ -674,7 +708,11 @@ Proof.
            ---- apply aeq_P in H1.
                 simpl in H1.
                 assumption.
-    -- admit.
+    -- apply aeq_P in H. simpl in H. unfold m_subst in H.
+       simpl in H. destruct (y == y).
+       --- apply aeq_P in H1. simpl in H1.
+           apply (aeq_trans _ _ _ H H1).
+       --- contradiction.
     -- apply aeq_P in H.
        simpl in H.
        unfold m_subst in H.
@@ -688,23 +726,28 @@ Proof.
                 simpl in H1.
                 unfold m_subst in H1.
                 apply aeq_trans with (n_abs x (subst_rec (size (P e0)) (P e0) (P e5) y)).
-                ----- 
-
-                  
-                  apply abs_swap.
-              
-
-
-                  case ( x == x0 ).
-                ------ intro Heq; subst.
-                rewrite swap_id.
-                apply aeq_refl.
-                ------ intro Hneq.
-                apply aeq_sym.
-                apply aeq_abs_diff.
-                ------- assumption.
-                ------- admit.
-                ------- 
+                ----- case ( x == x0 ).
+                      ------ intro Heq; subst.
+                             rewrite swap_id.
+                             apply aeq_refl.
+                      ------ intro Hneq.
+                             apply aeq_sym.
+                             apply aeq_abs_diff.
+                             ------- assumption.
+                             ------- rewrite <- (swap_size_eq x x0).
+                                     rewrite <- (swap_involutive (P e5) x x0).
+                                     assert (Hy: y = swap_var x x0 (swap_var x x0 y)).
+                                     { unfold swap_var. default_simp. }
+                                     rewrite Hy. pose proof swap_m_subst.
+                                     unfold m_subst in H4. rewrite <- H4.
+                                     apply fv_nom_swap. pose proof n0.
+                                     apply notin_union_2 in H5.
+                                     apply notin_union_2 in H5.
+                                     apply notin_singleton_1 in H5.
+                                     assert (Hy2: swap_var x x0 y = y).
+                                     { unfold swap_var. default_simp. }
+                                     rewrite Hy2. admit.
+                             ------- admit. 
                 ----- assumption.
     -- admit.
     -- admit.
