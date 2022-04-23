@@ -18,6 +18,69 @@ Fixpoint P (t : n_sexp) := match t with
                            | n_sub t1 x t2 => m_subst (P t2) x (P t1)
                            end.
 
+Lemma aeq_swap_m_subst: forall t u x y, x <> y ->  x `notin` fv_nom u -> y `notin` fv_nom u -> y `notin` fv_nom t -> aeq (swap x y (m_subst u x t)) (m_subst u y (swap x y t)).
+Proof.
+  induction t using n_sexp_induction.
+  - intros.
+    unfold m_subst.
+    simpl.
+    unfold swap_var.
+    default_simp.
+    apply swap_reduction; assumption.
+  - intros.
+    unfold m_subst.
+    simpl.
+    destruct (x == z).
+    + subst.
+      unfold swap_var.
+      default_simp.
+      unfold swap_var.
+      default_simp.
+      apply aeq_refl.
+    + unfold swap_var.
+      default_simp.
+      * unfold swap_var.
+        destruct (x0 == y).
+        ** assert (Hx0: x0 = x).
+           {
+             admit.
+           }
+           subst.
+           default_simp.
+        ** assert (Hx0: x0 = x).
+           {
+             admit.
+           }
+           subst.
+           default_simp.
+           apply aeq_abs_diff.
+           *** admit.
+           *** admit.
+           *** apply aeq_trans with (subst_rec (size t) t (swap x y u) y).
+               **** unfold m_subst in H.
+                    specialize (H t y x).
+                    assert (IH: forall (u : n_sexp) (x0 y0 : atom),
+      x0 <> y0 ->
+      x0 `notin` fv_nom u ->
+      y0 `notin` fv_nom u ->
+      y0 `notin` fv_nom (swap y x t) ->
+      aeq (swap x0 y0 (subst_rec (size (swap y x t)) (swap y x t) u x0))
+        (subst_rec (size (swap x0 y0 (swap y x t))) (swap x0 y0 (swap y x t)) u y0)).
+                    {
+                      apply H.
+                      reflexivity.
+                    }
+                    specialize (IH u x y).
+
+                    (*
+                    Lemma swap_idemp: forall t x y, aeq (swap x y (swap x y t)) t *)
+                    
+                    apply swap_
+               ****
+      *
+
+
+      
 Lemma subst_swap_reduction: forall u t x y z,
     (swap x y (m_subst u z t)) = (m_subst (swap x y u) (swap_var x y z) (swap x y t)).
 Proof.
