@@ -3189,3 +3189,6 @@ Proof.
   intros. apply subst_fresh_eq_aux with (n := size t). lia. auto.
 Qed.
 
+Lemma aeq_n_sub_compat: forall t1 t1' t2 x, aeq t1 t1' -> aeq (n_sub t1 x t2) (n_sub t1' x t2).
+  
+Lemma aeq_n_sub_in_compat: forall t1 t2 t2' x, aeq t2 t2' -> aeq (n_sub t1 x t2) (n_sub t1 x t2').  
