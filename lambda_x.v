@@ -3193,6 +3193,16 @@ Lemma aeq_n_sub_compat: forall t1 t1' t2 x, aeq t1 t1' -> aeq (n_sub t1 x t2) (n
 Proof.
   Admitted.
 
-Lemma aeq_n_sub_in_compat: forall t1 t2 t2' x, aeq t2 t2' -> aeq (n_sub t1 x t2) (n_sub t1 x t2').  
+Lemma aeq_n_sub_in_compat: forall t1 t2 t2' x, aeq t2 t2' -> aeq (n_sub t1 x t2) (n_sub t1 x t2').
 Proof.
+  induction 1.
+  - apply aeq_sub_same; apply aeq_refl.
+  - apply aeq_sub_same.
+   + apply aeq_refl.
+   + apply aeq_abs_same.
+     assumption.
+  - apply aeq_sub_same.
+    + apply aeq_refl.
+    + apply aeq_abs_diff; assumption.
+  -
   Admitted.
