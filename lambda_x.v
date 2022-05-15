@@ -3204,5 +3204,13 @@ Proof.
   - apply aeq_sub_same.
     + apply aeq_refl.
     + apply aeq_abs_diff; assumption.
-  -
-  Admitted.
+  - apply aeq_sub_same.
+    + apply aeq_refl.
+    + apply aeq_app; assumption.
+  - apply aeq_sub_same.
+    + apply aeq_refl.
+    + apply aeq_sub_same; assumption.
+  - apply aeq_sub_same.
+    + apply aeq_refl.
+    + apply aeq_sub_diff; assumption.
+Qed.
