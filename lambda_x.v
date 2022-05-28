@@ -200,28 +200,28 @@ Qed.
 
 (** Now let's look at some simple properties of swapping. *)
 
-Lemma swap_id : forall n x,
-    swap x x n = n.
+Lemma swap_id : forall t x,
+    swap x x t = t.
 Proof.
-  induction n; simpl; unfold swap_var;  default_simp.
+  induction t; simpl; unfold swap_var;  default_simp.
 Qed.
 
 (** Demo: We will need the next two properties later in the tutorial,
     so we show that even though there are many cases to consider,
     [default_simp] can find these proofs. *)
 
-Lemma fv_nom_swap : forall z y n,
-  z `notin` fv_nom n ->
-  y `notin` fv_nom (swap y z n).
+Lemma fv_nom_swap : forall z y t,
+  z `notin` fv_nom t ->
+  y `notin` fv_nom (swap y z t).
 Proof.
-  induction n; intros; simpl; unfold swap_var; default_simp.
+  induction t; intros; simpl; unfold swap_var; default_simp.
 Qed.
 
-Lemma fv_nom_swap_2 : forall z y n,
-  z `notin` fv_nom (swap y z n) ->
-  y `notin` fv_nom n.
+Lemma fv_nom_swap_2 : forall z y t,
+  z `notin` fv_nom (swap y z t) ->
+  y `notin` fv_nom t.
 Proof.
-  intros. induction n; simpl in *; unfold swap_var in H; default_simp.
+  intros. induction t; simpl in *; unfold swap_var in H; default_simp.
 Qed.
   
 Lemma diff_remove: forall x y s,
@@ -1336,7 +1336,7 @@ Qed.
 Lemma aeq_diff_abs: forall x y t1 t2,
     aeq (n_abs x t1) (n_abs y t2) -> aeq t1 (swap x y t2).
 Proof.
-  intros. inversion H.
+  intros. inversion H; subst.
   - rewrite swap_id; assumption.
   - rewrite swap_symmetric; assumption.
 Qed.
@@ -2605,7 +2605,7 @@ Fixpoint subst_rec (n:nat) (t:n_sexp) (u :n_sexp) (x:atom)  : n_sexp :=
           | n_app t1 t2 =>
             n_app (subst_rec m t1 u x) (subst_rec m t2 u x)
           | n_sub t1 y t2 =>
-            if (x == y) then n_sub t1 y (subst_rec m t2 u x)
+            if (x == y) then t
             else
               (* rename to avoid capture *)
               let (z,_) :=
@@ -2657,28 +2657,20 @@ Proof.
        --- apply Nat.lt_le_trans with (S (size t1 + size t2)).
            ---- lia.
            ---- assumption.
+       --- rewrite swap_size_eq.
+           lia.
+       --- rewrite (swap_size_eq x0 x1).
+           apply Peano.le_S_n in SZ.
+           apply le_trans with (size t1 + size t2).
+           ---- lia.
+           ---- assumption.
+    -- rewrite (IH n); try lia.
+       symmetry.
+       apply IH.
+       --- apply Nat.lt_le_trans with (S (size t1 + size t2)).
+           ---- lia.
+           ---- assumption.
        --- lia.
-   -- rewrite (IH n); try lia.
-      --- rewrite (swap_size_eq x0 x1).
-          symmetry.
-          rewrite <- (swap_size_eq x0 x1) at 2.    
-          apply IH.
-          ---- apply Nat.lt_le_trans with (S (size t1 + size t2)).
-               ----- lia.
-               ----- assumption.
-          ---- rewrite (swap_size_eq x0 x1).
-               lia.
-      --- rewrite (swap_size_eq x0 x1).
-          apply le_trans with (size t1 + size t2).
-          ---- lia.
-          ---- lia.
-   -- rewrite (IH n); try lia.
-      symmetry.
-      apply IH.
-      --- apply Nat.lt_le_trans with (S (size t1 + size t2)).
-          ---- lia.
-          ---- assumption.
-      --- lia.
 Qed.
 
 (** ** Challenge Exercise [m_subst]
@@ -2723,11 +2715,11 @@ Proof.
   - assumption.
 Qed.
 
-Lemma subst_abs : forall u x y t1,
-    m_subst u x (n_abs y t1) =
-       if (x == y) then (n_abs y t1)
-       else let (z,_) := atom_fresh (fv_nom u `union` fv_nom (n_abs y t1) `union` {{x}}) in
-       n_abs z (m_subst u x (swap y z t1)).
+Lemma subst_abs : forall u x y t ,
+    m_subst u x (n_abs y t)  =
+       if (x == y) then (n_abs y t )
+       else let (z,_) := atom_fresh (fv_nom u `union` fv_nom (n_abs y t ) `union` {{x}}) in
+       n_abs z (m_subst u x (swap y z t )).
 Proof.
   intros. case (x == y).
   - intros. unfold m_subst.  rewrite e. simpl. case (y == y).
@@ -2739,20 +2731,20 @@ Proof.
   - intros. unfold m_subst. simpl. case (x == y).
     -- intros. contradiction.
     -- intros. pose proof AtomSetImpl.union_1.
-       assert (forall z, size t1 = size (swap y z t1)). {
+       assert (forall z, size t  = size (swap y z t )). {
          intros. case (y == z).
          - intros. rewrite e. rewrite swap_id. reflexivity.
          - intros. rewrite swap_size_eq. reflexivity.         
        }
        destruct (atom_fresh
        (union (fv_nom u)
-          (union (remove y (fv_nom t1)) (singleton x)))). 
+          (union (remove y (fv_nom t )) (singleton x)))). 
        specialize (H0 x0). rewrite H0. reflexivity.
 Qed.
 
 Lemma subst_sub : forall u x y t1 t2,
     m_subst u x (n_sub t1 y t2) =
-       if (x == y) then (n_sub t1 y (m_subst u x t2))
+       if (x == y) then (n_sub t1 y t2)
        else let (z,_) := atom_fresh (fv_nom u `union` fv_nom (n_sub t1 y t2) `union` {{x}}) in
             n_sub (m_subst u x (swap y z t1)) z (m_subst u x t2).
 Proof.
@@ -2760,13 +2752,9 @@ Proof.
   - intro H; subst.
     unfold m_subst.
     simpl.
-    case (y == y).
-    -- intro H.
-       rewrite subst_size.
-       --- reflexivity.
-       ---  lia.
-    -- intro H.
-      contradiction.      
+    destruct(y == y).
+    -- reflexivity.
+    -- contradiction.      
   - intro Hneq.
     unfold m_subst.
     simpl.
@@ -2775,8 +2763,18 @@ Proof.
     -- intro Hneq'.
        destruct (atom_fresh (union (fv_nom u)
         (union (union (remove y (fv_nom t1)) (fv_nom t2)) (singleton x)))).
-       pose proof subst_size. rewrite H. rewrite (H _ _ _ t2). reflexivity.
-       { apply le_plus_r. } { rewrite swap_size_eq. apply le_plus_l. }
+       pose proof subst_size. 
+       rewrite swap_size_eq.
+       specialize (H (size t1 + size t2) u x (swap y x0 t1)).
+       rewrite H.
+       --- rewrite swap_size_eq.
+           pose proof subst_size. 
+           specialize (H0 (size t1 + size t2) u x t2).
+           rewrite H0.
+           ---- reflexivity.
+           ---- lia.
+       --- rewrite swap_size_eq.
+           lia.
 Qed. 
 
 Lemma pure_m_subst : forall t u x, pure u -> pure t -> pure (m_subst u x t).
@@ -2894,10 +2892,7 @@ Proof.
     -- rewrite subst_sub. case (y == x).
        --- intro Heq; subst. apply aeq_sub_same.
            ---- apply aeq_refl.
-           ---- apply IHn. apply le_S_n in SZ.
-                apply (Nat.le_trans (size t2) (size t1 + size t2) n).
-                ----- lia.
-                ----- assumption.
+           ---- apply aeq_refl.
        --- intro Hneq.
            simpl.
            destruct (atom_fresh
@@ -3098,14 +3093,7 @@ Proof.
     + intros. unfold m_subst; simpl. default_simp.
       -- apply aeq_sub_same.
          --- apply aeq_refl.
-         --- rewrite subst_size.
-             ---- apply IHn.
-                  ----- apply le_S_n in H.
-                        apply (le_trans (size t2) (size t1 + size t2) n).
-                        ------ lia.
-                        ------ assumption.
-                  ----- apply (notin_union_2 _ _ _ H0).
-             ---- lia.
+         --- apply aeq_refl.
       -- case (x1 == x0); intros; subst.
          --- apply aeq_sub_same.
              ---- rewrite swap_id.
