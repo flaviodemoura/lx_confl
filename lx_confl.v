@@ -17,6 +17,99 @@ Fixpoint P (t : n_sexp) := match t with
                            | n_app t1 t2 => n_app (P t1) (P t2)
                            | n_sub t1 x t2 => m_subst (P t2) x (P t1)
                            end.
+
+Lemma swap_var_in: forall x y z,  swap_var x y z = x \/ swap_var x y z = y \/  swap_var x y z = z.
+Proof.
+Admitted.
+
+Lemma swap_var_neq: forall x y z, x <> z -> y <> z -> swap_var x y z = z.
+Proof.  
+Admitted.
+
+Lemma aeq_swap_m_subst: forall t u x y z, x <> z ->  y <> z -> aeq (swap x y (m_subst u z t)) (m_subst (swap x y u) z (swap x y t)).
+Proof.
+  induction t using n_sexp_induction.
+  - intros u x' y z H1 H2.
+    unfold m_subst.
+    default_simp.
+    + apply aeq_refl.
+    + apply False_ind.
+      apply n.
+      simpl.
+      unfold swap_var.
+      destruct (x == x').
+      * symmetry in e.
+        contradiction.
+      * destruct (x == y).
+        ** symmetry in e.
+           contradiction.
+        ** reflexivity.
+    + apply False_ind.
+      pose proof swap_var_in.
+      specialize (H x' y x).
+      destruct H.
+      * symmetry in H.
+        contradiction.
+      * destruct H.
+        ** symmetry in H.
+           contradiction.
+        ** contradiction.
+  - intros u x y z' H1 H2.
+    unfold m_subst.
+   (* default_simp. alternativa
+    + admit.
+    + admit.
+    + admit.
+    + *)  
+    case (z == z').
+    + intro Heq; subst.
+      default_simp.
+      * rewrite <- e0.
+        apply aeq_refl.
+      * pose proof swap_var_neq.
+        specialize (H0 x y z').
+        apply False_ind.
+        apply n1.
+        symmetry.
+        apply H0; assumption.
+    + intro Hneq.
+      default_simp.
+      * pose proof swap_var_in.
+        specialize (H0 x y z).
+        destruct H0.
+        ** symmetry in H0.
+           contradiction.
+        ** destruct H0.
+           *** symmetry in H0.
+               contradiction.
+           *** contradiction.
+      * unfold swap_var.
+        default_simp.
+        ** case (y == x1).
+           *** intro Heq; subst.
+               apply aeq_abs_same.
+               unfold m_subst in H.
+               replace (size t) with (size (swap x x t)).
+               **** rewrite (swap_id _ x1).
+                 change (swap x1 x1 (swap x x1 t)) with (swap x x1 t).
+                 replace (swap x x1 t) with (swap x x1 (swap x x t)).
+                    ***** specialize (H t).
+                          apply H.
+                          ****** reflexivity.
+                          ****** assumption.
+                          ****** assumption.
+                   ***** rewrite swap_id.
+                         reflexivity.       
+               **** rewrite swap_id; reflexivity.
+           *** intro Hneq'.
+               apply aeq_abs_diff.
+               **** assumption.
+               ****
+               ****
+
+
+
+    
 (*
 Lemma aeq_swap_m_subst: forall t u x y, x <> y ->  x `notin` fv_nom u -> y `notin` fv_nom u -> y `notin` fv_nom t -> aeq (swap x y (m_subst u x t)) (m_subst u y (swap x y t)).
 Proof.
@@ -78,11 +171,30 @@ Proof.
                     apply swap_
                ****
 *)
-      
-Lemma subst_swap_reduction: forall u t x y z,
+
+Lemma eq_aeq: forall t u, t = u -> aeq t u.
+Proof.
+  intros t u H; rewrite H; apply aeq_refl.
+Qed.
+  
+Lemma subst_swap_reduction: forall t u x y z,
     aeq (swap x y (m_subst u z t)) (m_subst (swap x y u) (swap_var x y z) (swap x y t)).
 Proof.
-  Admitted.
+  induction t using n_sexp_induction.
+  - intros u x' y z.
+    unfold m_subst.
+    default_simp.
+    + apply aeq_refl.
+    + unfold swap_var in e.
+      default_simp.
+  - intros u x y z'.
+    case (z == z').
+    + intro Heq; subst.
+      unfold m_subst.
+      default_simp.
+      apply aeq_refl.
+    + Admitted.
+
 (*  intros. induction t.
   - unfold m_subst. simpl in *; unfold swap_var. default_simp.
   - unfold m_subst. simpl in *; unfold swap_var.
