@@ -20,11 +20,17 @@ Fixpoint P (t : n_sexp) := match t with
 
 Lemma swap_var_in: forall x y z,  swap_var x y z = x \/ swap_var x y z = y \/  swap_var x y z = z.
 Proof.
-Admitted.
+  intros x y z.
+  unfold swap_var.
+  default_simp.
+Qed.
 
 Lemma swap_var_neq: forall x y z, x <> z -> y <> z -> swap_var x y z = z.
-Proof.  
-Admitted.
+Proof.
+  intros x y z H1 H2.
+  unfold swap_var.
+  default_simp.
+Qed.
 
 Lemma aeq_swap_m_subst: forall t u x y z, x <> z ->  y <> z -> aeq (swap x y (m_subst u z t)) (m_subst (swap x y u) z (swap x y t)).
 Proof.
