@@ -2605,7 +2605,7 @@ Fixpoint subst_rec (n:nat) (t:n_sexp) (u :n_sexp) (x:atom)  : n_sexp :=
           | n_app t1 t2 =>
             n_app (subst_rec m t1 u x) (subst_rec m t2 u x)
           | n_sub t1 y t2 =>
-            if (x == y) then t
+            if (x == y) then n_sub t1 y (subst_rec m t2 u x)
             else
               (* rename to avoid capture *)
               let (z,_) :=
@@ -2657,13 +2657,21 @@ Proof.
        --- apply Nat.lt_le_trans with (S (size t1 + size t2)).
            ---- lia.
            ---- assumption.
-       --- rewrite swap_size_eq.
-           lia.
+       --- lia.
+    -- rewrite (IH n); try lia.
        --- rewrite (swap_size_eq x0 x1).
-           apply Peano.le_S_n in SZ.
+           symmetry.
+           rewrite <- (swap_size_eq x0 x1) at 2.    
+           apply IH.
+           ---- apply Nat.lt_le_trans with (S (size t1 + size t2)).
+                ----- lia.
+                ----- assumption.
+           ---- rewrite (swap_size_eq x0 x1).
+                lia.
+       --- rewrite (swap_size_eq x0 x1).
            apply le_trans with (size t1 + size t2).
            ---- lia.
-           ---- assumption.
+           ---- lia.
     -- rewrite (IH n); try lia.
        symmetry.
        apply IH.
@@ -2744,7 +2752,7 @@ Qed.
 
 Lemma subst_sub : forall u x y t1 t2,
     m_subst u x (n_sub t1 y t2) =
-       if (x == y) then (n_sub t1 y t2)
+       if (x == y) then (n_sub t1 y (m_subst u x t2))
        else let (z,_) := atom_fresh (fv_nom u `union` fv_nom (n_sub t1 y t2) `union` {{x}}) in
             n_sub (m_subst u x (swap y z t1)) z (m_subst u x t2).
 Proof.
@@ -2752,9 +2760,13 @@ Proof.
   - intro H; subst.
     unfold m_subst.
     simpl.
-    destruct(y == y).
-    -- reflexivity.
-    -- contradiction.      
+    case (y == y).
+    -- intro H.
+       rewrite subst_size.
+       --- reflexivity.
+       ---  lia.
+    -- intro H.
+      contradiction.      
   - intro Hneq.
     unfold m_subst.
     simpl.
@@ -2892,7 +2904,10 @@ Proof.
     -- rewrite subst_sub. case (y == x).
        --- intro Heq; subst. apply aeq_sub_same.
            ---- apply aeq_refl.
-           ---- apply aeq_refl.
+           ---- apply IHn. apply le_S_n in SZ.
+                apply (Nat.le_trans (size t2) (size t1 + size t2) n).
+                ----- lia.
+                ----- assumption.
        --- intro Hneq.
            simpl.
            destruct (atom_fresh
@@ -3093,7 +3108,14 @@ Proof.
     + intros. unfold m_subst; simpl. default_simp.
       -- apply aeq_sub_same.
          --- apply aeq_refl.
-         --- apply aeq_refl.
+         --- rewrite subst_size.
+             ---- apply IHn.
+                  ----- apply le_S_n in H.
+                        apply (le_trans (size t2) (size t1 + size t2) n).
+                        ------ lia.
+                        ------ assumption.
+                  ----- apply (notin_union_2 _ _ _ H0).
+             ---- lia.
       -- case (x1 == x0); intros; subst.
          --- apply aeq_sub_same.
              ---- rewrite swap_id.
@@ -3201,4 +3223,70 @@ Proof.
   - apply aeq_sub_same.
     + apply aeq_refl.
     + apply aeq_sub_diff; assumption.
+Qed.
+
+Lemma aeq_swap0: forall x y t, x `notin` fv_nom t -> y `notin` fv_nom t -> 
+  aeq t (swap x y t).
+Proof.
+  induction t;intros.
+  - simpl. unfold swap_var. apply notin_singleton_1 in H. apply notin_singleton_1 in H0.
+    default_simp.
+  - simpl in *. unfold swap_var. case (x0 == x);intros.
+    -- rewrite e. case (x == y);intros.
+       --- rewrite e0. rewrite swap_id. apply aeq_refl.
+       --- apply aeq_abs_diff. assumption.
+           ---- apply fv_nom_swap.
+                apply (diff_remove_2 y x0).
+                * rewrite e. default_simp.
+                * assumption.
+           ---- rewrite swap_symmetric. rewrite swap_involutive. apply aeq_refl.
+    -- case (x0 == y);intros.
+       --- rewrite e. apply aeq_abs_diff.
+           ---- rewrite e in n. assumption.
+           ---- rewrite swap_symmetric.
+                apply fv_nom_swap. apply (diff_remove_2 x x0).
+                * default_simp.
+                * assumption.
+           ---- rewrite swap_involutive. apply aeq_refl.
+       --- apply aeq_abs_same. apply diff_remove_2 in H.
+           ---- apply diff_remove_2 in H0.
+                ----- apply (IHt H H0).
+                ----- default_simp.
+           ---- default_simp.
+  - simpl in *. apply aeq_app.
+    -- apply notin_union_1 in H. apply notin_union_1 in H0.
+       apply (IHt1 H H0).
+    -- apply notin_union_2 in H. apply notin_union_2 in H0.
+       apply (IHt2 H H0).
+  - simpl in *. unfold swap_var. case (x0 == x);intros.
+    -- rewrite e. case (x == y);intros.
+       --- rewrite e0. rewrite swap_id. rewrite swap_id.
+           apply aeq_refl.
+       --- apply aeq_sub_diff.
+           ---- apply notin_union_2 in H. apply notin_union_2 in H0.
+                apply (IHt2 H H0).
+           ---- assumption.
+           ---- apply fv_nom_swap. apply (diff_remove_2 y x0).
+                * rewrite e. default_simp.
+                * apply notin_union_1 in H0. assumption.
+           ---- rewrite swap_symmetric. rewrite swap_involutive.
+                apply aeq_refl.
+    -- case (x0 == y);intros.
+       --- apply aeq_sub_diff.
+           ---- apply notin_union_2 in H. apply notin_union_2 in H0.
+                apply (IHt2 H H0).
+           ---- assumption.
+           ---- rewrite e. rewrite swap_symmetric. apply fv_nom_swap. apply (diff_remove_2 x x0).
+                * default_simp.
+                * apply notin_union_1 in H. assumption.
+           ---- rewrite e. rewrite swap_involutive. apply aeq_refl.
+       --- apply aeq_sub_same.
+           ---- apply notin_union_1 in H. apply notin_union_1 in H0.
+                apply (diff_remove_2 _ x0) in H.
+                ----- apply (diff_remove_2 _ x0) in H0.
+                      * apply (IHt1 H H0).
+                      * default_simp.
+                ----- default_simp.
+           ---- apply notin_union_2 in H. apply notin_union_2 in H0.
+                apply (IHt2 H H0).
 Qed.
