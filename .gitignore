@@ -1,3 +1,11 @@
 *.vo
 *.vio
 *.glob
+/*.aux
+*.aux
+*.vok
+*.vos
+*.d
+*.mk
+*.conf
+/.lia.cache
