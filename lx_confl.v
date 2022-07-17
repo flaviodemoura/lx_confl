@@ -1144,7 +1144,8 @@ Proof.
                apply n; reflexivity.
         ** assumption.
         ** assumption.
-      * Admitted.
+      * (* ver anotações: 3 casos precisam ser considerados. *)
+Admitted.
         
 Lemma subst_swap_reduction: forall t u x y z,
     aeq (swap x y (m_subst u z t)) (m_subst (swap x y u) (swap_var x y z) (swap x y t)).
