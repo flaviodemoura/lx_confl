@@ -1091,7 +1091,7 @@ Proof.
   - apply aeq_m_subst_2; assumption.
   - apply aeq_m_subst_1; assumption.
 Qed.
-
+(*
 Lemma aeq_swap_m_subst: forall t u x y z, x <> z ->  y <> z -> aeq (swap x y (m_subst u z t)) (m_subst (swap x y u) z (swap x y t)).
 Proof.
   (** Temos dois casos a analisar: 
@@ -1145,7 +1145,92 @@ Proof.
         ** assumption.
         ** assumption.
       * (* ver anotações: 3 casos precisam ser considerados. *)
-Admitted.
+Admitted. *)
+
+Lemma swap_var_eq: forall x y z w, swap_var x y z = swap_var x y w <-> z = w.
+Proof.
+  intros x y z w; split.
+  - unfold swap_var.
+    default_simp.
+  - intro H; subst.
+    reflexivity.
+Qed.
+    
+Lemma aeq_swap_m_subst: forall t u x y z, aeq (swap x y (m_subst u z t)) (m_subst (swap x y u) (swap_var  x y z) (swap x y t)).
+Proof.
+  (** Temos dois casos a analisar: 
+       1. x = y, i.e. o swap é trivial: *)
+  intros t u x y z.
+  case (x == y).
+  - intros Heq; subst.
+    repeat rewrite swap_id.
+    rewrite swap_var_id.
+    apply aeq_refl.
+    (** 2. x <> y: *)
+  - generalize dependent z.
+    generalize dependent y.
+    generalize dependent x.
+    generalize dependent u.
+    induction t using n_sexp_induction.
+    + intros u x' y z H.
+      unfold m_subst.
+      simpl.
+      unfold swap_var.
+      default_simp; apply aeq_refl.
+    + intros u x y z' H'.
+      simpl.
+      unfold m_subst in *.
+      simpl.
+      default_simp.
+      * apply aeq_refl.
+      * apply False_ind.
+        apply swap_var_eq in e.
+        contradiction.
+      * clear n2.
+        case (x1 == (swap_var x y x0)).
+        ** intro Heq; subst.
+           apply aeq_abs_same.
+           rewrite <- (swap_size_eq z x0 t).
+           replace (swap (swap_var x y z) (swap_var x y x0) (swap x y t)) with (swap x y (swap z x0 t)).
+           replace (swap x y t) with 
+           (swap x y (swap z x0 t)).
+           *** apply H.
+               **** reflexivity.
+               **** assumption.
+           *** Admitted.
+(*        **
+        
+        pose proof swap_var_in.
+        specialize (H x' y x).
+        destruct H.
+        ** symmetry in H.
+           contradiction.
+        ** destruct H.
+           *** symmetry in H.
+               contradiction.
+           *** contradiction.
+    + intros u x y z' H1 H2 H3.
+      pose proof subst_abs.
+      specialize (H0 u z' z t).
+      rewrite H0; clear H0.
+      destruct (z' == z).
+      * simpl.
+        subst.
+        pose proof swap_var_neq.
+        specialize (H0 x y z).
+        rewrite H0.
+        ** pose proof subst_abs.
+           specialize (H4 (swap x y u) z z (swap x y t)).
+           destruct (z == z).
+           *** rewrite H4.
+               apply aeq_refl.
+           *** apply False_ind.
+               apply n; reflexivity.
+        ** assumption.
+        ** assumption.
+      * (* ver anotações: 3 casos precisam ser considerados. *)
+Admitted. *)
+
         
 Lemma subst_swap_reduction: forall t u x y z,
     aeq (swap x y (m_subst u z t)) (m_subst (swap x y u) (swap_var x y z) (swap x y t)).

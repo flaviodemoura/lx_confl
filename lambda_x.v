@@ -2788,7 +2788,7 @@ Proof.
        --- rewrite swap_size_eq.
            lia.
 Qed. 
-
+  
 Lemma pure_m_subst : forall t u x, pure u -> pure t -> pure (m_subst u x t).
 Proof.
   induction t using n_sexp_induction.
