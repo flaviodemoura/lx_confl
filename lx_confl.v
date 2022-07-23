@@ -1192,12 +1192,20 @@ Proof.
            apply aeq_abs_same.
            rewrite <- (swap_size_eq z x0 t).
            replace (swap (swap_var x y z) (swap_var x y x0) (swap x y t)) with (swap x y (swap z x0 t)).
-           replace (swap x y t) with 
-           (swap x y (swap z x0 t)).
+           replace (size (swap x y t)) with 
+           (size (swap x y (swap z x0 t))).
            *** apply H.
                **** reflexivity.
                **** assumption.
+           *** repeat rewrite swap_size_eq.
+               reflexivity.
+           *** apply swap_equivariance.
+        ** intro H''.
+           apply aeq_abs_diff.
+           *** intro Hneq; subst.
+               contradiction.               
            *** Admitted.
+
 (*        **
         
         pose proof swap_var_in.
