@@ -4,6 +4,14 @@
 
 Require Export Lia.
 Require Export Metalib.Metatheory.
+Require Export Metalib.LibLNgen.
+
+Lemma aux_not_equal : forall (x:atom) (y:atom),
+    x <> y -> y <> x.
+Proof.
+  intros x y H. unfold not in *. intros H0. apply H.
+  symmetry. assumption.
+Qed.
 
 (** ** A nominal representation of lambda_x terms *)
 
@@ -18,17 +26,6 @@ Inductive pure : n_sexp -> Prop :=
  | pure_app : forall e1 e2, pure e1 -> pure e2 -> pure (n_app e1 e2) 
  | pure_abs : forall x e1, pure e1 -> pure (n_abs x e1).
 
-(** For example, we can encode the expression [(\X.Y X)] as below.  *)
-
-Definition demo_rep1 := n_abs X (n_app (n_var Y) (n_var X)).
-
-(** For example, we can encode the expression [(\Z.Y Z)] as below.  *)
-
-Definition demo_rep2 := n_abs Z (n_app (n_var Y) (n_var Z)).
-
-
-(** As usual, the free variable function needs to remove the
-    bound variable in the [n_abs] case. *)
 Fixpoint fv_nom (n : n_sexp) : atoms :=
   match n with
   | n_var x => {{x}}
@@ -36,16 +33,6 @@ Fixpoint fv_nom (n : n_sexp) : atoms :=
   | n_app t1 t2 => fv_nom t1 `union` fv_nom t2
   | n_sub t1 x t2 => (remove x (fv_nom t1)) `union` fv_nom t2
   end.
-
-(** The tactics for reasoning about lists and sets of atoms are useful here
-    too. *)
-
-Example fv_nom_rep1 : fv_nom demo_rep1 [=] {{ Y }}.
-Proof.
-  pose proof YneX.
-  simpl.
-  fsetdec.
-Qed.
 
 Lemma notin_singleton_is_false: forall x,
     x `notin` (singleton x) -> False.
@@ -68,11 +55,6 @@ Proof.
   intros. repeat rewrite remove_singleton_empty. reflexivity.
 Qed.
 
-(** What makes this a *nominal* representation is that our
-    operations are based on the following swapping function for
-    names.  Note that this operation is symmetric: [x] becomes
-    [y] and [y] becomes [x]. *)
-
 Definition swap_var (x:atom) (y:atom) (z:atom) :=
   if (z == x) then y else if (z == y) then x else z.
 
@@ -94,16 +76,6 @@ Proof.
   - reflexivity.
 Qed.
    
-
-(** The main insight of nominal representations is that we can
-    rename variables, without capture, using a simple
-    structural induction. Note how in the [n_abs] case we swap
-    all variables, both bound and free.
-    For example:
-      (swap x y) (\z. (x y)) = \z. (y x))
-      (swap x y) (\x. x) = \y.y
-      (swap x y) (\y. x) = \x.y
-*)
 Fixpoint swap (x:atom) (y:atom) (t:n_sexp) : n_sexp :=
   match t with
   | n_var z     => n_var (swap_var x y z)
@@ -124,54 +96,11 @@ Proof.
   - inversion H.
 Qed.  
 
-
-(** Because swapping is a simple, structurally recursive
-    function, it is highly automatable using the [default_simp]
-    tactic from LNgen library.
-    This tactic "simplifies" goals using a combination of
-    common proof steps, including case analysis of all disjoint
-    sums in the goal. Because atom equality returns a sumbool,
-    this makes this tactic useful for reasoning by cases about
-    atoms.
-    For more information about the [default_simp] tactic, see
-    [metalib/LibDefaultSimp.v].
-    WARNING: this tactic is not always safe. It's a power tool
-    and can put your proof in an irrecoverable state. *)
-
-Example swap1 : forall x y z, x <> z -> y <> z ->
-    swap x y (n_abs z (n_app (n_var x)(n_var y))) = n_abs z (n_app (n_var y) (n_var x)).
-Proof.
-  intros. simpl; unfold swap_var; default_simp.
-Qed.
-
-Example swap2 : forall x y, x <> y ->
-    swap x y (n_abs x (n_var x)) = n_abs y (n_var y).
-Proof.
-  intros. simpl; unfold swap_var; default_simp.
-Qed.
-
-Example swap3 : forall x y, x <> y ->
-     swap x y (n_abs y (n_var x)) = n_abs x (n_var y).
-Proof.
-  intros. simpl; unfold swap_var; default_simp.
-Qed.
-
-(*************************************************************)
-(** ** Properties about swapping                             *)
-(*************************************************************)
-
-
-(** Now let's look at some simple properties of swapping. *)
-
 Lemma swap_id : forall t x,
     swap x x t = t.
 Proof.
   induction t; simpl; unfold swap_var;  default_simp.
 Qed.
-
-(** Demo: We will need the next two properties later in the tutorial,
-    so we show that even though there are many cases to consider,
-    [default_simp] can find these proofs. *)
 
 Lemma fv_nom_swap : forall z y t,
   z `notin` fv_nom t ->
@@ -447,15 +376,6 @@ Proof.
            rewrite remove_symmetric. reflexivity.        
 Qed.
 
-(*************************************************************)
-(** ** Exercises                                             *)
-(*************************************************************)
-
-(** *** Recommended Exercise: [swap] properties
-    Prove the following properties about swapping, either
-    explicitly (by destructing [x == y]) or automatically
-    (using [default_simp]).  *)
-
 Lemma swap_symmetric : forall t x y,
     swap x y t = swap y x t.
 Proof.
@@ -482,15 +402,6 @@ Proof.
   - intros. simpl. unfold swap_var. default_simp.
   - intros. simpl. unfold swap_var. default_simp.    
 Qed.
-
-(** *** Challenge exercises: equivariance
-    Equivariance is the property that all functions and
-    relations are preserved under swapping.  Show that this
-    holds for the various functions and relations below.
-    (Hint: [default_simp] will be slow and sometimes
-    ineffective on *some* of these properties. If it puts
-    you in an dead-end state, you'll need to prove the
-    lemm another way. *)
 
 Lemma swap_var_equivariance : forall v x y z w,
     swap_var x y (swap_var z w v) =
@@ -560,8 +471,6 @@ Proof.
        --- assumption.
        --- assumption.
 Qed.
-
-(* HINT: For a helpful fact about sets of atoms, check AtomSetImpl.union_1 *)
 
 Lemma in_fv_nom_equivariance : forall x y x0 t,
   x0 `in` fv_nom t ->
@@ -832,18 +741,6 @@ Proof.
                     * right. assumption.
 Qed.
 
-(*************************************************************)
-(** * Size based reasoning                                   *)
-(*************************************************************)
-
-
-(** Some properties about nominal terms require calling the
-    induction hypothesis not on a direct subterm, but on one
-    that has first had a swapping applied to it.
-    However, swapping names does not change the size of terms,
-    so that means we can prove such properties by induction on
-    that size.  *)
-
 Fixpoint num_occ x t : nat :=
   match t with
   | n_var y => if(x == y) then 1 else 0
@@ -864,14 +761,6 @@ Proof.
   induction t; simpl; unfold swap_var; default_simp.
 Qed.
     
-Fixpoint size' (t : n_sexp) : nat :=
-  match t with
-  | n_var x => 1
-  | n_abs x t => 1 + size' t
-  | n_app t1 t2 => 1 + size' t1 + size' t2
-  | n_sub t1 x t2 => size' t1 + ((num_occ x t1) * ((size' t2) - 1))
-  end.  
-
 Fixpoint size (t : n_sexp) : nat :=
   match t with
   | n_var x => 1
@@ -961,21 +850,15 @@ Qed.
 Hint Rewrite swap_size_eq.
 
 
-(** We define the "alpha-equivalence" relation that declares
-    when two nominal terms are equivalent (up to renaming of
-    bound variables).
-    Note the two different rules for [n_abs]: either the
-    binders are the same and we can directly compare the
-    bodies, or the binders differ, but we can swap one side to
-    make it look like the other.  *)
+(** We define the "alpha-equivalence" relation that declares when two nominal terms are equivalent (up to renaming of bound variables). Note the two different rules for [n_abs]: either the binders are the same and we can directly compare the bodies, or the binders differ and we use cofinite quantification.  *)
 
 Inductive aeq : n_sexp -> n_sexp -> Prop :=
  | aeq_var : forall x,
      aeq (n_var x) (n_var x)
  | aeq_abs_same : forall x t1 t2,
      aeq t1 t2 -> aeq (n_abs x t1) (n_abs x t2)
- | aeq_abs_diff : forall x y t1 t2,
-     x <> y -> x `notin` fv_nom t2 ->
+ | aeq_abs_diff : forall L x y t1 t2,
+     x <> y -> forall x, x `notin` L ->
      aeq t1 (swap y x t2) ->
      aeq (n_abs x t1) (n_abs y t2)
  | aeq_app : forall t1 t2 t1' t2',
@@ -984,19 +867,27 @@ Inductive aeq : n_sexp -> n_sexp -> Prop :=
  | aeq_sub_same : forall t1 t2 t1' t2' x,
      aeq t1 t1' -> aeq t2 t2' ->
      aeq (n_sub t1 x t2) (n_sub t1' x t2')
- | aeq_sub_diff : forall t1 t2 t1' t2' x y,
-     aeq t2 t2' -> x <> y -> x `notin` fv_nom t1' ->
+ | aeq_sub_diff : forall L t1 t2 t1' t2' x y,
+     aeq t2 t2' -> x <> y -> x `notin` L ->
      aeq t1 (swap y x t1') ->
      aeq (n_sub t1 x t2) (n_sub t1' y t2').
 
 Hint Constructors aeq.
 
-
-Example aeq1 : forall x y, x <> y -> aeq (n_abs x (n_var x)) (n_abs y (n_var y)).
+Example aeq1 : forall x y, aeq (n_abs x (n_var x)) (n_abs y (n_var y)).
 Proof.
-  intros.
-  eapply aeq_abs_diff; auto.
-  simpl; unfold swap_var; default_simp.
+  intros x y.
+  case (x == y).
+  - intro Eq; subst.
+    apply aeq_abs_same.
+    apply aeq_var.
+  - intro Neq.
+    apply aeq_abs_diff with {{y}} x.
+    + assumption.
+    + apply notin_singleton_2.
+      intro H. symmetry in H. contradiction.
+    + simpl. unfold swap_var.
+      default_simp.
 Qed.
 
 Lemma aeq_var_2 : forall x y, aeq (n_var x) (n_var y) -> x = y.
