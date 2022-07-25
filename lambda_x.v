@@ -1,11 +1,48 @@
-(** * A nominal representation of the lambda_x calculus. *)
+(** A nominal representation of the lambda_x calculus.
+    This version looks a lot like we expect a representation of
+    the lambda calculus to look like. Unlike the LN version,
+    the syntax does not distinguish between bound and free
+    variables and abstractions include the name of binding
+    variables.  *)
 
-(** * Imports. *)
+(*************************************************************)
+(** * Imports                                                *)
+(*************************************************************)
 
 Require Export Lia.
+
+(** We will use the [atom] type from the metatheory library to
+    represent variable names. *)
 Require Export Metalib.Metatheory.
 
-(** * A nominal representation of lambda_x terms. *)
+(** Although we are not using LNgen, some of the tactics from
+    its library are useful for automating reasoning about
+    names (i.e. atoms). *)
+Require Export Metalib.LibLNgen.
+
+(* Require Import Nominal. *)
+
+(** Some fresh atoms *)
+Notation X := (fresh nil).
+Notation Y := (fresh (X :: nil)).
+Notation Z := (fresh (X :: Y :: nil)).
+
+Lemma YneX : Y <> X.
+Proof.
+  pose proof Atom.fresh_not_in (X :: nil) as H.
+  apply elim_not_In_cons in H.
+  auto.
+Qed.
+
+Lemma aux_not_equal : forall (x:atom) (y:atom),
+    x <> y -> y <> x.
+Proof.
+  intros x y H. unfold not in *. intros H0. apply H.
+  symmetry. assumption.
+Qed.
+(*************************************************************)
+(** * A nominal representation of lambda_x terms             *)
+(*************************************************************)
 
 Inductive n_sexp : Set :=
  | n_var (x:atom)
