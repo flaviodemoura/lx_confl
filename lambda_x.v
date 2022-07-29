@@ -96,22 +96,19 @@ Proof.
   - inversion H.
 Qed.  
 
-Lemma swap_id : forall t x,
-    swap x x t = t.
+Lemma swap_id : forall t x, swap x x t = t.
 Proof.
   induction t; simpl; unfold swap_var;  default_simp.
 Qed.
 
 Lemma fv_nom_swap : forall z y t,
-  z `notin` fv_nom t ->
-  y `notin` fv_nom (swap y z t).
+  z `notin` fv_nom t -> y `notin` fv_nom (swap y z t).
 Proof.
   induction t; intros; simpl; unfold swap_var; default_simp.
 Qed.
 
 Lemma fv_nom_swap_2 : forall z y t,
-  z `notin` fv_nom (swap y z t) ->
-  y `notin` fv_nom t.
+  z `notin` fv_nom (swap y z t) -> y `notin` fv_nom t.
 Proof.
   intros. induction t; simpl in *; unfold swap_var in H; default_simp.
 Qed.
@@ -131,8 +128,7 @@ Proof.
   apply AtomSetProperties.remove_equal in H. assumption.
 Qed.
 
-Lemma double_remove: forall x s,
-           remove x (remove x s) [=] remove x s.
+Lemma double_remove: forall x s, remove x (remove x s) [=] remove x s.
 Proof.
   intros. pose proof AtomSetProperties.remove_equal.
   assert (x `notin` remove x s). {
@@ -141,8 +137,7 @@ Proof.
   specialize (H (remove x s) x). apply H in H0. assumption.
 Qed.
 
-Lemma remove_empty: forall x,
-    remove x empty [=] empty.
+Lemma remove_empty: forall x, remove x empty [=] empty.
 Proof.
   intros. pose proof notin_empty. specialize (H x).
   apply AtomSetProperties.remove_equal in H.
@@ -255,7 +250,9 @@ Proof.
        --- assumption.
 Qed.
 
-Lemma fv_nom_swap_remove: forall t x y y0, x <> y ->  x <> y0 -> x `notin` fv_nom (swap y0 y t) -> x `notin` fv_nom t.
+Lemma fv_nom_swap_remove: forall t x y y0, x <> y ->  x <> y0 ->
+                                           x `notin` fv_nom (swap y0 y t) ->
+                                           x `notin` fv_nom t.
 Proof.
   intros. induction t.
   - simpl. simpl in H1. unfold swap_var in H1. default_simp.
@@ -264,7 +261,9 @@ Proof.
   - simpl. simpl in H1. unfold swap_var in H1. default_simp.
 Qed.
 
-Lemma fv_nom_remove_swap: forall t x y y0, x <> y ->  x <> y0 -> x `notin` fv_nom t -> x `notin` fv_nom (swap y0 y t).
+Lemma fv_nom_remove_swap: forall t x y y0, x <> y ->  x <> y0 ->
+                                           x `notin` fv_nom t ->
+                                           x `notin` fv_nom (swap y0 y t).
   Proof.
   intros. induction t.
   - simpl. simpl in H1. unfold swap_var. default_simp.
@@ -287,6 +286,8 @@ Proof.
   induction n; intros; simpl; unfold swap_var; default_simp.
 Qed.
 
+
+(** Is x `notin` fv_nom t really necessary? Yes, consider the case where x <> y and t = x. *)
 Lemma remove_fv_swap: forall x y t, x `notin` fv_nom t -> remove x (fv_nom (swap y x t)) [=] remove y (fv_nom t).
 Proof.
   intros x y t. induction t.
@@ -375,6 +376,30 @@ Proof.
            rewrite H1; rewrite H2; rewrite H3.
            rewrite remove_symmetric. reflexivity.        
 Qed.
+
+Lemma remove_fv_swap': forall x y t, exists L, x `notin` L -> remove x (fv_nom (swap y x t)) [=] remove y (fv_nom t).
+Proof.
+  intros x y t. exists (fv_nom t).
+  apply remove_fv_swap.
+Qed.  
+
+(* revisit remove_fv_swap's proof
+
+ intro H.
+  generalize dependent y. generalize dependent x. induction t.
+  - intros x' H y.
+    simpl. unfold swap_var. destruct (x == y).
+    + subst. repeat rewrite remove_singleton_empty.  reflexivity.
+    + simpl in H. apply notin_singleton_1' in H.
+      destruct (x == x').
+      * contradiction.
+      * apply remove_singleton_neq in n.
+        apply remove_singleton_neq in n0.
+        rewrite n; rewrite n0; reflexivity.
+  - intros x' H y. simpl in *. unfold swap_var. destruct (x == y).
+    + subst. repeat rewrite double_remove. apply IHt.
+    +
+*)
 
 Lemma swap_symmetric : forall t x y,
     swap x y t = swap y x t.
@@ -855,58 +880,56 @@ Hint Rewrite swap_size_eq.
 Inductive aeq : n_sexp -> n_sexp -> Prop :=
  | aeq_var : forall x,
      aeq (n_var x) (n_var x)
- | aeq_abs_same : forall x t1 t2,
-     aeq t1 t2 -> aeq (n_abs x t1) (n_abs x t2)
- | aeq_abs_diff : forall L x y t1 t2,
-     x <> y -> forall x, x `notin` L ->
-     aeq t1 (swap y x t2) ->
+ | aeq_abs : forall L t1 t2 y x,
+     x `notin` L -> aeq t1 (swap y x t2) ->
      aeq (n_abs x t1) (n_abs y t2)
  | aeq_app : forall t1 t2 t1' t2',
      aeq t1 t1' -> aeq t2 t2' ->
      aeq (n_app t1 t2) (n_app t1' t2')
- | aeq_sub_same : forall t1 t2 t1' t2' x,
-     aeq t1 t1' -> aeq t2 t2' ->
-     aeq (n_sub t1 x t2) (n_sub t1' x t2')
- | aeq_sub_diff : forall L t1 t2 t1' t2' x y,
-     aeq t2 t2' -> x <> y -> x `notin` L ->
+ | aeq_sub : forall L t1 t2 t1' t2' y x,
+     aeq t2 t2' -> x `notin` L ->
      aeq t1 (swap y x t1') ->
      aeq (n_sub t1 x t2) (n_sub t1' y t2').
 
-Hint Constructors aeq.
+#[export] Hint Constructors aeq.
 
 Example aeq1 : forall x y, aeq (n_abs x (n_var x)) (n_abs y (n_var y)).
 Proof.
   intros x y.
   case (x == y).
-  - intro Eq; subst.
-    apply aeq_abs_same.
-    apply aeq_var.
-  - intro Neq.
-    apply aeq_abs_diff with {{y}} x.
-    + assumption.
-    + apply notin_singleton_2.
-      intro H. symmetry in H. contradiction.
+  - intro Eq; subst. apply aeq_abs with {}.
+    + auto.
+    + rewrite swap_id.  apply aeq_var.
+  - intro Neq. apply aeq_abs with {}.
+    + auto.
     + simpl. unfold swap_var.
-      default_simp.
+      destruct (y == y).
+      * apply aeq_var.
+      * apply False_ind.
+        apply n.
+        reflexivity.
 Qed.
 
 Lemma aeq_var_2 : forall x y, aeq (n_var x) (n_var y) -> x = y.
 Proof.
-  intros. inversion H; subst. reflexivity.
+  intros x y H. inversion H; subst. reflexivity.
 Qed.
 
 Lemma aeq_fv_nom:forall t1 t2, aeq t1 t2 -> fv_nom t1 [=] fv_nom t2.
 Proof.
-  intros. induction H.
+  intros t1 t2 H. induction H.
   - reflexivity.
-  - simpl. rewrite IHaeq. reflexivity.
-  - simpl. inversion H1;subst; rewrite IHaeq; apply remove_fv_swap; assumption.
+  - Admitted.
+(*    simpl. rewrite IHaeq. pose proof remove_fv_swap' as H'.
+    specialize (H' x y t2).
+    apply H in H'. assumption.
   - simpl. rewrite IHaeq1; rewrite IHaeq2. reflexivity.
   - simpl. rewrite IHaeq1; rewrite IHaeq2. reflexivity.
   - simpl. pose proof remove_fv_swap.
     specialize (H3 x y t1'). apply H3 in H1.
     inversion H2; subst; rewrite IHaeq1; rewrite IHaeq2; rewrite H1; reflexivity.
 Qed.  
+ *)
 
 Lemma aeq_size: forall t1 t2, aeq t1 t2 -> size t1 = size t2.
 Proof.
