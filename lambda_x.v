@@ -2,8 +2,20 @@
 
 (** * Imports. *)
 
-Require Export Lia.
+Require Export Arith Lia.
 Require Export Metalib.Metatheory.
+Require Export Metalib.LibDefaultSimp.
+Require Export Metalib.LibLNgen.
+
+Lemma aux_not_equal : forall (x:atom) (y:atom),
+    x <> y -> y <> x.
+Proof.
+  intros. unfold not. intros. unfold not in H.
+  assert (x = y). {
+    rewrite H0. reflexivity.
+  }
+  contradiction.
+Qed.  
 
 (** * A nominal representation of lambda_x terms. *)
 
@@ -18,15 +30,6 @@ Inductive pure : n_sexp -> Prop :=
  | pure_app : forall e1 e2, pure e1 -> pure e2 -> pure (n_app e1 e2) 
  | pure_abs : forall x e1, pure e1 -> pure (n_abs x e1).
 
-(** For example, we can encode the expression [(\X.Y X)] as below.  *)
-
-Definition demo_rep1 := n_abs X (n_app (n_var Y) (n_var X)).
-
-(** For example, we can encode the expression [(\Z.Y Z)] as below.  *)
-
-Definition demo_rep2 := n_abs Z (n_app (n_var Y) (n_var Z)).
-
-
 (** As usual, the free variable function needs to remove the
     bound variable in the [n_abs] case. *)
 Fixpoint fv_nom (n : n_sexp) : atoms :=
@@ -36,16 +39,6 @@ Fixpoint fv_nom (n : n_sexp) : atoms :=
   | n_app t1 t2 => fv_nom t1 `union` fv_nom t2
   | n_sub t1 x t2 => (remove x (fv_nom t1)) `union` fv_nom t2
   end.
-
-(** The tactics for reasoning about lists and sets of atoms are useful here
-    too. *)
-
-Example fv_nom_rep1 : fv_nom demo_rep1 [=] {{ Y }}.
-Proof.
-  pose proof YneX.
-  simpl.
-  fsetdec.
-Qed.
 
 Lemma notin_singleton_is_false: forall x,
     x `notin` (singleton x) -> False.
@@ -2800,21 +2793,20 @@ Qed.
 (* Não é possível provar esse lema porque ele não é correto,
    pois se não existirem y em t não ocorrera a substituição
    por u e as variáveis livres de u não estarão no conjunto
-   de variáveis livres*)
+   de variáveis livres
 
-(*
-Lemma fv_nom_abs_subst_aux: forall t u y,
-    fv_nom (subst_rec (size t) t u y) [=] (remove y (fv_nom t)) `union` (fv_nom u).
+   Lemma fv_nom_abs_subst_aux: forall t u y,
+    fv_nom (subst_rec (size t) t u y) [=] 
+    (remove y (fv_nom t)) `union` (fv_nom u).
+
+  mas podemos provar o seguinte: *)
+
+Lemma fv_nom_subst_subset: forall t u x, fv_nom (m_subst u x t) [<=] (remove x (fv_nom t)) `union` (fv_nom u). 
 Proof.
-  intros. induction t.
-  - simpl subst_rec. destruct (y == x).
-    -- subst.
-       rewrite remove_singleton_empty.
-       symmetry.
-       apply AtomSetProperties.empty_union_1.
-       apply AtomSetImpl.empty_1.
-    -- Admitted.
-*)
+  induction t using n_sexp_induction.
+  - intros u x'. unfold m_subst.
+    simpl. destruct (x' == x).
+    +  Admitted.
 
 (** ** Challenge Exercise [m_subst properties]
     Now show the following property by induction on the size of terms. *)

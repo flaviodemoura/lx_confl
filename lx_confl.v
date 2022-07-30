@@ -1156,11 +1156,70 @@ Proof.
     reflexivity.
 Qed.
     
-Lemma aeq_swap_m_subst: forall t u x y z, aeq (swap x y (m_subst u z t)) (m_subst (swap x y u) (swap_var  x y z) (swap x y t)).
+Lemma aeq_swap_m_subst: forall t u x y z, aeq (swap x y (m_subst u z t)) (m_subst (swap x y u) (swap_var x y z) (swap x y t)).
 Proof.
-  (** Temos dois casos a analisar: 
-       1. x = y, i.e. o swap é trivial: *)
-  intros t u x y z.
+  induction t using n_sexp_induction.
+  - intros u x' y z. unfold m_subst. simpl.
+    destruct (z == x).
+    + subst.
+      destruct (swap_var x' y x == swap_var x' y x).
+      * apply aeq_refl.
+      * apply False_ind.
+        apply n.
+        reflexivity.        
+    + destruct (swap_var x' y z == swap_var x' y x).
+      * apply swap_var_eq in e. contradiction.
+      * simpl. apply aeq_var.
+  - intros u x y z'. unfold m_subst in *. default_simp.
+    + apply aeq_refl.
+    + apply swap_var_eq in e.
+      contradiction.
+    + case ((swap_var x y x0) == x1).
+      * intro Eq. rewrite Eq.
+        apply aeq_abs_same.
+        replace (size t) with (size (swap z x0 t)).
+        ** replace (size (swap x y t)) with (size (swap (swap_var x y z) x1 (swap x y t))).
+           *** rewrite <- Eq.
+               replace (swap (swap_var x y z) (swap_var x y x0) (swap x y t)) with (swap x y (swap z x0 t)).
+               **** apply H. reflexivity.
+               **** apply swap_equivariance.
+           *** repeat rewrite swap_size_eq. reflexivity.
+        ** apply swap_size_eq.
+      * intro Neq. apply aeq_abs_diff.
+           *** assumption.
+           *** replace (size (swap x y t)) with (size (swap (swap_var x y z) x1 (swap x y t))).
+               **** pose proof fv_nom_subst_subset as Hset.
+                    unfold m_subst in Hset.
+                    specialize (Hset (swap (swap_var x y z) x1 (swap x y t)) (swap x y u) (swap_var x y z')).
+                    rewrite Hset.
+                    pose proof n as H'.
+                    apply notin_union_1 in n.
+                    apply notin_union_2 in H'.
+                    pose proof H' as H''.
+                    apply notin_union_1 in H'.
+                    apply notin_union_2 in H''.
+                    apply notin_union.
+                    *****
+                    *****
+                    ****** pose proof n1.
+                      repeat apply notin_union_2 in n1.
+                    apply notin_singleton_1 in n1.
+                    apply diff_remove.
+                    ******* intro H'. apply n1.
+                    symmetry; assumption.
+                    ******* 
+                      admit.
+****** admit.
+                    ***** rewrite swap_size_eq. reflexivity.
+               **** admit
+           *** admit.
+-
+
+
+
+                    
+(*
+  Intros t u x y z.
   case (x == y).
   - intros Heq; subst.
     repeat rewrite swap_id.
@@ -1205,7 +1264,7 @@ Proof.
            *** intro Hneq; subst.
                contradiction.               
            *** Admitted.
-
+*)
 (*        **
         
         pose proof swap_var_in.
