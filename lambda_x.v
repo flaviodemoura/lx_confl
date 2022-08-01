@@ -7,6 +7,8 @@ Require Export Metalib.Metatheory.
 Require Export Metalib.LibDefaultSimp.
 Require Export Metalib.LibLNgen.
 
+(** * Auxiliary lemmas *)
+
 Lemma aux_not_equal : forall (x:atom) (y:atom),
     x <> y -> y <> x.
 Proof.
@@ -30,8 +32,6 @@ Inductive pure : n_sexp -> Prop :=
  | pure_app : forall e1 e2, pure e1 -> pure e2 -> pure (n_app e1 e2) 
  | pure_abs : forall x e1, pure e1 -> pure (n_abs x e1).
 
-(** As usual, the free variable function needs to remove the
-    bound variable in the [n_abs] case. *)
 Fixpoint fv_nom (n : n_sexp) : atoms :=
   match n with
   | n_var x => {{x}}
@@ -61,29 +61,20 @@ Proof.
   intros. repeat rewrite remove_singleton_empty. reflexivity.
 Qed.
 
-(** What makes this a *nominal* representation is that our
-    operations are based on the following swapping function for
-    names.  Note that this operation is symmetric: [x] becomes
-    [y] and [y] becomes [x]. *)
-
 Definition swap_var (x:atom) (y:atom) (z:atom) :=
   if (z == x) then y else if (z == y) then x else z.
 
 Lemma swap_var_id: forall x y, (swap_var x x y = y).
 Proof.
-  intros. unfold swap_var. case (y == x); intros; subst.
-  - reflexivity.
-  - reflexivity.
+  intros. unfold swap_var. case (y == x); intros; subst; reflexivity.
 Qed.
 
 Lemma in_or_notin: forall x s, x `in` s \/ x `notin` s.
 Proof.
   intros. pose proof notin_diff_1. specialize (H x s s).
   rewrite AtomSetProperties.diff_subset_equal in H.
-  - assert (H1: x `notin`empty). default_simp. apply H in H1.
-    destruct H1.
-    -- right. apply H0.
-    -- left. apply H0.
+  - apply or_comm. apply H.
+    apply notin_empty_1.
   - reflexivity.
 Qed.
    
