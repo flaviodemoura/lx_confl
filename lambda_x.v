@@ -7,8 +7,6 @@ Require Export Metalib.Metatheory.
 Require Export Metalib.LibDefaultSimp.
 Require Export Metalib.LibLNgen.
 
-(** * Auxiliary lemmas *)
-
 Lemma aux_not_equal : forall (x:atom) (y:atom),
     x <> y -> y <> x.
 Proof.
@@ -17,7 +15,7 @@ Proof.
     rewrite H0. reflexivity.
   }
   contradiction.
-Qed.  
+Qed.
 
 (** * A nominal representation of lambda_x terms. *)
 
@@ -78,7 +76,6 @@ Proof.
   - reflexivity.
 Qed.
    
-
 (** The main insight of nominal representations is that we can
     rename variables, without capture, using a simple
     structural induction. Note how in the [n_abs] case we swap
@@ -106,8 +103,7 @@ Proof.
     -- inversion H. apply IHt1 in H2. assumption.
     -- inversion H. apply IHt2 in H3. assumption.
   - inversion H.
-Qed.  
-
+Qed.
 
 (** Because swapping is a simple, structurally recursive
     function, it is highly automatable using the [default_simp]
@@ -144,18 +140,11 @@ Qed.
 (** ** Properties about swapping                             *)
 (*************************************************************)
 
-
-(** Now let's look at some simple properties of swapping. *)
-
 Lemma swap_id : forall t x,
     swap x x t = t.
 Proof.
-  induction t; simpl; unfold swap_var;  default_simp.
+  induction t; simpl; unfold swap_var; default_simp.
 Qed.
-
-(** Demo: We will need the next two properties later in the tutorial,
-    so we show that even though there are many cases to consider,
-    [default_simp] can find these proofs. *)
 
 Lemma fv_nom_swap : forall z y t,
   z `notin` fv_nom t ->
@@ -248,7 +237,6 @@ Proof.
            + apply AtomSetImpl.remove_3 in H. assumption.
 Qed.
 
-
 Lemma swap_remove_reduction: forall x y t,
     remove x (remove y (fv_nom (swap y x t))) [=] remove x (remove y (fv_nom t)).
 Proof.
@@ -312,20 +300,12 @@ Qed.
 
 Lemma fv_nom_swap_remove: forall t x y y0, x <> y ->  x <> y0 -> x `notin` fv_nom (swap y0 y t) -> x `notin` fv_nom t.
 Proof.
-  intros. induction t.
-  - simpl. simpl in H1. unfold swap_var in H1. default_simp.
-  - simpl. simpl in H1. unfold swap_var in H1. default_simp.
-  - simpl. simpl in H1. unfold swap_var in H1. default_simp.
-  - simpl. simpl in H1. unfold swap_var in H1. default_simp.
+  intros. induction t; simpl in *; unfold swap_var in *; default_simp.
 Qed.
 
 Lemma fv_nom_remove_swap: forall t x y y0, x <> y ->  x <> y0 -> x `notin` fv_nom t -> x `notin` fv_nom (swap y0 y t).
   Proof.
-  intros. induction t.
-  - simpl. simpl in H1. unfold swap_var. default_simp.
-  - simpl. simpl in H1. unfold swap_var. default_simp.
-  - simpl. simpl in H1. unfold swap_var. default_simp.
-  - simpl. simpl in H1. unfold swap_var. default_simp.
+    induction t; simpl in *; unfold swap_var; default_simp.
 Qed.
   
 Lemma shuffle_swap : forall w y n z,
@@ -431,63 +411,36 @@ Proof.
            rewrite remove_symmetric. reflexivity.        
 Qed.
 
-(*************************************************************)
-(** ** Exercises                                             *)
-(*************************************************************)
-
-(** *** Recommended Exercise: [swap] properties
-    Prove the following properties about swapping, either
-    explicitly (by destructing [x == y]) or automatically
-    (using [default_simp]).  *)
-
 Lemma swap_symmetric : forall t x y,
     swap x y t = swap y x t.
 Proof.
   induction t.
-  - intros x' y.
-    simpl.
-    unfold swap_var.
-    default_simp.
-  - intros x' y; simpl.
-    unfold swap_var.
-    default_simp.
-  - intros x y; simpl.
-    rewrite IHt1.
-    rewrite IHt2; reflexivity.
+  - intros x' y. simpl. unfold swap_var. default_simp.
+  - intros x' y; simpl. unfold swap_var. default_simp.
+  - intros x y; simpl. rewrite IHt1. rewrite IHt2; reflexivity.
   - intros. simpl. unfold swap_var. default_simp.
 Qed.
-    
+
+Lemma swap_symmetric_2: forall x y x' y' t,
+    x <> x' -> y <> y' -> x <> y'-> y <> x' -> swap x y (swap x' y' t) = swap x' y' (swap x y t). 
+Proof.
+  intros. induction t; simpl in *; unfold swap_var in *; default_simp.
+Qed.
+
 Lemma swap_involutive : forall t x y,
     swap x y (swap x y t) = t.
 Proof.
- induction t.
-  - intros. simpl. unfold swap_var. default_simp.
-  - intros. simpl. unfold swap_var. default_simp.
-  - intros. simpl. unfold swap_var. default_simp.
-  - intros. simpl. unfold swap_var. default_simp.    
+ induction t; intros; simpl; unfold swap_var; default_simp.
 Qed.
 
-(** *** Challenge exercises: equivariance
-    Equivariance is the property that all functions and
-    relations are preserved under swapping.  Show that this
-    holds for the various functions and relations below.
-    (Hint: [default_simp] will be slow and sometimes
-    ineffective on *some* of these properties. If it puts
-    you in an dead-end state, you'll need to prove the
-    lemm another way. *)
+(** Equivariance is the property that all functions and 
+    relations are preserved under swapping. *)
 
 Lemma swap_var_equivariance : forall v x y z w,
     swap_var x y (swap_var z w v) =
     swap_var (swap_var x y z) (swap_var x y w) (swap_var x y v).
 Proof.
-  intros. unfold swap_var.
-  case(v == z).
-  - case (w == x).
-    -- default_simp.
-    -- default_simp.
-  - case (w == x).
-    -- default_simp.
-    -- default_simp.
+  intros; unfold swap_var; case(v == z); case (w == x); default_simp.
 Qed.
 
 Lemma swap_equivariance : forall t x y z w,
@@ -505,18 +458,10 @@ Proof.
     -- unfold swap. unfold swap_var. intros. default_simp.
   - intros. simpl. rewrite IHt. unfold swap_var.
     case (x == z).
+    -- case (w == x0); default_simp.
     -- case (w == x0).
        --- default_simp.
-       --- default_simp.
-    -- case (w == x0).
-       --- default_simp.
-       --- intros. case (x == w).
-           + intros. case (z == x0).
-             ++ default_simp.
-             ++ default_simp.
-           + intros. case (z == x0).
-             ++ default_simp.
-             ++ default_simp.
+       --- intros. case (x == w); intros; case (z == x0); default_simp.
   - intros. simpl. rewrite IHt1. rewrite IHt2. reflexivity.
   - intros. simpl. rewrite IHt1. rewrite IHt2. unfold swap_var.
     default_simp.    
@@ -544,8 +489,6 @@ Proof.
        --- assumption.
        --- assumption.
 Qed.
-
-(* HINT: For a helpful fact about sets of atoms, check AtomSetImpl.union_1 *)
 
 Lemma in_fv_nom_equivariance : forall x y x0 t,
   x0 `in` fv_nom t ->
@@ -666,7 +609,7 @@ Proof.
        --- repeat rewrite swap_id. assumption.
        --- repeat rewrite swap_id. assumption.
     -- intros. default_simp.
-       --- Search "remove". pose proof AtomSetImpl.remove_1.
+       --- pose proof AtomSetImpl.remove_1.
            specialize (H0 (fv_nom t1) x x).
            assert (x = x). {
              reflexivity.
@@ -720,7 +663,7 @@ Proof.
              ++ case (y == y) in H0.
                 +++ right. assumption.
                 +++ contradiction.
-       --- Search "remove". pose proof AtomSetImpl.remove_1.
+       --- pose proof AtomSetImpl.remove_1.
            specialize (H0 (fv_nom t1) x x).
            assert (x = x). {
              reflexivity.
@@ -816,24 +759,12 @@ Proof.
                     * right. assumption.
 Qed.
 
-(*************************************************************)
-(** * Size based reasoning                                   *)
-(*************************************************************)
-
-
-(** Some properties about nominal terms require calling the
-    induction hypothesis not on a direct subterm, but on one
-    that has first had a swapping applied to it.
-    However, swapping names does not change the size of terms,
-    so that means we can prove such properties by induction on
-    that size.  *)
-
 Fixpoint num_occ x t : nat :=
   match t with
-  | n_var y => if(x == y) then 1 else 0
-  | n_abs y t1 => if(x == y) then 0 else num_occ x t1
+  | n_var y => if (x == y) then 1 else 0
+  | n_abs y t1 => if (x == y) then 0 else num_occ x t1
   | n_app t1 t2 => (num_occ x t1) + (num_occ x t2)
-  | n_sub t1 y t2 => if(x == y) then num_occ x t2 else (num_occ x t1) + (num_occ x t2)
+  | n_sub t1 y t2 => if (x == y) then num_occ x t2 else (num_occ x t1) + (num_occ x t2)
   end.
 
 Lemma swap_same_occ: forall x y t,
@@ -847,7 +778,8 @@ Lemma swap_diff_occ: forall x y z t,
 Proof.
   induction t; simpl; unfold swap_var; default_simp.
 Qed.
-    
+
+(* The n_sub constructor is part of the grammar of the terms, therefore the definition size' (n_sub t1 x t2) is computing the size of the normal form of the term (n_sub t1 x t2), and not the size of the term itself.
 Fixpoint size' (t : n_sexp) : nat :=
   match t with
   | n_var x => 1
@@ -855,6 +787,7 @@ Fixpoint size' (t : n_sexp) : nat :=
   | n_app t1 t2 => 1 + size' t1 + size' t2
   | n_sub t1 x t2 => size' t1 + ((num_occ x t1) * ((size' t2) - 1))
   end.  
+ *)
 
 Fixpoint size (t : n_sexp) : nat :=
   match t with
@@ -877,13 +810,10 @@ Lemma strong_induction :
 Proof.
   intros Q IH n.
   assert (H := nat_ind (fun n => (forall m : nat, m < n -> Q m))).
-  apply IH.
-  apply H.
+  apply IH. apply H.
   - intros m Hlt; inversion Hlt.
-  - intros n' H' m Hlt.
-    apply IH.
-    intros m0 Hlt'.
-    apply H'.
+  - intros n' H' m Hlt. apply IH.
+    intros m0 Hlt'. apply H'.
     apply lt_n_Sm_le in Hlt.
     apply lt_le_trans with m; assumption.
 Qed.
@@ -944,14 +874,7 @@ Qed.
 
 Hint Rewrite swap_size_eq.
 
-
-(** We define the "alpha-equivalence" relation that declares
-    when two nominal terms are equivalent (up to renaming of
-    bound variables).
-    Note the two different rules for [n_abs]: either the
-    binders are the same and we can directly compare the
-    bodies, or the binders differ, but we can swap one side to
-    make it look like the other.  *)
+(** We define the "alpha-equivalence" relation that declares when two nominal terms are equivalent (up to renaming of bound variables). Note the two different rules for [n_abs] and [n_sub]: either the binders are the same and we can directly compare the bodies, or the binders differ, but we can swap one side to make it look like the other.  *)
 
 Inductive aeq : n_sexp -> n_sexp -> Prop :=
  | aeq_var : forall x,
@@ -975,7 +898,6 @@ Inductive aeq : n_sexp -> n_sexp -> Prop :=
 
 Hint Constructors aeq.
 
-
 Example aeq1 : forall x y, x <> y -> aeq (n_abs x (n_var x)) (n_abs y (n_var y)).
 Proof.
   intros.
@@ -993,7 +915,7 @@ Proof.
   intros. induction H.
   - reflexivity.
   - simpl. rewrite IHaeq. reflexivity.
-  - simpl. inversion H1;subst; rewrite IHaeq; apply remove_fv_swap; assumption.
+  - simpl. inversion H1; subst; rewrite IHaeq; apply remove_fv_swap; assumption.
   - simpl. rewrite IHaeq1; rewrite IHaeq2. reflexivity.
   - simpl. rewrite IHaeq1; rewrite IHaeq2. reflexivity.
   - simpl. pose proof remove_fv_swap.
@@ -1005,26 +927,12 @@ Lemma aeq_size: forall t1 t2, aeq t1 t2 -> size t1 = size t2.
 Proof.
   induction 1.
   - reflexivity.
-  - simpl.
-    rewrite IHaeq; reflexivity.
-  - simpl.
-    rewrite IHaeq.
-    rewrite swap_size_eq.
-    reflexivity.
-  - simpl.
-    rewrite IHaeq1.
-    rewrite IHaeq2.
-    reflexivity.
-  - simpl.
-    rewrite IHaeq1.
-    rewrite IHaeq2.
-    reflexivity.
-  - simpl.
-    rewrite IHaeq1.
-    rewrite IHaeq2.
-    rewrite swap_size_eq.
-    reflexivity.
-Qed.  
+  - simpl. rewrite IHaeq; reflexivity.
+  - simpl. rewrite IHaeq. rewrite swap_size_eq. reflexivity.
+  - simpl. rewrite IHaeq1. rewrite IHaeq2. reflexivity.
+  - simpl. rewrite IHaeq1. rewrite IHaeq2. reflexivity.
+  - simpl. rewrite IHaeq1. rewrite IHaeq2. rewrite swap_size_eq. reflexivity.
+Qed.
 
 (** aeq is an equivalence relation. *)
 
@@ -1271,29 +1179,6 @@ Proof.
          rewrite H3. assumption.
 Qed.
 
-
-Lemma aeq_same_abs: forall x t1 t2,
-    aeq (n_abs x t1) (n_abs x t2) -> aeq t1 t2.
-Proof.
-  intros. inversion H.
-  - assumption.
-  - rewrite swap_id in H6; assumption.
-Qed.  
-
-Lemma aeq_diff_abs: forall x y t1 t2,
-    aeq (n_abs x t1) (n_abs y t2) -> aeq t1 (swap x y t2).
-Proof.
-  intros. inversion H; subst.
-  - rewrite swap_id; assumption.
-  - rewrite swap_symmetric; assumption.
-Qed.
-
-Lemma swap_symmetric_2: forall x y x' y' t,
-    x <> x' -> y <> y' -> x <> y'-> y <> x' -> swap x y (swap x' y' t) = swap x' y' (swap x y t). 
-Proof.
-  intros. induction t; simpl in *; unfold swap_var in *; default_simp.
-Qed.
-
 Lemma aeq_swap2: forall t1 t2 x y, aeq (swap x y t1) (swap x y t2) -> aeq t1 t2.
 Proof.
   induction t1.
@@ -1532,6 +1417,44 @@ Proof.
   - apply aeq_swap2.
 Qed.
 
+Lemma aeq_same_abs: forall x t1 t2,
+    aeq (n_abs x t1) (n_abs x t2) -> aeq t1 t2.
+Proof.
+  intros. inversion H.
+  - assumption.
+  - rewrite swap_id in H6; assumption.
+Qed.
+
+Lemma aeq_diff_abs: forall x y t1 t2,
+    aeq (n_abs x t1) (n_abs y t2) -> aeq t1 (swap x y t2).
+Proof.
+  intros. inversion H; subst.
+  - rewrite swap_id; assumption.
+  - rewrite swap_symmetric; assumption.
+Qed.
+
+Lemma aeq_same_sub: forall x t1 t1' t2 t2',
+    aeq (n_sub t1 x t2) (n_sub t1' x t2') -> aeq t1 t1' /\ aeq t2 t2'.
+Proof.
+  intros. inversion H; subst.
+  - split; assumption.
+  - split.
+    + rewrite swap_id in H9; assumption.
+    + assumption.
+Qed.
+
+Lemma aeq_diff_sub: forall x y t1 t1' t2 t2',
+    aeq (n_sub t1 x t2) (n_sub t1' y t2') -> aeq t1 (swap x y t1') /\ aeq t2 t2'.
+Proof.
+  intros. inversion H; subst.
+  - split.
+    + rewrite swap_id; assumption.
+    + assumption.
+  - split.
+    + rewrite swap_symmetric; assumption.
+    + assumption.
+Qed.
+
 Lemma aeq_sym: forall t1 t2, aeq t1 t2 -> aeq t2 t1.
 Proof.
   induction 1.
@@ -1546,12 +1469,8 @@ Proof.
        rewrite swap_involutive.
        rewrite swap_symmetric.
        assumption.
-  - apply aeq_app.
-    -- assumption.
-    -- assumption.
-  - apply aeq_sub_same.
-    -- assumption.
-    -- assumption.
+  - apply aeq_app; assumption.
+  - apply aeq_sub_same; assumption.
   - apply aeq_sub_diff.
     -- assumption.
     -- apply aux_not_equal. assumption.
@@ -1570,116 +1489,6 @@ Proof.
     -- assumption.
     -- apply aeq_refl.
 Qed.
-
-
-  (*induction t.
-  - intros x' y H.
-    simpl in *.
-    unfold swap_var.
-    case (x == x').
-    + intro Heq; subst.
-      apply notin_singleton_1' in H.
-      apply aeq_abs_diff.
-      * intro H'; subst.
-        contradiction.
-      * simpl.
-        apply notin_singleton_2; assumption.
-      * simpl.
-        unfold swap_var.
-        case (x' == x').
-        ** intro H'; subst.
-           apply aeq_refl.
-        ** intro H'; contradiction.
-    + intro H'.
-      case (x == y).
-      * intro H''; subst.
-        apply notin_singleton_is_false in H.
-        contradiction. 
-      * intro H''.
-        case (y == x').
-        ** intro H'''; subst.
-           apply aeq_refl.
-        ** intro H'''.
-           apply aeq_abs_diff.
-           *** assumption.      
-           *** assumption.
-           *** simpl.
-               unfold swap_var.
-               case (x == x').
-               **** intro H''''.
-                    contradiction.
-               **** intro H''''.
-                    case (x == y).
-                    ***** intro H'''''; contradiction.
-                    ***** intro H'''''; apply aeq_refl.
-  - intros x' y H.
-    case (y == x').
-    + intro H'; subst.
-      apply aeq_abs_same.
-      rewrite swap_id.
-      apply aeq_refl.
-    + intro H'.
-      apply aeq_abs_diff.
-      * assumption.
-      * assumption.
-      * apply aeq_refl.
-  - intros x y H.
-    simpl in *.
-    assert (H' := H).
-    apply notin_union_1 in H.
-    apply notin_union_2 in H'.
-    case (y == x).
-    + intro H''; subst.
-      repeat rewrite swap_id.
-      apply aeq_refl.
-    + intro H''.
-      apply aeq_abs_diff.
-      * assumption.
-      * simpl.
-        apply notin_union_3; assumption.
-      * simpl.
-        apply aeq_app; apply aeq_refl.
-  - intros x' y H.
-    simpl in *.
-    assert (H' := H).
-    apply notin_union_1 in H.
-    apply notin_union_2 in H'.
-    apply notin_remove_1 in H.
-    destruct H.
-    + subst.
-      case (y == x').
-      * intro H''; subst.
-        apply aeq_abs_same.
-        repeat rewrite swap_id.
-        unfold swap_var.
-        case (x' == x').
-        ** intro H''; apply aeq_refl.
-        ** intro H''; contradiction.
-      * intro H''.
-        apply aeq_abs_diff.
-        ** assumption.
-        ** simpl.
-           apply notin_union.
-           *** apply AtomSetImpl.remove_1.
-               reflexivity.
-           *** assumption.
-        ** simpl.
-           apply aeq_refl.
-    + case (y == x').
-      * intro H''; subst.
-        repeat rewrite swap_id.
-        unfold swap_var.
-        destruct (x == x'); subst; apply aeq_refl.
-      * intro H''.
-        apply aeq_abs_diff.
-        ** assumption.
-        ** simpl.
-           apply notin_union.
-           *** apply notin_remove_2; assumption.
-           *** assumption.           
-        ** simpl.
-           apply aeq_refl.
-Qed.*)
 
 Lemma aeq_sub: forall t1 t2 x y, y `notin` fv_nom t1 -> aeq (n_sub (swap x y t1) y t2) (n_sub t1 x t2).
 Proof.
@@ -1771,9 +1580,7 @@ Proof.
         ** case (x' == y); intros; subst.
            *** repeat rewrite swap_id. apply aeq_refl.
            *** apply aeq_sub_diff.
-           **** apply IHt2.
-           ***** assumption.
-           ***** assumption.
+           **** apply IHt2; assumption.
            **** apply aux_not_equal; assumption.
            **** assumption.
            **** apply aeq_refl.
@@ -1787,9 +1594,7 @@ Proof.
         ** case (x' == y); intros; subst.
            *** repeat rewrite swap_id. apply aeq_refl.
            *** apply aeq_sub_diff.
-           **** apply IHt2.
-           ***** assumption.
-           ***** assumption.
+           **** apply IHt2; assumption.
            **** apply aux_not_equal; assumption.
            **** assumption.
            **** apply aeq_refl.
@@ -1799,9 +1604,7 @@ Proof.
            *** rewrite swap_symmetric.
                replace (swap x' y t2) with (swap y x' t2).
                **** apply aeq_sub_diff.
-               ***** apply IHt2.
-               ****** assumption.
-               ****** assumption.
+               ***** apply IHt2; assumption.
                ***** apply aux_not_equal; assumption.
                ***** assumption.
                ***** apply aeq_refl.
@@ -1812,9 +1615,7 @@ Proof.
                rewrite swap_symmetric.
                replace (swap x' y t2) with (swap y x' t2).
                **** apply aeq_sub_diff.
-               ***** apply IHt2.
-               ****** assumption.
-               ****** assumption.
+               ***** apply IHt2; assumption.
                ***** apply aux_not_equal; assumption.
                ***** assumption.
                ***** apply aeq_refl.
