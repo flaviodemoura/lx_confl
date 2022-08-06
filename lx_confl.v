@@ -1155,148 +1155,39 @@ Proof.
   - intro H; subst.
     reflexivity.
 Qed.
-    
-Lemma aeq_swap_m_subst: forall t u x y z, aeq (swap x y (m_subst u z t)) (m_subst (swap x y u) (swap_var x y z) (swap x y t)).
+
+Lemma aeq_swap_m_subst: forall t u x y z,  x `notin` fv_nom t -> y `notin` fv_nom t ->  x `notin` fv_nom u ->  y `notin` fv_nom u -> aeq (swap x y (m_subst u z t)) (m_subst (swap x y u) (swap_var x y z) (swap x y t)).
 Proof.
   induction t using n_sexp_induction.
-  - intros u x' y z. unfold m_subst. simpl.
+  - intros u x' y z H1 H2 H3 H4. unfold m_subst. simpl in *.
     destruct (z == x).
-    + subst.
-      destruct (swap_var x' y x == swap_var x' y x).
+    + subst. destruct (swap_var x' y x == swap_var x' y x).
       * apply aeq_refl.
-      * apply False_ind.
-        apply n.
-        reflexivity.        
+      * apply False_ind. apply n. reflexivity.        
     + destruct (swap_var x' y z == swap_var x' y x).
       * apply swap_var_eq in e. contradiction.
       * simpl. apply aeq_var.
-  - intros u x y z'. unfold m_subst in *. default_simp.
-    + apply aeq_refl.
-    + apply swap_var_eq in e.
-      contradiction.
-    + case ((swap_var x y x0) == x1).
-      * intro Eq. rewrite Eq.
-        apply aeq_abs_same.
-        replace (size t) with (size (swap z x0 t)).
-        ** replace (size (swap x y t)) with (size (swap (swap_var x y z) x1 (swap x y t))).
-           *** rewrite <- Eq.
-               replace (swap (swap_var x y z) (swap_var x y x0) (swap x y t)) with (swap x y (swap z x0 t)).
-               **** apply H. reflexivity.
-               **** apply swap_equivariance.
-           *** repeat rewrite swap_size_eq. reflexivity.
-        ** apply swap_size_eq.
-      * intro Neq. apply aeq_abs_diff.
-           *** assumption.
-           *** replace (size (swap x y t)) with (size (swap (swap_var x y z) x1 (swap x y t))).
-               **** pose proof fv_nom_subst_subset as Hset.
-                    unfold m_subst in Hset.
-                    specialize (Hset (swap (swap_var x y z) x1 (swap x y t)) (swap x y u) (swap_var x y z')).
-                    rewrite Hset.
-                    pose proof n as H'.
-                    apply notin_union_1 in n.
-                    apply notin_union_2 in H'.
-                    pose proof H' as H''.
-                    apply notin_union_1 in H'.
-                    apply notin_union_2 in H''.
-                    apply notin_union.
-                    *****
-                    *****
-                    ****** pose proof n1.
-                      repeat apply notin_union_2 in n1.
-                    apply notin_singleton_1 in n1.
-                    apply diff_remove.
-                    ******* intro H'. apply n1.
-                    symmetry; assumption.
-                    ******* 
-                      admit.
-****** admit.
-                    ***** rewrite swap_size_eq. reflexivity.
-               **** admit
-           *** admit.
--
-
-
-
-                    
-(*
-  Intros t u x y z.
-  case (x == y).
-  - intros Heq; subst.
-    repeat rewrite swap_id.
-    rewrite swap_var_id.
-    apply aeq_refl.
-    (** 2. x <> y: *)
-  - generalize dependent z.
-    generalize dependent y.
-    generalize dependent x.
-    generalize dependent u.
-    induction t using n_sexp_induction.
-    + intros u x' y z H.
-      unfold m_subst.
-      simpl.
-      unfold swap_var.
-      default_simp; apply aeq_refl.
-    + intros u x y z' H'.
-      simpl.
-      unfold m_subst in *.
-      simpl.
-      default_simp.
-      * apply aeq_refl.
-      * apply False_ind.
-        apply swap_var_eq in e.
-        contradiction.
-      * clear n2.
-        case (x1 == (swap_var x y x0)).
-        ** intro Heq; subst.
-           apply aeq_abs_same.
-           rewrite <- (swap_size_eq z x0 t).
-           replace (swap (swap_var x y z) (swap_var x y x0) (swap x y t)) with (swap x y (swap z x0 t)).
-           replace (size (swap x y t)) with 
-           (size (swap x y (swap z x0 t))).
-           *** apply H.
-               **** reflexivity.
-               **** assumption.
-           *** repeat rewrite swap_size_eq.
-               reflexivity.
-           *** apply swap_equivariance.
-        ** intro H''.
-           apply aeq_abs_diff.
-           *** intro Hneq; subst.
-               contradiction.               
-           *** Admitted.
-*)
-(*        **
-        
-        pose proof swap_var_in.
-        specialize (H x' y x).
-        destruct H.
-        ** symmetry in H.
-           contradiction.
-        ** destruct H.
-           *** symmetry in H.
-               contradiction.
-           *** contradiction.
-    + intros u x y z' H1 H2 H3.
-      pose proof subst_abs.
-      specialize (H0 u z' z t).
-      rewrite H0; clear H0.
-      destruct (z' == z).
-      * simpl.
-        subst.
-        pose proof swap_var_neq.
-        specialize (H0 x y z).
-        rewrite H0.
-        ** pose proof subst_abs.
-           specialize (H4 (swap x y u) z z (swap x y t)).
-           destruct (z == z).
-           *** rewrite H4.
-               apply aeq_refl.
-           *** apply False_ind.
-               apply n; reflexivity.
-        ** assumption.
-        ** assumption.
-      * (* ver anotações: 3 casos precisam ser considerados. *)
-Admitted. *)
+  - intros u x y z' H1 H2 H3 H4. unfold m_subst in *. simpl in *.
+    assert ((remove z (fv_nom t)) [=] (remove (swap_var x y z)  (fv_nom (swap x y t)))) as Hrem.
+    { admit. }
+    apply Eq_implies_equality in Hrem. rewrite Hrem.
+    pose proof fv_nom_swap_eq as Hfv.
+    specialize (Hfv x y u). apply Hfv in H3.
+    + apply Eq_implies_equality in H3. rewrite H3.
+      assert (singleton z' [=] singleton (swap_var x y z')). (* pois z' é uma v.l. de t ou z' não ocorre em t. *)
+      { admit. }
+      apply Eq_implies_equality in H0. rewrite H0. destruct (z' == z).
+      * subst. destruct (swap_var x y z == swap_var x y z).
+        ** simpl. apply aeq_refl.
+        ** apply False_ind. apply n; reflexivity.
+      * destruct (swap_var x y z' == swap_var x y z).
+        ** apply swap_var_eq in e. contradiction.
+        ** destruct (atom_fresh
+            (Metatheory.union (fv_nom (swap x y u))
+               (Metatheory.union
+                  (remove (swap_var x y z) (fv_nom (swap x y t)))
+                  (singleton (swap_var x y z'))))).
+           simpl. Admitted.
 
         
 Lemma subst_swap_reduction: forall t u x y z,
