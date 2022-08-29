@@ -1249,7 +1249,20 @@ Proof.
                          ------------- admit. (* ok *)
                            ------------ apply swap_symmetric.
                            ----------- apply swap_symmetric.
-                           --------- (* d *) Admitted.
+                           --------- (* d *) assert (swap_var x y z' = swap_var x1 (swap_var x y x0) (swap_var x y z')). { rewrite swap_var_neq with  x1 (swap_var x y x0) (swap_var x y z').
+                                                                                                                           - reflexivity.
+                                                                                                                           - admit. (* ok *)
+                                                                                                                           - admit. (* ok *) } rewrite H0 at 1.
+                           assert (aeq (swap x y u) (swap x1 (swap_var x y x0) (swap x y u))). { admit. } apply aeq_trans with (subst_rec (size (swap x1 (swap_var x y x0) (swap (swap_var x y z) x1 (swap x y t))))
+       (swap x1 (swap_var x y x0) (swap (swap_var x y z) x1 (swap x y t))) 
+       (swap x1 (swap_var x y x0) (swap x y u)) (swap_var x1 (swap_var x y x0) (swap_var x y z'))).
+                           ---------- admit. (* ok *)
+                           ---------- apply aeq_sym.
+                           assert (size (swap x y t) = size (swap (swap_var x y z) x1 (swap x y t))). { repeat rewrite swap_size_eq; reflexivity. } rewrite H2 at 1. apply H.
+                           -----------  rewrite swap_size_eq; reflexivity.
+                           ----------- assumption.
+                           ----- rewrite swap_size_eq; reflexivity.
+    -- Admitted.
                              
 
 
