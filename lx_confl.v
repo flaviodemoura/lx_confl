@@ -1191,6 +1191,124 @@ Proof.
   - intro H; subst.
     reflexivity.
 Qed.
+                  
+Lemma aeq_swap_m_subst: forall t u x y z, aeq (swap x y (m_subst u z t)) (m_subst (swap x y u) (swap_var x y z) (swap x y t)).
+Proof.
+  intros t u x y z. case (x == y).
+  - intro Heq; subst. repeat rewrite swap_id. rewrite swap_var_id. apply aeq_refl.
+  - generalize dependent z. generalize dependent y. generalize dependent x. generalize dependent u.
+    induction t using n_sexp_induction.
+    -- intros u x' y z Hneq. unfold m_subst. simpl in *. default_simp.
+       --- apply aeq_refl.
+       --- apply swap_var_eq in e. contradiction.
+    -- intros u x y z' Hneq. simpl in *. destruct (z' == z) eqn:Heq.
+       --- subst. unfold m_subst in *. simpl. rewrite Heq.
+           destruct (swap_var x y z == swap_var x y z).
+           ---- simpl. apply aeq_refl.
+           ---- apply False_ind. apply n; reflexivity.
+       --- unfold m_subst in *. (*
+           replace (n_abs (swap_var x y z) (swap x y t)) with (swap x y (n_abs z t)). *)
+           simpl. rewrite Heq.
+           destruct (swap_var x y z' == swap_var x y z).
+           ---- apply False_ind. apply n. apply swap_var_eq in e. assumption.
+           ---- destruct (atom_fresh
+            (Metatheory.union (fv_nom u)
+               (Metatheory.union (remove z (fv_nom t)) (singleton z')))).
+                simpl. replace (size t) with (size (swap z x0 t)). (* a *)
+                ----- destruct (atom_fresh
+                                  (Metatheory.union (fv_nom (swap x y u))
+                                     (Metatheory.union
+                                        (remove (swap_var x y z) (fv_nom (swap x y t)))
+                                        (singleton (swap_var x y z'))))).
+                case (x1 == swap_var x y x0).
+                ------ intro H'. rewrite H'. apply aeq_abs_same.
+                       replace (size (swap x y t)) with (size (swap (swap_var x y z) (swap_var x y x0) (swap x y t))).
+                       ------- apply aeq_trans with (subst_rec (size (swap x y (swap z x0 t))) (swap x y (swap z x0 t)) (swap x y u) (swap_var x y z')).
+                       -------- apply H.
+                       --------- reflexivity.
+                       --------- assumption.
+                       -------- pose proof aeq_m_subst_2 as H''. unfold m_subst in H''. apply H''. rewrite swap_equivariance. apply aeq_refl.
+                       ------- repeat rewrite swap_size_eq; reflexivity.  
+                       ------ intro Hneq'. apply aeq_abs_diff.
+                       ------- apply aux_not_equal; assumption.
+                         ------- admit. (* Danilo ok *)
+                         ------- (* b *) apply aeq_trans with (subst_rec (size (swap x1 (swap_var x y x0) (swap (swap_var x y z) x1 (swap x y t))))
+         (swap x1 (swap_var x y x0) (swap (swap_var x y z) x1 (swap x y t))) 
+         (swap x y u) (swap_var x y z')).
+                         --------- (* c *) apply aeq_trans with (subst_rec (size (swap x y (swap z x0 t))) (swap x y (swap z x0 t)) (swap x y u) (swap_var x y z')).
+                         ---------- apply H.
+                         ----------- reflexivity.
+                         ----------- assumption.
+                         ---------- apply aeq_m_subst_2. replace
+                           (swap (swap_var x y z) x1 (swap x y t)) with  (swap x1 (swap_var x y z) (swap x y t)).
+                         ----------- replace (swap x1 (swap_var x y x0)
+       (swap x1 (swap_var x y z) (swap x y t))) with (swap (swap_var x y x0) x1
+       (swap x1 (swap_var x y z) (swap x y t))).
+                         ------------ rewrite swap_equivariance. rewrite swap_symmetric. apply aeq_sym. apply aeq_swap_swap.
+                         ------------- admit. (* ok *)
+                         ------------- admit. (* ok *)
+                           ------------ apply swap_symmetric.
+                           ----------- apply swap_symmetric.
+                           --------- (* d *) assert (swap_var x y z' = swap_var x1 (swap_var x y x0) (swap_var x y z')). { rewrite swap_var_neq with  x1 (swap_var x y x0) (swap_var x y z').
+                                                                                                                           - reflexivity.
+                                                                                                                           - admit. (* ok *)
+                                                                                                                           - admit. (* ok *) } rewrite H0 at 1.
+                           assert (aeq (swap x y u) (swap x1 (swap_var x y x0) (swap x y u))). { admit. } apply aeq_trans with (subst_rec (size (swap x1 (swap_var x y x0) (swap (swap_var x y z) x1 (swap x y t))))
+       (swap x1 (swap_var x y x0) (swap (swap_var x y z) x1 (swap x y t))) 
+       (swap x1 (swap_var x y x0) (swap x y u)) (swap_var x1 (swap_var x y x0) (swap_var x y z'))).
+                           ---------- admit. (* ok *)
+                           ---------- apply aeq_sym.
+                           assert (size (swap x y t) = size (swap (swap_var x y z) x1 (swap x y t))). { repeat rewrite swap_size_eq; reflexivity. } rewrite H2 at 1. apply H.
+                           -----------  rewrite swap_size_eq; reflexivity.
+                           ----------- assumption.
+                           ----- rewrite swap_size_eq; reflexivity.
+    -- Admitted.
+                             
+
+
+(* a               apply aeq_trans with (n_abs (swap_var x y x0)
+                                        (subst_rec (size (swap x y (swap z x0 t))) (swap x y (swap z x0 t)) (swap x y u) (swap_var x y z'))).
+                ----- apply aeq_abs_same. apply H.
+                      ------ reflexivity.
+                      ------ assumption.
+                ----- destruct (atom_fresh
+         (Metatheory.union (fv_nom (swap x y u))
+            (Metatheory.union
+               (remove (swap_var x y z) (fv_nom (swap x y t)))
+               (singleton (swap_var x y z'))))).
+                pose proof n1. apply notin_union_1 in n1.
+                apply notin_union_2 in H0. pose proof H0.
+                apply notin_union_1 in H1. apply notin_union_2 in H0.
+                apply notin_fv_nom_equivariance with x0 x y u in n1.
+                case (swap_var x y x0 == x1) eqn:H2.
+                ------ rewrite e. apply aeq_abs_same.
+                       replace (size (swap x y t)) with (size (swap (swap_var x y z) x1 (swap x y t))). 
+                       ------- rewrite <- e. rewrite swap_equivariance.
+                               apply aeq_refl.
+                       ------- repeat rewrite swap_size_eq. reflexivity.
+                ------ pose proof aeq_m_subst_2. unfold m_subst in H3.
+                       replace (size (swap x y t)) with (size (swap (swap_var x y z) x1 (swap x y t))).
+                       ------- apply aeq_abs_diff. 
+                               -------- assumption.
+                               -------- replace (subst_rec (size (swap (swap_var x y z) x1 (swap x y t)))
+               (swap (swap_var x y z) x1 (swap x y t)) 
+               (swap x y u) (swap_var x y z')) with (m_subst (swap x y u) (swap_var x y z') (swap (swap_var x y z) x1 (swap x y t))).
+                                        --------- rewrite fv_nom_subst_subset. apply notin_union.
+                                        ---------- apply notin_remove_3. admit. (* looks ok *)
+                                        ---------- assumption.
+                              --------- admit.
+                     -------- ? apply aeq_trans with (subst_rec (size (swap x1 (swap_var x y x0) (swap (swap_var x y z) x1 (swap x y t))))
+         (swap x1 (swap_var x y x0) (swap (swap_var x y z) x1 (swap x y t))) 
+          (swap x1 (swap_var x y x0) (swap x y u)) (swap_var x1 (swap_var x y x0) (swap_var x y z'))).
+                    --------- apply H3.
+
+                                 --------- 
+                               --------  
+                                 
+                       apply H3.
+                       ----- rewrite swap_size_eq; reflexivity.
+    -- Admitted. *)
+
 
 Lemma subst_swap_reduction: forall t u x y z,
     aeq (swap x y (m_subst u z t)) (m_subst (swap x y u) (swap_var x y z) (swap x y t)).
