@@ -2010,7 +2010,7 @@ Inductive pix : n_sexp -> n_sexp -> Prop :=
     x <> y -> x `notin` fv_nom e2 ->
     pix (n_sub (n_abs x e1) y e2)  (n_abs x (n_sub e1 y e2))
 | step_abs3 : forall (e1 e2: n_sexp) (x y z: atom),
-    x <> y -> x `in` fv_nom e2 -> z `notin` fv_nom e1 -> z `notin` fv_nom e2 -> 
+    x <> y -> z <> y -> x `in` fv_nom e2 -> z `notin` fv_nom e1 -> z `notin` fv_nom e2 -> 
                    pix (n_sub (n_abs x e1) y e2)  (n_abs z (n_sub (swap x z e1) y e2))
 | step_app : forall (e1 e2 e3: n_sexp) (y: atom),
     pix (n_sub (n_app e1 e2) y e3) (n_app (n_sub e1 y e3) (n_sub e2 y e3)).
