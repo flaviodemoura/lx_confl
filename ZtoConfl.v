@@ -782,7 +782,7 @@ Qed.
     %\ref{cor:zcomp}%, which is a Corollary in %\cite{Nakazawa-Fujita2016}%, 
     directly from Theorem %\ref{thm:zcomp}% *)
 
-Definition Z_comp_eq {A:Type} (R :Rel A) := exists (R1 R2: Rel A) (f1 f2: A -> A), (forall x y, R x y <-> (R1 !_! R2) x y) /\ (forall a b, R1 a b -> (f1 a) = (f1 b)) /\ (forall a, (refltrans R1) a (f1 a)) /\ (forall b a, a = f1 b -> (refltrans R) a (f2 a)) /\ (f_is_weak_Z R2 R (f2 # f1)).
+Definition Z_comp_eq {A:Type} (R :Rel A) := exists (R1 R2: Rel A) (f1 f2: A -> A), (forall x y, R x y <-> (R1 !_! R2) x y) /\ (forall a b, R1 a b -> f1 a = f1 b) /\ (forall a, (refltrans R1) a (f1 a)) /\ (forall b a, a = f1 b -> (refltrans R) a (f2 a)) /\ (f_is_weak_Z R2 R (f2 # f1)).
         
 Lemma Z_comp_eq_implies_Z_prop {A:Type}: forall (R : Rel A), Z_comp_eq R -> Z_prop R.
 Proof.
@@ -799,9 +799,10 @@ Proof.
   intros a b Hab. (** %\comm{In order to prove that $(f_2 \circ f_1)$ is Z,
   let $a$ and $b$ be arbitrary elements of type $A$, and $Hab$ be the
   hypothesis that $a \to_{R} b$.}% *)
-  Admitted.
-(*  
-  inversion Hunion; subst; clear H.  inversion Hab; subst; clear Hab. (**
+  split.
+  - unfold comp. Admitted.
+
+       (* .inversion Hunion; subst; clear H.  inversion Hab; subst; clear Hab. (**
   %\comm{Since $a$ $R$-reduces in one step to $b$ and $R$ is the union of the
   relations $R1$ and $R2$ then we consider two cases:}% *)
   
