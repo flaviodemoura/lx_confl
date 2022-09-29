@@ -4850,10 +4850,27 @@ Proof.
                       ------ apply H. 
                              * reflexivity.
                              * apply pure_swap. assumption.
-                             * assumption.                         
-  - pose proof subst_app. unfold m_subst in H1. rewrite H1.
-    simpl. destruct e1_1 eqn: H''.
-    --  rewrite H1. apply (refltrans_composition _ _ (n_app (B (subst_rec (size (n_var x0)) (n_var x0) e2 x))
+                             * assumption.
+  - pose proof subst_app. unfold m_subst in H1. rewrite H1. generalize dependent e1_1.
+    intro e1_1. destruct e1_1 eqn: H'.
+    -- intros IHe1_1 Hpure. change (B (n_app (n_var x0) e1_2)) with (n_app (n_var x0) (B e1_2)). rewrite H1. simpl. default_simp.
+       --- destruct e2 eqn:H2.
+           ---- simpl. apply refltrans_app3.
+                ----- apply refl.
+                ----- unfold lx in IHe1_2. unfold m_subst in IHe1_2. admit. (* i.h. *)
+           ---- unfold m_subst. simpl. admit. (* beta step *)
+           ---- apply refltrans_app3.
+                ----- apply refl.
+                ----- admit. (* i.h. *)
+           ---- apply refltrans_app3.
+                ----- apply refl.
+                ----- admit. (* i.h. *)
+        --- admit. (* ok *)
+    -- Admitted.
+
+    (*
+    simpl. destruct e1_1 eqn: H''
+    -- rewrite H1. apply (refltrans_composition _ _ (n_app (B (subst_rec (size (n_var x0)) (n_var x0) e2 x))
         (B (subst_rec (size e1_2) e1_2 e2 x)))).
         --- apply refltrans_app3.
             ---- apply IHe1_1;default_simp.
@@ -4866,8 +4883,8 @@ Proof.
             ---- apply refltrans_lx_pix. apply pure_pix. simpl in H'. default_simp.
                  apply pure_B. assumption.
     -- simpl. case (x == x0);intros.
-
- 
+       --- 
+ *)
 Admitted.
 
 Lemma lambda_x_Z_comp_eq: Z_comp_eq lx.
