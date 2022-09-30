@@ -4866,7 +4866,9 @@ Proof.
                 ----- apply refl.
                 ----- admit. (* i.h. *)
         --- admit. (* ok *)
-    -- Admitted.
+    -- intros IHe1_1 Hpure. change (B (n_app (n_abs x0 n) e1_2)) with (m_subst (B e1_2) x0 (B n)). unfold m_subst. apply (refltrans_composition _ _ (subst_rec (size (subst_rec (size (B n)) (B n) (B e2) x)) (subst_rec (size (B n)) (B n) (B e2) x) (subst_rec (size (B e1_2)) (B e1_2) (B e2) x) x0)).
+       --- admit. (* subst_lemma *)
+       --- Admitted.
 
     (*
     simpl. destruct e1_1 eqn: H''
