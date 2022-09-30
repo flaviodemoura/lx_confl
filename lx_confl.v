@@ -4756,6 +4756,11 @@ Proof.
     -- apply notin_union_2 in H. apply IHe2. default_simp.
 Qed.
 
+Lemma m_subst_lemma: forall e1 e2 e3 x y, x <> y -> x \notin (fv_nom e3) -> aeq (m_subst e3 y (m_subst e2 x e1)) (m_subst (m_subst e3 y e2) x (m_subst e3 y e1)).
+Proof.
+  induction e1 using n_sexp_induction. 
+  Admitted.
+  
 Lemma refltrans_m_subst_B: forall e1 e2 x, pure e1 -> pure e2 -> refltrans lx (m_subst (B e2) x (B e1)) (B (m_subst e2 x e1)).
 Proof.
   induction e1 using n_sexp_induction;intros;unfold m_subst.
@@ -4769,7 +4774,13 @@ Proof.
                 (subst_rec (size (B (swap z x1 e1))) (B (swap z x1 e1)) (B e2) x)).
                 ----- apply step_aeq. apply aeq_m_subst_2. apply swap_B.
                 ----- apply refl.
-           ---- apply H.
+           ---- apply H.beta step *)
+           ---- apply refltrans_app3.
+                ----- apply refl.
+                ----- admit. (* i.h. *)
+           ---- apply refltrans_app3.
+                ----- apply refl.
+                ----- admit. 
                 ----- reflexivity.
                 ----- apply pure_swap. assumption.
                 ----- assumption.
@@ -4852,7 +4863,8 @@ Proof.
                              * apply pure_swap. assumption.
                              * assumption.
   - pose proof subst_app. unfold m_subst in H1. rewrite H1. generalize dependent e1_1.
-    intro e1_1. destruct e1_1 eqn: H'.
+    intro e1_1.
+    simpl. destruct e1_1 eqn: H'.
     -- intros IHe1_1 Hpure. change (B (n_app (n_var x0) e1_2)) with (n_app (n_var x0) (B e1_2)). rewrite H1. simpl. default_simp.
        --- destruct e2 eqn:H2.
            ---- simpl. apply refltrans_app3.
@@ -4867,7 +4879,8 @@ Proof.
                 ----- admit. (* i.h. *)
         --- admit. (* ok *)
     -- intros IHe1_1 Hpure. change (B (n_app (n_abs x0 n) e1_2)) with (m_subst (B e1_2) x0 (B n)). unfold m_subst. apply (refltrans_composition _ _ (subst_rec (size (subst_rec (size (B n)) (B n) (B e2) x)) (subst_rec (size (B n)) (B n) (B e2) x) (subst_rec (size (B e1_2)) (B e1_2) (B e2) x) x0)).
-       --- admit. (* subst_lemma *)
+       --- pose proof m_subst_lemma.
+           admit. 
        --- Admitted.
 
     (*
