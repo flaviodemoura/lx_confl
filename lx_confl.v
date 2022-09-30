@@ -4884,8 +4884,7 @@ Proof.
                  apply pure_B. assumption.
     -- simpl. case (x == x0);intros.
        --- 
- *)
-Admitted.
+Admitted. *)
 
 Lemma lambda_x_Z_comp_eq: Z_comp_eq lx.
 Proof.
