@@ -4758,8 +4758,14 @@ Qed.
 
 Lemma m_subst_lemma: forall e1 e2 e3 x y, x <> y -> x \notin (fv_nom e3) -> aeq (m_subst e3 y (m_subst e2 x e1)) (m_subst (m_subst e3 y e2) x (m_subst e3 y e1)).
 Proof.
-  induction e1 using n_sexp_induction. 
-  Admitted.
+  induction e1 using n_sexp_induction.
+  - intros e2 e3 x0 y Hneq Hnot. unfold m_subst. simpl. default_simp.
+    + apply aeq_refl.
+    + apply aeq_sym. pose proof subst_fresh_eq_aux. unfold m_subst in H. apply H with (size e3).
+      * auto.
+      * assumption.
+  - intros e2 e3 x y Hneq Hnot. unfold m_subst. pose proof subst_abs. unfold m_subst in H0. 
+Admitted.
   
 Lemma refltrans_m_subst_B: forall e1 e2 x, pure e1 -> pure e2 -> refltrans lx (m_subst (B e2) x (B e1)) (B (m_subst e2 x e1)).
 Proof.
