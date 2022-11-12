@@ -2204,6 +2204,10 @@ Definition m_subst (u : n_sexp) (x:atom) (t:n_sexp) :=
     the size of the term [t] is enough "fuel" to completely calculate a
     substitution. Providing larger numbers produces the same result. *)
 
+Inductive beta : n_sexp -> n_sexp -> Prop :=
+| step_beta : forall (e1 e2: n_sexp) (x: atom),
+    beta (n_app  (n_abs x e1) e2)  (m_subst e2 x e1).
+
 Lemma Sn_le_Sm__n_le_m : forall n m,
   S n <= S m -> n <= m.
 Proof.
