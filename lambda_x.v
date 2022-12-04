@@ -1,11 +1,11 @@
 (** * A nominal representation of the lambda_x calculus. *)
 
-(** * Imports. *)
-
 Require Export Arith Lia.
 Require Export Metalib.Metatheory.
 Require Export Metalib.LibDefaultSimp.
 Require Export Metalib.LibLNgen.
+
+Require Import ZtoConflNom.
 
 Lemma aux_not_equal : forall (x:atom) (y:atom),
     x <> y -> y <> x.
@@ -908,7 +908,27 @@ Inductive aeq : n_sexp -> n_sexp -> Prop :=
      aeq (n_sub t1 x t2) (n_sub t1' y t2').
 
 Hint Constructors aeq.
+(*
+Inductive refltrans' (R: Rel n_sexp) : n_sexp -> n_sexp -> Prop :=
+| refl_aeq: forall a b, aeq a b -> (refltrans' R) a b
+| rtrans_aeq: forall a b c, R a b -> refltrans' R b c -> refltrans' R a c.
 
+Lemma aeq_refltrans': forall a b c R, aeq a b -> refltrans' R b c -> refltrans' R a c.
+Proof.
+  intros a b c R Haeq H. inversion H; subst.
+  -
+  -
+
+Lemma refltrans_composition' (R: Rel n_sexp): forall t u v, refltrans' R t u -> refltrans' R u v -> refltrans' R t v.
+Proof.  
+  intros. induction H0.
+    assumption.
+  - apply rtrans with b.
+    + assumption.
+    + apply IHrefltrans; assumption.  
+Qed. 
+*)
+  
 Example aeq1 : forall x y, x <> y -> aeq (n_abs x (n_var x)) (n_abs y (n_var y)).
 Proof.
   intros.
@@ -2051,6 +2071,73 @@ Proof.
     assumption.
 Qed. 
 Não resolve porque precisamos da alpha-equiv em um passo de redução
+ 
+Definition f_is_weak_Z' (R R': Rel n_sexp) (f: n_sexp -> n_sexp) := forall a b, R a b -> ((refltrans' R') b (f a) /\ (refltrans' R') (f a) (f b)).
+*)
+
+Definition Z_comp_eq' (R: Rel n_sexp) := exists (R1 R2: Rel n_sexp) (f1 f2: n_sexp -> n_sexp), (forall a b, R a b <-> (R1 !_! R2) a b) /\ (forall a b, R1 a b -> (aeq (f1 a) (f1 b))) /\ (forall a, (refltrans R1) a (f1 a)) /\ (forall b a, a = f1 b -> (refltrans R) a (f2 a)) /\ (f_is_weak_Z R2 R (f2 # f1)).
+
+Lemma Z_comp_eq_implies_Z_prop: forall (R: Rel n_sexp), Z_comp_eq' R -> Z_prop R.
+Proof.
+  intros R H. unfold Z_comp_eq' in H. 
+  destruct H as [R1 [R2 [f1 [f2 [Hunion [H1 [H2 [H3 H4]]]]]]]]. 
+  unfold Z_prop.  exists (f2 # f1). intros a b Hab. split.
+  - apply Hunion in Hab. inversion Hab; subst.
+    + clear Hab.
+    +
+  -
+
+(*
+Definition Z_prop' (R: Rel n_sexp) := exists f: n_sexp -> n_sexp, forall a b, R a b -> ((refltrans' R) b (f a) /\ (refltrans' R) (f a) (f b)).
+
+Lemma Z_comp_eq_implies_Z_prop: forall (R: Rel n_sexp), Z_comp_eq' R -> Z_prop' R.
+Proof.
+  intros R H. unfold Z_comp_eq' in H. 
+  destruct H as [R1 [R2 [f1 [f2 [Hunion [H1 [H2 [H3 H4]]]]]]]]. 
+  unfold Z_prop'.  exists (f2 # f1). intros a b Hab. split.
+  - unfold comp. apply Hunion in Hab. inversion Hab; subst.
+    + clear Hab H4. apply refltrans_composition with (f1 a).
+      * apply refl_aeq. apply H1 in H.
+
+
+        
+        apply refltrans_composition with (f1 b).
+        ** specialize (H2 b). pose proof refltrans_union_equiv R. specialize (H0 R1 R2 a b).
+           apply H0.
+           *** apply Hunion.
+           *** admit.
+        **
+      *
+    apply Hunion. inversion Hunion; subst; clear H.  inversion Hab; subst; clear Hab. (**
+  %\comm{Since $a$ $R$-reduces in one step to $b$ and $R$ is the union of the
+  relations $R1$ and $R2$ then we consider two cases:}% *)
+  
+  - unfold comp; split. (** %\comm{The first case is when $a \to_{R1}
+    b$. This is equivalent to say that $f_2 \circ f_1$ is weak Z for
+    $R1$ by $R1 \cup R2$.}% *)
+    
+    + apply refltrans_composition with (f1 b). (** %\comm{Therefore, we first
+    prove that $b \tto_{(R1\cup R2)} (f_2 (f_1\ a))$, which can be
+    reduced to $b \tto_{(R1\cup R2)} (f_1\ b)$ and $(f_1\ b)
+    \tto_{(R1\cup R2)} (f_2 (f_1\ a))$ by the transitivity of
+    $refltrans$.}% *)
+      
+      * apply refltrans_union.  apply H2. (** %\comm{From hypothesis $H2$, we
+        know that $a \tto_{R1} (f_1\ a)$ for all $a$, and hence
+        $a\tto_{(R1\cup R2)} (f_1\ a)$ and we conclude.}% *)
+        
+      * apply H1 in H.  rewrite H.  apply H3 with b; reflexivity. (**
+        %\comm{The proof that $(f_1\ b)\tto_{(R1\cup R2)} (f_2 (f_1\ a))$ is
+        exactly the hypothesis $H3$.}% *)
+
+    + apply H1 in H.  rewrite H.  apply refl. (** %\comm{The proof that $(f_2
+    (f_1\ a)) \tto_{(R1\cup R2)} (f_2 (f_1\ b))$ is done using the
+    reflexivity of $refltrans$ because $(f_2 (f_1\ a)) = (f_2 (f_1\
+    b))$ by hypothesis $H1$.}% *)
+      
+  - apply H4; assumption. (** %\comm{When $a \to_{R2} b$ then we are done by
+    hypothesis $H4$.}% *)
+Qed.
  *)
 
 Lemma step_redex_R : forall (R : n_sexp -> n_sexp -> Prop) e1 e2,
@@ -2330,8 +2417,8 @@ Proof.
          - intros. rewrite swap_size_eq. reflexivity.         
        }
        destruct (atom_fresh
-       (union (fv_nom u)
-          (union (remove y (fv_nom t )) (singleton x)))). 
+       (Metatheory.union (fv_nom u)
+          (Metatheory.union (remove y (fv_nom t )) (singleton x)))). 
        specialize (H0 x0). rewrite H0. reflexivity.
 Qed.
 
@@ -2358,8 +2445,8 @@ Proof.
     case (x == y).
     -- intro H; contradiction.
     -- intro Hneq'.
-       destruct (atom_fresh (union (fv_nom u)
-        (union (union (remove y (fv_nom t1)) (fv_nom t2)) (singleton x)))).
+       destruct (atom_fresh (Metatheory.union (fv_nom u)
+        (Metatheory.union (Metatheory.union (remove y (fv_nom t1)) (fv_nom t2)) (singleton x)))).
        pose proof subst_size. 
        rewrite swap_size_eq.
        specialize (H (size t1 + size t2) u x (swap y x0 t1)).
@@ -2383,8 +2470,8 @@ Proof.
   - intros. unfold m_subst. simpl. case (x==z).
     -- intros; subst. assumption.
     -- intros. destruct (atom_fresh
-         (union (fv_nom u)
-                (union (remove z (fv_nom t)) (singleton x)))).
+         (Metatheory.union (fv_nom u)
+                (Metatheory.union (remove z (fv_nom t)) (singleton x)))).
        apply pure_abs. inversion H1. unfold m_subst in H.
        pose proof pure_swap. specialize (H5 z x0 t).
        pose proof H3. apply H5 in H6; clear H5.
@@ -2453,8 +2540,8 @@ Proof.
        --- intros. apply aeq_refl.
        --- intros. simpl.
            destruct (atom_fresh
-           (union (singleton y)
-                  (union (remove x (fv_nom t)) (singleton y)))).
+           (Metatheory.union (singleton y)
+                  (Metatheory.union (remove x (fv_nom t)) (singleton y)))).
            case (x == x0).
            ---- intro Heq; subst.
                 rewrite swap_id.
@@ -2495,8 +2582,8 @@ Proof.
        --- intro Hneq.
            simpl.
            destruct (atom_fresh
-           (union (singleton y)
-                  (union (union (remove x (fv_nom t1)) (fv_nom t2)) (singleton y)))).
+           (Metatheory.union (singleton y)
+                  (Metatheory.union (Metatheory.union (remove x (fv_nom t1)) (fv_nom t2)) (singleton y)))).
            case (x == x0).
              ---- intros; subst. rewrite swap_id.
                   apply aeq_sub_same.
@@ -2621,8 +2708,8 @@ Proof.
     -- intros.
        simpl.
        destruct (atom_fresh
-                   (union (fv_nom u)
-                          (union (remove x0 (fv_nom t)) (singleton x)))).
+                   (Metatheory.union (fv_nom u)
+                          (Metatheory.union (remove x0 (fv_nom t)) (singleton x)))).
        pose proof notin_remove_1.
        specialize (H1 x0 x (fv_nom t)).
        simpl in H0.
