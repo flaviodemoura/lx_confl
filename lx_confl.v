@@ -4771,17 +4771,47 @@ Proof.
     -- apply notin_union_2 in H. apply IHe2. default_simp.
 Qed.
 
-Lemma m_subst_lemma: forall e1 e2 e3 x y, x <> y -> x \notin (fv_nom e3) ->
+Lemma n_sexp_size_induction: forall P: n_sexp -> Prop,
+  (forall x, (forall y, size y < size x -> P y) -> P x) -> forall z, P z.
+Proof.
+  intros. remember (size z) as n. generalize dependent z. induction n using strong_induction;intros.
+  case z eqn:H';intros.
+  - apply H. intros. destruct y;default_simp.
+  - apply H. intros. apply (H0 (size y)).
+    -- rewrite Heqn. assumption.
+    -- reflexivity.
+  - apply H. intros. apply (H0 (size y)).
+    -- rewrite Heqn. assumption.
+    -- reflexivity.
+  - apply H. intros. apply (H0 (size y)).
+    -- rewrite Heqn. assumption.
+    -- reflexivity.
+Qed.
+
+Lemma m_subst_lemma: forall e1 e2 e3 x y, x <> y -> x `notin` (fv_nom e3) ->
   aeq (m_subst e3 y (m_subst e2 x e1)) (m_subst (m_subst e3 y e2) x (m_subst e3 y e1)).
 Proof.
+  (*
+  induction e1 using n_sexp_size_induction. intros. destruct e1 eqn:He1.
+  - case (x0 == x);intros.
+    -- rewrite e in *. unfold m_subst at 2. default_simp. unfold m_subst at 4. default_simp.
+       unfold m_subst at 2. default_simp. apply aeq_refl.
+    -- unfold m_subst at 2. default_simp. case (x0 == y);intros.
+       --- rewrite e in *. unfold m_subst at 1. unfold m_subst at 3. default_simp.
+           apply aeq_sym. apply subst_fresh_eq. assumption.
+       --- unfold m_subst at 1. unfold m_subst at 3. default_simp. unfold m_subst. default_simp.
+  - pose proof subst_abs. rewrite H2. rewrite H2. default_simp.
+    --*)
+
+  (*
   induction e1 using n_sexp_induction.
   - intros e2 e3 x0 y Hneq Hnot. unfold m_subst. simpl. default_simp.
     + apply aeq_refl.
     + apply aeq_sym. pose proof subst_fresh_eq_aux. unfold m_subst in H. apply H with (size e3).
       * auto.
       * assumption.
-  - intros e2 e3 x y Hneq Hnot. unfold m_subst. pose proof subst_abs. unfold m_subst in H0. admit. 
-  Admitted.
+  - intros e2 e3 x y Hneq Hnot. unfold m_subst. pose proof subst_abs. unfold m_subst in H0. admit. *)
+Admitted.
 
 Lemma lx_fv_nom: forall e1 e2 x, lx e1 e2 -> x `notin` (fv_nom e1) -> x `notin` (fv_nom e2).
   intros. induction H.
@@ -5329,7 +5359,7 @@ Proof.
                         ** apply aeq_sym. apply aeq_swap_m_subst.
                 ----- pose proof in_or_notin. specialize (H2 x (fv_nom (swap z x0 e3))).
                       destruct H2.
-                      ------ apply (aeq_trans _ (m_subst e1 x (m_subst e2 (swap_var x0 x2 x) (swap x0 x2 (swap z x0 e3))))).
+                      ------  apply (aeq_trans _ (m_subst e1 x (m_subst e2 (swap_var x0 x2 x) (swap x0 x2 (swap z x0 e3))))).
                              * apply aeq_m_subst_2. pose proof n2. repeat apply notin_union_2 in H3.
                                apply notin_singleton_1 in H3. apply (aeq_trans _ (m_subst (swap x0 x2 e2) (swap_var x0 x2 x)
                                (swap x0 x2 (swap z x0 e3)))).
@@ -5437,187 +5467,604 @@ Proof.
                                                                      apply diff_remove;default_simp.
                                                                 + assumption.
                                                  ****** apply aeq_sym. apply aeq_swap_m_subst.
-                      ------ apply (aeq_trans _ (m_subst e1 x (m_subst e2 x (swap x0 x2 (swap z x0 e3))))).
-                             ------- apply aeq_m_subst_2. apply (aeq_trans _ (m_subst (swap x0 x2 e2)
-                                     (swap_var x0 x2 x) (swap x0 x2 (swap z x0 e3)))).
-                                     * apply aeq_swap_m_subst.
-                                     * unfold swap_var. pose proof n2. repeat apply notin_union_2 in H3.
-                                       apply notin_singleton_1 in H3. default_simp. apply aeq_m_subst_1.
-                                       apply aeq_sym. apply aeq_swap0.
-                                       ** default_simp.
-                                       ** apply (fv_nom_m_subst_notin _ e2) in H2. admit.
-                             ------- admit.
- - admit.
- - admit.
-Admitted.
-  
-Lemma refltrans_m_subst_B: forall e1 e2 x, pure e1 -> pure e2 -> refltrans lx (m_subst (B e2) x (B e1)) (B (m_subst e2 x e1)).
-Proof.
-  induction e1 using n_sexp_induction;intros;unfold m_subst.
-  - simpl. default_simp; apply refl.
-  - simpl. default_simp.
-    -- apply refl.
-    -- case (x0 == x1);intros.
-       --- rewrite e in *. apply refltrans_abs2. rewrite <- (swap_size_eq z x1 e1).
-           apply (refltrans_composition _ _ (subst_rec (size (B (swap z x1 e1))) (B (swap z x1 e1)) (B e2) x)).
-           ---- rewrite <- (swap_size_eq z x1 (B e1)). apply (rtrans _ _
-                (subst_rec (size (B (swap z x1 e1))) (B (swap z x1 e1)) (B e2) x)).
-                ----- apply step_aeq. apply aeq_m_subst_2. apply swap_B.
-                ----- apply refl.
-           ---- apply H.
-                ----- reflexivity.
-                ----- apply pure_swap. assumption.
-                ----- assumption.
-       --- apply (refltrans_composition _ _ (n_abs x1 (swap x0 x1 (subst_rec (size (B e1)) (swap z x0 (B e1)) (B e2) x)))).
-           ---- apply (rtrans _ _ (n_abs x1 (swap x0 x1 (subst_rec (size (B e1)) (swap z x0 (B e1)) (B e2) x)))).
-                ----- apply step_aeq. case (x0 == z);intros.
-                      * rewrite e in *. apply aeq_abs_diff.
-                        ** assumption.
-                        ** apply fv_nom_swap. rewrite (swap_id). pose proof in_or_notin.
-                           specialize (H0 x (fv_nom (B e1))). destruct H0.
-                           *** apply (fv_nom_m_subst_in _ (B e2)) in H0. rewrite H0. simpl. apply notin_union_3.
-                               **** apply diff_remove;default_simp. apply notin_union_2 in n0. apply notin_union_1 in n0.
-                                    apply diff_remove_2 in n0;default_simp. apply notin_B. assumption.
-                               **** apply notin_B. default_simp.
-                           *** apply (fv_nom_m_subst_notin _ (B e2)) in H0. rewrite H0. apply diff_remove;default_simp.
-                               apply notin_union_2 in n0. apply notin_union_1 in n0.
-                               apply diff_remove_2 in n0;default_simp. apply notin_B. assumption.
-                        ** rewrite swap_id. rewrite swap_symmetric. rewrite swap_involutive. apply aeq_refl.
-                      * case (x1 == z);intros.
-                        ** rewrite e in *. rewrite <- (swap_size_eq z x0). apply aeq_abs_diff.
-                           *** assumption.
-                           *** apply fv_nom_swap. pose proof in_or_notin. specialize (H0 x (fv_nom (swap z x0 (B e1)))).
-                               destruct H0.
-                               **** apply (fv_nom_m_subst_in _ (B e2)) in H0. rewrite H0. simpl.
-                                    apply notin_union_3.
-                                    ***** apply diff_remove;default_simp. apply fv_nom_swap. default_simp.
-                                    ***** apply notin_B. default_simp.
-                               **** apply (fv_nom_m_subst_notin _ (B e2)) in H0. rewrite H0.
-                                    apply diff_remove;default_simp. apply fv_nom_swap. default_simp.
-                           *** rewrite (swap_symmetric (swap x0 z
-                               (subst_rec (size (swap z x0 (B e1))) (swap z x0 (B e1)) (B e2) x)) z x0).
-                               rewrite swap_involutive. apply aeq_refl.
-                        ** rewrite <- (swap_size_eq z x0). apply aeq_abs_diff.
-                           *** assumption.
-                           *** apply fv_nom_swap. pose proof in_or_notin. specialize (H0 x (fv_nom (swap z x0 (B e1)))).
-                               destruct H0.
-                               **** apply (fv_nom_m_subst_in _ (B e2)) in H0. rewrite H0. simpl.
-                                    apply notin_union_3.
-                                    ***** apply diff_remove;default_simp. apply fv_nom_remove_swap;default_simp.
-                                          apply notin_B. default_simp.
-                                    ***** apply notin_B. default_simp.
-                               **** apply (fv_nom_m_subst_notin _ (B e2)) in H0. rewrite H0.
-                                    apply diff_remove;default_simp. apply fv_nom_remove_swap;default_simp.
-                                    apply notin_B. default_simp.
-                           *** rewrite (swap_symmetric _ x1 x0). rewrite swap_involutive. apply aeq_refl.
-                ----- apply refl.
-           ---- apply refltrans_abs2. rewrite <- (swap_size_eq z x0) at 1. rewrite <- (swap_size_eq z x1 e1).
-                apply (refltrans_composition _ _ (subst_rec (size (swap z x1 (B e1))) (swap z x1 (B e1)) (B e2) x)).
-                ----- apply (rtrans _ _ (subst_rec (size (swap z x1 (B e1))) (swap z x1 (B e1)) (B e2) x)).
-                      ------ apply step_aeq. apply (aeq_trans _
-                             (subst_rec (size (swap x0 x1 (swap z x0 (B e1)))) (swap x0 x1 (swap z x0 (B e1)))
-                             (swap x0 x1 (B e2)) (swap_var x0 x1 x))).
-                             * apply aeq_swap_m_subst.
-                             * unfold swap_var. pose proof n. repeat apply notin_union_2 in n. apply notin_singleton_1 in n.
-                               pose proof n0. repeat apply notin_union_2 in n0. apply notin_singleton_1 in n0.
-                               default_simp. apply (aeq_trans _ (subst_rec (size (swap x0 x1 (swap z x0 (B e1))))
-                               (swap x0 x1 (swap z x0 (B e1))) (B e2) x)).
-                               ** apply aeq_m_subst_1. apply aeq_sym. apply aeq_swap0.
-                                  *** default_simp.
-                                  *** apply notin_B. default_simp.
-                               ** rewrite (swap_symmetric _ z x0). rewrite (swap_symmetric _ x0 x1).
-                                  case (x1 == z);intros.
-                                  *** rewrite e in *. rewrite (swap_symmetric _ z x0).
-                                      rewrite swap_id. rewrite swap_involutive. apply aeq_refl.
-                                  *** case (x0 == z);intros.
-                                      **** rewrite e in *. rewrite swap_id. rewrite (swap_symmetric _ x1 z).
-                                           apply aeq_refl.
-                                      **** rewrite shuffle_swap;try assumption. rewrite (swap_symmetric _ x1 z).
-                                           rewrite shuffle_swap;default_simp. apply aeq_m_subst_2.
-                                           apply aeq_sym. apply aeq_swap0.
-                                           ***** apply fv_nom_swap. apply notin_B. default_simp.
-                                           ***** apply fv_nom_remove_swap;default_simp.
-                      ------ apply refl.
-                ----- apply (refltrans_composition _ _ (subst_rec (size (B (swap z x1 e1))) (B (swap z x1 e1)) (B e2) x)).
-                      ------ apply (rtrans _ _ (subst_rec (size (B (swap z x1 e1))) (B (swap z x1 e1)) (B e2) x)).
-                             * apply step_aeq. apply aeq_m_subst_2. apply swap_B.
-                             * apply refl.
-                      ------ apply H. 
-                             * reflexivity.
-                             * apply pure_swap. assumption.
-                             * assumption.
-  - pose proof subst_app. unfold m_subst in H1. rewrite H1. simpl. destruct e1_1.
-    -- rewrite H1. simpl. case (x == x0);intros.
-       --- destruct e2.
-           ---- apply refltrans_app2. apply IHe1_2;default_simp.
-           ---- simpl. apply (refltrans_composition _ _ (n_sub (B e2) x1
-                (subst_rec (size (B e1_2)) (B e1_2) (n_abs x1 (B e2)) x))).
-                ----- apply (rtrans _ _ (n_sub (B e2) x1 (subst_rec (size (B e1_2)) (B e1_2) (n_abs x1 (B e2)) x)));
-                      try (apply refl). apply step_redex_R. apply b_rule. apply step_betax.
-                ----- apply (refltrans_composition _ _ (n_sub (B e2) x1
-                      (B (subst_rec (size e1_2) e1_2 (n_abs x1 e2) x)))).
-                      ------ apply refltrans_sub1. assert (H': B (n_abs x1 e2) = 
-                             n_abs x1 (B e2)). default_simp. rewrite <- H'. apply IHe1_2;
-                             inversion H;assumption.
-                      ------ apply refltrans_lx_pix. apply pure_pix. apply pure_B.
-                             inversion H0. assumption.
-           ---- apply refltrans_app2. apply IHe1_2;default_simp.
-           ---- apply refltrans_app2. apply IHe1_2;default_simp.
-       --- apply refltrans_app3.
-           ---- simpl. apply refl.
-           ---- apply IHe1_2.
-                ----- inversion H. assumption.
-                ----- assumption.
-    -- pose proof subst_abs. unfold m_subst in H2. rewrite H2. case (x == x0);intros.
-       --- rewrite e in *. pose proof aeq_double_m_subst. apply (rtrans _ _ (m_subst (m_subst (B e2)
-           x0 (B e1_2)) x0 (B e1_1))).
-           ---- apply step_aeq. apply H3.
-           ---- apply refltrans_m_subst_1. apply IHe1_2.
-                ----- inversion H. assumption.
-                ----- assumption.
-       --- destruct (atom_fresh (Metatheory.union (fv_nom e2) (Metatheory.union (fv_nom (n_abs x0 e1_1)) (singleton x)))).
-           assert (H': (subst_rec (size (m_subst (B e1_2) x0 (B e1_1))) (m_subst (B e1_2) x0 (B e1_1)) (B e2) x) = 
-           (m_subst (B e2) x (m_subst (B e1_2) x0 (B e1_1)))). default_simp. rewrite H'. admit.
-    -- pose proof subst_app. unfold m_subst in H2. rewrite H2. rewrite H2. apply refltrans_app3.
-       --- unfold m_subst in IHe1_1. rewrite <- (H2 e2). apply IHe1_1.
-           ---- inversion H. assumption.
-           ---- assumption.
-       --- apply IHe1_2.
-           ---- inversion H. assumption.
-           ---- assumption.
-    -- pose proof subst_sub. unfold m_subst in H2. rewrite H2. case (x == x0);intros.
-       --- rewrite H1. apply refltrans_app3.
-           ---- rewrite e in *. specialize (H2 e2 x0 x0). default_simp.
-           ---- apply IHe1_2.
-                ----- inversion H. assumption.
-                ----- assumption.
-       --- pose proof H2. specialize (H2 e2 x x0). default_simp.
-  - inversion H0.
-Admitted.
+                      ------ apply (aeq_trans _ (m_subst e1 x (swap x0 x2 (swap z x0 e3)))).
+                             ------- apply aeq_m_subst_2. apply aeq_swap. apply subst_fresh_eq. assumption.
+                             ------- apply (aeq_trans _ (swap x1 x2 (swap z x1 e3))).
+                                     * apply (aeq_trans _ (swap x0 x2 (swap z x0 e3))).
+                                       ** apply subst_fresh_eq. apply fv_nom_remove_swap;default_simp.
+                                       ** case (z == x1);intros.
+                                          *** rewrite e in *. rewrite swap_id. rewrite swap_symmetric.
+                                              rewrite (swap_symmetric _ x1 x0).
+                                              case (x0 == x1);intros.
+                                              **** rewrite e0 in *. rewrite swap_id. rewrite swap_symmetric.
+                                                   apply aeq_refl.
+                                              **** rewrite shuffle_swap;default_simp. rewrite swap_symmetric.
+                                                   rewrite shuffle_swap;default_simp.
+                                                   apply aeq_sym. apply aeq_swap0.
+                                                   ***** apply fv_nom_swap. apply (fv_nom_m_subst_notin _ e2) in H2.
+                                                         rewrite H2 in n2. pose proof n2. apply notin_union_2 in n2.
+                                                         apply notin_union_1 in n2. apply diff_remove_2 in n2;try assumption.
+                                                         apply diff_remove_2 in n2;default_simp.
+                                                         apply fv_nom_swap_remove in n2;default_simp.
+                                                   ***** apply fv_nom_remove_swap;default_simp.
+                                          *** case (z == x0);intros.
+                                              **** rewrite e in *. rewrite swap_id. rewrite (swap_symmetric _ x1 x2).
+                                                   rewrite (swap_symmetric _ x0 x1). rewrite shuffle_swap;default_simp.
+                                                   rewrite swap_symmetric. apply aeq_swap. apply aeq_swap0.
+                                                   ***** rewrite swap_id in *. apply (fv_nom_m_subst_notin _ e2) in H2.
+                                                         rewrite H2 in n2. pose proof n2. apply notin_union_2 in n2.
+                                                         apply notin_union_1 in n2. apply diff_remove_2 in n2;try assumption.
+                                                         apply diff_remove_2 in n2;default_simp.
+                                                   ***** default_simp.
+                                              **** case (z == x2);intros.
+                                                   ***** rewrite e in *. rewrite swap_symmetric. rewrite swap_involutive.
+                                                         rewrite swap_symmetric. rewrite swap_involutive. apply aeq_refl.
+                                                   ***** rewrite swap_symmetric. rewrite (swap_symmetric _ z x0).
+                                                         rewrite shuffle_swap;default_simp.
+                                                         rewrite (swap_symmetric _ x1 x2).
+                                                         rewrite (swap_symmetric _ z x1).
+                                                         rewrite shuffle_swap;default_simp. apply aeq_swap.
+                                                         apply (aeq_trans _ e3).
+                                                         ****** apply aeq_sym. apply aeq_swap0.
+                                                                ******* apply (fv_nom_m_subst_notin _ e2) in H2.
+                                                                        rewrite H2 in n2. pose proof n2.
+                                                                        apply notin_union_2 in n2.
+                                                                        apply notin_union_1 in n2.
+                                                                        apply diff_remove_2 in n2;try assumption.
+                                                                        apply diff_remove_2 in n2;default_simp.
+                                                                        apply fv_nom_swap_remove in n2;default_simp.
+                                                                ******* default_simp.
+                                                         ****** apply aeq_swap0.
+                                                                ******* apply (fv_nom_m_subst_notin _ e2) in H2.
+                                                                        rewrite H2 in n2. pose proof n2.
+                                                                        apply notin_union_2 in n2.
+                                                                        apply notin_union_1 in n2.
+                                                                        apply diff_remove_2 in n2;try assumption.
+                                                                        apply diff_remove_2 in n2;default_simp.
+                                                                        apply fv_nom_swap_remove in n2;default_simp.
+                                                                ******* default_simp.
+                                     * apply aeq_swap. apply aeq_sym. apply subst_fresh_eq.
+                                       apply fv_nom_remove_swap;default_simp.
+                                       apply fv_nom_swap_remove in H2;default_simp. 
+ - pose proof subst_app. rewrite H. rewrite H. rewrite H. apply aeq_app.
+   -- apply IHe3_1.
+   -- apply IHe3_2.
+ - pose proof subst_sub. rewrite H0. rewrite H0. case (x == z);intros.
+   -- rewrite e in *. rewrite H0. default_simp. apply aeq_sub_same.
+      --- apply aeq_refl.
+      --- apply IHe3_1.
+   -- default_simp. rewrite H0. pose proof n0. repeat apply notin_union_2 in H1. apply notin_singleton_1 in H1.
+      default_simp. case (x1 == x2);intros.
+      --- rewrite e in *. apply aeq_sub_same.
+          ---- apply (aeq_trans _ (m_subst e1 x (m_subst e2 x (swap x0 x2 (swap z x0 e3_1))))).
+               ----- apply aeq_m_subst_2. apply (aeq_trans _ (m_subst (swap x0 x2 e2) (swap_var x0 x2 x)
+                     (swap x0 x2 (swap z x0 e3_1)))).
+                     ------ apply aeq_swap_m_subst.
+                     ------ unfold swap_var. pose proof n0. pose proof n1. repeat apply notin_union_2 in n1.
+                            repeat apply notin_union_2 in n0. apply notin_singleton_1 in n0.
+                            apply notin_singleton_1 in n1. default_simp. apply aeq_m_subst_1.
+                            apply aeq_sym. apply aeq_swap0.
+                            * default_simp.
+                            * pose proof in_or_notin. specialize (H4 x (fv_nom e2)). destruct H4.
+                              ** apply (fv_nom_m_subst_in _ e1) in H4. rewrite H4 in H3. simpl in H3.
+                                 default_simp.
+                              ** apply (fv_nom_m_subst_notin _ e1) in H4. rewrite H4 in H3. default_simp.
+               ----- rewrite swap_symmetric. rewrite (swap_symmetric _ z x0). case (x2 == z);intros.
+                     ------ rewrite e0 in *. rewrite swap_symmetric. rewrite swap_involutive.
+                            rewrite <- (swap_id e3_1 z) at 1. apply H. reflexivity.
+                     ------ case (x0 == z);intros.
+                            * rewrite e0 in *. rewrite swap_id. rewrite swap_symmetric. apply H. reflexivity.
+                            * rewrite shuffle_swap;default_simp. rewrite swap_symmetric.
+                              case (x2 == x0);intros.
+                              ** rewrite e in *. rewrite swap_id. apply H. reflexivity.
+                              ** rewrite shuffle_swap;default_simp. apply (aeq_trans _ (m_subst e1 x
+                                 (m_subst e2 x (swap z x2 e3_1)))).
+                                 *** apply aeq_m_subst_2. apply aeq_m_subst_2. apply aeq_sym.
+                                     apply aeq_swap0.
+                                     **** apply fv_nom_swap. default_simp.
+                                     **** apply fv_nom_remove_swap;default_simp.
+                                 *** apply H. reflexivity.
+          ---- apply IHe3_1.
+      --- apply aeq_sub_diff.
+          ---- apply IHe3_1.
+          ---- default_simp.
+          ---- pose proof in_or_notin. specialize (H2 x (fv_nom (swap z x0 e3_1))). destruct H2.
+               ----- pose proof H2. pose proof n2. apply (fv_nom_m_subst_in _ e2) in H2. rewrite H2 in n2. simpl in n2.
+                     apply notin_union_2 in n2. apply notin_union_1 in n2.
+                     apply notin_union_1 in n2. apply in_swap in H3.
+                     * pose proof H3. apply (in_swap _ _ z x1) in H3.
+                       ** apply (fv_nom_m_subst_in _ (m_subst e1 x e2)) in H3. rewrite H3. simpl.
+                          apply notin_union_3.
+                          *** apply diff_remove.
+                              **** default_simp.
+                              **** case (x2 == x0);intros.
+                                   ***** rewrite e in *. case (x0 == z);intros.
+                                         ****** rewrite e0 in *. apply fv_nom_swap. apply notin_union_2 in n1.
+                                                repeat apply notin_union_1 in n1. apply diff_remove_2 in n1;default_simp.
+                                         ****** apply notin_union_2 in n0. repeat apply notin_union_1 in n0.
+                                                apply fv_nom_remove_swap.
+                                                ******* default_simp.
+                                                ******* assumption.
+                                                ******* apply diff_remove_2 in n0;default_simp.
+                                   ***** apply diff_remove_2 in n2;try assumption. apply notin_union_1 in n2.
+                                         apply diff_remove_2 in n2;default_simp. case (x2 == z);intros.
+                                         ****** rewrite e in *. apply fv_nom_swap. default_simp.
+                                         ****** apply fv_nom_remove_swap;default_simp.
+                                                apply fv_nom_swap_remove in n2;default_simp.
+                          *** pose proof in_or_notin. specialize (H6 x (fv_nom e2)). destruct H6.
+                              **** apply (fv_nom_m_subst_in _ e1) in H6. rewrite H6.
+                                   simpl. apply notin_union_3.
+                                   ***** apply diff_remove.
+                                         ****** repeat apply notin_union_2 in H4. apply notin_singleton_1 in H4.
+                                                default_simp.
+                                         ****** case (x2 == x0);intros.
+                                                ******* rewrite e in *. default_simp.
+                                                ******* apply diff_remove_2 in n2;default_simp.
+                                   ***** default_simp.
+                              **** apply (fv_nom_m_subst_notin _ e1) in H6. rewrite H6.
+                                   apply diff_remove.
+                                   ***** repeat apply notin_union_2 in H4. apply notin_singleton_1 in H4.
+                                         default_simp.
+                                   ***** case (x2 == x0);intros.
+                                         ****** rewrite e in *. default_simp.
+                                         ****** apply diff_remove_2 in n2;default_simp.             
+                       ** assumption.
+                       ** default_simp.
+                     * assumption.
+                     * assumption.
+               ----- assert (H': x `notin` fv_nom (swap z x1 e3_1)).
+                     * apply fv_nom_remove_swap;default_simp. apply fv_nom_swap_remove in H2;default_simp.
+                     * apply (fv_nom_m_subst_notin _ e2) in H2. apply (fv_nom_m_subst_notin _ (m_subst e1 x e2)) in H'.
+                       rewrite H'. pose proof n2. rewrite H2 in n2. apply notin_union_2 in n2. apply notin_union_1 in n2.
+                       apply notin_union_1 in n2. case (x2 == x0);intros.
+                       ** rewrite e in *. apply diff_remove.
+                          *** default_simp.
+                          *** case (x0 == z);intros.
+                              **** rewrite e0 in *. apply fv_nom_swap. apply notin_union_2 in n1.
+                                   repeat apply notin_union_1 in n1. apply diff_remove_2 in n1;default_simp.
+                              **** apply fv_nom_remove_swap.
+                                   ***** default_simp.
+                                   ***** assumption.
+                                   ***** apply notin_union_2 in n0.
+                                         repeat apply notin_union_1 in n0. apply diff_remove_2 in n0;default_simp.
+                       ** apply diff_remove.
+                          *** default_simp.
+                          *** apply diff_remove_2 in n2;try assumption. apply diff_remove_2 in n2;default_simp.
+                              case (x2 == z);intros.
+                              **** rewrite e in *. apply fv_nom_swap. default_simp.
+                              **** apply fv_nom_remove_swap;default_simp.
+                                   apply fv_nom_swap_remove in n2;default_simp.
+          ---- pose proof in_or_notin. specialize (H2 x (fv_nom (swap z x0 e3_1))). destruct H2.
+               ----- apply (fv_nom_m_subst_in _ e2) in H2. rewrite H2 in n2. simpl in n2.
+                     case (x0 == x2);intros.
+                     ------ rewrite e in *. rewrite swap_id. apply (aeq_trans _
+                            (m_subst (m_subst e1 x e2) x (swap x1 x2 (swap z x1 e3_1)))).
+                            * rewrite (swap_symmetric _ x1 x2). rewrite (swap_symmetric _ z x1).
+                              case (x1 == z);intros.
+                              ** rewrite e0 in *. rewrite swap_symmetric. rewrite swap_id. apply H. reflexivity.
+                              ** case (x2 == z);intros.
+                                 *** rewrite e0 in *. rewrite (swap_symmetric _ z x1). rewrite swap_involutive.
+                                     rewrite <- (swap_id e3_1 z) at 2. apply H. reflexivity.
+                                 *** rewrite shuffle_swap;default_simp. rewrite (swap_symmetric _ x2 z).
+                                     rewrite shuffle_swap;default_simp. apply (aeq_trans _
+                                     (m_subst (m_subst e1 x e2) x (swap z x2 e3_1))).
+                                     **** apply H. reflexivity.
+                                     **** apply aeq_m_subst_2. apply aeq_swap0.
+                                          ***** apply fv_nom_swap. default_simp.
+                                          ***** apply fv_nom_remove_swap;default_simp.
+                            * apply (aeq_trans _ (m_subst (swap x1 x2 (m_subst e1 x e2)) (swap_var x1 x2 x)
+                              (swap x1 x2 (swap z x1 e3_1)))).
+                              ** unfold swap_var. pose proof n1. repeat apply notin_union_2 in H3. apply notin_singleton_1 in H3.
+                                 default_simp. apply aeq_m_subst_1. apply aeq_swap0.
+                                 *** default_simp.
+                                 *** pose proof in_or_notin. specialize (H4 x (fv_nom e2)). destruct H4.
+                                     **** apply (fv_nom_m_subst_in _ e1) in H4. rewrite H4. simpl.
+                                          apply notin_union_3;default_simp.
+                                     **** apply (fv_nom_m_subst_notin _ e1) in H4. rewrite H4. default_simp.
+                              ** apply aeq_sym. apply aeq_swap_m_subst.
+                     ------ apply (aeq_trans _ (m_subst e1 x (m_subst e2 x (swap x0 x2 (swap z x0 e3_1))))).
+                            * apply aeq_m_subst_2. apply (aeq_trans _ (m_subst (swap x0 x2 e2) (swap_var x0 x2 x)
+                              (swap x0 x2 (swap z x0 e3_1)))).
+                              ** apply aeq_swap_m_subst.
+                              ** unfold swap_var. pose proof n2. repeat apply notin_union_2 in n2. apply notin_singleton_1 in n2.
+                                 default_simp. apply aeq_m_subst_1. apply aeq_sym. apply aeq_swap0.
+                                 *** default_simp.
+                                 *** default_simp.
+                            * apply (aeq_trans _ (m_subst (m_subst e1 x e2) x (swap x1 x2 (swap z x1 e3_1)))).
+                              ** case (x0 == x1);intros.
+                                 *** rewrite e in *. apply H. rewrite swap_size_eq. reflexivity.
+                                 *** rewrite swap_symmetric. rewrite (swap_symmetric _ z x0).
+                                     case (x2 == z);intros.
+                                     **** rewrite e in *. rewrite swap_symmetric. rewrite swap_involutive.
+                                          rewrite swap_symmetric. rewrite swap_involutive.
+                                          rewrite <- (swap_id e3_1 z). apply H. reflexivity.
+                                     **** case (x0 == z);intros.
+                                          ***** rewrite e in *. rewrite swap_id. rewrite (swap_symmetric _ x1 x2).
+                                                rewrite (swap_symmetric _ z x1). rewrite shuffle_swap;default_simp.
+                                                apply (aeq_trans _ (m_subst (m_subst e1 x e2) x (swap x2 z e3_1))).
+                                                ****** apply H. reflexivity.
+                                                ****** apply aeq_m_subst_2. apply aeq_swap. apply aeq_swap0.
+                                                       ******* rewrite swap_id in n2. default_simp.
+                                                       ******* default_simp.
+                                          ***** rewrite shuffle_swap;default_simp. apply (aeq_trans _ 
+                                                (m_subst e1 x (m_subst e2 x (swap x2 z e3_1)))).
+                                                ****** apply aeq_m_subst_2. apply aeq_m_subst_2. apply aeq_swap.
+                                                       apply aeq_sym. apply aeq_swap0.
+                                                       ******* pose proof n2. apply notin_union_2 in n2.
+                                                               repeat apply notin_union_1 in n2.
+                                                               apply diff_remove_2 in n2.
+                                                               ******** apply notin_union_1 in n2. apply diff_remove_2 in n2.
+                                                                        ********* apply fv_nom_swap_remove in n2;default_simp.
+                                                                        ********* default_simp.
+                                                               ******** default_simp.
+                                                       ******* apply notin_union_2 in n0. repeat apply notin_union_1 in n0.
+                                                               apply diff_remove_2 in n0;default_simp.
+                                                ****** rewrite (swap_symmetric _ x1 x2).
+                                                       rewrite (swap_symmetric _ z x1). case (z == x1);intros.
+                                                       ******* rewrite e in *. rewrite swap_id. apply H. reflexivity.
+                                                       ******* rewrite shuffle_swap;default_simp. apply (aeq_trans _ 
+                                                               (m_subst (m_subst e1 x e2) x (swap x2 z e3_1))).
+                                                               ******** apply H. reflexivity.
+                                                               ******** apply aeq_m_subst_2. apply aeq_swap.
+                                                                        apply aeq_swap0.
+                                                                        ********* pose proof n2. apply notin_union_2 in n2.
+                                                                                  repeat apply notin_union_1 in n2.
+                                                                                  apply diff_remove_2 in n2.
+                                                                                  + apply notin_union_1 in n2.
+                                                                                    apply diff_remove_2 in n2.
+                                                                                    ++ apply fv_nom_swap_remove in n2;default_simp.
+                                                                                    ++ default_simp.
+                                                                                  + default_simp.
+                                                                        ********* default_simp.
+                              ** apply (aeq_trans _ (m_subst (swap x1 x2 (m_subst e1 x e2)) (swap_var x1 x2 x)
+                                 (swap x1 x2 (swap z x1 e3_1)))).
+                                 *** unfold swap_var. pose proof n1. pose proof n2. repeat apply notin_union_2 in H3.
+                                     repeat apply notin_union_2 in H4. apply notin_singleton_1 in H3.
+                                     apply notin_singleton_1 in H4. default_simp. apply aeq_m_subst_1. apply aeq_swap0.
+                                     **** default_simp.
+                                     **** pose proof in_or_notin. specialize (H5 x (fv_nom e2)). destruct H5.
+                                          ***** apply (fv_nom_m_subst_in _ e1) in H5. rewrite H5. simpl.
+                                                apply notin_union_3;default_simp.
+                                          ***** apply (fv_nom_m_subst_notin _ e1) in H5. rewrite H5. default_simp.
+                                 *** apply aeq_sym. apply aeq_swap_m_subst.
+               ----- assert (H': x `notin` fv_nom (swap z x1 e3_1)).
+                     ------- apply fv_nom_remove_swap;default_simp. apply fv_nom_swap_remove in H2;default_simp.
+                     ------- apply (aeq_trans _ (m_subst e1 x (swap x0 x2 (swap z x0 e3_1)))).
+                             * apply aeq_m_subst_2. apply aeq_swap. apply subst_fresh_eq. assumption.
+                             * apply (aeq_trans _ (swap x1 x2 (swap z x1 e3_1))).
+                               ** apply (aeq_trans _ (swap x0 x2 (swap z x0 e3_1))).
+                                  *** apply subst_fresh_eq. apply fv_nom_remove_swap;default_simp.
+                                  *** case (z == x0);intros.
+                                      **** rewrite e in *. rewrite swap_id. case (x0 == x1);intros.
+                                           ***** rewrite e0 in *. rewrite swap_id. apply aeq_refl.
+                                           ***** rewrite (swap_symmetric _ x1 x2). rewrite (swap_symmetric _ x0 x1).
+                                                 case (x2 == x0);intros.
+                                                 ****** rewrite e0 in *. rewrite swap_id. rewrite swap_symmetric.
+                                                        rewrite swap_involutive. apply aeq_refl.
+                                                 ****** rewrite shuffle_swap;default_simp. rewrite swap_symmetric.
+                                                        apply aeq_swap. apply aeq_swap0.
+                                                        + pose proof n2. apply notin_union_2 in n2. repeat apply notin_union_1 in n2.
+                                                          apply (fv_nom_m_subst_notin _ e2) in H2. rewrite H2 in n2.
+                                                          simpl in n2. apply diff_remove_2 in n2.
+                                                          ++ rewrite swap_id in n2. apply diff_remove_2 in n2;default_simp.
+                                                          ++ assumption.
+                                                        + default_simp.
+                                      **** case (z == x2);intros.
+                                           ***** rewrite e in *. rewrite swap_symmetric. rewrite swap_involutive.
+                                                 rewrite swap_symmetric. rewrite swap_involutive. apply aeq_refl.
+                                           ***** rewrite swap_symmetric. rewrite (swap_symmetric _ z x0).
+                                                 rewrite shuffle_swap;default_simp. case(z == x1);intros.
+                                                 ****** rewrite e in *. rewrite swap_id. rewrite swap_symmetric.
+                                                        apply aeq_swap. apply aeq_sym. case (x2 == x0);intros.
+                                                        + rewrite e0. rewrite swap_id. apply aeq_refl. 
+                                                        + apply aeq_swap0.
+                                                          ++ pose proof n2. apply notin_union_2 in n2.
+                                                             repeat apply notin_union_1 in n2. apply diff_remove_2 in n2.
+                                                             +++ apply (fv_nom_m_subst_notin _ e2) in H2. rewrite H2 in n2.
+                                                                 apply diff_remove_2 in n2.
+                                                                 ++++ apply fv_nom_swap_remove in n2;default_simp.
+                                                                 ++++ default_simp.
+                                                             +++ default_simp.
+                                                          ++ default_simp.
+                                                 ****** rewrite (swap_symmetric _ x1 x2). rewrite (swap_symmetric _ z x1).
+                                                        rewrite shuffle_swap;default_simp. apply aeq_swap.
+                                                        apply (aeq_trans _ e3_1).
+                                                        + apply aeq_sym. apply aeq_swap0.
+                                                          ++ case (x2 == x0);intros.
+                                                             +++ rewrite e in *. default_simp.
+                                                             +++ pose proof n2. apply notin_union_2 in n2.
+                                                                 repeat apply notin_union_1 in n2. apply diff_remove_2 in n2.
+                                                                 ++++ apply (fv_nom_m_subst_notin _ e2) in H2. rewrite H2 in n2.
+                                                                      apply diff_remove_2 in n2.
+                                                                      +++++ apply fv_nom_swap_remove in n2;default_simp.
+                                                                      +++++ default_simp.
+                                                                 ++++ default_simp.
+                                                          ++ default_simp.
+                                                        + apply aeq_swap0.
+                                                          ++ case (x2 == x0);intros.
+                                                             +++ rewrite e in *. default_simp.
+                                                             +++ pose proof n2. apply notin_union_2 in n2.
+                                                                 repeat apply notin_union_1 in n2. apply diff_remove_2 in n2.
+                                                                 ++++ apply (fv_nom_m_subst_notin _ e2) in H2. rewrite H2 in n2.
+                                                                      apply diff_remove_2 in n2.
+                                                                      +++++ apply fv_nom_swap_remove in n2;default_simp.
+                                                                      +++++ default_simp.
+                                                                 ++++ default_simp.
+                                                          ++ default_simp.
+                               ** apply aeq_swap. apply aeq_sym. apply subst_fresh_eq. assumption.
+Qed.
 
-    (*
-    simpl. destruct e1_1 eqn: H''
-    -- rewrite H1. apply (refltrans_composition _ _ (n_app (B (subst_rec (size (n_var x0)) (n_var x0) e2 x))
-        (B (subst_rec (size e1_2) e1_2 e2 x)))).
-        --- apply refltrans_app3.
-            ---- apply IHe1_1;default_simp.
-            ---- apply IHe1_2;default_simp.
-        --- destruct (subst_rec (size (n_var x0)) (n_var x0) e2 x ) eqn: H';try apply refl. simpl.
-            apply (refltrans_composition _ _ (n_sub (B n) x1 (B (subst_rec (size e1_2) e1_2 e2 x)))).
-            ---- apply (rtrans _ _ (n_sub (B n) x1 (B (subst_rec (size e1_2) e1_2 e2 x)))).
-                 ----- apply step_redex_R. apply b_rule. apply step_betax.
-                 ----- apply refl.
-            ---- apply refltrans_lx_pix. apply pure_pix. simpl in H'. default_simp.
-                 apply pure_B. assumption.
-    -- simpl. case (x == x0);intros.
-       --- 
-Admitted. *)
+Lemma aeq_swap_B: forall e1 x1 x2, aeq (B (swap x1 x2 e1)) (swap x1 x2 (B e1)).
+Proof.
+  induction e1 using n_sexp_size_induction;intros;destruct e1 eqn:He1.
+  - simpl. apply aeq_refl.
+  - simpl. apply aeq_abs_same. apply H. simpl. lia.
+  - destruct n1.
+    -- simpl. apply aeq_app;try apply aeq_refl. apply H. simpl. lia.
+    -- default_simp. apply (aeq_trans _ (m_subst (swap x1 x2 (B n2)) (swap_var x1 x2 x) (swap x1 x2 (B n1)))).
+       --- apply (aeq_trans _ (m_subst (B (swap x1 x2 n2)) (swap_var x1 x2 x) (swap x1 x2 (B n1)))).
+           ---- apply aeq_m_subst_2. apply H. lia.
+           ---- apply aeq_m_subst_1. apply H. lia.
+       --- apply aeq_sym. apply aeq_swap_m_subst.
+    -- assert (H': (B (swap x1 x2 (n_app (n_app n1_1 n1_2) n2))) = (n_app (B (swap x1 x2 (n_app n1_1 n1_2))) (B (swap x1 x2 n2)))).
+       default_simp. assert (H'': (swap x1 x2 (B (n_app (n_app n1_1 n1_2) n2))) = (n_app (swap x1 x2 (B (n_app n1_1 n1_2)))
+       (swap x1 x2 (B n2)))). default_simp. rewrite H'. rewrite H''. apply aeq_app;apply H; simpl; lia.
+    -- simpl. apply aeq_app.
+       --- apply aeq_sub_same;apply H;simpl;lia.
+       --- apply H. simpl. lia.
+  - simpl. apply aeq_sub_same;apply H;simpl;lia.
+Qed.
+ 
+Lemma aeq_B: forall e1 e2, aeq e1 e2 -> aeq (B e1) (B e2).
+Proof.
+  induction e1 using n_sexp_induction;intros.
+  - inversion H. simpl. apply aeq_refl.
+  - inversion H0.
+    -- subst. simpl. apply aeq_abs_same. rewrite <- (swap_id e1 z). apply H.
+       --- reflexivity.
+       --- rewrite swap_id. assumption.
+    -- subst. simpl. apply aeq_abs_diff.
+       --- assumption.
+       --- apply notin_B. assumption.
+       --- apply (aeq_trans _ (B (swap y z t2))).
+           ---- rewrite <- (swap_id e1 z). apply H.
+                * reflexivity.
+                * rewrite swap_id. assumption.
+           ---- apply aeq_swap_B.
+  - destruct e1_1;inversion H.
+    -- simpl. inversion H2. simpl. apply aeq_app.
+       --- apply aeq_refl.
+       ---  apply IHe1_2. assumption.
+    -- simpl. inversion H2;subst.
+       --- apply (aeq_trans _ (m_subst (B t2') x (B e1_1))).
+           ---- apply aeq_m_subst_1. apply IHe1_2. assumption.
+           ---- apply aeq_m_subst_2. apply IHe1_1 in H2. simpl in H2. inversion H2.
+                * assumption.
+                * default_simp.
+       --- apply (aeq_trans _ (m_subst (B t2') x (B e1_1))).
+           ---- apply aeq_m_subst_1. apply IHe1_2. assumption.
+           ---- apply aeq_m_subst_3.
+                * assumption.
+                * apply notin_B. assumption.
+                * apply IHe1_1 in H2. simpl in H2. inversion H2.
+                  ** default_simp.
+                  ** rewrite swap_symmetric. assumption.
+    -- inversion H2. assert (H': (B (n_app (n_app e1_1_1 e1_1_2) e1_2)) = n_app (B (n_app e1_1_1 e1_1_2)) (B e1_2)).
+       default_simp. assert (H'': (B (n_app (n_app t1'0 t2'0) t2')) = n_app (B (n_app t1'0 t2'0)) (B t2')).
+       default_simp. rewrite H'. rewrite H''. apply aeq_app.
+       --- apply IHe1_1. subst. assumption.
+       --- apply IHe1_2. assumption.
+    -- inversion H2;subst.
+       --- simpl. apply aeq_app.
+           ---- simpl in IHe1_1. apply IHe1_1 in H2. simpl in H2. assumption.
+           ---- apply IHe1_2. assumption.
+       --- simpl. apply aeq_app.
+           ---- apply IHe1_1 in H2. simpl in H2. assumption.
+           ---- apply IHe1_2. assumption.
+  - inversion H0;subst.
+    -- simpl. apply aeq_sub_same.
+       --- rewrite <- (swap_id e1_1 z). apply H.
+           ---- reflexivity.
+           ---- rewrite swap_id. assumption.
+       --- apply IHe1_1. assumption.
+    -- simpl. apply aeq_sub_diff.
+       --- apply IHe1_1. assumption.
+       --- assumption.
+       --- apply notin_B. assumption.
+       --- rewrite <- (swap_id e1_1 z) in H8. apply H in H8.
+           ---- rewrite swap_id in H8. apply (aeq_trans _ (B (swap y z t1'))).
+                ----- assumption.
+                ----- apply aeq_swap_B.
+           ---- reflexivity.
+Qed.
 
 Lemma refltrans_rtrans_reduction (R: Rel n_sexp): forall e1 e2, (ctx R) e1 e2 -> refltrans (ctx R) e1 e2.
 Proof.
   intros. apply (rtrans _ _ e2).
   - assumption.
   - apply refl.
+Qed.
+
+Lemma refltrans_m_subst_B: forall e1 e2 x, pure e1 -> pure e2 -> refltrans lx (m_subst (B e2) x (B e1)) (B (m_subst e2 x e1)).
+Proof.
+  induction e1 using n_sexp_size_induction;intros.
+  destruct e1 eqn:He.
+  - simpl. unfold m_subst;default_simp;apply refl.
+  - pose proof subst_abs. simpl. rewrite H2. rewrite H2. case (x == x0);intros.
+    -- simpl. apply refltrans_abs. apply refl.
+    -- default_simp. case (x1 == x2);intros.
+       --- rewrite e in *. apply refltrans_abs. apply (rtrans _ _ (m_subst (B e2) x (B (swap x0 x2 n)))).
+           ---- apply step_aeq. apply aeq_m_subst_2. apply swap_B.
+           ---- apply H.
+                ----- rewrite swap_size_eq. default_simp.
+                ----- apply pure_swap. assumption.
+                ----- assumption.
+       --- apply (rtrans _ _ (n_abs x2 (swap x1 x2 (m_subst (B e2) x (swap x0 x1 (B n)))))).
+           ---- apply step_aeq. apply aeq_abs_diff.
+                ----- assumption.
+                ----- apply fv_nom_swap. pose proof in_or_notin. specialize (H0 x (fv_nom (swap x0 x1 (B n)))).
+                      destruct H0.
+                      ------ apply (fv_nom_m_subst_in _ (B e2)) in H0. rewrite H0. simpl. apply notin_union_3.
+                             * apply diff_remove;default_simp. case (x2 == x0);intros.
+                               ** rewrite e in *. apply fv_nom_swap. default_simp.
+                               ** apply fv_nom_remove_swap;default_simp. apply notin_B. default_simp.
+                             * apply notin_B. default_simp.
+                      ------ apply (fv_nom_m_subst_notin _ (B e2)) in H0. rewrite H0.
+                             apply diff_remove;default_simp. case (x2 == x0);intros.
+                             * rewrite e in *. apply fv_nom_swap. default_simp.
+                             * apply fv_nom_remove_swap;default_simp. apply notin_B. default_simp.
+                ----- rewrite (swap_symmetric _ x2 x1). rewrite swap_involutive. apply aeq_refl.
+           ---- apply refltrans_abs. apply (rtrans _ _ (m_subst (B e2) x (swap x1 x2 (swap x0 x1 (B n))))).
+                ----- apply step_aeq. apply (aeq_trans _ (m_subst (swap x1 x2 (B e2)) (swap_var x1 x2 x)
+                      (swap x1 x2 (swap x0 x1 (B n))))).
+                      ------ apply aeq_swap_m_subst.
+                      ------ unfold swap_var. pose proof n1. pose proof n2. repeat apply notin_union_2 in n1.
+                             repeat apply notin_union_2 in n2. apply notin_singleton_1 in n1. apply notin_singleton_1 in n2.
+                             default_simp. apply aeq_m_subst_1. apply aeq_sym. apply aeq_swap0.
+                             * default_simp.
+                             * apply notin_B. default_simp.
+                ----- case (x1 == x0);intros.
+                      ------ rewrite e in *. rewrite swap_id. apply (rtrans _ _ (m_subst (B e2) x (B (swap x0 x2 n)))).
+                             * apply step_aeq. apply aeq_m_subst_2. apply aeq_sym. apply aeq_swap_B.
+                             * apply H.
+                               ** rewrite swap_size_eq. lia.
+                               ** apply pure_swap. assumption.
+                               ** assumption.
+                      ------ case (x2 == x0);intros.
+                             * rewrite e in *. rewrite swap_symmetric. rewrite swap_involutive. rewrite swap_id.
+                               apply H.
+                               ** lia.
+                               ** assumption.
+                               ** assumption.
+                             * rewrite swap_symmetric. rewrite (swap_symmetric _ x0 x1). rewrite shuffle_swap;default_simp.
+                               rewrite swap_symmetric. apply (rtrans _ _ (m_subst (B e2) x (B (swap x0 x2 n)))).
+                               ** apply step_aeq. apply aeq_m_subst_2. apply (aeq_trans _ (swap x0 x2 (B n))).
+                                  *** apply aeq_swap. apply aeq_sym. apply aeq_swap0.
+                                      **** apply notin_B. default_simp.
+                                      **** default_simp.
+                                  *** apply aeq_sym. apply aeq_swap_B.
+                               ** apply H.
+                                  *** rewrite swap_size_eq. lia.
+                                  *** apply pure_swap. assumption.
+                                  *** assumption.
+  - pose proof subst_app. rewrite H2. destruct n1.
+    -- simpl. case (x0 == x);intros.
+       --- rewrite e in *. unfold m_subst at 2. default_simp. pose proof subst_app. destruct e2 eqn:He2.
+           ---- rewrite H0. apply refltrans_app3.
+                ----- assert (H': n_var x = (B (n_var x))). default_simp. rewrite H'. apply H.
+                      * simpl. lia.
+                      * simpl. apply pure_var.
+                      * apply pure_var.
+                ----- apply H.
+                      * lia.
+                      * assumption.
+                      * apply pure_var.
+           ---- simpl. rewrite H0. unfold m_subst at 1. default_simp.
+                apply (rtrans _ _ (n_sub (B n) x0 (m_subst (n_abs x0 (B n)) x (B n2)))).
+                ----- apply step_redex_R. apply b_rule. apply step_betax.
+                ----- apply (refltrans_composition _ _ (n_sub (B n) x0 (B (m_subst (n_abs x0 n) x n2)))).
+                      * apply refltrans_sub1. assert (H': n_abs x0 (B n) = B (n_abs x0 n)). default_simp. rewrite H'. apply H.
+                        ** lia.
+                        ** assumption.
+                        ** assumption.
+                      * apply refltrans_lx_pix. apply pure_pix. apply pure_B. inversion H1. assumption.
+           ---- rewrite H0. apply refltrans_app3.
+                ----- assert (H': n_var x = B (n_var x)). default_simp. rewrite H'. apply H.
+                      * simpl. lia.
+                      * simpl. apply pure_var.
+                      * assumption.
+                ----- apply H.
+                      * lia.
+                      * assumption.
+                      * assumption.
+           ---- inversion H1.
+       --- unfold m_subst at 2. default_simp. pose proof subst_app. rewrite H0. apply refltrans_app3.
+           ---- assert (H': n_var x0 = B (n_var x0)). default_simp. rewrite H'. apply H.
+                ----- simpl. lia.
+                ----- simpl. apply pure_var.
+                ----- assumption.
+           ---- apply H.
+                ----- lia.
+                ----- assumption.
+                ----- assumption. 
+    -- case (x == x0);intros.
+       --- rewrite e in *. simpl. pose proof subst_abs. rewrite H3. default_simp.
+           apply (rtrans _ _ (m_subst (m_subst (B e2) x0 (B n2)) x0 (B n1))).
+           ---- apply step_aeq. apply aeq_double_m_subst.
+           ---- apply refltrans_m_subst1. apply H.
+                * lia.
+                * assumption.
+                * assumption.
+       --- remember (B (n_app (m_subst e2 x (n_abs x0 n1)) (m_subst e2 x n2))) as expression.
+           simpl. remember ( let (z,_) := (atom_fresh (Metatheory.union (fv_nom e2)
+           (Metatheory.union (fv_nom n2) (Metatheory.union (fv_nom n1)
+           (Metatheory.union (singleton x0) (singleton x)))))) in z) as x2. destruct (atom_fresh
+           (Metatheory.union (fv_nom e2) (Metatheory.union (fv_nom n2)
+           (Metatheory.union (fv_nom n1) (Metatheory.union (singleton x0) (singleton x)))))).
+           apply (rtrans _ _ (m_subst (B e2) x (m_subst (B n2) x1 (swap x0 x1 (B n1)))) ).
+           ---- apply step_aeq. apply aeq_m_subst_2. apply aeq_m_subst_3.
+                ----- default_simp.
+                ----- apply fv_nom_swap. apply notin_B. default_simp.
+                ----- rewrite swap_involutive. apply aeq_refl.
+           ---- apply (rtrans _ _ (m_subst (m_subst (B e2) x (B n2)) x1 (m_subst (B e2) x (swap x0 x1 (B n1))))).
+                ----- apply step_aeq. apply m_subst_lemma.
+                      * default_simp.
+                      * apply notin_B. default_simp.
+                ----- apply (refltrans_composition _ _ (m_subst (B (m_subst e2 x n2)) x1 (m_subst (B e2) x (swap x0 x1 (B n1))))).
+                      * apply refltrans_m_subst1. inversion H0. apply H;try assumption. simpl. lia.
+                      * apply (refltrans_composition _ _ (m_subst (B (m_subst e2 x n2)) x1 (B (m_subst e2 x (swap x0 x1 n1))))).
+                        ** apply refltrans_m_subst2. inversion H0. inversion H5.
+                           apply (rtrans _ _ (m_subst (B e2) x (B (swap x0 x1 n1)))).
+                           *** apply step_aeq. apply aeq_m_subst_2. apply aeq_sym. apply aeq_swap_B.
+                           *** apply H.
+                               **** simpl. rewrite swap_size_eq. lia.
+                               **** apply pure_swap. assumption.
+                               **** assumption.
+                        ** assert (H': (m_subst (B (m_subst e2 x n2)) x1 (B (m_subst e2 x (swap x0 x1 n1)))) = 
+                          B (n_app (n_abs x1 (m_subst e2 x (swap x0 x1 n1))) (m_subst e2 x n2))).
+                          *** simpl. reflexivity.
+                          *** rewrite H'. rewrite Heqexpression. apply refltrans_rtrans_reduction. apply step_aeq.
+                              apply aeq_B. apply aeq_app.
+                              **** pose proof subst_abs. rewrite H3. default_simp. case (x1 == x2);intros.
+                                   ***** rewrite e in *. apply aeq_refl.
+                                   ***** apply aeq_abs_diff.
+                                         ****** assumption.
+                                         ****** pose proof in_or_notin. specialize (H4 x (fv_nom (swap x0 x2 n1))).
+                                                destruct H4.
+                                                + apply (fv_nom_m_subst_in _ e2) in H4. rewrite H4. simpl.
+                                                  apply notin_union_3.
+                                                  ++ apply diff_remove;default_simp. apply fv_nom_remove_swap;default_simp.
+                                                  ++ default_simp.
+                                                + apply (fv_nom_m_subst_notin _ e2) in H4. rewrite H4.
+                                                  apply diff_remove;default_simp. apply fv_nom_remove_swap;default_simp.
+                                         ****** apply (aeq_trans _ (m_subst e2 x (swap x2 x1 (swap x0 x2 n1)))).
+                                                + rewrite (swap_symmetric _ x2 x1). rewrite (swap_symmetric _ x0 x2).
+                                                  case (x2 == x0);intros.
+                                                  ++ rewrite e in *. rewrite swap_symmetric. rewrite swap_id. apply aeq_refl.
+                                                  ++ rewrite shuffle_swap;default_simp. rewrite swap_symmetric.
+                                                     apply aeq_m_subst_2. apply aeq_swap. apply aeq_swap0;default_simp.
+                                                + apply (aeq_trans _ (m_subst (swap x2 x1 e2) (swap_var x2 x1 x)
+                                                  (swap x2 x1 (swap x0 x2 n1)))).
+                                                  ++ unfold swap_var. pose proof n0. pose proof n3.
+                                                     repeat apply notin_union_2 in n0. repeat apply notin_union_2 in n3.
+                                                     apply notin_singleton_1 in n0. apply notin_singleton_1 in n3.
+                                                     default_simp. apply aeq_m_subst_1. apply aeq_swap0;default_simp.
+                                                  ++ apply aeq_sym. apply aeq_swap_m_subst.
+                              **** apply aeq_refl. 
+    -- assert (H': (B (n_app (n_app n1_1 n1_2) n2)) = n_app (B (n_app n1_1 n1_2)) (B n2)). default_simp.
+       assert (H'': (B (n_app (m_subst e2 x (n_app n1_1 n1_2)) (m_subst e2 x n2))) = 
+       n_app (B (m_subst e2 x (n_app n1_1 n1_2))) (B (m_subst e2 x n2))). default_simp.
+       rewrite H'. rewrite H''. rewrite H2. apply refltrans_app3.
+       --- apply H.
+           ---- simpl. lia.
+           ---- inversion H0. assumption.
+           ---- assumption.
+       --- apply H.
+           ---- simpl. lia.
+           ---- inversion H0. assumption.
+           ---- assumption.
+    -- inversion H0. inversion H5.
+  - inversion H0.
 Qed.
 
 Lemma refltrans_m_subst (R: Rel n_sexp): forall e1 e2 e3 e4 x, refltrans (ctx R) e1 e2 -> 
@@ -6135,9 +6582,51 @@ Proof.
 Admitted.
 
 Lemma refltrans_beta_abs: forall e1 e2 x1 x2,
-  refltrans (ctx beta) (n_abs x1 e1) (n_abs x2 e2) -> refltrans (ctx beta) e1 (swap x1 x2 e2).
+  refltrans (ctx beta) (n_abs x1 e1) (n_abs x2 e2) ->
+  refltrans (ctx beta) e1 (swap x1 x2 e2).
 Proof.
-  intros. induction H.
+ 
+  intros e1 e2 x1 x2 e1' e2' H. generalize dependent e1. generalize dependent e2.
+  generalize dependent x1. generalize dependent x2. induction H;intros.
+  - apply aeq_sym in H0. apply (aeq_trans (n_abs x2 e2) a) in H; try assumption.
+    inversion H.
+    -- rewrite swap_id. apply refltrans_rtrans_reduction. apply step_aeq.
+       apply aeq_sym. assumption.
+    -- apply refltrans_rtrans_reduction. apply step_aeq. apply (aeq_swap _ _ x1 x2).
+       rewrite swap_involutive. apply aeq_sym. assumption.
+  - inversion H1.
+    -- subst. pose proof H. apply ctx_abs in H.
+       destruct H as [e3 [y]]. subst. apply ctx_abs_2 in H3. inversion H1;default_simp.
+       apply (rtrans _ _ t1).
+       --- apply step_aeq. apply aeq_sym. assumption.
+       --- apply (refltrans_composition _ _ (swap x1 y e3)).
+           ---- apply refltrans_rtrans_reduction. assumption.
+           ---- apply IHrefltrans.
+                ----- apply aeq_abs_diff.
+  
+  
+  apply IHrefltrans.
+    -- inversion H1.
+       --- subst. inversion H.
+           ---- apply aeq_sym. apply (aeq_trans _ (n_abs x1 t1)).
+                ----- apply aeq_abs_same. apply aeq_sym. assumption.
+                ----- assumption.
+           ---- inversion H3;subst;inversion H4.
+           ---- apply aeq_abs_same. apply aeq_sym in H7. apply (aeq_trans _ t1);assumption. 
+    -- assumption.
+  
+  subst. inversion H0. rewrite swap_id. apply refl.
+  - pose proof H. subst. apply ctx_abs in H3. destruct H3 as [e3 [y]]. subst.
+    apply (refltrans_composition _ _ (swap x1 y e3)).
+    -- admit.
+    --  
+
+  induction e1;intros.
+  - inversion H.
+    -- rewrite swap_id. apply refl.
+    -- 
+
+  intros. injection H.
   
 
   intros. inversion H.
