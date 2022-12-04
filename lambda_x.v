@@ -5,7 +5,7 @@ Require Export Metalib.Metatheory.
 Require Export Metalib.LibDefaultSimp.
 Require Export Metalib.LibLNgen.
 
-Require Import ZtoConflNom.
+Require Import ZtoConfl.
 
 Lemma aux_not_equal : forall (x:atom) (y:atom),
     x <> y -> y <> x.
@@ -908,26 +908,6 @@ Inductive aeq : n_sexp -> n_sexp -> Prop :=
      aeq (n_sub t1 x t2) (n_sub t1' y t2').
 
 Hint Constructors aeq.
-(*
-Inductive refltrans' (R: Rel n_sexp) : n_sexp -> n_sexp -> Prop :=
-| refl_aeq: forall a b, aeq a b -> (refltrans' R) a b
-| rtrans_aeq: forall a b c, R a b -> refltrans' R b c -> refltrans' R a c.
-
-Lemma aeq_refltrans': forall a b c R, aeq a b -> refltrans' R b c -> refltrans' R a c.
-Proof.
-  intros a b c R Haeq H. inversion H; subst.
-  -
-  -
-
-Lemma refltrans_composition' (R: Rel n_sexp): forall t u v, refltrans' R t u -> refltrans' R u v -> refltrans' R t v.
-Proof.  
-  intros. induction H0.
-    assumption.
-  - apply rtrans with b.
-    + assumption.
-    + apply IHrefltrans; assumption.  
-Qed. 
-*)
   
 Example aeq1 : forall x y, x <> y -> aeq (n_abs x (n_var x)) (n_abs y (n_var y)).
 Proof.
@@ -1998,7 +1978,49 @@ Proof.
                          assumption.
                     * assumption.
                     * assumption.
-Qed.                 
+Qed.
+
+Require Import Equivalence.
+
+Instance aeq_equiv: Equivalence aeq.
+Proof.
+  split.
+  - unfold Reflexive. apply aeq_refl.
+  - unfold Symmetric. apply aeq_sym.
+  - unfold Transitive. apply aeq_trans.
+Qed.
+  
+(*
+Lemma aeq_equiv: Equivalence aeq .
+Proof.
+  split.
+  - unfold Reflexive. apply aeq_refl.
+  - unfold Symmetric. apply aeq_sym.
+  - unfold Transitive. apply aeq_trans.
+Qed.    
+*)
+
+(* Talvez seja possível simplesmente utilizar a biblioteca de reescrita generalizada para tratar a alpha equivalência como uma igualdade. Assim ela não precisaria ser incluída explicitamente em refltrans e nem em ctx.
+
+Inductive refltrans' (R: Rel n_sexp) : n_sexp -> n_sexp -> Prop :=
+| refl_aeq: forall a b, aeq a b -> (refltrans' R) a b
+| rtrans_aeq: forall a b c, R a b -> refltrans' R b c -> refltrans' R a c.
+
+Lemma aeq_refltrans': forall a b c R, aeq a b -> refltrans' R b c -> refltrans' R a c.
+Proof.
+  intros a b c R Haeq H. generalize dependent c. induction Haeq.
+  - intros c H. assumption.
+  - intros c H.
+
+Lemma refltrans_composition' (R: Rel n_sexp): forall t u v, refltrans' R t u -> refltrans' R u v -> refltrans' R t v.
+Proof.  
+  intros. induction H0.
+    assumption.
+  - apply rtrans with b.
+    + assumption.
+    + apply IHrefltrans; assumption.  
+Qed. 
+*)
 
 Inductive betax : n_sexp -> n_sexp -> Prop :=
  | step_betax : forall (e1 e2: n_sexp) (x: atom),
@@ -2047,7 +2069,6 @@ Inductive betapi: n_sexp -> n_sexp -> Prop :=
 | x_rule : forall t u, pix t u -> betapi t u.
 
 Inductive ctx  (R : n_sexp -> n_sexp -> Prop): n_sexp -> n_sexp -> Prop :=
- | step_aeq: forall e1 e2, aeq e1 e2 -> ctx R e1 e2
  | step_redex: forall (e1 e2 e3 e4: n_sexp), aeq e1 e2 -> R e2 e3 -> aeq e3 e4 -> ctx R e1 e4
  | step_abs_in: forall (e e': n_sexp) (x: atom), ctx R e e' -> ctx R (n_abs x e) (n_abs x e')
  | step_app_left: forall (e1 e1' e2: n_sexp) , ctx R e1 e1' -> ctx R (n_app e1 e2) (n_app e1' e2)
@@ -2075,17 +2096,30 @@ Não resolve porque precisamos da alpha-equiv em um passo de redução
 Definition f_is_weak_Z' (R R': Rel n_sexp) (f: n_sexp -> n_sexp) := forall a b, R a b -> ((refltrans' R') b (f a) /\ (refltrans' R') (f a) (f b)).
 *)
 
-Definition Z_comp_eq' (R: Rel n_sexp) := exists (R1 R2: Rel n_sexp) (f1 f2: n_sexp -> n_sexp), (forall a b, R a b <-> (R1 !_! R2) a b) /\ (forall a b, R1 a b -> (aeq (f1 a) (f1 b))) /\ (forall a, (refltrans R1) a (f1 a)) /\ (forall b a, a = f1 b -> (refltrans R) a (f2 a)) /\ (f_is_weak_Z R2 R (f2 # f1)).
+Definition Z_comp_aeq (R: Rel n_sexp) := exists (R1 R2: Rel n_sexp) (f1 f2: n_sexp -> n_sexp), (forall a b, R a b <-> (R1 !_! R2) a b) /\ (forall a b, R1 a b -> (aeq (f1 a) (f1 b))) /\ (forall a, (refltrans R1) a (f1 a)) /\ (forall b a, a = f1 b -> (refltrans R) a (f2 a)) /\ (f_is_weak_Z R2 R (f2 # f1)).
 
-Lemma Z_comp_eq_implies_Z_prop: forall (R: Rel n_sexp), Z_comp_eq' R -> Z_prop R.
+Instance aeq_refltrans_Proper: forall R b, Proper (aeq ==> flip impl) (refltrans R b).
 Proof.
-  intros R H. unfold Z_comp_eq' in H. 
+Admitted.
+
+Instance refltrans: forall R, Proper (aeq ==> aeq ==> iff) (refltrans R).         
+Proof.
+  intro R; split.
+  - intro H1. Admitted. 
+
+Lemma Z_comp_aeq_implies_Z_prop: forall (R: Rel n_sexp), Z_comp_aeq R -> Z_prop R.
+Proof.
+  intros R H. unfold Z_comp_aeq in H. 
   destruct H as [R1 [R2 [f1 [f2 [Hunion [H1 [H2 [H3 H4]]]]]]]]. 
-  unfold Z_prop.  exists (f2 # f1). intros a b Hab. split.
-  - apply Hunion in Hab. inversion Hab; subst.
-    + clear Hab.
-    +
-  -
+  unfold Z_prop.  exists (f2 # f1). intros a b Hab. apply Hunion in Hab. inversion Hab; subst. 
+  - split.
+    + clear Hab. apply refltrans_composition with (f1 a).
+      * apply refltrans_union_equiv with R1 R2.
+        ** assumption.
+        ** apply refltrans_union. apply H1 in H. rewrite H. apply H2.
+      * unfold comp. remember (f1 a) as t. apply H3 (aeq (f1 a) (f1 b))) with a. assumption.
+    + unfold comp. apply H1 in H. rewrite H.
+  - unfold comp. unfold f_is_weak_Z in H4.
 
 (*
 Definition Z_prop' (R: Rel n_sexp) := exists f: n_sexp -> n_sexp, forall a b, R a b -> ((refltrans' R) b (f a) /\ (refltrans' R) (f a) (f b)).
