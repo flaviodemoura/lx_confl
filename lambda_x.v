@@ -5,7 +5,7 @@ Require Export Metalib.Metatheory.
 Require Export Metalib.LibDefaultSimp.
 Require Export Metalib.LibLNgen.
 
-Require Import ZtoConflNom.
+Require Import ZtoConfl.
 
 Lemma aux_not_equal : forall (x:atom) (y:atom),
     x <> y -> y <> x.
@@ -2072,22 +2072,17 @@ Proof.
 Qed. 
 Não resolve porque precisamos da alpha-equiv em um passo de redução
  
-Definition f_is_weak_Z' (R R': Rel n_sexp) (f: n_sexp -> n_sexp) := forall a b, R a b -> ((refltrans' R') b (f a) /\ (refltrans' R') (f a) (f b)).
-*)
+Definition f_is_weak_Z' (R R': Rel n_sexp) (f: n_sexp -> n_sexp) := forall a b, R a b -> ((refltrans' R') b (f a) /\ (refltrans' R') (f a) (f b)). *)
 
-Definition Z_comp_eq' (R: Rel n_sexp) := exists (R1 R2: Rel n_sexp) (f1 f2: n_sexp -> n_sexp), (forall a b, R a b <-> (R1 !_! R2) a b) /\ (forall a b, R1 a b -> (aeq (f1 a) (f1 b))) /\ (forall a, (refltrans R1) a (f1 a)) /\ (forall b a, a = f1 b -> (refltrans R) a (f2 a)) /\ (f_is_weak_Z R2 R (f2 # f1)).
+Definition Z_comp_eq_aeq (R: Rel n_sexp) := exists (R1 R2: Rel n_sexp) (f1 f2: n_sexp -> n_sexp), (forall a b, R a b <-> (R1 !_! R2) a b) /\ (forall a b, R1 a b -> (aeq (f1 a) (f1 b))) /\ (forall a, (refltrans R1) a (f1 a)) /\ (forall b a, a = f1 b -> (refltrans R) a (f2 a)) /\ (f_is_weak_Z R2 R (f2 # f1)).
 
-Lemma Z_comp_eq_implies_Z_prop: forall (R: Rel n_sexp), Z_comp_eq' R -> Z_prop R.
+Lemma Z_comp_eq_aeq_implies_Z_prop: forall (R: Rel n_sexp), Z_comp_eq_aeq R -> Z_prop R.
 Proof.
-  intros R H. unfold Z_comp_eq' in H. 
+  intros R H. unfold Z_comp_eq_aeq in H. 
   destruct H as [R1 [R2 [f1 [f2 [Hunion [H1 [H2 [H3 H4]]]]]]]]. 
-  unfold Z_prop.  exists (f2 # f1). intros a b Hab. split.
-  - apply Hunion in Hab. inversion Hab; subst.
-    + clear Hab.
-    +
-  -
+  unfold Z_prop.  exists (f2 # f1). intros a b Hab. Admitted.
 
-(*
+(*    
 Definition Z_prop' (R: Rel n_sexp) := exists f: n_sexp -> n_sexp, forall a b, R a b -> ((refltrans' R) b (f a) /\ (refltrans' R) (f a) (f b)).
 
 Lemma Z_comp_eq_implies_Z_prop: forall (R: Rel n_sexp), Z_comp_eq' R -> Z_prop' R.
