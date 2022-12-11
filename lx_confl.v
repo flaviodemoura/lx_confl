@@ -4788,10 +4788,60 @@ Proof.
     -- reflexivity.
 Qed.
 
+Lemma in_swap: forall  e x y z, x <> y -> x <> z -> x `in` fv_nom e <-> 
+  x `in` fv_nom (swap y z e).
+Proof.
+  induction e;intros;split.
+  - intros. simpl. unfold swap_var. simpl in H1. apply AtomSetImpl.singleton_1 in H1.
+    rewrite H1. default_simp.
+  - intros. simpl in *. unfold swap_var in H1. default_simp;apply AtomSetImpl.singleton_1 in H1;default_simp.
+  - intros. simpl in *. unfold swap_var. case (x0 == x);intros.
+    -- rewrite e0 in *. apply remove_iff in H1. destruct H1. default_simp.
+    -- apply AtomSetImpl.remove_2.
+       --- default_simp.
+       --- apply AtomSetImpl.remove_3 in H1. apply IHe;default_simp.
+  - intros. simpl in *. case (x == x0);intros.
+    --  rewrite e0 in *. apply remove_iff in H1. destruct H1. unfold swap_var in H2.
+        default_simp.
+    -- apply AtomSetImpl.remove_3 in H1. apply AtomSetImpl.remove_2.
+       --- assumption.
+       --- specialize (IHe x0 y z H H0). destruct IHe. apply H3. assumption.
+  - intros. simpl in *. apply AtomSetImpl.union_1 in H1. destruct H1.
+    -- apply AtomSetImpl.union_2. apply IHe1;default_simp.
+    -- apply AtomSetImpl.union_3. apply IHe2;default_simp.
+  - intros. simpl in *. apply AtomSetImpl.union_1 in H1. destruct H1.
+    -- apply AtomSetImpl.union_2. specialize (IHe1 x y z H H0). destruct IHe1.
+       apply H3. assumption.
+    -- apply AtomSetImpl.union_3. specialize (IHe2 x y z H H0). destruct IHe2.
+       apply H3. assumption.
+  - intros. simpl in *. apply AtomSetImpl.union_1 in H1. destruct H1.
+    -- apply AtomSetImpl.union_2. case (x == x0);intros.
+       --- rewrite e in *. apply remove_iff in H1. destruct H1. default_simp.
+       --- apply AtomSetImpl.remove_2.
+           ---- unfold swap_var. default_simp.
+           ---- apply AtomSetImpl.remove_3 in H1. apply IHe1;default_simp.
+    -- apply AtomSetImpl.union_3. apply IHe2;default_simp.
+  - intros. simpl in *. apply AtomSetImpl.union_1 in H1. destruct H1.
+    -- case (x == x0);intros. 
+       --- rewrite e in *. unfold swap_var in H1. default_simp. apply remove_iff in H1.
+           destruct H1. default_simp.
+       --- apply AtomSetImpl.remove_3 in H1. apply AtomSetImpl.union_2.
+           apply AtomSetImpl.remove_2.
+           ---- assumption.
+           ---- specialize (IHe1 x0 y z H H0). destruct IHe1. apply H3. assumption.
+    -- apply AtomSetImpl.union_3. specialize (IHe2 x0 y z H H0). destruct IHe2. apply H3. assumption.
+Qed.
+
+Lemma in_swap_2: forall e x a b c d, x <> a -> x <> b -> x <> c -> x <> d ->
+  x `in` fv_nom (swap a b e) <-> x `in` fv_nom (swap c d e).
+Proof.
+  intros. split;intros;apply in_swap in H3;try assumption;
+  apply in_swap;assumption.
+Qed.
+
 Lemma m_subst_lemma: forall e1 e2 e3 x y, x <> y -> x `notin` (fv_nom e3) ->
   aeq (m_subst e3 y (m_subst e2 x e1)) (m_subst (m_subst e3 y e2) x (m_subst e3 y e1)).
 Proof.
-  (*
   induction e1 using n_sexp_size_induction. intros. destruct e1 eqn:He1.
   - case (x0 == x);intros.
     -- rewrite e in *. unfold m_subst at 2. default_simp. unfold m_subst at 4. default_simp.
@@ -4800,8 +4850,92 @@ Proof.
        --- rewrite e in *. unfold m_subst at 1. unfold m_subst at 3. default_simp.
            apply aeq_sym. apply subst_fresh_eq. assumption.
        --- unfold m_subst at 1. unfold m_subst at 3. default_simp. unfold m_subst. default_simp.
-  - pose proof subst_abs. rewrite H2. rewrite H2. default_simp.
-    --*)
+  - pose proof subst_abs. rewrite H2. rewrite H2. case (x == x0);intros.
+    -- case (y == x0);intros. default_simp. rewrite e in *. destruct (atom_fresh
+       (Metatheory.union (fv_nom e3) (Metatheory.union (fv_nom (n_abs x0 n)) (singleton y)))).
+       rewrite H2. rewrite H2. default_simp.
+       --- rewrite swap_id. case (x == x1);intros.
+           ---- rewrite e in *. rewrite swap_id. apply aeq_refl.
+           ---- apply aeq_abs_diff.
+                ----- default_simp.
+                ----- pose proof in_or_notin. specialize (H3 y (fv_nom n)). destruct H3.
+                      ------ apply (fv_nom_m_subst_in _ e3) in H3. rewrite H3. simpl. apply notin_union_3.
+                             * apply diff_remove;default_simp.
+                             * default_simp.
+                      ------ apply (fv_nom_m_subst_notin _ e3) in H3. rewrite H3. apply diff_remove;default_simp.
+                ----- apply (aeq_trans _ (m_subst (swap x1 x e3) (swap_var x1 x y) (swap x1 x n))).
+                      ------ unfold swap_var. pose proof n2. repeat apply notin_union_2 in n2. apply notin_singleton_1 in n2.
+                             default_simp. apply aeq_m_subst_1. apply aeq_swap0.
+                             * assumption.
+                             * default_simp.
+                      ------ apply aeq_sym. apply aeq_swap_m_subst.
+       --- case (x == x2);intros.
+           ---- rewrite e in *. apply aeq_abs_same. apply (aeq_trans _ (m_subst (m_subst e3 y e2) x0
+                (m_subst e3 y (swap x1 x2 (swap x0 x1 n))))).
+                ----- rewrite (swap_symmetric _ x1 x2). rewrite (swap_symmetric _ x0 x1).
+                      rewrite shuffle_swap;default_simp. rewrite swap_symmetric. apply (aeq_trans _ 
+                      (m_subst (m_subst e3 y e2) x0 (m_subst e3 y (swap x2 x0 n)))).
+                      * apply (aeq_trans _ (m_subst e3 y (m_subst e2 x0 (swap x2 x0 n)))).
+                        ** apply aeq_m_subst_2. apply aeq_sym. apply subst_fresh_eq. rewrite swap_symmetric.
+                           apply fv_nom_swap. default_simp. 
+                        ** apply H.
+                           *** rewrite swap_size_eq. lia.
+                           *** assumption.
+                           *** assumption. 
+                      * apply aeq_m_subst_2. apply aeq_m_subst_2. apply aeq_swap. apply aeq_swap0;default_simp.
+                ----- apply aeq_m_subst_2. apply (aeq_trans _ (m_subst (swap x1 x2 e3) (swap_var x1 x2 y)
+                      (swap x1 x2 (swap x0 x1 n)))).
+                      * unfold swap_var. pose proof n2. pose proof n1. repeat apply notin_union_2 in n1.
+                        apply notin_singleton_1 in n1. repeat apply notin_union_2 in n2. apply notin_singleton_1 in n2.
+                        default_simp. apply aeq_m_subst_1. apply aeq_swap0;default_simp.
+                      * apply aeq_sym. apply aeq_swap_m_subst.
+           ---- apply aeq_sym. apply aeq_abs_diff.
+                * default_simp.
+                * case (x == x1);intros. rewrite e in *. default_simp. pose proof in_or_notin.
+                  specialize (H3 y (fv_nom (swap x0 x n))). destruct H3.
+                  ** pose proof H3. apply (fv_nom_m_subst_in _ e3) in H3. rewrite H3. simpl. apply notin_union_3.
+                     *** case (x2 == y);intros. rewrite e. default_simp. apply diff_remove;default_simp.
+                         apply (in_swap_2 _ _ x0 x x0 x1) in H4;default_simp. apply (fv_nom_m_subst_in _ e3) in H4. 
+                         rewrite H4 in n3. simpl in n3. pose proof n3. apply notin_union_2 in n3. apply notin_union_1 in n3.
+                         case (x2 == x0);intros.
+                         **** rewrite e in *. apply fv_nom_swap. default_simp.
+                         **** case (x2 == x1);intros.
+                              ***** rewrite e in *. apply fv_nom_remove_swap;default_simp.
+                              ***** apply diff_remove_2 in n3.
+                                    ****** apply notin_union_1 in n3. apply diff_remove_2 in n3;default_simp.
+                                           apply fv_nom_remove_swap;default_simp. apply fv_nom_swap_remove in n3;default_simp.
+                                    ****** assumption.
+                     *** apply (in_swap_2 _ _ x0 x x0 x1) in H4;default_simp. apply (fv_nom_m_subst_in _ e3) in H4. 
+                         rewrite H4 in n3. simpl in n3. pose proof n3. apply notin_union_2 in n3. apply notin_union_1 in n3.
+                         case (x2 == x1);intros.
+                         **** rewrite e in *. default_simp.
+                         **** apply diff_remove_2 in n3;default_simp.
+                  ** pose proof H3. apply (fv_nom_m_subst_notin _ e3) in H3. rewrite H3. case (x2 == y);intros. rewrite e.
+                     default_simp. apply diff_remove;default_simp.
+                     apply fv_nom_swap_remove in H4;default_simp. apply (fv_nom_remove_swap _ _ x1 x0) in H4;default_simp.
+                     apply (fv_nom_m_subst_notin _ e3) in H4. 
+                     rewrite H4 in n3. pose proof n3. apply notin_union_2 in n3. apply notin_union_1 in n3.
+                     case (x2 == x0);intros.
+                     *** rewrite e in *. apply fv_nom_swap. default_simp.
+                     *** case (x2 == x1);intros.
+                         **** rewrite e in *. apply fv_nom_remove_swap;default_simp.
+                         **** apply diff_remove_2 in n3.
+                              ***** apply diff_remove_2 in n3;default_simp.
+                                    apply fv_nom_remove_swap;default_simp. apply fv_nom_swap_remove in n3;default_simp.
+                              ***** assumption.
+                * apply aeq_sym. case (x2 == y);intros.
+                  ** rewrite e in *. apply (aeq_trans _ (m_subst (m_subst e3 y e2) x0 (m_subst (swap x1 y e3)
+                     (swap_var x1 y y) (swap x1 y (swap x0 x1 n))))).
+                     *** 
+                     *** apply aeq_m_subst_2. apply aeq_sym. apply aeq_swap_m_subst.
+                  ** apply (aeq_trans _ (m_subst e3 y (swap x x2 (swap x0 x n)))).
+                     *** apply (aeq_trans _ (m_subst (swap x x2 e3) (swap_var x x2 y) (swap x x2 (swap x0 x n)))).
+                         **** apply aeq_swap_m_subst.
+                         **** unfold swap_var.
+           
+           
+      
+                
 
   (*
   induction e1 using n_sexp_induction.
@@ -5182,57 +5316,6 @@ Qed.
   - admit.
   - admit.
 Admitted.  *) 
-
-Lemma in_swap: forall  e x y z, x <> y -> x <> z -> x `in` fv_nom e <-> 
-  x `in` fv_nom (swap y z e).
-Proof.
-  induction e;intros;split.
-  - intros. simpl. unfold swap_var. simpl in H1. apply AtomSetImpl.singleton_1 in H1.
-    rewrite H1. default_simp.
-  - intros. simpl in *. unfold swap_var in H1. default_simp;apply AtomSetImpl.singleton_1 in H1;default_simp.
-  - intros. simpl in *. unfold swap_var. case (x0 == x);intros.
-    -- rewrite e0 in *. apply remove_iff in H1. destruct H1. default_simp.
-    -- apply AtomSetImpl.remove_2.
-       --- default_simp.
-       --- apply AtomSetImpl.remove_3 in H1. apply IHe;default_simp.
-  - intros. simpl in *. case (x == x0);intros.
-    --  rewrite e0 in *. apply remove_iff in H1. destruct H1. unfold swap_var in H2.
-        default_simp.
-    -- apply AtomSetImpl.remove_3 in H1. apply AtomSetImpl.remove_2.
-       --- assumption.
-       --- specialize (IHe x0 y z H H0). destruct IHe. apply H3. assumption.
-  - intros. simpl in *. apply AtomSetImpl.union_1 in H1. destruct H1.
-    -- apply AtomSetImpl.union_2. apply IHe1;default_simp.
-    -- apply AtomSetImpl.union_3. apply IHe2;default_simp.
-  - intros. simpl in *. apply AtomSetImpl.union_1 in H1. destruct H1.
-    -- apply AtomSetImpl.union_2. specialize (IHe1 x y z H H0). destruct IHe1.
-       apply H3. assumption.
-    -- apply AtomSetImpl.union_3. specialize (IHe2 x y z H H0). destruct IHe2.
-       apply H3. assumption.
-  - intros. simpl in *. apply AtomSetImpl.union_1 in H1. destruct H1.
-    -- apply AtomSetImpl.union_2. case (x == x0);intros.
-       --- rewrite e in *. apply remove_iff in H1. destruct H1. default_simp.
-       --- apply AtomSetImpl.remove_2.
-           ---- unfold swap_var. default_simp.
-           ---- apply AtomSetImpl.remove_3 in H1. apply IHe1;default_simp.
-    -- apply AtomSetImpl.union_3. apply IHe2;default_simp.
-  - intros. simpl in *. apply AtomSetImpl.union_1 in H1. destruct H1.
-    -- case (x == x0);intros. 
-       --- rewrite e in *. unfold swap_var in H1. default_simp. apply remove_iff in H1.
-           destruct H1. default_simp.
-       --- apply AtomSetImpl.remove_3 in H1. apply AtomSetImpl.union_2.
-           apply AtomSetImpl.remove_2.
-           ---- assumption.
-           ---- specialize (IHe1 x0 y z H H0). destruct IHe1. apply H3. assumption.
-    -- apply AtomSetImpl.union_3. specialize (IHe2 x0 y z H H0). destruct IHe2. apply H3. assumption.
-Qed.
-
-Lemma in_swap_2: forall e x a b c d, x <> a -> x <> b -> x <> c -> x <> d ->
-  x `in` fv_nom (swap a b e) <-> x `in` fv_nom (swap c d e).
-Proof.
-  intros. split;intros;apply in_swap in H3;try assumption;
-  apply in_swap;assumption.
-Qed.
 
 Lemma aeq_double_m_subst: forall e1 e2 e3 x, aeq (m_subst (e1) x (m_subst e2 x e3)) (m_subst (m_subst e1 x e2) x e3).
 Proof.
