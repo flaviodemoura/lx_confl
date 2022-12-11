@@ -1,24 +1,23 @@
-(** * The Z property implies Confluence
+(** * A Formalization of the Z property *)
+(* comments used in the report *)
+(** In this section, we present a formalization of the Z property in the context of ARS, which are sets with a binary relation. A binary relation is a predicate over a type [A]: *)
 
-  An ARS, say $(A,R)$, is defined as a pair composed of a set $A$ and
-  binary relation over this set $R:A\times A$. Let $a,b\in A$. We
-  write $a\to_R b$ (or $R\ a\ b$ in Coq) to denote that $(a,b)\in R$,
-  and we say that $a$ $R$-reduces to $b$ in one step. The reflexive
-  transitive closure of a relation [R], written as $\tto_R$, is
-  defined by the following inference rules: %\begin{mathpar}
-  \inferrule*[Right={$(refl)$}]{~}{a \tto_R a} \and
-  \inferrule*[Right={$(rtrans)$}]{a\to_R b \and b \tto_R c}{a \tto_R
-  c} \end{mathpar}% %\noindent% where $a,b$ and $c$ are universally
-  quantified variables as one makes explicit in the corresponding Coq
-  definition: *)
-(* begin hide *)
 Definition Rel (A:Type) := A -> A -> Prop.
 
-Inductive trans {A} (red: Rel A) : Rel A :=
-| singl: forall a b,  red a b -> trans red a b
-| transit: forall b a c,  red a b -> trans red b c -> trans red a c.
+(** If $(A,R)$, is an ARS and $a,b\in A$ then we write $a\to_R b$ (or $R\ a\ b$ in the Coq syntax below) to denote that $(a,b)\in R$, and in this case, we say that $a$ $R$-reduces to $b$ in one step. The transitive closure of $\to_R$, written $\to^+_R$, is defined as usual by the following inference rules:
 
-Arguments transit {A} {red} _ _ _ _ _ .
+%\begin{mathpar}
+     \inferrule*[Right={($singl$)}]{a \to_R b}{a \to^+_R b} \and
+     \inferrule*[Right={($transit$)}]{a \to_R b \and b \to^+_R c}{a \to^+_R c}
+\end{mathpar}%
+
+ This definition corresponds to the following Coq code, where $\to_R$ (resp. $\to^+_R$) corresponds to [R] (resp. [trans R]):$\newline$ *)
+
+Inductive trans {A} (R: Rel A) : Rel A :=
+| singl: forall a b,  R a b -> trans R a b
+| transit: forall b a c,  R a b -> trans R b c -> trans R a c.
+(* begin hide *)
+Arguments transit {A} {R} _ _ _ _ _ .
 
 Lemma trans_composition {A} (R: Rel A):
   forall t u v, trans R t u -> trans R u v -> trans R t v.
@@ -29,178 +28,32 @@ Proof.
     + assumption.
     + apply IHtrans; assumption.
 Qed.
-
-(**
-Lemma transit' {A:Type} (R: Rel A):
-  forall t u v, trans R t u -> R u v -> trans R t v.
-Proof.
-  intros t u v H1 H2. induction H1.
-  - apply transit with b. 
-    + assumption.
-    + apply singl.
-      assumption.
-  - apply IHtrans in H2.
-    apply transit with b; assumption.
-Qed.
-
-Lemma trans_composition' {A} (R: Rel A):
-  forall t v, trans R t v -> (R t v \/ exists u, trans R t u /\ R u v).
-Proof.
- intros t v H.
- induction H.
- - left; assumption.
- - right.
-   destruct IHtrans.
-   + exists b.
-     split.
-     * apply singl.
-       assumption.
-     * assumption.
-   + destruct H1.
-     exists x.
-     split.
-     * apply transit with b.
-       ** assumption.
-       ** apply H1.
-     * apply H1.
-Qed. *)
 (* end hide *)
+
+(** The reflexive transitive closure of $\to_R$, written $\tto_R$, is defined by:
+
+%\begin{mathpar}
+     \inferrule*[Right={($refl$)}]{a \to_R b}{a \tto_R b}\and\and
+     \inferrule*[Right={($rtrans$)}]{a \to_R b \and b \tto_R c}{a \tto_R c}
+\end{mathpar}%
+
+ This definition corresponds to the following Coq code, where $\tto_R$ is written as [refltrans R]: *)
 
 Inductive refltrans {A:Type} (R: Rel A) : A -> A -> Prop :=
-| refl: forall a, (refltrans R) a a
+| refl: forall a, refltrans R a a
 | rtrans: forall a b c, R a b -> refltrans R b c -> refltrans R a c.
-
-(** The rules named ([refl]) and ([rtrans]) are called _constructors_
-in the Coq definition. The first constructor, namely [refl], states
-the reflexivity axiom for $\tto_R$, while [rtrans] extends the
-reflexive transitive closure of [R], if one has at least a one-step
-reduction. As a first example, let's have a look at the proof of
-transitivity of $\tto_R$:
-
-%\begin{lemma} Let $\to_R$ be a binary relation over a set $A$. For
-all $t, u, v \in A$, if $t \tto_R u$ and $u \tto_R v$ then $t \tto_R
-v$.  \end{lemma}%
-
- Despite its simplicity, the proof of this lemma will help us explain
-the way in which we will relate English annotations with the proof
-steps. Coq proofs are written between the reserved words [Proof] and
-[Qed] (lines 1 and 9), and each proof command finishes with a
-dot. Proofs can be structured with bullets (- in the first level, + in
-the second level, * in the third level, ** in the fourth level, and so
-on). The corresponding informal proof proceed as follows: The
-corresponding lemma in Coq, named [refltrans_composition], is stated
-as follows: *)
-
+(* begin hide *)
 Lemma refltrans_composition {A} (R: Rel A): forall t u v, refltrans R t u -> refltrans R u v -> refltrans R t v.
-Proof.  
-  intros t u v. (** %\comm{Let $t,u,v$ be elements of $A$.}% *)
-  
-  intros H1 H2. (** %\comm{Let $H1$ (respectively, $H2$) be the hipothesis that $t \tto_R   u$ (respectively, $u \tto_R v$).}% *)
-  
-  induction H1. (** %\comm{The proof procceds by induction on the
-    hipothesis $H1$. Therefore there is one case for each constructor
-    of the reflexive transitive closure of $R$. The structure of the
-    proof context determines the shape of the induction hypothesis,
-    and this fact will be essential to understand the inductive proof
-    of the next theorem.}% *)
-  
-  - assumption. (** %\comm{For the base case, which corresponds to the rule $refl$, $t$ and $u$ are the same element and hence the goal coincides with the hipothesis $H2$.}% *)
-    
-  - apply rtrans with b. (** %\comm{For the inductive case, $t \tto_R
-    u$ is build from $t \to_R b$ and $b \tto_R u$, for some $b$, and
-    as induction hipothesis one has that $b \tto_R v$. Therefore, one
-    can prove that $t \tto_R v$ by applying the rule ($rtrans$) with
-    $b$ as the intermediary term:
+Proof.
+  intros t u v.
+  intros H1 H2.
+  induction H1.
+  - assumption.
+  - apply rtrans with b.
+    + assumption.
+    + apply IHrefltrans; assumption.
+Qed.
 
-\begin{mathpar} \inferrule*[Right={$(rtrans)$}]{t\to_R b \and b \tto_R
-  v}{t \tto_R v} \end{mathpar}
-
- We have then two subproofs:}% *)
-    
-    + assumption. (** %\comm{The proof that $t\to_R b$ is one of the hipothesis, and we are done.}% *)
-      
-    + apply IHrefltrans; assumption.  (** %\comm{The proof that
-$b\tto_R v$ is obtained from the induction hipothesis, and this proof
-can be better visualized by the corresponding deduction tree:
-
-\begin{mathpar}
-\inferrule*[Right={$MP$}]{
-\inferrule*[Right={$IH$}]{~}{b\tto_R u \to b\tto_R v} \and
-\inferrule*[Right={H2}]{~}{b\tto_R u}}{b\tto_R v}
-\end{mathpar} }% *)
-      
-Qed. 
-(* begin hide *)
-(**
-<<
-1. Proof.  
-2.  intros t u v.  
-3.  intros H1 H2.  
-4.  induction H1.
-5.  - assumption.  
-6.  - apply rtrans with b.  
-7.  + assumption.  
-8.  + apply IHrefltrans; assumption.  
-9. Qed. 
->>
-
-This work is not a Coq tutorial, but our idea is that it should
-also be readable for those unfamiliar with the Coq proof Assistant. In
-addition, this paper is built directly from a Coq proof script, which
-means that we are forced to present the ideas and the results in a
-more organized and systematic way that is not necessarily the more
-pedagogical one. *)
-
-(** %{\bf Proof}.%
-
-    Let $t, u, v \in A$, i.e. they are elements of type [A], or
-    elements of the set [A] (line 2). Call [H1] (resp. [H2]) the
-    hypothesis that $t \tto_R u$ (resp. $u\tto_R v$) (line 3). The
-    proof proceeds by induction on the hypothesis [H1] (line 4),
-    i.e. by induction on $t \tto_R u$. The structure of the proof
-    context determines the shape of the induction hypothesis, and this
-    fact will be essential to understand the inductive proof of the
-    next theorem. As shown in Figure %\ref{fig:trans}%, [H1] and [H2]
-    are the only hypothesis (the other lines are just declaration of
-    variables), therefore the induction hypothesis subsumes [H2].
-
-      %\begin{figure}[h] \centering
-        \includegraphics[scale=0.6]{fig1.png} \caption{Transitivity of
-        $\tto_R$}\label{fig:trans} \end{figure}%
-
-    The first case is when $t \tto_R u$ is generated by the
-    constructor [refl], which is an axiom and hence we are done (line
-    5).  The second case, i.e. the recursive case is more interesting
-    because $t \tto_R u$ is now generated by [rtrans] (line 6). This
-    means that there exists an element, say $b$, such that $t \to_R b$
-    and $b \tto_R u$. Therefore, in order to prove that $t \tto_R u$,
-    we can apply the rule [rtrans] taking [b] as the intermediary
-    term. The proof of the recursive case can be better visualized by
-    the corresponding deduction tree: %{\scriptsize \begin{mathpar}
-    \inferrule*[Right=MP]{\inferrule*[Right=MP]{\inferrule*[Right={
-    $rtrans$}]{~}{\inferrule*[Right={$(\forall_e)$}]{\forall x\ y\ z,
-    x\to_R y \to y\tto_R z \to x\tto_R z}{t\to_R b \to b\tto_R u \to
-    t\tto_R u}} \and \inferrule*[Right={H}]{~}{t\to_R b}}{ b\tto_R u
-    \to t\tto_R u} \and \inferrule*[Right=MP]{\inferrule*[Right={
-    $IH$}]{~}{u\tto_R v \to b\tto_R u} \and
-    \inferrule*[Right={H2}]{~}{u\tto_R v}}{b\tto_R u}}{t\tto_R u}
-    \end{mathpar}}%
-
-    Each branch of the above tree corresponds to a new goal in the Coq
-    proof. Therefore, we have two subcases (or subgoals) to prove: In
-    this subgoal we need to prove that $t \to_R b$, which we have as
-    hypothesis (line 7). In the second subgoal (line 8), we need to
-    prove that $b \tto_R u$. To do so, we apply the induction
-    hypothesis [IHrefltrans]: $u \tto_R v \to b \tto_R u$, where
-    $u\tto_R v$ is the hypothesis [H2]. $\hfill\Box$ *)
-(* end hide *)
-
-(** This example is interesting because it shows how Coq works, how
-each command line (also known as tactics or tacticals depending on its
-structure) corresponds, in general, to several steps of natural
-deduction rules. *)
-
-(* begin hide *)
 Lemma refltrans_composition2 {A} (R: Rel A): forall t u v, refltrans R t u -> R u v -> refltrans R t v.
 Proof.
   intros t u v H1 H2. induction H1.
@@ -219,9 +72,8 @@ Proof.
     + assumption.
     + apply refl.
   - apply rtrans with b; assumption.
-Qed.    
+Qed.
 (* end hide *)
-
 (** The reflexive transitive closure of a relation is used to define
     the notion of confluence: no matter how the reduction is done, the
     result will always be the same. In other words, every divergence
@@ -230,49 +82,40 @@ Qed.
     $\centerline{\xymatrix{ & a \ar@{->>}[dl] \ar@{->>}[dr] & \\ b
     \ar@{.>>}[dr] & & c \ar@{.>>}[dl] \\ & d & }}$
 
-
-    Formally, this means that if an expression $a$ can be reduced in
-    two different ways to the expressions $b$ and $c$, then there
-    exists an expression $d$ such that both $b$ and $c$ reduce to
-    $d$. The existential quantification is expressed by the dotted
-    lines in the diagram. This notion is defined in the Coq system as
-    follows: *)
+Formally, this means that if an expression $a$ can be reduced in two
+different ways to $b$ and $c$, then there exists an expression $d$
+such that both $b$ and $c$ reduce to $d$. The existential
+quantification is expressed by the dotted lines in the diagram. This
+notion is defined in the Coq system as follows: *)
 
 Definition Confl {A:Type} (R: Rel A) := forall a b c, (refltrans R) a b -> (refltrans R) a c -> (exists d, (refltrans R) b d /\ (refltrans R) c d).
 
-(** In %\cite{dehornoy2008z}%, V. van Oostrom gives a sufficient
-    condition for an ARS to be confluent, known as the _Z Property_:
+(** In %\cite{dehornoy2008z}%, V. van Oostrom gives a sufficient condition
+for an ARS to be confluent. This condition is based on the $\textit{Z
+  Property}$ that is defined as follows:
 
-    %\begin{definition} Let $(A,\to_R)$ be an ARS. Then $(A,\to_R)$
-      has the Z property, if there exists a map $f:A \to A$ such that
-      the following diagram holds:
+%\begin{definition} Let $(A,\to_R)$ be an ARS. A mapping $f:A \to A$ satisfies the Z property for $\to_R$, if $a \to_R b$ implies
+$b \tto_R f a  \tto_R f b$, for any $a, b \in A$. 
+\end{definition}%
+
+The name of the property comes from the following diagrammatic
+representation of this definition:
     
-      \[ \xymatrix{ a \ar[r]_R & b \ar@{.>>}[dl]^R\\ f(a)
-      \ar@{.>>}[r]_R & f(b) \\ } \] \end{definition}%
+$\xymatrix{ a \ar[r]_R & b \ar@{.>>}[dl]^R\\ f a \ar@{.>>}[r]_R & f
+    b \\ }$
 
-The corresponding Coq definition is given as: *)
+If a function [f] satisfies the Z property for $\to_R$ then
+we say that [f] is Z for $\to_R$, and the corresponding Coq
+definition is given by the following predicate: *)
+
+Definition f_is_Z {A:Type} (R: Rel A) (f: A -> A) := forall a b, R a b -> ((refltrans R)  b (f a) /\ (refltrans R) (f a) (f b)).
+
+(** Alternatively, an ARS $(A,\to_R)$ satisfies the Z property if there
+exists a mapping $f:A \to A$ such that $f$ is Z for $\to_R$: *)
 
 Definition Z_prop {A:Type} (R: Rel A) := exists f:A -> A, forall a b, R a b -> ((refltrans R) b (f a) /\ (refltrans R) (f a) (f b)).
 
-(** Alternatively, for a given function [f], one can say that [f] satisfies the Z property, or that [f] is Z, if the above conditions hold for [f]: *)
-
-Definition f_is_Z {A:Type} (R: Rel A) (f: A -> A) := forall a b, R a b -> ((refltrans R)  b (f a) /\ (refltrans R) (f a) (f b)). 
-
-(** The first contribution of this work is a constructive proof of the
-    fact that the Z property implies confluence. Our proof uses nested
-    induction, and hence it differs from the one in %\cite{kes09}%
-    (that follows %\cite{dehornoy2008z}%) and the one in %\cite{zproperty}% 
-    in the sense that it does not rely on analyzing whether 
-    a term is in normal form or not, avoiding necessity of 
-    the law of the excluded middle . As a result, we have 
-    an elegant inductive proof of the fact that if a binary relation
-    has the Z property then it is confluent. In addition, we
-    formalized this proof in the Coq proof assistant. In
-    %\cite{zproperty}%, B. Felgenhauer et.al. formalized in Isabelle/HOL 
-    the Z property and its relation to confluence. 
-    In what follows, we present the theorem
-    and its proof interleaving Coq code and the corresponding
-    comments. *)
+(** The first contribution of this work is a constructive proof of the fact that the Z property implies confluence. Our proof uses nested induction, and hence it differs from the one in %\cite{kesnerTheoryExplicitSubstitutions2009}% (that follows %\cite{dehornoy2008z}%) and the one in %\cite{felgenhauerProperty2016}% in the sense that it does not rely on the analyses of whether a term is in normal form or not, avoiding the necessity of the law of the excluded middle. As a result, we have an elegant inductive proof of the fact that if an ARS satisfies the Z property then it is confluent. *)
 
 Theorem Z_prop_implies_Confl {A:Type}: forall R: Rel A, Z_prop R -> Confl R.
 Proof.
@@ -283,7 +126,7 @@ Proof.
   unfold Z_prop, Confl in *. (** %\comm{Unfolding both definitions of
   $Z\_prop$ and $Confl$, we get the following proof context:
 
-     \includegraphics[scale=0.5]{fig3.png} }% *)
+     \includegraphics[scale=0.5]{figs/fig3.png} }% *)
 
   intros a b c Hrefl1 Hrefl2. (** %\comm{Let $a, b$ and $c$ be elements of
      the set $A$, $Hrefl1$ the hypothesis that $a \tto_R b$, and
@@ -294,7 +137,7 @@ Proof.
      $HZ\_prop$ that there exists a mapping $f$ that is Z. Let's call
      $g$ this mapping, and we get following proof context:
 
-      %\includegraphics[scale=0.6]{fig4.png}%
+      %\includegraphics[scale=0.6]{figs/fig4.png}%
 
       The proof proceeds by nested induction, firstly on the length of
       the reduction from $a$ to $b$, and then on the length of the
@@ -336,7 +179,7 @@ Proof.
 
         (* The corresponding proof context is as follows:
 
-        %\includegraphics[scale=0.6]{fig5.png}% *)
+        %\includegraphics[scale=0.6]{figs/fig5.png}% *)
 
         The induction hypothesis states that every divergence from
         $a'$ that reduces to $b$ from one side converges: [IHHrefl1]
@@ -360,7 +203,7 @@ Proof.
     reduction $a \to_R a' \tto_R b$ is now $a\to_R b \tto_R c$, as
     shown below:
 
-    \includegraphics[scale=0.5]{fig5-1.png}
+    \includegraphics[scale=0.5]{figs/fig5-1.png}
 
     Before applying induction to $Hrefl2$: $a \tto_R c_0$, we will derive 
     $b\tto_R (g\ a)$ and $a\tto_R (g\ a)$ from the proof context so we can
@@ -433,7 +276,7 @@ Proof.
         $IHHrefl1$ generated by the first outer induction and the fact
         that $b0 \tto_R (g\ a)$ is given by:
 
-        \includegraphics[scale=0.48]{fig7.png} }% *)
+        \includegraphics[scale=0.48]{figs/fig7.png} }% *)
 
       apply IHHrefl2 with b0. (** %\comm{The second goal, i.e. the inductive case is 
       the consequent on $IHHrefl2$, so we can apply $IHHrefl2$ to prove it. Doing so, 
@@ -464,71 +307,6 @@ Proof.
         
 Qed.
 
-(* Another proof 
-
-Lemma refltrans_f_is_Z_refltrans {A:Type}: forall (R: Rel A) a b f, f_is_Z R f -> (refltrans R) a b -> (refltrans R) (f a) (f b).
-Proof.
-  intros R a b f H Hab.
-  unfold f_is_Z in H.
-  induction Hab.
-  - apply refl.
-  - apply H in H0.
-    destruct H0 as [H1 H2].
-    apply refltrans_composition with (f b); assumption.
-Qed.
-
-Lemma refltrans_f_is_Z {A:Type}: forall (R: Rel A) a f, f_is_Z R f -> (refltrans R) a (f a).
-Proof.
-  intros R a f H.
-  unfold f_is_Z in H.
-Admitted.
-
-  Theorem Z_prop_implies_Confl2 {A:Type}: forall R: Rel A, Z_prop R -> Confl R.
-  Proof.
-    intros R H.
-    unfold Z_prop in H.
-    destruct H as [g H].
-    unfold Confl.
-    intros a b c H1 H2.
-    generalize dependent c.
-    induction H1.
-    - intros c H1.
-      exists c; split.
-      + assumption.
-      + apply refl.
-    - intros c0 H2.
-      apply H in H0.
-      destruct H0 as [Hga Hgb].
-      assert (refltrans R (g a) (g c0)).
-      {
-        apply  refltrans_f_is_Z_refltrans.
-        - assumption.
-        - assumption.
-      }
-      assert (refltrans R c0 (g c0)).
-      {
-        apply refltrans_f_is_Z; assumption.
-      }
-      assert (refltrans R b (g c0)).
-      {
-        apply refltrans_composition with (g a); assumption.
-      }
-      apply IHrefltrans in H4.
-      destruct H4 as [d [H4 H5]].
-      exists d; split.
-      +  assumption.
-      + apply refltrans_composition with (g c0); assumption.     
-Qed. *)
-      
-(** An alternative proof that Z implies confluence is possible via the
-    notion of semiconfluence, which is equivalent to confluence, as
-    done in %\cite{zproperty}%. Unlike the proof in %\cite{zproperty}% and 
-    similarly to our previous proof, our proof of the Theorem that 
-    Z implies semiconfluence is constructive, but we
-    will not explain it here due to lack of space; any
-    interested reader can find it in the Coq file in our GitHub
-    repository. *)
-  
 Definition SemiConfl {A:Type} (R: Rel A) := forall a b c, R a b -> (refltrans R) a c -> (exists d, (refltrans R) b d /\ (refltrans R) c d).
 
 Theorem Z_prop_implies_SemiConfl {A:Type}: forall R: Rel A, Z_prop R -> SemiConfl R.
@@ -603,60 +381,29 @@ Qed.
 (* end hide *)
 
 Corollary Zprop_implies_Confl_via_SemiConfl {A:Type}: forall R: Rel A, Z_prop R -> Confl R.
-Proof. intros R HZ_prop. apply Semi_equiv_Confl. generalize dependent HZ_prop.
-       apply Z_prop_implies_SemiConfl. Qed.
+(* begin hide *)
+Proof.
+  intros R HZ_prop.
+  apply Semi_equiv_Confl.
+  generalize dependent HZ_prop.
+  apply Z_prop_implies_SemiConfl.
+Qed.
+(* end hide *)
 
-(** * An extension of the Z property: Compositional Z
-
-    In this section we present a formalization of an extension of the
-    Z property with compositional functions, known as _Compositional
-    Z_, as presented in %\cite{Nakazawa-Fujita2016}%. The
-    compositional Z is an interesting property because it allows a
-    kind of modular approach to the Z property in such a way that the
-    reduction relation can be split into two parts. More precisely,
-    given an ARS $(A,\to_R)$, one must be able to decompose the
-    relation $\to_R$ into two parts, say $\to_1$ and $\to_2$ such that
-    $\to_R = \to_1\cup \to_2$. This kind of decomposition can be done
-    in several interesting situations such as the $\lambda$-calculus
-    with $\beta\eta$-reduction%\cite{Ba84}%, extensions of the
-    $\lambda$-calculus with explicit substitutions%\cite{accl91}%, the
-    $\lambda\mu$-calculus%\cite{Parigot92}%, etc. But before
-    presenting the full definition of the Compositional Z, we need
-    to define the _weak Z property_:
-
-    %\begin{figure}[h] \centering \[ \xymatrix{ a \ar[r]_R & b
-        \ar@{.>>}[dl]^x\\ f(a) \ar@{.>>}[r]_x & f(b) \\ } \]
-        \caption{The weak Z property}\label{fig:weakZ} \end{figure}%
-    
-    %\begin{definition} Let $(A,\to_R)$ be an ARS and $\to_R'$ a
-     relation on $A$. A mapping $f$ satisfies the {\it weak Z
-     property} for $\to_R$ by $\to_R'$ if $a\to_R b$ implies $b \tto_R'
-     f(a)$ and $f(a) \tto_R' f(b)$ (cf. Figure
-     \ref{fig:weakZ}). Therefore, a mapping $f$ satisfies the Z
-     property for $\to_R$ if it satisfies the weak Z property by
-     itself.  \end{definition}%
-
-    When $f$ satisfies the weak Z property, we also say that $f$ is
-    weakly Z, and the corresponding definition in Coq is given as
-    follows: *)
+(** * An extension of the Z property: Compositional Z *)
 
 Definition f_is_weak_Z {A} (R R': Rel A) (f: A -> A) := forall a b, R a b -> ((refltrans R') b (f a) /\ (refltrans R') (f a) (f b)).
 
-(** The compositional Z is an extension of the Z property for
-compositional functions, where composition is defined as usual: *)
-
 Definition comp {A} (f1 f2: A -> A) := fun x:A => f1 (f2 x).
 Notation "f1 # f2" := (comp f1 f2) (at level 40).
-
-(** %\noindent% and the disjoint union is inductively defined as: *)
 
 Inductive union {A} (red1 red2: Rel A) : Rel A :=
 | union_left: forall a b, red1 a b -> union red1 red2 a b
 | union_right: forall a b, red2 a b -> union red1 red2 a b.
 Notation "R1 !_! R2" := (union R1 R2) (at level 40).
 
-(* begin hide *)
 Lemma union_or {A}: forall (r1 r2: Rel A) (a b: A), (r1 !_! r2) a b <-> (r1 a b) \/ (r2 a b).
+(* begin hide *)
 Proof.
   intros r1 r2 a b; split.
   - intro Hunion.
@@ -669,168 +416,189 @@ Proof.
     + apply union_right; assumption.
 Qed.
 (* end hide *)
+Require Import Setoid.
+Require Import ZArith.
 
-(** We are now ready to present the definition of the compositional Z:
-
-    %\begin{theorem}\cite{Nakazawa-Fujita2016}\label{thm:zcomp} Let
-     $(A,\to_R)$ be an ARS such that $\to_R = \to_1 \cup \to_2$. If
-     there exists mappings $f_1,f_2: A \to A$ such that
-     \begin{enumerate} \item $f_1$ is Z for $\to_1$ \item $a \to_1 b$
-     implies $f_2(a) \tto f_2(b)$ \item $a \tto f_2(a)$ holds for any
-     $a\in Im(f_1)$ \item $f_2 \circ f_1$ is weakly Z for $\to_2$ by
-     $\to_R$ \end{enumerate} then $f_2 \circ f_1$ is Z for
-     $(A,\to_R)$, and hence $(A,\to_R)$ is confluent.  \end{theorem}%
-
-    We define the predicate [Z_comp] that corresponds to the premises
-    of Theorem %\ref{thm:zcomp}%, i.e. to the conjunction of items
-    (i), (ii), (iii) and (iv) in addition to the fact that $\to_R =
-    \to_1 \cup \to_2$, where $\to_1$ (resp. $\to_2$) is written as
-    [R1] (resp. [R2]): *)
-
-Definition Z_comp {A:Type} (R :Rel A) := exists (R1 R2: Rel A) (f1 f2: A -> A), (forall x y, R x y <-> (R1 !_! R2) x y) /\ f_is_Z R1 f1 /\ (forall a b, R1 a b -> (refltrans R) (f2 a) (f2 b)) /\ (forall a b, b = f1 a -> (refltrans R) b (f2 b)) /\ (f_is_weak_Z R2 R (f2 # f1)).
-
+Lemma equiv_refltrans {A}: forall (R R1 R2: Rel A), (forall x y, R x y <-> (R1 !_! R2) x y) -> forall x y, refltrans (R1 !_! R2) x y -> refltrans R x y.
 (* begin hide *)
+Proof.
+  intros.
+  induction H0.
+  - apply refl.
+  - apply rtrans with b.
+    + apply H. assumption.
+    + assumption.
+  Qed.
+(* end hide *)
+
+Definition Z_comp {A:Type} (R :Rel A) := exists (R1 R2: Rel A) (f1 f2: A -> A), (forall x y, R x y <-> (R1 !_! R2) x y) /\ f_is_Z R1 f1 /\ (forall a b, R1 a b -> (refltrans R) ((f2 # f1) a) ((f2 # f1) b)) /\ (forall a b, b = f1 a -> (refltrans R) b (f2 b)) /\ (f_is_weak_Z R2 R (f2 # f1)).
+
 Lemma refltrans_union {A:Type}: forall (R R' :Rel A) (a b: A), refltrans R a b -> refltrans (R !_! R') a b.
+(* begin hide *)
 Proof.
   intros R R' a b Hrefl.
   induction Hrefl.
   - apply refl.
   - apply rtrans with b.
-    + apply union_left; assumption.
+    + apply union_left. assumption.
     + assumption.
 Qed.
 (* end hide *)
 
-(** As stated by Theorem %\ref{thm:zcomp}%, the compositional Z gives
-    a sufficient condition for compositional functions to be Z. In
-    other words, compositional Z implies Z, which is justified by the
-    diagrams of Figure %\ref{fig:zcomp}%.
- 
-    %\begin{figure}[h]\begin{tabular}{l@{\hskip 3cm}l} $\xymatrix{ a
-    \ar@{->}[rr]^1 && b \ar@{.>>}[dll]_1\\ f_1(a)\ar@{.>>}[d]
-    \ar@{.>>}[rr]^1 && f_1(b) \\ f_2(f_1(a)) \ar@{.>>}[rr] &&
-    f_2(f_1(b)) }$ & $\xymatrix{ a \ar@{->}[rr]^2 && b
-    \ar@{.>>}[ddll]\\ & & \\ f_2(f_1(a)) \ar@{.>>}[rr] && f_2(f_1(b))
-    }$ \end{tabular}\caption{Compositional Z implies
-    Z}\label{fig:zcomp}\end{figure}%
-  
-    In what follows, we present our commented Coq proof of this fact:
-    *)
+Require Import Setoid.
+Lemma refltrans_union_equiv {A}: forall (R R1 R2 : Rel A), (forall (x y : A), (R x y <-> (R1 !_! R2) x y)) -> forall (x y: A), refltrans (R1 !_! R2) x y -> refltrans R x y.
+(* begin hide *)
+Proof.
+  intros.
+  induction H0.
+  + apply refl.
+  + apply rtrans with b.
+    - apply H. assumption.
+    - assumption.
+Qed.
+(* end hide *)
 
-Lemma refltrans_union_equiv {A}: forall (R R1 R2 : Rel A) (x y : A), R x y <-> (R1 !_! R2) x y -> forall x y : A, refltrans (R1 !_! R2) x y -> refltrans R x y.
-Proof.  
-Admitted.
-  
 Theorem Z_comp_implies_Z_prop {A:Type}: forall (R :Rel A), Z_comp R -> Z_prop R.
+(* begin hide *)
 Proof.
   intros R H.
   unfold Z_prop. unfold Z_comp in H. destruct H as
-  [ R1 [ R2 [f1 [f2 [Hunion [H1 [H2 [H3 H4]]]]]]]]. 
-  exists (f2 # f1). 
+  [ R1 [ R2 [f1 [f2 [Hunion [H1 [H2 [H3 H4]]]]]]]].
+  exists (f2 # f1).
   intros a b HR.
   apply Hunion in HR. inversion HR; subst. clear HR.
-  - split. 
-    + apply refltrans_composition with (f1 a). 
+  - split.
+    + apply refltrans_composition with (f1 a).
       * apply H1 in H.
         destruct H as [Hb Hf].
         apply (refltrans_union R1 R2) in Hb.
-        apply refltrans_union_equiv with R1 R2 b (f1 a).
+        apply refltrans_union_equiv with R1 R2.
         ** apply Hunion.
         ** apply Hb.
-      * apply H3 with a; reflexivity. 
-    + apply H1 in H.  destruct H as [Hb Hf].
-      clear Hb.  unfold comp. 
-      induction Hf. 
-      * apply refl. 
-      * apply refltrans_composition with (f2 b0). 
-        ** apply H2; assumption. 
-        ** apply IHHf. 
-  - apply H4; assumption. 
+      * apply H3 with a; reflexivity.
+    + apply H2; assumption. 
+  - apply H4; assumption.
 Qed.
+(* end hide *)
 
 (** Now we can use the proofs of the theorems [Z_comp_implies_Z_prop]
 and [Z_prop_implies_Confl] to conclude that compositional Z is a
 sufficient condition for confluence. *)
 
 Corollary Z_comp_is_Confl {A}: forall (R: Rel A), Z_comp R -> Confl R.
+(* begin hide *)
 Proof.
   intros R H.
   apply Z_comp_implies_Z_prop in H.
   apply Z_prop_implies_Confl; assumption.
 Qed.
+(* end hide *)
 
-(** Rewriting Systems with equations is another interesting and
-    non-trivial topic %\cite{winkler89,terese03}%. The confluence of
-    rewriting systems with an equivalence relation can also be proved
-    by a variant of the compositional Z, known as Z property
-    modulo%~\cite{AK12b}%.
-
-    %\begin{theorem}\label{cor:zcomp} Let
-     $(A,\to_R)$ be an ARS such that $\to_R = \to_1 \cup \to_2$. If
-     there exist mappings $f_1,f_2: A \to A$ such that
-     \begin{enumerate} \item $a \to_1 b$ implies $f_1(a) = f_1(b)$
-     \item $a \tto_1 f_1(a), for all a$ \item $a \tto_R f_2(a)$ holds
-     for any $a\in Im(f_1)$ \item $f_2 \circ f_1$ is weakly Z for
-     $\to_2$ by $\to_R$ \end{enumerate} then $f_2 \circ f_1$ is Z for
-     $(A,\to_R)$, and hence $(A,\to_R)$ is confluent. \end{theorem}%
-
-    We define the predicate [Z_comp_eq] corresponding to the
-    hypothesis of Theorem %\ref{cor:zcomp}%, and then we prove
-    directly that if [Z_comp_eq] holds for a relation [R] then [Zprop
-    R] also holds. This approach differs from
-    %\cite{Nakazawa-Fujita2016}% that proves Theorem
-    %\ref{cor:zcomp}%, which is a Corollary in %\cite{Nakazawa-Fujita2016}%, 
-    directly from Theorem %\ref{thm:zcomp}% *)
-
-Definition Z_comp_eq {A:Type} (R :Rel A) := exists (R1 R2: Rel A) (f1 f2: A -> A), (forall x y, R x y <-> (R1 !_! R2) x y) /\ (forall a b, R1 a b -> f1 a = f1 b) /\ (forall a, (refltrans R1) a (f1 a)) /\ (forall b a, a = f1 b -> (refltrans R) a (f2 a)) /\ (f_is_weak_Z R2 R (f2 # f1)).
-        
-Lemma Z_comp_eq_implies_Z_prop {A:Type}: forall (R : Rel A), Z_comp_eq R -> Z_prop R.
+Theorem Z_comp_thm {A:Type}: forall (R :Rel A) (R1 R2: Rel A) (f1 f2: A -> A), (forall x y, R x y <-> (R1 !_! R2) x y) /\ f_is_Z R1 f1 /\ (forall a b, R1 a b -> (refltrans R) ((f2 # f1) a) ((f2 # f1) b)) /\ (forall a b, b = f1 a -> (refltrans R) b (f2 b)) /\ (f_is_weak_Z R2 R (f2 # f1)) -> f_is_Z R (f2 # f1).
+(* begin hide *)
 Proof.
-  intros R Heq.  unfold Z_comp_eq in Heq. (** %\comm{Let $R$ be a relation
-  and suppose that $R$ satisfies the predicate $Z\_comp\_eq$.}% *)
-  
-  destruct Heq as [R1 [R2 [f1 [f2 [Hunion [H1 [H2 [H3 H4]]]]]]]]. (**
-  %\comm{Call $Hi$ the $i$th hypothesis as in \ref{cor:zcomp}.}% *)
-  
-  unfold Z_prop.  exists (f2 # f1). (** %\comm{From the definition of the
-  predicate $Z\_prop$, we need to find a map, say $f$ that is Z. Let
-  $(f_2 \circ f_1)$ be such map.}%  *)
-  
-  intros a b Hab. (** %\comm{In order to prove that $(f_2 \circ f_1)$ is Z,
-  let $a$ and $b$ be arbitrary elements of type $A$, and $Hab$ be the
-  hypothesis that $a \to_{R} b$.}% *)
-  split.
-  - unfold comp. Admitted.
+  intros R R1 R2 f1 f2 H.
+  destruct H as [Hunion [H1 [H2 [H3 H4]]]].
+  unfold f_is_Z.
+  intros a b Hab.
+  apply Hunion in Hab.
+  inversion Hab; subst. clear Hab; split.
+  - apply refltrans_composition with (f1 a).
+    assert (Hbf1a: refltrans (R1 !_! R2) b (f1 a)).
+    { apply refltrans_union. apply H1; assumption. }
+    apply equiv_refltrans with R1 R2.
+    + assumption.
+    + assumption.
+    + apply H3 with a; reflexivity.
+  - unfold comp.
+    assert (H' := H).
+    apply H1 in H.
+    destruct H as [H Hf1].
+    clear H.
+    apply H2; assumption.
+  - apply H4; assumption.
+Qed. 
+(* end hide *)
 
-       (* .inversion Hunion; subst; clear H.  inversion Hab; subst; clear Hab. (**
-  %\comm{Since $a$ $R$-reduces in one step to $b$ and $R$ is the union of the
-  relations $R1$ and $R2$ then we consider two cases:}% *)
-  
-  - unfold comp; split. (** %\comm{The first case is when $a \to_{R1}
-    b$. This is equivalent to say that $f_2 \circ f_1$ is weak Z for
-    $R1$ by $R1 \cup R2$.}% *)
-    
-    + apply refltrans_composition with (f1 b). (** %\comm{Therefore, we first
-    prove that $b \tto_{(R1\cup R2)} (f_2 (f_1\ a))$, which can be
-    reduced to $b \tto_{(R1\cup R2)} (f_1\ b)$ and $(f_1\ b)
-    \tto_{(R1\cup R2)} (f_2 (f_1\ a))$ by the transitivity of
-    $refltrans$.}% *)
-      
-      * apply refltrans_union.  apply H2. (** %\comm{From hypothesis $H2$, we
-        know that $a \tto_{R1} (f_1\ a)$ for all $a$, and hence
-        $a\tto_{(R1\cup R2)} (f_1\ a)$ and we conclude.}% *)
-        
-      * apply H1 in H.  rewrite H.  apply H3 with b; reflexivity. (**
-        %\comm{The proof that $(f_1\ b)\tto_{(R1\cup R2)} (f_2 (f_1\ a))$ is
-        exactly the hypothesis $H3$.}% *)
-
-    + apply H1 in H.  rewrite H.  apply refl. (** %\comm{The proof that $(f_2
-    (f_1\ a)) \tto_{(R1\cup R2)} (f_2 (f_1\ b))$ is done using the
-    reflexivity of $refltrans$ because $(f_2 (f_1\ a)) = (f_2 (f_1\
-    b))$ by hypothesis $H1$.}% *)
-      
-  - apply H4; assumption. (** %\comm{When $a \to_{R2} b$ then we are done by
-    hypothesis $H4$.}% *)
-
+Corollary Z_comp_eq_corol {A:Type}: forall (R :Rel A) (R1 R2: Rel A) (f1 f2: A -> A), (forall x y, R x y <-> (R1 !_! R2) x y) /\ (forall a b, R1 a b -> (f1 a) = (f1 b)) /\ (forall a, (refltrans R1) a (f1 a)) /\ (forall b a, a = f1 b -> (refltrans R) a (f2 a)) /\ (f_is_weak_Z R2 R (f2 # f1)) -> f_is_Z R (f2 # f1).
+(* begin hide *)
+Proof.
+  intros R R1 R2 f1 f2 H.
+  destruct H as [Hunion [H1 [H2 [H3 H4]]]].
+  pose proof (Z_comp_thm := Z_comp_thm R R1 R2 f1 f2).
+  apply Z_comp_thm. split.
+  - assumption.
+  - split.
+    + unfold f_is_Z.
+      intros a b Hab. split.
+      * apply H1 in Hab.
+        rewrite Hab.
+        apply H2.
+      * apply H1 in Hab.
+        rewrite Hab.
+        apply refl.
+    + split.
+      * intros a b Hab.
+        unfold comp.
+        apply H1 in Hab.
+        rewrite Hab.
+        apply refl.
+      * split; assumption.
 Qed.
-*)
+(* end hide *)
+
+Definition Z_comp_eq {A:Type} (R :Rel A) := exists (R1 R2: Rel A) (f1 f2: A -> A), (forall x y, R x y <-> (R1 !_! R2) x y) /\ (forall a b, R1 a b -> (f1 a) = (f1 b)) /\ (forall a, (refltrans R1) a (f1 a)) /\ (forall b a, a = f1 b -> (refltrans R) a (f2 a)) /\ (f_is_weak_Z R2 R (f2 # f1)).
+
+Lemma Z_comp_eq_implies_Z_comp {A:Type}: forall (R : Rel A), Z_comp_eq R -> Z_comp R.
+(* begin hide *)
+Proof.
+  intros R Heq. unfold Z_comp_eq in Heq.
+  destruct Heq as [R1 [R2 [f1 [f2 [Hunion [H1 [H2 [H3 H4]]]]]]]].
+  unfold Z_comp.
+  exists R1, R2, f1, f2.
+  split.
+  - assumption.
+  - split.
+    + unfold f_is_Z.
+      intros a b H; split.
+      * apply H1 in H. rewrite H. apply H2.
+      * apply H1 in H. rewrite H. apply refl.
+    + split.
+      * intros a b H.
+        unfold comp.
+        apply H1 in H.
+        rewrite H.
+        apply refl.
+      * split; assumption.
+Qed.
+(* end hide *)
+
+Lemma Z_comp_eq_implies_Z_prop {A:Type}: forall (R : Rel A), Z_comp_eq R -> Z_prop R.
+(* begin hide *)
+Proof.
+  intros R Heq.
+  unfold Z_comp_eq in Heq.
+  destruct Heq as [R1 [R2 [f1 [f2 [Hunion [H1 [H2 [H3 H4]]]]]]]].
+  unfold Z_prop.  exists (f2 # f1).
+  intros a b Hab.
+  split.
+  - apply Hunion in Hab.
+    inversion Hab; subst.
+    + unfold comp.
+      apply H1 in H. rewrite H.
+      apply refltrans_composition with (f1 b).
+      * assert (H5: refltrans R1 b (f1 b)).
+        {
+          apply H2.
+        }
+        apply refltrans_union_equiv with R1 R2.
+        ** assumption.
+        ** apply refltrans_union. assumption.
+      * apply H3 with b. reflexivity.
+    + apply H4. assumption.
+  - apply Hunion in Hab.
+    inversion Hab; subst.
+    + unfold comp. apply H1 in H. rewrite H. apply refl.
+    + apply H4. assumption.
+Qed.
+(* end hide *)

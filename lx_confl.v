@@ -1257,8 +1257,8 @@ Proof.
                            -----------  rewrite swap_size_eq; reflexivity.
                            ----------- assumption.
                            ----- rewrite swap_size_eq; reflexivity.
-    -- Admitted.
-                             
+    -- admit.
+    -- Admitted.                            
 
 
 (* a               apply aeq_trans with (n_abs (swap_var x y x0)
