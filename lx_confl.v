@@ -4842,6 +4842,25 @@ Qed.
 Lemma m_subst_lemma: forall e1 e2 e3 x y, x <> y -> x `notin` (fv_nom e3) ->
   aeq (m_subst e3 y (m_subst e2 x e1)) (m_subst (m_subst e3 y e2) x (m_subst e3 y e1)).
 Proof.
+  (** The proof is by induction on the size of [e1]. *)
+  induction e1 using n_sexp_size_induction.
+  (** We procced by case analisys on the structure of [e1]. *)
+  generalize dependent e1. intro e1; case e1 as [z | z e11 | e11 e12 | e11 z e12].
+  - (** The first case: [e1] is a variable, say [z], and there are several subcases to analyse. *)
+    intros IH e2 e3 x y Hneq Hfv. unfold m_subst. simpl. destruct (x == z) eqn:Hxz.
+    + (** In the first subcase [z] is equal to [x]. *)
+      subst. destruct (y == z) eqn:Hyz.
+      * (** As an explicit comparison between [z] and [y] is required and [z] and [y] are diferrent by hipothesis, the first subscase is done by contradiction *)
+        subst. contradiction.
+      * (** In the second subcase, both lhs and rhs reduces to the same term. *)
+        simpl. rewrite Hxz. apply aeq_refl.
+    + (** In this case, we know that [z] is not equal to [x], so we compare [z] to [y]. *)
+      simpl. destruct (y == z) eqn:Hyz.
+      * (** If [z] is equal to [y] then both lhs and rhs reduces to [e3], since [x] does not occur in [e3] by hypothesis. *)
+        subst. apply aeq_sym. pose proof subst_fresh_eq. change (subst_rec (size e3) e3 (subst_rec (size e2) e2 e3 z) x) with (m_subst (m_subst e3 z e2) x e3). apply H. assumption.
+      * (** In the last subcase [x] is not equal to [y] and not equal to [z], therefore both lhs and rhs reduces to [z]. *) 
+        apply aeq_sym. change (subst_rec (size (n_var z)) (n_var z) (subst_rec (size e2) e2 e3 y) x) with (m_subst (m_subst e3 y e2) x (n_var z)). apply subst_fresh_eq. simpl. apply notin_singleton_2. intro H. subst. contradiction.
+        - (** If [e1] is an abstraction, say [n_abs x e11] then *)
 Admitted.
 
 Lemma lx_fv_nom: forall e1 e2 x, lx e1 e2 -> x `notin` (fv_nom e1) -> x `notin` (fv_nom e2).
