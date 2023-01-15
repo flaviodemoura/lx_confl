@@ -873,17 +873,6 @@ Proof.
 Qed.
 
 Hint Rewrite swap_size_eq.
-
-Lemma fv_nom_swap_eq: forall x y t, x `notin` fv_nom t -> y `notin` fv_nom t -> fv_nom t [=] fv_nom (swap x y t).
-Proof.
-  induction t using n_sexp_induction.
-  - intros H1 H2. simpl in *.
-    unfold swap_var. default_simp.
-    + apply notin_singleton_is_false in H1. contradiction.
-    + apply notin_singleton_is_false in H2. contradiction.     
-    + reflexivity.
-  - intros H1 H2. simpl in *.
-    Admitted.
       
 (** We define the "alpha-equivalence" relation that declares when two nominal terms are equivalent (up to renaming of bound variables). Note the two different rules for [n_abs] and [n_sub]: either the binders are the same and we can directly compare the bodies, or the binders differ, but we can swap one side to make it look like the other.  *)
 
@@ -2501,24 +2490,6 @@ Proof.
   - intros. inversion H1.
 Qed.
 
-(* Não é possível provar esse lema porque ele não é correto,
-   pois se não existirem y em t não ocorrera a substituição
-   por u e as variáveis livres de u não estarão no conjunto
-   de variáveis livres
-
-   Lemma fv_nom_abs_subst_aux: forall t u y,
-    fv_nom (subst_rec (size t) t u y) [=] 
-    (remove y (fv_nom t)) `union` (fv_nom u).
-
-  mas podemos provar o seguinte: *)
-
-Lemma fv_nom_subst_subset: forall t u x, fv_nom (m_subst u x t) [<=] (remove x (fv_nom t)) `union` (fv_nom u). 
-Proof.
-  induction t using n_sexp_induction.
-  - intros u x'. unfold m_subst.
-    simpl. destruct (x' == x).
-    +  Admitted.
-
 (** ** Challenge Exercise [m_subst properties]
     Now show the following property by induction on the size of terms. *)
 
@@ -2864,10 +2835,6 @@ Lemma subst_fresh_eq : forall (x : atom) t u,  x `notin` fv_nom t -> aeq (m_subs
 Proof.
   intros. apply subst_fresh_eq_aux with (n := size t). lia. auto.
 Qed.
-
-Lemma aeq_n_sub_compat: forall t1 t1' t2 x, aeq t1 t1' -> aeq (n_sub t1 x t2) (n_sub t1' x t2).
-Proof.
-  Admitted.
 
 Lemma aeq_n_sub_in_compat: forall t1 t2 t2' x, aeq t2 t2' -> aeq (n_sub t1 x t2) (n_sub t1 x t2').
 Proof.
