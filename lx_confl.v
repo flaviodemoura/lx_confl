@@ -1,3 +1,4 @@
+(*begin hide *)
 Require Import lambda_x.
 Require Import ZtoConfl.
 
@@ -4771,22 +4772,6 @@ Proof.
     -- apply notin_union_2 in H. apply IHe2. default_simp.
 Qed.
 
-Lemma n_sexp_size_induction: forall P: n_sexp -> Prop,
-  (forall x, (forall y, size y < size x -> P y) -> P x) -> forall z, P z.
-Proof.
-  intros. remember (size z) as n. generalize dependent z. induction n using strong_induction;intros.
-  case z eqn:H';intros.
-  - apply H. intros. destruct y;default_simp.
-  - apply H. intros. apply (H0 (size y)).
-    -- rewrite Heqn. assumption.
-    -- reflexivity.
-  - apply H. intros. apply (H0 (size y)).
-    -- rewrite Heqn. assumption.
-    -- reflexivity.
-  - apply H. intros. apply (H0 (size y)).
-    -- rewrite Heqn. assumption.
-    -- reflexivity.
-Qed.
 
 Lemma in_swap: forall  e x y z, x <> y -> x <> z -> x `in` fv_nom e <-> 
   x `in` fv_nom (swap y z e).
@@ -4838,14 +4823,19 @@ Proof.
   intros. split;intros;apply in_swap in H3;try assumption;
   apply in_swap;assumption.
 Qed.
+(* end hide *)
 
 Lemma m_subst_lemma: forall e1 e2 e3 x y, x <> y -> x `notin` (fv_nom e3) ->
   aeq (m_subst e3 y (m_subst e2 x e1)) (m_subst (m_subst e3 y e2) x (m_subst e3 y e1)).
 Proof.
   (** The proof is by induction on the size of [e1]. *)
+
   induction e1 using n_sexp_size_induction.
-  (** We procced by case analisys on the structure of [e1]. *)
+
+  (** We procced by case analisys on the structure of [e1]. The cases in between square brackets below mean that in the first case, [e1] is a variable named [z], in the second case [e1] is an abstraction of the form $\lambda$[z.e11], in the third case [e1] is an application of the form ([e11] [e12]), and finally in the fourth case [e1] is an explicit substitution of the form [e11] $\langle$ [z] := [e12] $\rangle$. *)
+  
   generalize dependent e1. intro e1; case e1 as [z | z e11 | e11 e12 | e11 z e12].
+(* begin hide *)
   - (** The first case: [e1] is a variable, say [z], and there are several subcases to analyse. *)
     intros IH e2 e3 x y Hneq Hfv. unfold m_subst. simpl. destruct (x == z) eqn:Hxz.
     + (** In the first subcase [z] is equal to [x]. *)
@@ -4860,7 +4850,11 @@ Proof.
         subst. apply aeq_sym. pose proof subst_fresh_eq. change (subst_rec (size e3) e3 (subst_rec (size e2) e2 e3 z) x) with (m_subst (m_subst e3 z e2) x e3). apply H. assumption.
       * (** In the last subcase [x] is not equal to [y] and not equal to [z], therefore both lhs and rhs reduces to [z]. *) 
         apply aeq_sym. change (subst_rec (size (n_var z)) (n_var z) (subst_rec (size e2) e2 e3 y) x) with (m_subst (m_subst e3 y e2) x (n_var z)). apply subst_fresh_eq. simpl. apply notin_singleton_2. intro H. subst. contradiction.
-        - (** If [e1] is an abstraction, say [n_abs x e11] then *)
+  - (** Suppose [e1] is an abstraction, say [n_abs z e11]. There are several subcases. *)
+    intros IH e2 e3 x y Hneq Hfv. unfold m_subst at 2 3. simpl. destruct (x == z) eqn:Hxz.
+    + (** In the first subcase, [x] is equal to [z] and both lhs and rhs reduces straightfoward to the same term. *)
+      subst. change (subst_rec (size (m_subst e3 y (n_abs z e11))) (m_subst e3 y (n_abs z e11)) (m_subst e3 y e2) z) with (m_subst (m_subst e3 y e2) z (m_subst e3 y (n_abs z e11))). rewrite subst_abs_eq.
+    +
 Admitted.
 
 Lemma lx_fv_nom: forall e1 e2 x, lx e1 e2 -> x `notin` (fv_nom e1) -> x `notin` (fv_nom e2).
@@ -6728,3 +6722,4 @@ Proof.
   apply Z_comp_eq_implies_Z_prop.
   apply lambda_x_Z_comp_eq.
 Qed.
+(* end hide *)

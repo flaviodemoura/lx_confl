@@ -1,5 +1,5 @@
 (** * A nominal representation of the lambda_x calculus. *)
-
+(* begin hide *)
 Require Export Arith Lia.
 Require Export Metalib.Metatheory.
 Require Export Metalib.LibDefaultSimp.
@@ -871,6 +871,25 @@ Proof.
          apply le_plus_l.
       ++ reflexivity.
 Qed.
+(* end hide *)
+(** printing < %\ensuremath{<}% *)
+Lemma n_sexp_size_induction: forall P: n_sexp -> Prop,
+    (forall x, (forall y, size y < size x -> P y) -> P x) -> forall z, P z.
+(* begin hide *)
+Proof.
+  intros. remember (size z) as n. generalize dependent z. induction n using strong_induction;intros.
+  case z eqn:H';intros.
+  - apply H. intros. destruct y;default_simp.
+  - apply H. intros. apply (H0 (size y)).
+    -- rewrite Heqn. assumption.
+    -- reflexivity.
+  - apply H. intros. apply (H0 (size y)).
+    -- rewrite Heqn. assumption.
+    -- reflexivity.
+  - apply H. intros. apply (H0 (size y)).
+    -- rewrite Heqn. assumption.
+    -- reflexivity.
+Qed.
 
 Hint Rewrite swap_size_eq.
 
@@ -908,6 +927,8 @@ Inductive aeq : n_sexp -> n_sexp -> Prop :=
      aeq (n_sub t1 x t2) (n_sub t1' y t2').
 
 Hint Constructors aeq.
+Notation "t =a u" := (aeq t u) (at level 60).
+
 (*
 Inductive refltrans' (R: Rel n_sexp) : n_sexp -> n_sexp -> Prop :=
 | refl_aeq: forall a b, aeq a b -> (refltrans' R) a b
@@ -2279,9 +2300,113 @@ Fixpoint subst_rec (n:nat) (t:n_sexp) (u :n_sexp) (x:atom)  : n_sexp :=
 
 (** Our real substitution function uses the size of the size of the term
     as that extra argument. *)
+
 Definition m_subst (u : n_sexp) (x:atom) (t:n_sexp) :=
   subst_rec (size t) t u x.
+Notation "[ x := u ] t" := (m_subst u x t) (at level 60).
 
+Lemma m_subst_var_eq : forall u x,
+    [x := u](n_var x) = u.
+Proof.
+  intros. unfold m_subst. simpl. rewrite eq_dec_refl. reflexivity.
+Qed.
+
+Lemma m_subst_var_neq : forall u x y, x <> y ->
+    [y := u](n_var x) = n_var x.
+Proof.
+  intros. unfold m_subst. simpl. destruct (y == x) eqn:Hxy.
+  - subst. contradiction.
+  - reflexivity.
+Qed.
+
+Lemma m_subst_abs : forall u x y t , m_subst u x (n_abs y t)  =
+       if (x == y) then (n_abs y t )
+       else let (z,_) := atom_fresh (fv_nom u `union` fv_nom (n_abs y t ) `union` {{x}}) in
+       n_abs z (m_subst u x (swap y z t )).
+Proof.
+  intros. case (x == y).
+  - intros. unfold m_subst.  rewrite e. simpl. case (y == y).
+    -- trivial.
+    -- unfold not. intros. assert (y = y). {
+         reflexivity.
+       }
+       contradiction.
+  - intros. unfold m_subst. simpl. case (x == y).
+    -- intros. contradiction.
+    -- intros. pose proof AtomSetImpl.union_1.
+       assert (forall z, size t  = size (swap y z t )). {
+         intros. case (y == z).
+         - intros. rewrite e. rewrite swap_id. reflexivity.
+         - intros. rewrite swap_size_eq. reflexivity.         
+       }
+       destruct (atom_fresh
+       (Metatheory.union (fv_nom u)
+          (Metatheory.union (remove y (fv_nom t )) (singleton x)))). 
+       specialize (H0 x0). rewrite H0. reflexivity.
+Qed.
+
+Corollary m_subst_abs_eq : forall u x t, [x := u](n_abs x t) = n_abs x t.
+Proof.
+  intros u x t.
+  pose proof m_subst_abs. specialize (H u x x t). rewrite eq_dec_refl in H. assumption.
+Qed.  
+
+Corollary m_subst_abs_neq : forall u x y t, x <> y -> let (z,_) := atom_fresh (fv_nom u `union` fv_nom (n_abs y t ) `union` {{x}}) in [x := u](n_abs y t) = n_abs z ([x := u](swap y z t)).
+Proof.
+  intros u x y t H. pose proof m_subst_abs. specialize (H0 u x y t). destruct (x == y) eqn:Hx.
+  - subst. contradiction.
+  - destruct (atom_fresh (Metatheory.union (fv_nom u) (Metatheory.union (fv_nom (n_abs y t)) (singleton x)))). assumption.    
+Qed.  
+
+Lemma m_subst_notin : forall t u x, x `notin` fv_nom t -> [x := u]t = t.
+Proof.
+  induction t.
+  - intros u x' H. unfold m_subst. simpl in *. apply notin_singleton_1' in H. destruct (x' == x) eqn:Hx.
+    + subst. contradiction.
+    + reflexivity.
+  - intros u x' H. simpl in *.
+  -
+  -
+  
+  intros. unfold m_subst. simpl. destruct (y == x) eqn:Hxy.
+  - subst. contradiction.
+  - reflexivity.
+Qed.
+
+(* end hide *)
+
+(** * The substitution lemma for the metasubstitution *)
+
+Lemma m_subst_lemma: forall e1 e2 e3 x y, x <> y -> x `notin` (fv_nom e3) ->
+ ([y := e3]([x := e2]e1)) =a ([x := ([y := e3]e2)]([y := e3]e1)).
+Proof.
+  (** The proof is by induction on the size of [e1] using the size induction principle, named [n_sexp_size_induction] presented above. *)
+
+  induction e1 using n_sexp_size_induction.
+
+  (** We procced by case analisys on the structure of [e1]. The cases in between square brackets below mean that in the first case, [e1] is a variable named [z], in the second case [e1] is an abstraction of the form $\lambda$[z.e11], in the third case [e1] is an application of the form ([e11] [e12]), and finally in the fourth case [e1] is an explicit substitution of the form [e11] $\langle$ [z] := [e12] $\rangle$. *)
+  
+  generalize dependent e1. intro e1; case e1 as [z | z e11 | e11 e12 | e11 z e12].
+
+  - (** The first case: [e1] is a variable, say [z], and there are several subcases to analyse. *)
+    intros IH e2 e3 x y Hneq Hfv. destruct (x == z) eqn:Hxz.
+    + (** In the first subcase [z] is equal to [x]. *)
+      subst. rewrite (m_subst_var_neq e3 z y).
+      * repeat rewrite m_subst_var_eq. apply aeq_refl.
+      * assumption.
+    + rewrite m_subst_var_neq.
+      * (** If [z] is equal to [y] then both lhs and rhs reduces to [e3], since [x] does not occur in the set [fv_nom e3] by hypothesis. *)
+        subst. apply aeq_sym. pose proof subst_fresh_eq. change (subst_rec (size e3) e3 (subst_rec (size e2) e2 e3 z) x) with (m_subst (m_subst e3 z e2) x e3). apply H. assumption.
+      * (** In the last subcase [x] is not equal to [y] and not equal to [z], therefore both lhs and rhs reduces to [z]. *) 
+        apply aeq_sym. change (subst_rec (size (n_var z)) (n_var z) (subst_rec (size e2) e2 e3 y) x) with (m_subst (m_subst e3 y e2) x (n_var z)). apply subst_fresh_eq. simpl. apply notin_singleton_2. intro H. subst. contradiction.
+  - (** Suppose [e1] is an abstraction, say [n_abs z e11]. There are several subcases. *)
+    intros IH e2 e3 x y Hneq Hfv. unfold m_subst at 2 3. simpl. destruct (x == z) eqn:Hxz.
+    + (** In the first subcase, [x] is equal to [z] and both lhs and rhs reduces straightfoward to the same term. *)
+      subst. change (subst_rec (size (m_subst e3 y (n_abs z e11))) (m_subst e3 y (n_abs z e11)) (m_subst e3 y e2) z) with (m_subst (m_subst e3 y e2) z (m_subst e3 y (n_abs z e11))). rewrite subst_abs_eq.
+    +
+Admitted.
+
+(* begin hide *)
 (** This next lemma uses course of values induction [lt_wf_ind] to prove that
     the size of the term [t] is enough "fuel" to completely calculate a
     substitution. Providing larger numbers produces the same result. *)
@@ -2348,29 +2473,6 @@ Proof.
        --- lia.
 Qed.
 
-(** ** Challenge Exercise [m_subst]
-    Use the definitions above to prove the following results about the
-    nominal substitution function.  *)
-
-Lemma subst_eq_var : forall u x,
-    m_subst u x (n_var x) = u.
-Proof.
-  intros. unfold size. unfold subst_rec.
-  unfold m_subst. simpl.
-  case (x == x).
-  - trivial.
-  - intros. contradiction.
-Qed.
-
-Lemma subst_neq_var : forall u x y,
-    x <> y ->
-    m_subst u x (n_var y) = n_var y.
-Proof.
-  intros. unfold m_subst. unfold size. unfold subst_rec.
-  case (x == y).
-  - intros. contradiction.
-  - reflexivity.
-Qed.
 
 Lemma subst_app : forall u x t1 t2,
     m_subst u x (n_app t1 t2) = n_app (m_subst u x t1) (m_subst u x t2).
@@ -2390,32 +2492,6 @@ Proof.
   - assumption.
 Qed.
 
-Lemma subst_abs : forall u x y t ,
-    m_subst u x (n_abs y t)  =
-       if (x == y) then (n_abs y t )
-       else let (z,_) := atom_fresh (fv_nom u `union` fv_nom (n_abs y t ) `union` {{x}}) in
-       n_abs z (m_subst u x (swap y z t )).
-Proof.
-  intros. case (x == y).
-  - intros. unfold m_subst.  rewrite e. simpl. case (y == y).
-    -- trivial.
-    -- unfold not. intros. assert (y = y). {
-         reflexivity.
-       }
-       contradiction.
-  - intros. unfold m_subst. simpl. case (x == y).
-    -- intros. contradiction.
-    -- intros. pose proof AtomSetImpl.union_1.
-       assert (forall z, size t  = size (swap y z t )). {
-         intros. case (y == z).
-         - intros. rewrite e. rewrite swap_id. reflexivity.
-         - intros. rewrite swap_size_eq. reflexivity.         
-       }
-       destruct (atom_fresh
-       (Metatheory.union (fv_nom u)
-          (Metatheory.union (remove y (fv_nom t )) (singleton x)))). 
-       specialize (H0 x0). rewrite H0. reflexivity.
-Qed.
 
 Lemma subst_sub : forall u x y t1 t2,
     m_subst u x (n_sub t1 y t2) =
@@ -2956,3 +3032,4 @@ Proof.
            ---- apply notin_union_2 in H. apply notin_union_2 in H0.
                 apply (IHt2 H H0).
 Qed.
+(* end hide *)
