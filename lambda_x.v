@@ -2377,6 +2377,10 @@ Qed.
 
 (** * The substitution lemma for the metasubstitution *)
 
+(**
+   In the pure $\lambda$-calculus, the substitution lemma is probably the first non trivial property. In our framework, we have defined two different substitution operation, namely, the metasubstitution denoted by [[x:=u]t] and the explicit substitution that has [n_sub] as a constructor. In what follows, we present the main steps of our proof of the substitution lemma for the metasubstitution operation: 
+ *)
+
 Lemma m_subst_lemma: forall e1 e2 e3 x y, x <> y -> x `notin` (fv_nom e3) ->
  ([y := e3]([x := e2]e1)) =a ([x := ([y := e3]e2)]([y := e3]e1)).
 Proof.
