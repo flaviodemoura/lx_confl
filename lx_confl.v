@@ -3952,7 +3952,8 @@ Proof.
                              (swap x2 x1 t2) (swap_var x2 x1 y))).
                              * apply aeq_m_subst_1. apply aeq_swap0;default_simp.
                              * apply aeq_sym. apply aeq_swap_m_subst.
-Qed.                                                                                                                                                                                      
+Qed.
+
 Lemma aeq_P: forall t1 t2, aeq t1 t2 -> aeq (P t1) (P t2).
 Proof.
   intros t1. induction t1 using n_sexp_induction;intros.
