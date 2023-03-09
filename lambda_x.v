@@ -2078,23 +2078,65 @@ Fixpoint subst_rec (n:nat) (t:n_sexp) (u :n_sexp) (x:atom)  : n_sexp :=
 
 Require Import Recdef.
 
-Function subst_rec' (t:n_sexp) (u :n_sexp) (x:atom) {measure size t} : n_sexp :=
+Function subst_rec_fun (t:n_sexp) (u :n_sexp) (x:atom) {measure size t} : n_sexp :=
   match t with
   | n_var y =>
       if (x == y) then u else t
   | n_abs y t1 =>
       if (x == y) then t
       else let (z,_) :=
-          atom_fresh (fv_nom u `union` fv_nom t `union` {{x}}) in
-        n_abs z (subst_rec' (swap y z t1) u x)
-          | n_app t1 t2 =>
-            n_app (subst_rec' t1 u x) (subst_rec' t2 u x)
-          | n_sub t1 y t2 =>
-            if (x == y) then n_sub t1 y (subst_rec' t2 u x)
-            else
-              let (z,_) :=
                   atom_fresh (fv_nom u `union` fv_nom t `union` {{x}}) in
-              n_sub  (subst_rec' (swap y z t1) u x) z (subst_rec' t2 u x) 
+                n_abs z (subst_rec_fun (swap y z t1) u x)
+  | n_app t1 t2 =>
+      n_app (subst_rec_fun t1 u x) (subst_rec_fun t2 u x)
+  | n_sub t1 y t2 =>
+      if (x == y) then n_sub t1 y (subst_rec_fun t2 u x)
+      else let (z,_) :=
+                  atom_fresh (fv_nom u `union` fv_nom t `union` {{x}}) in
+              n_sub  (subst_rec_fun (swap y z t1) u x) z (subst_rec_fun t2 u x) 
+           end.
+Proof.
+ - intros. simpl. rewrite swap_size_eq. auto.
+ - intros. simpl. lia.
+ - intros. simpl. lia.
+ - intros. simpl. lia.
+ - intros. simpl. lia.
+ - intros. simpl. rewrite swap_size_eq. lia.
+Defined.
+
+Require Import EquivDec.
+Generalizable Variable A.
+
+Definition equiv_decb `{EqDec A} (x y : A) : bool :=
+  if x == y then true else false.
+
+Definition nequiv_decb `{EqDec A} (x y : A) : bool :=
+  negb (equiv_decb x y).
+
+Infix "==b" := equiv_decb (no associativity, at level 70).
+Infix "<>b" := nequiv_decb (no associativity, at level 70).
+
+Parameter Inb : atom -> atoms -> bool.
+Definition equalb s s' := forall a, Inb
+
+Function subst_rec_b (t:n_sexp) (u :n_sexp) (x:atom) {measure size t} : n_sexp :=
+  match t with
+  | n_var y =>
+      if (x == y) then u else t
+  | n_abs y t1 =>
+      if (x == y) then t
+      else if (Inb y (fv_nom u)) then let (z,_) :=
+                  atom_fresh (fv_nom u `union` fv_nom t `union` {{x}}) in
+                                      n_abs z (subst_rec_b (swap y z t1) u x)
+                                            else n_abs y (subst_rec_b t1 u x)
+  | n_app t1 t2 =>
+      n_app (subst_rec_b t1 u x) (subst_rec_b t2 u x)
+  | n_sub t1 y t2 =>
+      if (x == y) then n_sub t1 y (subst_rec_b t2 u x)
+      else if (Inb y (fv_nom u)) then let (z,_) :=
+                  atom_fresh (fv_nom u `union` fv_nom t `union` {{x}}) in
+                                      n_sub  (subst_rec_b (swap y z t1) u x) z (subst_rec_b t2 u x)
+                                             else n_sub (subst_rec_b t1 u x) y (subst_rec_b t2 u x)
            end.
 Proof.
  - intros. simpl. rewrite swap_size_eq. auto.
@@ -2109,23 +2151,24 @@ Defined.
     as that extra argument. *)
 
 Definition m_subst (u : n_sexp) (x:atom) (t:n_sexp) :=
-  subst_rec (size t) t u x.
+  subst_rec_fun t u x.
 Notation "[ x := u ] t" := (m_subst u x t) (at level 60).
 
 Lemma m_subst_var_eq : forall u x,
     [x := u](n_var x) = u.
 Proof.
-  intros. unfold m_subst. simpl. rewrite eq_dec_refl. reflexivity.
+  intros. unfold m_subst.rewrite subst_rec_fun_equation. rewrite eq_dec_refl. reflexivity.
 Qed.
 
 Lemma m_subst_var_neq : forall u x y, x <> y ->
     [y := u](n_var x) = n_var x.
 Proof.
-  intros. unfold m_subst. simpl. destruct (y == x) eqn:Hxy.
+  intros u x y H. unfold m_subst. rewrite subst_rec_fun_equation. destruct (y == x) eqn:Hxy.
   - subst. contradiction.
   - reflexivity.
 Qed.
 
+(*
 Lemma subst_size : forall (n:nat) (u : n_sexp) (x:atom) (t:n_sexp),
     size t <= n -> subst_rec n t u x = subst_rec (size t) t u x.
 Proof.
@@ -2172,23 +2215,11 @@ Proof.
            ---- lia.
            ---- assumption.
        --- lia.
-Qed.
+Qed. *)
 
 Lemma m_subst_app: forall t1 t2 u x, [x := u](n_app t1 t2) = n_app ([x := u]t1) ([x := u]t2).
 Proof.
-  intros. unfold m_subst. simpl.
-  assert (size t1 <= (size t1 + size t2)). {
-    apply le_plus_l.         
-  }
-  assert (size t2 <= (size t1 + size t2)). {
-    rewrite plus_comm. apply le_plus_l.         
-  }
-  rewrite subst_size.
-  - assert ((subst_rec (size t1 + size t2) t2 u x) = subst_rec (size t2) t2 u x). {
-      apply subst_size. assumption.
-    }
-    rewrite H1. reflexivity.
-  - assumption.
+  intros t1 t2 u x. unfold m_subst. rewrite subst_rec_fun_equation. reflexivity.
 Qed.
 
 Lemma m_subst_abs : forall u x y t , m_subst u x (n_abs y t)  =
