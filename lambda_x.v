@@ -2104,6 +2104,19 @@ Proof.
  - intros. simpl. rewrite swap_size_eq. lia.
 Defined.
 
+(** The definitions subst_rec and subst_rec_fun are alpha-equivalent. *)
+Theorem subst_rec_fun_equiv: forall t u x, (subst_rec (size t) t u x) =a (subst_rec_fun t u x).
+Proof.
+  intros t u x. functional induction (subst_rec_fun t u x).
+  - simpl. rewrite e0. apply aeq_refl.
+  - simpl. rewrite e0. apply aeq_refl.
+  - simpl. rewrite e0. apply aeq_refl.
+  - simpl. rewrite e0. destruct (atom_fresh (Metatheory.union (fv_nom u) (Metatheory.union (remove y (fv_nom t1)) (singleton x)))).  admit.
+  - simpl. admit.
+  - simpl. rewrite e0. admit.
+  - simpl. rewrite e0.
+Admitted.
+  
 Require Import EquivDec.
 Generalizable Variable A.
 
