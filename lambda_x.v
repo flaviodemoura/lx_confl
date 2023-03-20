@@ -40,6 +40,39 @@ Fixpoint fv_nom (n : n_sexp) : atoms :=
 
 (* Infrastructure *)
 
+Lemma fv_nom_dec: forall t x, x `in` fv_nom t \/ x `notin` fv_nom t.
+Proof.
+  induction t.
+  - intros x'. pose proof eq_dec. specialize (H x x'). destruct H.
+    + subst. left. simpl. auto.
+    + right. simpl. auto.
+  - intro x'. simpl. pose proof eq_dec. specialize (H x x'). destruct H.
+    + subst. specialize (IHt x'). destruct IHt; default_simp.
+    + specialize (IHt x'). destruct IHt.
+      * left. default_simp.
+      * right. default_simp.
+  - intro x. simpl. specialize (IHt1 x). destruct IHt1.
+    + left. default_simp.
+    + specialize (IHt2 x). destruct IHt2.
+      * left. default_simp.
+      * right. default_simp.
+  - intro x'. simpl. pose proof eq_dec. specialize (H x x'). destruct H.
+    + subst. specialize (IHt1 x'). destruct IHt1.
+      * specialize (IHt2 x'). destruct IHt2.
+        ** left. default_simp.
+        ** right. default_simp.
+      * specialize (IHt2 x'). destruct IHt2.
+        ** left. default_simp.
+        ** right. default_simp.
+    + specialize (IHt1 x'). destruct IHt1.
+      * specialize (IHt2 x'). destruct IHt2.
+        ** left. default_simp.
+        ** left. default_simp.
+      * specialize (IHt2 x'). destruct IHt2.
+        ** left. default_simp.
+        ** right. default_simp.
+Qed.
+      
 Lemma fv_nom_app: forall t1 t2 x, x `notin` fv_nom (n_app t1 t2) -> x `notin` fv_nom t1  /\ x `notin` fv_nom t2.
 Proof.
   intros t1 t2 x H. simpl in H. split.
@@ -2116,7 +2149,8 @@ Proof.
   - simpl. rewrite e0. admit.
   - simpl. rewrite e0.
 Admitted.
-  
+
+(*
 Require Import EquivDec.
 Generalizable Variable A.
 
@@ -2158,7 +2192,7 @@ Proof.
  - intros. simpl. lia.
  - intros. simpl. lia.
  - intros. simpl. rewrite swap_size_eq. lia.
-Defined.
+Defined. *)
 
 (** Our real substitution function uses the size of the size of the term
     as that extra argument. *)
@@ -2170,8 +2204,7 @@ Notation "[ x := u ] t" := (m_subst u x t) (at level 60).
 Lemma m_subst_var_eq : forall u x,
     [x := u](n_var x) = u.
 Proof.
-  intros. unfold m_subst.rewrite subst_rec_fun_equation. rewrite eq_dec_refl. reflexivity.
-Qed.
+  intros. Admitted.
 
 Lemma m_subst_var_neq : forall u x y, x <> y ->
     [y := u](n_var x) = n_var x.
@@ -2242,8 +2275,8 @@ Lemma m_subst_abs : forall u x y t , m_subst u x (n_abs y t)  =
 Proof.
   intros. case (x == y).
   - intros. unfold m_subst.  rewrite e. simpl. case (y == y).
-    -- trivial.
-    -- unfold not. intros. assert (y = y). {
+    -- trivial. Admitted.
+(*    -- unfold not. intros. assert (y = y). {
          reflexivity.
        }
        contradiction.
@@ -2259,7 +2292,7 @@ Proof.
        (Metatheory.union (fv_nom u)
           (Metatheory.union (remove y (fv_nom t )) (singleton x)))). 
        specialize (H0 x0). rewrite H0. reflexivity.
-Qed.
+Qed. *)
 
 Corollary m_subst_abs_eq : forall u x t, [x := u](n_abs x t) = n_abs x t.
 Proof.
@@ -2284,7 +2317,8 @@ Proof.
   induction t.
   - intros u x' H. unfold m_subst. simpl in *. apply notin_singleton_1' in H. destruct (x' == x) eqn:Hx.
     + subst. contradiction.
-    + reflexivity.
+    + Admitted.
+(**      reflexivity.
   - intros u x' H. simpl in *. destruct (x' == x).
     + subst. rewrite m_subst_abs_eq; reflexivity.
     + pose proof diff_remove_2. specialize (H0 x' x (fv_nom t)). assert (n' := n). apply H0 in n.
@@ -2295,7 +2329,7 @@ Proof.
       * reflexivity.
       * assumption.
     + assumption.
-  - intros u x' H. Admitted.
+  - intros u x' H. Admitted. *)
  
 
 (* end hide *)
@@ -2325,7 +2359,8 @@ Proof.
       * assumption.
     + rewrite m_subst_var_neq.
       * (** If [z] is equal to [y] then both lhs and rhs reduces to [e3], since [x] does not occur in the set [fv_nom e3] by hypothesis. *)
-        subst. apply aeq_sym. pose proof subst_fresh_eq. change (subst_rec (size e3) e3 (subst_rec (size e2) e2 e3 z) x) with (m_subst (m_subst e3 z e2) x e3). apply H. assumption.
+        subst. apply aeq_sym. Admitted.
+(*        pose proof subst_fresh_eq. change (subst_rec (size e3) e3 (subst_rec (size e2) e2 e3 z) x) with (m_subst (m_subst e3 z e2) x e3). apply H. assumption.
       * (** In the last subcase [x] is not equal to [y] and not equal to [z], therefore both lhs and rhs reduces to [z]. *) 
         apply aeq_sym. change (subst_rec (size (n_var z)) (n_var z) (subst_rec (size e2) e2 e3 y) x) with (m_subst (m_subst e3 y e2) x (n_var z)). apply subst_fresh_eq. simpl. apply notin_singleton_2. intro H. subst. contradiction.
   - (** Suppose [e1] is an abstraction, say [n_abs z e11]. There are several subcases. *)
@@ -2333,7 +2368,7 @@ Proof.
     + (** In the first subcase, [x] is equal to [z] and both lhs and rhs reduces straightfoward to the same term. *)
       subst. change (subst_rec (size (m_subst e3 y (n_abs z e11))) (m_subst e3 y (n_abs z e11)) (m_subst e3 y e2) z) with (m_subst (m_subst e3 y e2) z (m_subst e3 y (n_abs z e11))). rewrite subst_abs_eq.
     +
-Admitted.
+Admitted. *)
 
 
 Inductive betax : n_sexp -> n_sexp -> Prop :=
@@ -2353,30 +2388,37 @@ Inductive pix : n_sexp -> n_sexp -> Prop :=
     x <> y -> x `notin` fv_nom e2 ->
     pix (n_sub (n_abs x e1) y e2)  (n_abs x (n_sub e1 y e2))
 | step_app : forall (e1 e2 e3: n_sexp) (y: atom),
-    pix (n_sub (n_app e1 e2) y e3) (n_app (n_sub e1 y e3) (n_sub e2 y e3)). *)
+    pix (n_sub (n_app e1 e2) y e3) (n_app (n_sub e1 y e3) (n_sub e2 y e3)).
 
 Inductive pix : n_sexp -> n_sexp -> Prop :=
 | step_var : forall (e: n_sexp) (y: atom),
     pix (n_sub (n_var y) y e) e
 | step_gc : forall (e: n_sexp) (x y: atom),
     x <> y -> pix (n_sub (n_var x) y e) (n_var x)
-| step_abs1 : forall (e1 e2: n_sexp) (y : atom),
-    pix (n_sub (n_abs y e1) y e2)  (n_abs y e1)
-| step_abs2 : forall (e1 e2: n_sexp) (x y: atom),
-    x <> y -> x `notin` fv_nom e2 ->
-    pix (n_sub (n_abs x e1) y e2)  (n_abs x (n_sub e1 y e2))
-| step_abs3 : forall (e1 e2: n_sexp) (x y z: atom),
-    x <> y -> z <> y -> x `in` fv_nom e2 -> z `notin` fv_nom e1 -> z `notin` fv_nom e2 -> 
-                   pix (n_sub (n_abs x e1) y e2)  (n_abs z (n_sub (swap x z e1) y e2))
+| step_abs : forall (e1 e2: n_sexp) (x y z: atom),
+    z <> x /\ z <> y /\ z `notin` fv_nom e1 /\ z `notin` fv_nom e2 ->
+    pix (n_sub (n_abs x e1) y e2)  (n_abs z (n_sub (swap x z e1) y e2))
 | step_app : forall (e1 e2 e3: n_sexp) (y: atom),
-    pix (n_sub (n_app e1 e2) y e3) (n_app (n_sub e1 y e3) (n_sub e2 y e3)).
+    pix (n_sub (n_app e1 e2) y e3) (n_app (n_sub e1 y e3) (n_sub e2 y e3)).  *)
 
+Fixpoint f_pix (t: n_sexp): n_sexp :=
+  match t with
+  | (n_sub (n_var x) y e) => if x == y then e else (n_var x)
+  | (n_sub (n_abs x e1) y e2) =>
+      let (z,_) :=
+        atom_fresh (fv_nom (n_abs x e1) `union` fv_nom e2 `union` {{y}}) in
+      (n_abs z (n_sub (swap x z e1) y e2))
+  | (n_sub (n_app e1 e2) y e3) => (n_app (n_sub e1 y e3) (n_sub e2 y e3))
+  | _ => t
+  end.
+
+Inductive pix : n_sexp -> n_sexp -> Prop :=
+| one_step : forall t, pix t (f_pix t).
 
 (* Pegar uma variável que não esteja livre tanto em e1 quanto em e2 e
   fazer um swap dessa variável com o x em e1. Estou considerando que é  possível uma
   abstração conter dentro dela uma outra abstração com a mesma variável.
   ex: \x -> x (\x -> x z) *)
-
 
 Inductive betapi: n_sexp -> n_sexp -> Prop :=
 | b_rule : forall t u, betax t u -> betapi t u
@@ -2392,6 +2434,15 @@ Inductive ctx  (R : n_sexp -> n_sexp -> Prop): n_sexp -> n_sexp -> Prop :=
  | step_sub_right: forall (e1 e2 e2': n_sexp) (x:atom), ctx R e2 e2' -> ctx R (n_sub e1 x e2) (n_sub e1 x e2').
 
 Definition lx t u := ctx betapi t u.
+
+Lemma step_abs_eq: forall (e1 e2: n_sexp) (y: atom), exists (z: atom) (e: n_sexp), refltrans (ctx pix) (n_sub (n_abs y e1) y e2) (n_abs z e) /\ (n_abs z e =a n_abs y e1).
+Proof.
+  induction e1 using n_sexp_size_induction. generalize dependent H. case e1.
+  - intros x IH e2 y. pose proof eq_dec. specialize (H x y). destruct H.
+    + subst. apply rtrans with (n_abs ).
+      apply step_abs_in.
+    +
+Admitted.
 
 (* Reflexive transitive closure modulo alpha equivalence 
 Inductive refltrans (R: n_sexp -> n_sexp -> Prop) : n_sexp -> n_sexp -> Prop :=

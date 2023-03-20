@@ -4637,7 +4637,7 @@ Proof.
   - simpl. apply aeq_sub_same;assumption.
 Qed.
 
-Lemma pure_refltrans_B: forall e, pure e -> refltrans lx e (B e).
+Lemma pure_rtrans_B: forall e, pure e -> refltrans lx e (B e).
 Proof.
   induction e using n_sexp_induction;intros.
   - simpl. apply refl.
@@ -6614,7 +6614,7 @@ Proof.
     -- split.
        --- apply refltrans_P.
        --- split.
-           ---- intros. apply pure_refltrans_B. rewrite H. apply pure_P.
+           ---- intros. apply pure_rtrans_B. rewrite H. apply pure_P.
            ---- unfold f_is_weak_Z. unfold comp. intros.
                 split.
                 ----- induction H.
@@ -6622,7 +6622,7 @@ Proof.
                              * apply step_aeq. apply aeq_sym. assumption.
                              * apply (refltrans_composition _ _ (P e1)).
                                ** apply refltrans_lx_pix. apply refltrans_P.
-                               ** apply pure_refltrans_B. apply pure_P.
+                               ** apply pure_rtrans_B. apply pure_P.
                       ------ inversion H0. apply (rtrans _ _ e3). apply step_aeq.
                              apply aeq_sym. assumption.
                              rewrite <- H2 in *. rewrite <- H3 in *.
@@ -6638,7 +6638,7 @@ Proof.
                                ** apply (refltrans_composition _ _ (n_sub (P t0) x (P t2))).
                                   *** apply refltrans_sub3;apply refltrans_lx_pix;apply refltrans_P.
                                   *** apply (refltrans_composition _ _ (n_sub (B (P t0)) x (B (P t2)))).
-                                      **** apply refltrans_sub3;apply pure_refltrans_B;apply pure_P.
+                                      **** apply refltrans_sub3;apply pure_rtrans_B;apply pure_P.
                                       **** apply pure_pix_2. apply pure_B. apply pure_P.
                              * apply (rtrans _ _ (n_sub t0 x0 e5)).
                                ** apply step_aeq. apply aeq_sym. apply aeq_sub_diff;default_simp. apply aeq_refl.
@@ -6649,13 +6649,13 @@ Proof.
                                   *** apply (refltrans_composition _ _ (n_sub (P t0) x0 (P t2))).
                                       **** apply refltrans_sub3;apply refltrans_lx_pix;apply refltrans_P.
                                       **** apply (refltrans_composition _ _ (n_sub (B (P t0)) x0 (B (P t2)))).
-                                           ***** apply refltrans_sub3;apply pure_refltrans_B;apply pure_P.
+                                           ***** apply refltrans_sub3;apply pure_rtrans_B;apply pure_P.
                                            ***** apply pure_pix_2. apply pure_B. apply pure_P.
                       ------ simpl. apply refltrans_abs. assumption.
                       ------ apply (refltrans_composition _ _ (n_app e1' (P e2))).
                              * apply refltrans_app2. apply refltrans_lx_pix. apply refltrans_P.
                              * apply (refltrans_composition _ _ (n_app e1' (B (P e2)))).
-                               ** apply refltrans_app2. apply pure_refltrans_B. apply pure_P.
+                               ** apply refltrans_app2. apply pure_rtrans_B. apply pure_P.
                                ** simpl. destruct (P e1) eqn:Hp.
                                   *** apply refltrans_app1. assumption.
                                   *** simpl in *. apply (refltrans_composition _ _ (n_app (n_abs x (B n)) (B (P e2)))).
@@ -6672,7 +6672,7 @@ Proof.
                       ------ apply (refltrans_composition _ _ (n_app (P e1) e2')).
                              * apply refltrans_app1. apply refltrans_lx_pix. apply refltrans_P.
                              * apply (refltrans_composition _ _ (n_app (B (P e1)) e2')).
-                               ** apply refltrans_app1. apply pure_refltrans_B. apply pure_P.
+                               ** apply refltrans_app1. apply pure_rtrans_B. apply pure_P.
                                ** simpl. destruct (P e1) eqn:Hp.
                                   *** simpl. apply refltrans_app2. assumption.
                                   *** simpl. apply (refltrans_composition _ _ (n_sub (B n) x e2')).
@@ -6691,7 +6691,7 @@ Proof.
                                ** assumption.
                                ** apply (refltrans_composition _ _ (P e2)).
                                   *** apply refltrans_lx_pix. apply refltrans_P.
-                                  *** apply pure_refltrans_B. apply pure_P.
+                                  *** apply pure_rtrans_B. apply pure_P.
                              * apply (refltrans_composition _ _ (m_subst (B (P e2)) x (B (P e1)))).
                                ** apply pure_pix_2. apply pure_B. apply pure_P.
                                ** apply refltrans_m_subst_B;apply pure_P.
@@ -6699,7 +6699,7 @@ Proof.
                              * apply refltrans_sub3.
                                ** apply (refltrans_composition _ _ (P e1)).
                                   *** apply refltrans_lx_pix. apply refltrans_P.
-                                  *** apply pure_refltrans_B. apply pure_P.
+                                  *** apply pure_rtrans_B. apply pure_P.
                                ** assumption.
                              * apply (refltrans_composition _ _ (m_subst (B (P e2)) x (B (P e1)))).
                                ** apply pure_pix_2. apply pure_B. apply pure_P.
