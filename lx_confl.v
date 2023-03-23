@@ -588,7 +588,8 @@ Proof.
   induction t using n_sexp_induction.
   - intros. unfold m_subst. simpl in *.
     apply notin_singleton_1 in H. default_simp.
-    rewrite (remove_singleton_neq _ _ H). reflexivity.
+    rewrite (remove_singleton_neq _ _ H).
+    Admitted. (* .reflexivity.
   - intros. unfold m_subst in *. simpl in *.
     case (x == z).
     -- intro; subst. simpl. rewrite double_remove.
@@ -649,7 +650,7 @@ Proof.
               apply (diff_remove_2 _ _ _ n1) in H2.
               rewrite (remove_fv_swap _ _ _ H2).
               rewrite remove_union_distrib. reflexivity.
-Qed.
+Qed. *)
 
 Lemma fv_nom_m_subst_in: forall t u x, x `in` fv_nom t ->
     fv_nom (m_subst u x t) [=] fv_nom (n_sub t x u). 
@@ -660,7 +661,7 @@ Proof.
     destruct (x0 == x0).
     -- rewrite remove_singleton_empty.
         rewrite AtomSetProperties.empty_union_1.
-        reflexivity. apply AtomSetImpl.empty_1.
+        Admitted. (* reflexivity. apply AtomSetImpl.empty_1.
     -- contradiction.
   - intros. unfold m_subst in *. simpl. case (x == z);intros.
     -- simpl in H0. rewrite e in H0. apply remove_iff in H0.
@@ -827,7 +828,7 @@ Proof.
                       rewrite (remove_fv_swap _ z _ H4). simpl.
                       rewrite <- AtomSetProperties.union_assoc.
                       rewrite remove_union_distrib. reflexivity.
-Qed.
+Qed. *)
 
 Lemma notin_P: forall x t,
     x `notin` fv_nom t -> x `notin` fv_nom (P t).
@@ -878,8 +879,8 @@ Lemma aeq_m_subst_1: forall t t1 t1' x,
 Proof.
   intros. unfold m_subst.
   induction t using n_sexp_induction.
-  - default_simp.
-  - simpl. pose proof H. apply aeq_fv_nom in H1. apply Eq_implies_equality in H1.
+  - Admitted. (*
+   - simpl. pose proof H. apply aeq_fv_nom in H1. apply Eq_implies_equality in H1.
     rewrite H1. default_simp.
     -- apply aeq_refl.
     -- apply aeq_abs_same. rewrite <- (swap_size_eq z x0).
@@ -900,7 +901,7 @@ Proof.
            lia. repeat rewrite (subst_size _ _ _ _ H'). apply H0. reflexivity.
        --- assert (H': size t3 <= size t2 + size t3).
            lia. repeat rewrite (subst_size _ _ _ _ H'). assumption.
-Qed.
+Qed. *)
 
 Lemma aeq_m_subst_2: forall t t1 t1' x,
   aeq t1 t1' -> aeq (m_subst t x t1) (m_subst t x t1').
@@ -910,7 +911,8 @@ Proof.
   - default_simp. apply aeq_refl.
   - inversion H0.
     -- simpl. pose proof H0. rewrite <- H2 in H0. apply aeq_fv_nom in H0. apply Eq_implies_equality in H0.
-       simpl in H0. rewrite H0. default_simp. apply aeq_abs_same.
+       simpl in H0. Admitted.
+       (* rewrite H0. default_simp. apply aeq_abs_same.
        rewrite <- (swap_size_eq z x0 t1). rewrite <- (swap_size_eq z x0 t2).
        apply H. 
        --- reflexivity.
@@ -1113,7 +1115,7 @@ Proof.
                                               apply (diff_remove_2 _ _ _ n3) in n.
                                               apply (aeq_swap0 _ _ _ n H7).
                 ----- apply IHt1_1. assumption.
-Qed.
+Qed. *)
 
 Corollary aeq_m_subst: forall t1 t1' t2 t2' x, aeq t1 t1' ->
   aeq t2 t2' -> aeq (m_subst t2 x t1) (m_subst t2' x t1').
@@ -1195,7 +1197,7 @@ Proof.
   - generalize dependent z. generalize dependent y. generalize dependent x. generalize dependent u.
     induction t using n_sexp_induction.
     -- intros u x' y z Hneq. unfold m_subst. simpl in *. default_simp.
-       --- apply aeq_refl.
+       ---  Admitted. (* apply aeq_refl.
        --- apply swap_var_eq in e. contradiction.
     -- intros u x y z' Hneq. simpl in *. destruct (z' == z) eqn:Heq.
        --- subst. unfold m_subst in *. simpl. rewrite Heq.
@@ -1259,7 +1261,7 @@ Proof.
                            ----------- assumption.
                            ----- rewrite swap_size_eq; reflexivity.
     -- admit.
-    -- Admitted.                            
+    -- Admitted.         *)                   
 
 
 (* a               apply aeq_trans with (n_abs (swap_var x y x0)
@@ -2191,7 +2193,7 @@ Proof.
   induction t1' using n_sexp_induction; intros.
   - inversion H1. unfold m_subst. simpl. unfold swap_var.
     default_simp.
-    -- apply aeq_refl.
+    -- Admitted. (* apply aeq_refl.
     -- apply notin_singleton_1 in H0. contradiction.
   - inversion H2.
     -- unfold m_subst in *. simpl. unfold swap_var. case (y == z);intros.
@@ -3952,7 +3954,7 @@ Proof.
                              (swap x2 x1 t2) (swap_var x2 x1 y))).
                              * apply aeq_m_subst_1. apply aeq_swap0;default_simp.
                              * apply aeq_sym. apply aeq_swap_m_subst.
-Qed.
+Qed. *)
 
 Lemma aeq_P: forall t1 t2, aeq t1 t2 -> aeq (P t1) (P t2).
 Proof.
@@ -4079,7 +4081,7 @@ Proof.
   - apply aeq_P.
     assumption.
   - inversion H0; subst.
-    -- apply aeq_trans with (P e3).
+    -- Admitted. (* apply aeq_trans with (P e3).
        --- apply aeq_P in H.
            simpl in H.
            unfold m_subst in H.
@@ -4230,7 +4232,7 @@ Proof.
     -- assumption.
   - simpl. apply aeq_m_subst_2. assumption.
   - simpl. apply aeq_m_subst_1. assumption.
-Qed.
+Qed. *)
 
 (*Lemma 2 in Nakazawa*)
 Lemma pure_P: forall e, pure (P e).
@@ -4244,7 +4246,7 @@ Proof.
   - simpl. unfold m_subst. 
     induction (P e1).
     -- simpl. case (x == x0).
-       --- intros. assumption.
+       --- intros. Admitted. (* assumption.
        --- intros. assumption.
     -- simpl. case (x == x0).
        --- intros. assumption.
@@ -4278,7 +4280,7 @@ Proof.
            specialize (H0 (size n1) (size n2)).
            apply H in H0; clear H. rewrite H0. assumption.
     -- inversion IHe1.
-Qed.
+Qed. *)
 
 (*lemma 3 in Nakazawa*)
 Lemma pure_P_id: forall e, pure e -> P e = e.
@@ -4478,7 +4480,7 @@ Proof.
   induction e1 using n_sexp_induction.
   - intros. case (x == x0).
     -- intros; subst. apply rtrans with e2.
-       --- apply step_redex_R. apply step_var.
+       --- apply step_redex_R. Admitted. (* apply step_var.
        --- unfold m_subst. simpl. destruct (x0 == x0).
            + apply refl.
            + contradiction.
@@ -4550,7 +4552,7 @@ Proof.
            rewrite H2; rewrite H3. apply refl.         
        --- apply refl.
   - intros. inversion H0.
-Qed.
+Qed. *)
 
 Lemma ctx_betax_beta_pix: forall x y, ctx betapi x y <-> (ctx pix !_! ctx betax) x y.
 Proof.
@@ -4844,7 +4846,7 @@ Proof.
       * (** As an explicit comparison between [z] and [y] is required and [z] and [y] are diferrent by hipothesis, the first subscase is done by contradiction *)
         subst. contradiction.
       * (** In the second subcase, both lhs and rhs reduces to the same term. *)
-        simpl. rewrite Hxz. apply aeq_refl.
+        simpl. Admitted. (* rewrite Hxz. apply aeq_refl.
     + (** In this case, we know that [z] is not equal to [x], so we compare [z] to [y]. *)
       simpl. destruct (y == z) eqn:Hyz.
       * (** If [z] is equal to [y] then both lhs and rhs reduces to [e3], since [x] does not occur in [e3] by hypothesis. *)
@@ -4856,7 +4858,7 @@ Proof.
     + (** In the first subcase, [x] is equal to [z] and both lhs and rhs reduces straightfoward to the same term. *)
       subst. change (subst_rec (size (m_subst e3 y (n_abs z e11))) (m_subst e3 y (n_abs z e11)) (m_subst e3 y e2) z) with (m_subst (m_subst e3 y e2) z (m_subst e3 y (n_abs z e11))). rewrite subst_abs_eq.
     +
-Admitted.
+Admitted. *)
 
 Lemma lx_fv_nom: forall e1 e2 x, lx e1 e2 -> x `notin` (fv_nom e1) -> x `notin` (fv_nom e2).
   intros. induction H.
@@ -4865,7 +4867,7 @@ Lemma lx_fv_nom: forall e1 e2 x, lx e1 e2 -> x `notin` (fv_nom e1) -> x `notin` 
     rewrite <- H2. rewrite H in H0. inversion H1.
     -- inversion H3. rewrite <- H6 in H0. simpl in *. assumption.
     -- inversion H3.
-       --- rewrite <- H7. rewrite <- H6 in H0. simpl in H0.
+       --- Admitted. (* rewrite <- H7. rewrite <- H6 in H0. simpl in H0.
            apply notin_union_2 in H0. assumption.
        --- rewrite <- H7 in H0. simpl in H0. apply notin_union_1 in H0.
            simpl. case (x == x0);intros;default_simp.
@@ -4889,7 +4891,7 @@ Lemma lx_fv_nom: forall e1 e2 x, lx e1 e2 -> x `notin` (fv_nom e1) -> x `notin` 
   - default_simp.
   - default_simp.
   - default_simp.
-Qed.
+Qed. *)
 
 Lemma refltrans_fv_nom: forall e1 e2 x, refltrans lx e1 e2 -> x `notin` (fv_nom e1) -> x `notin` (fv_nom e2).
 Proof.
@@ -4902,7 +4904,7 @@ Lemma refltrans_m_subst_1: forall e1 e2 e3 x,
   refltrans lx e1 e2 -> refltrans lx (m_subst e1 x e3) (m_subst e2 x e3).
 Proof.
   induction e3 using n_sexp_induction;intros;unfold m_subst in *.
-  - simpl. default_simp. apply refl.
+  - simpl. default_simp. Admitted. (* apply refl.
   - simpl. default_simp.
     -- apply refl.
     -- case (x1 == x0);intros.
@@ -5006,19 +5008,19 @@ Proof.
                                **** apply (refltrans_fv_nom e1 e2 x0);default_simp.
                            *** apply aeq_sym. apply aeq_swap_m_subst. 
                 ----- apply refl. 
-Qed.
+Qed. *)
 
 Lemma lx_var: forall e x, lx (n_var x) e -> e = (n_var x).
 Proof.
   intros. remember (n_var x) as e1. induction H;rewrite Heqe1 in *.
   - inversion H. reflexivity.
-  - inversion H. rewrite <- H2 in *. inversion H0;inversion H4.
+  - inversion H. rewrite <- H2 in *. inversion H0;inversion H4. Admitted.
+(*  - inversion Heqe1.
   - inversion Heqe1.
   - inversion Heqe1.
   - inversion Heqe1.
   - inversion Heqe1.
-  - inversion Heqe1.
-Qed.
+Qed. *)
 
 Lemma lx_abs: forall e1 e2 x, lx (n_abs x e1) e2 -> (exists x0 e2', e2 = n_abs x0 e2').
 Proof.
@@ -5028,13 +5030,13 @@ Proof.
     -- exists y, t2. reflexivity.
   - inversion H0.
     -- inversion H2. subst. inversion H.
-    -- inversion H;subst;try(inversion H);try(inversion H2).
-  - exists x0, e'. reflexivity.
+    -- inversion H;subst;try(inversion H);try(inversion H2). Admitted.
+(*  - exists x0, e'. reflexivity.
   - inversion Heqe. 
   - inversion Heqe. 
   - inversion Heqe. 
   - inversion Heqe.
-Qed.  
+Qed.  *)
 
 Lemma refltrans_var: forall e x, refltrans lx (n_var x) e -> e = (n_var x).
 Proof.
@@ -5231,7 +5233,7 @@ Admitted.  *)
 Lemma aeq_double_m_subst: forall e1 e2 e3 x, aeq (m_subst (e1) x (m_subst e2 x e3)) (m_subst (m_subst e1 x e2) x e3).
 Proof.
   intros e1 e2 e3. generalize dependent e1. generalize dependent e2. induction e3 using n_sexp_induction;intros.
-  - unfold m_subst. default_simp. apply aeq_refl.
+  - unfold m_subst. default_simp. Admitted. (* apply aeq_refl.
   - pose proof subst_abs. rewrite H0. rewrite H0. case (x == z);intros.
     -- rewrite e. rewrite H0. default_simp. apply aeq_refl.
     -- simpl. destruct (atom_fresh (Metatheory.union (fv_nom e2)
@@ -5786,7 +5788,7 @@ Proof.
                                                                  ++++ default_simp.
                                                           ++ default_simp.
                                ** apply aeq_swap. apply aeq_sym. apply subst_fresh_eq. assumption.
-Qed.
+Qed. *)
 
 Lemma aeq_swap_B: forall e1 x1 x2, aeq (B (swap x1 x2 e1)) (swap x1 x2 (B e1)).
 Proof.
@@ -5883,7 +5885,7 @@ Lemma refltrans_m_subst_B: forall e1 e2 x, pure e1 -> pure e2 -> refltrans lx (m
 Proof.
   induction e1 using n_sexp_size_induction;intros.
   destruct e1 eqn:He.
-  - simpl. unfold m_subst;default_simp;apply refl.
+  - simpl. Admitted. (* unfold m_subst;default_simp;apply refl.
   - pose proof subst_abs. simpl. rewrite H2. rewrite H2. case (x == x0);intros.
     -- simpl. apply refltrans_abs. apply refl.
     -- default_simp. case (x1 == x2);intros.
@@ -6059,7 +6061,7 @@ Proof.
            ---- assumption.
     -- inversion H0. inversion H5.
   - inversion H0.
-Qed.
+Qed. *)
 
 Lemma refltrans_m_subst (R: Rel n_sexp): forall e1 e2 e3 e4 x, refltrans (ctx R) e1 e2 -> 
   refltrans (ctx R) e3 e4 -> refltrans (ctx R) (m_subst e3 x e1) (m_subst e4 x e2).
@@ -6169,7 +6171,7 @@ Proof.
                                ** apply refl.
     -- inversion H2.
        --- subst. inversion H.
-           ---- inversion H6. subst. simpl. unfold m_subst. simpl. default_simp.
+           ---- Admitted. (* inversion H6. subst. simpl. unfold m_subst. simpl. default_simp.
                 apply (rtrans _ _ (P e4)).
                 ----- apply step_aeq. apply aeq_P. apply (aeq_trans _ e3);assumption.
                 ----- apply refl.
@@ -6275,9 +6277,9 @@ Proof.
   - simpl. apply refltrans_app2. assumption.
   - simpl. apply refltrans_m_subst2. assumption.
   - simpl. apply refltrans_m_subst1. assumption.
-Qed.
+Qed. *)
                              
-(*                  
+                  
 (* 5.4.1 Nakazawa*)
 Lemma refltrans_P_betax: forall e1 e2, lx e1 e2 -> refltrans lx (P e1) (P e2).
 Proof.
@@ -6387,7 +6389,7 @@ Proof.
   - simpl. apply refltrans_app2. assumption.
   - simpl. apply refltrans_m_subst_2. assumption.
   - simpl. apply refltrans_m_subst_1. assumption.
-Qed. *)
+Qed. 
 
 (* 5.4.2 Nakazawa*)
 Lemma refltrans_pure_beta: forall e1 e2, pure e1 -> pure e2 -> (ctx beta) e1 e2 ->
@@ -6602,20 +6604,43 @@ Proof.
        --- assumption.
 Qed.
 
+(*
+Definition Z_comp_eq_aeq := (forall a b, (ctx pix) a b -> (P a) =a (P b)) /\ (forall a, (refltrans (ctx pix)) a (P a)) /\ (forall b a, a = P b -> (refltrans (ctx betax)) a (B a)) /\ (f_is_weak_Z (ctx betax) (ctx lx) (B # P)).*)
 
-Lemma lambda_x_Z_comp_eq: Z_comp_eq lx.
+Definition Z_comp_eq_aeq (R :Rel n_sexp) := exists (R1 R2: Rel n_sexp) (f1 f2: n_sexp -> n_sexp), (forall x y, R x y <-> (R1 !_! R2) x y) /\ (forall a b, R1 a b -> ((f1 a) =a (f1 b))) /\ (forall a, (refltrans R1) a (f1 a)) /\ (forall b a, a = f1 b -> (refltrans R) a (f2 a)) /\ (f_is_weak_Z R2 R (f2 # f1)).
+
+Lemma Z_comp_eq_aeq_implies_Z_comp: forall (R: Rel n_sexp), Z_comp_eq_aeq R -> Z_comp R.
 Proof.
-  unfold Z_comp_eq.
-  exists (ctx pix), (ctx betax), P, B.
-  split.
-  - apply ctx_betax_beta_pix. 
-  - split.
-    -- admit.
-    -- split.
-       --- apply refltrans_P.
-       --- split.
-           ---- intros. apply pure_rtrans_B. rewrite H. apply pure_P.
-           ---- unfold f_is_weak_Z. unfold comp. intros.
+  intros R H. unfold Z_comp_eq_aeq in H. 
+  destruct H as [R1 [R2 [f1 [f2 [Hunion [H1 [H2 [H3 H4]]]]]]]].
+  unfold Z_comp. exists R1, R2, f2, f1. split.
+  - assumption.
+  - split. 
+    + unfold f_is_Z. intros a b H; split.
+      * apply H1 in H. rewrite H. apply H2.
+      * apply H1 in H. rewrite H. apply refl.
+    + split.
+      * intros a b H.
+        unfold comp.
+        apply H1 in H.
+        rewrite H.
+        apply refl.
+      * split; assumption.
+Qed.
+
+    inversion Hab; subst.
+    + unfold comp. apply H1 in H. admit.
+    + apply H4. assumption.
+  - apply Hunion in Hab.
+    inversion Hab; subst.
+    + unfold comp. apply H1 in H. admit.
+    + apply H4. assumption.
+Admitted.
+
+
+Lemma lbd_x_f_is_weak_Z: f_is_weak_Z (ctx betax) lx (B # P).
+Proof.
+               unfold f_is_weak_Z. unfold comp. intros.
                 split.
                 ----- induction H.
                       ------ apply (rtrans _ _ e1).
@@ -6716,6 +6741,23 @@ Proof.
                         ** apply pure_P.
                         ** apply pure_P.
 Admitted.
+
+  
+Lemma lambda_x_Z_comp_eq: Z_comp_eq lx.
+Proof.
+  unfold Z_comp_eq.
+  exists (ctx pix), (ctx betax), P, B.
+  split.
+  - apply ctx_betax_beta_pix. 
+  - split.
+    -- admit.
+    -- split.
+       --- apply refltrans_P.
+       --- split.
+           ---- intros. apply pure_rtrans_B. rewrite H. apply pure_P.
+           ---- apply lambda_x_f_is_weak_Z.
+Admitted.
+             
   
 Theorem lambda_x_is_confluent: Confl lx.
 Proof.
