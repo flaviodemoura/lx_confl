@@ -1495,10 +1495,25 @@ Proof.
   - unfold Symmetric. apply aeq_sym.
   - unfold Transitive. apply aeq_trans.
 Qed.
-    
-(** We define the reflexive transitive closure of a reduction relation on [n_sexp] based on this notion of alpha-equivalence.
+
+(**
+ The original rules are implemented as the following recursive function:
  *)
-(* ver caso da abstração *)
+
+Fixpoint f_pix (t: n_sexp): n_sexp :=
+  match t with
+  | (n_sub (n_var x) y e) => if x == y then e else (n_var x)
+  | (n_sub (n_abs x e1) y e2) =>
+      let (z,_) :=
+        atom_fresh (fv_nom (n_abs x e1) `union` fv_nom e2 `union` {{y}}) in
+      (n_abs z (n_sub (swap x z e1) y e2))
+  | (n_sub (n_app e1 e2) y e3) => (n_app (n_sub e1 y e3) (n_sub e2 y e3))
+  | _ => t
+  end.
+
+
+(* In this inductive definition, I didn't find a way to generate a fresh atom for the step_abs rule. For this kind of definition, we need to split the abs rule into three other rules: *)
+
 Inductive pix : n_sexp -> n_sexp -> Prop :=
 | step_var : forall (e: n_sexp) (y: atom),
     pix (n_sub (n_var y) y e) e
@@ -1509,18 +1524,53 @@ Inductive pix : n_sexp -> n_sexp -> Prop :=
 | step_abs2 : forall (e1 e2: n_sexp) (x y: atom),
     x <> y -> x `notin` fv_nom e2 ->
     pix (n_sub (n_abs x e1) y e2)  (n_abs x (n_sub e1 y e2))
+| step_abs3 : forall (e1 e2: n_sexp) (x y: atom),
+    x <> y -> x `in` fv_nom e2 -> forall z, z <> x -> z <> y -> z `notin` fv_nom e1 -> z `notin` fv_nom e2 ->
+    pix (n_sub (n_abs x e1) y e2)  (n_abs z (n_sub (swap x z e1) y e2))
 | step_app : forall (e1 e2 e3: n_sexp) (y: atom),
     pix (n_sub (n_app e1 e2) y e3) (n_app (n_sub e1 y e3) (n_sub e2 y e3)).
 
-Instance aeq_R: forall (R: n_sexp -> n_sexp -> Prop) (a: n_sexp), Proper (aeq ==> flip impl) (R a).
+(**
+   The transitive closure of a binary relation is defined as follows:
+ *)
+
+
+
+(**
+   The rule  [step_gc] can be generalized as follows:     
+ *)
+
+Lemma step_gc_gen: forall t x y, y `notin` fv_nom t -> 
+
+(**
+   The [f_pix] function and the inductive definition have the same semantics in the following sense:
+ *)
+
+Lemma pix_to_f_pix: forall t u, pix t u -> f_pix t =a u.
 Proof.
-  repeat intro. 
+  induction 1.
+  - simpl. rewrite eq_dec_refl. apply aeq_refl.
+  - simpl. destruct (x == y).
+    + contradiction.
+    + apply aeq_refl.
+  - simpl. destruct (atom_fresh (union (remove y (fv_nom e1)) (union (fv_nom e2) (singleton y)))).
+    Admitted.
+
+Lemma f_pix_to_pix: forall t u, f_pix t = u -> exists u', u =a u' /\ pix t u'.
+Proof.    
+  Admitted.
+  
+Instance aeq_R: forall (a: n_sexp), Proper (aeq ==> flip impl) (pix a).
+Proof.
+  repeat intro. induction H0.
   -
   -
   -
   -
   Admitted.
 
+(** We define the reflexive transitive closure of a reduction relation on [n_sexp] based on this notion of alpha-equivalence.
+ *)
   
 Inductive refltrans_aeq (R: n_sexp -> n_sexp -> Prop) : n_sexp -> n_sexp -> Prop :=
 | refl_aeq: forall a b, aeq a b -> (refltrans_aeq R) a b
