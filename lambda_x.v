@@ -788,12 +788,15 @@ Proof.
    In the pure $\lambda$-calculus, the substitution lemma is probably the first non trivial property. In our framework, we have defined two different substitution operation, namely, the metasubstitution denoted by [[x:=u]t] and the explicit substitution that has [n_sub] as a constructor. In what follows, we present the main steps of our proof of the substitution lemma for the metasubstitution operation: 
  *)
 
-Lemma m_subst_lemma: forall e1 e2 e3 x y, x <> y -> x `notin` (fv_nom e3) ->
+Lemma m_subst_lemma: forall e1 e2 x e3 y, x <> y -> x `notin` (fv_nom e3) ->
  ([y := e3]([x := e2]e1)) =a ([x := ([y := e3]e2)]([y := e3]e1)).
 Proof.
   (** The proof is by induction on the size of [e1] using the size induction principle, named [n_sexp_size_induction] presented above. Therefore, the induction hypothesis *)
-
-  induction e1 using n_sexp_size_induction.
+intros e1 e2 x. unfold m_subst.
+  functional induction (subst_rec_fun e1 e2 x).
+  -
+  
+(*  induction e1 using n_sexp_size_induction. *)
 
   (** We procced by case analisys on the structure of [e1]. The cases in between square brackets below mean that in the first case, [e1] is a variable named [z], in the second case [e1] is an abstraction of the form $\lambda$[z.e11], in the third case [e1] is an application of the form ([e11] [e12]), and finally in the fourth case [e1] is an explicit substitution of the form [e11] $\langle$ [z] := [e12] $\rangle$. *)
   
