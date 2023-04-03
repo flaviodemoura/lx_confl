@@ -1580,11 +1580,7 @@ Proof.
 Instance aeq_R: forall (a: n_sexp), Proper (aeq ==> flip impl) (pix a).
 Proof.
   repeat intro. induction H0.
-  -
-  -
-  -
-  -
-  Admitted.
+  - Admitted.
 
 (** We define the reflexive transitive closure of a reduction relation on [n_sexp] based on this notion of alpha-equivalence.
  *)
@@ -1622,7 +1618,6 @@ Proof.
     + apply IHrefltrans; assumption.  
 Qed. 
 
-???
 Inductive refltrans {A:Type} (R: Rel A) : A -> A -> Prop :=
 | refl: forall a, refltrans R a a
 | rtrans: forall a b c, R a b -> refltrans R b c -> refltrans R a c.
