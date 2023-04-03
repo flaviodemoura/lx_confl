@@ -1531,17 +1531,34 @@ Inductive pix : n_sexp -> n_sexp -> Prop :=
     pix (n_sub (n_app e1 e2) y e3) (n_app (n_sub e1 y e3) (n_sub e2 y e3)).
 
 (**
-   The transitive closure of a binary relation is defined as follows:
+   The transitive closure of a binary relation over [n_sexp] is defined as follows:
  *)
 
-
+Inductive trans (R: n_sexp -> n_sexp -> Prop): n_sexp -> n_sexp -> Prop :=
+| singl: forall a b,  R a b -> trans R a b
+| transit: forall b a c,  R a b -> trans R b c -> trans R a c.
 
 (**
    The rule  [step_gc] can be generalized as follows:     
  *)
 
-Lemma step_gc_gen: forall t x y, y `notin` fv_nom t -> 
-
+Lemma step_gc_gen: forall t u x, x `notin` fv_nom t -> trans pix (n_sub t x u) t.
+Proof.
+  induction t.
+  - intros u x' H. simpl in H. apply notin_singleton_1 in H. apply singl. apply step_gc. assumption.
+  - intros u x' H. simpl in H. apply notin_remove_1 in H. destruct H.
+    + subst. apply singl. apply step_abs1.
+    + case (x == x').
+      * intro Heq. subst. apply singl. apply step_abs1.
+      * intro Hneq. pose proof fv_nom_dec as Hfv. specialize (Hfv u x). destruct Hfv.
+        ** pick_fresh z. apply transit with (n_abs x (n_sub t x' u)).
+           *** apply step_abs3. assumption.
+           *** 
+        ** 
+  -
+  -
+  
+  
 (**
    The [f_pix] function and the inductive definition have the same semantics in the following sense:
  *)
