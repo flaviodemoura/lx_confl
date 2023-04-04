@@ -1552,11 +1552,7 @@ Proof.
       * intro Heq. subst. apply singl. apply step_abs1.
       * intro Hneq. pose proof fv_nom_dec as Hfv. specialize (Hfv u x). destruct Hfv.
         ** pick_fresh z. apply transit with (n_abs x (n_sub t x' u)).
-           *** apply step_abs3. assumption.
-           *** 
-        ** 
-  -
-  -
+           *** Admitted.
   
   
 (**
@@ -1592,7 +1588,7 @@ Inductive refltrans_aeq (R: n_sexp -> n_sexp -> Prop) : n_sexp -> n_sexp -> Prop
 Lemma aeq_one_r: forall a b c (R: n_sexp -> n_sexp -> Prop), R a b -> b =a c -> R a c.
 Proof.
   intros a b c R H Haeq. generalize dependent c. generalize dependent a. induction b.
-  - intros a H1 c H2. rewrite <- H2. assumption.
+  - intros a H1 c H2. 
 Admitted.
 
 Lemma aeq_one_l: forall a b c (R: n_sexp -> n_sexp -> Prop), a =a b -> R b c -> R a c.
@@ -1607,9 +1603,8 @@ Lemma aeq_refltrans_refltrans_aeq: forall a b c R, aeq a b -> refltrans_aeq R b 
 Proof.
   intros a b c R Haeq H. generalize dependent a. induction H.
   - intros a' Haeq. apply refl_aeq. apply aeq_trans with a; assumption.
-  - intros a' Haeq. apply rtrans_aeq with b. ?? apply IHrefltrans_aeq. assumption.
-Qed.
-
+  - intros a' Haeq. apply rtrans_aeq with b. Admitted.
+(*
 Lemma refltrans_aeq_composition (R: Rel n_sexp): forall t u v, refltrans_aeq R t u -> refltrans_aeq R u v -> refltrans_aeq R t v.
 Proof.  
   intros t u v H1 H2. induction H1.
@@ -1651,7 +1646,7 @@ Proof.
     + assumption.
     + apply refl.
   - apply rtrans with b; assumption.
-Qed.
+Qed. *)
 (* end hide *)
 (** The reflexive transitive closure of a relation is used to define
     the notion of confluence: no matter how the reduction is done, the
@@ -1666,9 +1661,9 @@ different ways to $b$ and $c$, then there exists an expression $d$
 such that both $b$ and $c$ reduce to $d$. The existential
 quantification is expressed by the dotted lines in the diagram. This
 notion is defined in the Coq system as follows: *)
-
+(*
 Definition Confl {A:Type} (R: Rel A) := forall a b c, (refltrans R) a b -> (refltrans R) a c -> (exists d, (refltrans R) b d /\ (refltrans R) c d).
-
+*)
 (** In %\cite{dehornoy2008z}%, V. van Oostrom gives a sufficient condition
 for an ARS to be confluent. This condition is based on the $\textit{Z
   Property}$ that is defined as follows:
@@ -1686,16 +1681,16 @@ $\xymatrix{ a \ar[r]_R & b \ar@{.>>}[dl]^R\\ f a \ar@{.>>}[r]_R & f
 If a function [f] satisfies the Z property for $\to_R$ then
 we say that [f] is Z for $\to_R$, and the corresponding Coq
 definition is given by the following predicate: *)
-
+(*
 Definition f_is_Z {A:Type} (R: Rel A) (f: A -> A) := forall a b, R a b -> ((refltrans R)  b (f a) /\ (refltrans R) (f a) (f b)).
-
+*)
 (** Alternatively, an ARS $(A,\to_R)$ satisfies the Z property if there
 exists a mapping $f:A \to A$ such that $f$ is Z for $\to_R$: *)
-
+(*
 Definition Z_prop {A:Type} (R: Rel A) := exists f:A -> A, forall a b, R a b -> ((refltrans R) b (f a) /\ (refltrans R) (f a) (f b)).
-
+*)
 (** The first contribution of this work is a constructive proof of the fact that the Z property implies confluence. Our proof uses nested induction, and hence it differs from the one in %\cite{kesnerTheoryExplicitSubstitutions2009}% (that follows %\cite{dehornoy2008z}%) and the one in %\cite{felgenhauerProperty2016}% in the sense that it does not rely on the analyses of whether a term is in normal form or not, avoiding the necessity of the law of the excluded middle. As a result, we have an elegant inductive proof of the fact that if an ARS satisfies the Z property then it is confluent. *)
-
+(*
 Theorem Z_prop_implies_Confl {A:Type}: forall R: Rel A, Z_prop R -> Confl R.
 Proof.
   intros R HZ_prop. (** %\comm{Let $R$ be a relation over $A$ that satisfies
@@ -1884,7 +1879,7 @@ Proof.
       $R$ satisfies the Z property (hypothesis
       $HZ\_prop$).}% *)
         
-Qed.
+Qed. 
 
 Definition SemiConfl {A:Type} (R: Rel A) := forall a b c, R a b -> (refltrans R) a c -> (exists d, (refltrans R) b d /\ (refltrans R) c d).
 
@@ -2179,5 +2174,5 @@ Proof.
     inversion Hab; subst.
     + unfold comp. apply H1 in H. rewrite H. apply refl.
     + apply H4. assumption.
-Qed.
+Qed. *)
 (* end hide *)
