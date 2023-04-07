@@ -33,8 +33,6 @@ Proof.
   - reflexivity.
 Qed.
    
-
-
 Lemma pure_swap : forall x y t, pure t -> pure (swap x y t).
 Proof.
   intros. induction t.
@@ -393,12 +391,11 @@ Qed.
 Lemma fv_nom_swap_eq: forall x y t, x `notin` fv_nom t -> y `notin` fv_nom t -> fv_nom t [=] fv_nom (swap x y t).
 Proof.
   induction t using n_sexp_induction.
-  - intros H1 H2. simpl in *.
-    unfold swap_var. default_simp.
+  - intros H1 H2. simpl in *. unfold swap_var. default_simp.
     + apply notin_singleton_is_false in H1. contradiction.
     + apply notin_singleton_is_false in H2. contradiction.     
     + reflexivity.
-  - intros H1 H2. simpl in *.
+  - intros H1 H2. simpl in *. apply KeySetProperties.equal_sym. apply remove_fv_swap.
     Admitted.
       
 Lemma aeq_same_abs: forall x t1 t2,

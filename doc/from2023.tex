@@ -1,0 +1,70 @@
+\documentclass[submission,copyright,creativecommons]{eptcs}
+\providecommand{\event}{FROM 2023} % Name of the event you are submitting to
+
+\usepackage{iftex}
+
+\ifpdf
+  \usepackage{underscore}         % Only needed if you use pdflatex.
+  \usepackage[T1]{fontenc}        % Recommended with pdflatex
+\else
+  \usepackage{breakurl}           % Not needed if you use pdflatex only.
+\fi
+
+\usepackage[color]{coqdoc}
+\usepackage{mathpartir}
+\usepackage{tcolorbox}
+\usepackage{amsmath,amssymb}
+
+\newtheorem{definition}{Definition}
+\newtheorem{lemma}{Lemma}
+
+\newcommand{\vswap}[3]{(\!\!(#1\ #2)\!\!) #3}
+\newcommand{\swap}[3]{(#1\ #2) #3}
+%\newcommand{\msub}[2]{\{#1 / #2\}}
+\newcommand{\esub}[3]{[ #2 := #3 ] #1}
+\newcommand{\metasub}[3]{\{ #2 := #3 \}#1}
+
+\title{A formalized extension of the substitution lemma in Coq}
+\author{Maria J. D. Lima
+  \institute{Departamento de Ciência da Computação \\
+    Universidade de Brasília, Brasília, Brazil}
+  \email{majuhdl@gmail.com}
+  \and
+  Flávio L. C. de Moura
+  \institute{Departamento de Ciência da Computação \\
+    Universidade de Brasília, Brasília, Brazil}
+  \email{flaviomoura@unb.br}}
+\def\titlerunning{A formalized substitution lemma with explicit substitutions}
+\def\authorrunning{M. J. D. Lima \& F. L. C. de Moura}
+\begin{document}
+\maketitle
+
+\begin{abstract}
+  The substitution lemma is a renowned theorem within the realm of $\lambda$-calculus theory and concerns the interactional behaviour of the metasubstitution operation. In this work, we augment the $\lambda$-calculus's grammar with an uninterpreted explicit substitution operation, which allows the use of our framework for different calculi with explicit substitutions. Our primary contribution lies in verifying that, despite these modifications, the substitution lemma continues to remain valid. This confirmation was achieved using the Coq proof assistant. Our formalization methodology employs a nominal approach, which provides a remarkably direct implementation of the $\alpha$-equivalence concept. Despite this simplicity, the strategy involved in variable renaming within the proofs presents a substantial challenge, ensuring a comprehensive exploration of the implications of our extension to the grammar of the $\lambda$-calculus.
+\end{abstract}
+
+
+\input{lambda_es.tex} 
+
+% Para gerar o arquivo tex: 
+% 1.Em um terminal digite:  coqdoc --latex --body-only -s -g lambda_es.v
+% 2. Em um terminal digite: pdflatex report.tex *)
+
+% \nocite{*}
+\bibliographystyle{eptcs}
+\bibliography{zotLib}
+\end{document}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% End:
+
+
+This approach contrasts with the use of  De Bruijn indexes detailed in De Bruijn's landmark paper on $\lambda$-calculus notation%\cite{bruijnLambdaCalculusNotation1972}%.
+
+
+(**
+When it is equal, the meta-substitution is irrelevant. When they are different, we take a new variable that does not occur freely in the substituted term in the meta-substitution nor in the abstraction and is not the variable in the meta-substitution, and the abstraction of this new variable using the meta-substitution of the swap of the former variable in the meta-substitution is alpha-equivalent to the original meta-substitution of the abstraction.
+
+REVISAR The following lemmas are the equivalent version of the two previous lemmas for the case of the explicit substitution. They state, respectively, what hapens when the variable in the meta-substitution is equal or different from the one in the explicit substitution. When it is equal, the meta-substitution is irrelevant on [t1], but it is applied to [e2]. When they are different, we take a new variable that does not occur freely in the substituted term in the meta-substitution nor in the substitution and is not the variable in the meta-substitution, and the explicit substitution of this new variable using the meta-substitution of the swap of the former variable in the meta-substitution in [e11] and the application of the original meta_substitution in [e12] is alpha-equivalent to the original meta-substitution of the explicit substitution. The proofs are straighforward from the definition of the meta-substitution, each case being respectively each one in the definition. %\newline%*)

@@ -1,0 +1,65 @@
+\documentclass[12pt]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage{babel}
+\usepackage{amsmath,amsfonts}
+\usepackage{amssymb}
+\usepackage{xcolor}
+\usepackage[color]{coqdoc}
+\usepackage{mathpartir}
+\usepackage{minibox}
+\usepackage{tabto,calc}
+\usepackage{tcolorbox}
+
+
+% 
+\setlength{\textwidth}{17.5cm}                    % increase line length (page width)
+\setlength{\textheight}{24cm}                   % increase page length (page height)
+\setlength{\oddsidemargin}{-.2in}               % change page offset
+\setlength{\evensidemargin}{-.1in}              % change page offset
+\setlength{\topmargin}{-.6in}                   % change offset from page top
+%\setlength{\headsep}{15pt}                      %change space between
+%
+
+
+\newtheorem{definition}{Definition}
+\newtheorem{lemma}{Lemma}
+
+\newcommand{\vswap}[3]{(\!\!(#1\ #2)\!\!) #3}
+\newcommand{\swap}[3]{(#1\ #2) #3}
+
+\newcommand{\esub}[3]{[ #2 := #3 ] #1}
+\newcommand{\metasub}[3]{\{ #2 := #3 \}#1}
+
+\title{A formalized extension of the substitution lemma in Coq}
+\author{Maria J. D. Lima$^1$ \&  Flávio L. C. de Moura$^2$}
+\date{$^1$Departamento de Ciência da Computação \\
+    Universidade de Brasília, Brasília, Brazil \\
+  \texttt{majuhdl@gmail.com} \\
+  $^2$Departamento de Ciência da Computação \\
+    Universidade de Brasília, Brasília, Brazil \\
+  \texttt{flaviomoura@unb.br} \\ \today}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+  The substitution lemma is a renowned theorem within the realm of $\lambda$-calculus theory and concerns the interactional behaviour of the metasubstitution operation. In this work, we augment the $\lambda$-calculus's grammar with an uninterpreted explicit substitution operation, which allows the use of our framework for different calculi with explicit substitutions. Our primary contribution lies in verifying that, despite these modifications, the substitution lemma continues to remain valid. This confirmation was achieved using the Coq proof assistant. Our formalization methodology employs a nominal approach, which provides a remarkably direct implementation of the $\alpha$-equivalence concept. Despite this simplicity, the strategy involved in variable renaming within the proofs presents a substantial challenge, ensuring a comprehensive exploration of the implications of our extension to the grammar of the $\lambda$-calculus.
+\end{abstract}
+
+
+\input{lambda_es.tex} 
+
+% Para gerar o arquivo tex: 
+% 1.Em um terminal digite:  coqdoc --latex --body-only -s -g lambda_es.v
+% 2. Em um terminal digite: pdflatex report.tex *)
+
+% \nocite{*}
+\bibliographystyle{alpha}
+\bibliography{zotLib}
+\end{document}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% End:
