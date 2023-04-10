@@ -4,8 +4,6 @@ CoqEqDec.v
 CoqFSetDecide.v
 CoqFSetInterface.v
 CoqListFacts.v
-CoqMSetDecide.v
-CoqMSetInterface.v
 CoqUniquenessTacEx.v
 CoqUniquenessTac.v
 FSetExtra.v
@@ -15,5 +13,3 @@ LibLNgen.v
 LibTactics.v
 MetatheoryAtom.v
 Metatheory.v
-MSetExtra.v
-MSetWeakNotin.v

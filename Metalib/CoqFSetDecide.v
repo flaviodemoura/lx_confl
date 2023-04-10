@@ -1,7 +1,6 @@
 (** Includes minor tweaks (mostly bug fixes?) by Brian Aydemir. *)
-(** SCW 06/06/17: updated to use Coq MSets instead of FSets.
-    This version is still more powerful than Coq.MSets.MSetDecide
-    fsetdec_rec / fsetdec_body are the big differences *)
+
+Create HintDb set_simpl.
 
 (***********************************************************************)
 (*  v      *   The Coq Proof Assistant  /  The Coq Development Team    *)
@@ -18,7 +17,6 @@
 (*                                                            *)
 (* Author: Aaron Bohannon                                     *)
 (**************************************************************)
-
 
 (** This file implements a decision procedure for a certain
     class of propositions involving finite sets.  *)
@@ -349,6 +347,8 @@ the above form:
       enclosing module [Decide].  *)
   Module FSetDecideAuxiliary.
 
+
+
     (** ** Generic Tactics
         We begin by defining a few generic, useful tactics. *)
 
@@ -451,6 +451,7 @@ the above form:
     (** Here is the tactic that will throw away hypotheses that
         are not useful (for the intended scope of the [fsetdec]
         tactic). *)
+    #[global]
     Hint Constructors FSet_elt_Prop FSet_Prop : FSet_Prop.
     Ltac discard_nonFSet :=
       repeat (
@@ -469,7 +470,7 @@ the above form:
         variables.  We are going to use them with [autorewrite].
         *)
 
-    Hint Rewrite
+    #[global] Hint Rewrite
       F.empty_iff F.singleton_iff F.add_iff F.remove_iff
       F.union_iff F.inter_iff F.diff_iff
     : set_simpl.
@@ -492,6 +493,7 @@ the above form:
 
     (** The hint database [FSet_decidability] will be given to
         the [push_neg] tactic from the module [Negation]. *)
+    #[global]
     Hint Resolve dec_In dec_eq : FSet_decidability.
 
     (** ** Normalizing Propositions About Equality
@@ -631,8 +633,10 @@ the above form:
     (** Here is the crux of the proof search.  Recursion through
         [intuition]!  (This will terminate if I correctly
         understand the behavior of [intuition].) *)
+    #[global]
     Hint Resolve E.eq_refl : FSet_Auto.
     (* SCW: to change to MSets, replace with this.
+    #[global]
     Hint Resolve (E.eq_equiv.(@Equivalence_Reflexive _ _)) : FSet_Auto. *)
     Ltac fsetdec_rec :=
       auto with FSet_Auto;

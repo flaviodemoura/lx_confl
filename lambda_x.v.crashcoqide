@@ -795,27 +795,16 @@ Lemma m_subst_lemma: forall e1 e2 x e3 y, x <> y -> x `notin` (fv_nom e3) ->
  ([y := e3]([x := e2]e1)) =a ([x := ([y := e3]e2)]([y := e3]e1)).
 Proof.
   (** The proof is by induction on the size of [e1] using the size induction principle, named [n_sexp_size_induction] presented above. Therefore, the induction hypothesis *)
-  intros e1 e2 x.
+  intros e1 e2 x. unfold m_subst.
   functional induction (subst_rec_fun e1 e2 x).
-  - intros e3 y XY IH. destruct (x == y) eqn:Hxy. subst. contradiction. subst. rewrite (m_subst_var_neq e3 x y). repeat rewrite m_subst_var_eq. apply aeq_refl.
-    assumption.
-  - intros e3 z XY IH. rewrite m_subst_var_neq. subst. destruct (x == z) eqn:Hxz. subst. contradiction. rewrite m_subst_var_neq. rewrite m_subst_var_neq. apply aeq_refl.
-    auto.
-    admit.
-    auto.
-  - intros e3 z XY IH. repeat rewrite m_subst_abs_eq. admit.
-  - admit.
-  - intros e3 z XY IH. rewrite m_subst_app. rewrite m_subst_app. rewrite m_subst_app.  rewrite m_subst_app. auto.
-  - intros e3 z XY IH. admit.
-  - admit.
-
-(*
-
+  - intros e3 y XY IH. rewrite <- (m_subst_var_eq e3 y). rewrite <- (m_subst_var_neq e3 x y).
+    + rewrite <- (m_subst_var_eq e3 y). apply aeq_sym. repeat rewrite m_subst_var_eq. admit. 
+    + assumption.
 (*  induction e1 using n_sexp_size_induction. *) 
 
   (** We procced by case analisys on the structure of [e1]. The cases in between square brackets below mean that in the first case, [e1] is a variable named [z], in the second case [e1] is an abstraction of the form $\lambda$[z.e11], in the third case [e1] is an application of the form ([e11] [e12]), and finally in the fourth case [e1] is an explicit substitution of the form [e11] $\langle$ [z] := [e12] $\rangle$. *)
   
-  intro e1.
+  *)intro e1.
   generalize dependent e1. intro e1; case e1 as [z | z e11 | e11 e12 | e11 z e12].
 
   - (** The first case: [e1] is a variable, say [z], and there are several subcases to analyse. *)
@@ -835,8 +824,6 @@ Proof.
     + (** In the first subcase, [x] is equal to [z] and both lhs and rhs reduces straightfoward to the same term. *)
       subst. change (subst_rec (size (m_subst e3 y (n_abs z e11))) (m_subst e3 y (n_abs z e11)) (m_subst e3 y e2) z) with (m_subst (m_subst e3 y e2) z (m_subst e3 y (n_abs z e11))). rewrite subst_abs_eq.
     +
-*)
-*)
 Admitted.
 
 Lemma m_subst_lemma: forall e1 e2 e3 x y, x <> y -> x `notin` (fv_nom e3) ->

@@ -7,7 +7,7 @@
 
 Require Import Coq.Arith.Peano_dec.
 Require Import Coq.Lists.SetoidList.
-Require Import Coq.micromega.Lia.
+Require Import Lia.
 
 Require Import Metalib.CoqUniquenessTac.
 
@@ -18,6 +18,7 @@ Require Import Metalib.CoqUniquenessTac.
 (** The examples go through more smoothly if we declare [eq_nat_dec]
     as a hint. *)
 
+#[global]
 Hint Resolve eq_nat_dec : eq_dec.
 
 
