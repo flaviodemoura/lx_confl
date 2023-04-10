@@ -1,5 +1,6 @@
-(** * A nominal representation of the lambda_x calculus. *)
 (* begin hide *)
+(** * A nominal representation of the lambda_x calculus. *)
+
 
 Print LoadPath.
 
@@ -657,7 +658,8 @@ Notation "[ x := u ] t" := (m_subst u x t) (at level 60).
 Lemma m_subst_var_eq : forall u x,
     [x := u](n_var x) = u.
 Proof.
-  intros. Admitted.
+  intros u x. unfold m_subst. rewrite subst_rec_fun_equation. rewrite eq_dec_refl. reflexivity.
+Qed.
 
 Lemma m_subst_var_neq : forall u x y, x <> y ->
     [y := u](n_var x) = n_var x.
@@ -763,12 +765,10 @@ Lemma m_subst_abs_diff : forall t u x y, x <> y -> x `notin` (remove y (fv_nom t
 Proof.  
   Admitted.
   
-Lemma m_subst_notin : forall t u x, x `notin` fv_nom t -> [x := u]t = t.
+Lemma m_subst_notin : forall t u x, x `notin` fv_nom t -> [x := u]t =a t.
 Proof.
-  induction t.
-  - intros u x' H. unfold m_subst. simpl in *. apply notin_singleton_1' in H. destruct (x' == x) eqn:Hx.
-    + subst. contradiction. 
-    + Admitted.
+  intros t u x. unfold m_subst. functional induction (subst_rec_fun t u x).
+  - Admitted.
 (**      reflexivity.
   - intros u x' H. simpl in *. destruct (x' == x).
     + subst. rewrite m_subst_abs_eq; reflexivity.
@@ -794,15 +794,19 @@ Proof.
 Lemma m_subst_lemma: forall e1 e2 x e3 y, x <> y -> x `notin` (fv_nom e3) ->
  ([y := e3]([x := e2]e1)) =a ([x := ([y := e3]e2)]([y := e3]e1)).
 Proof.
-  (** The proof is by induction on the size of [e1] using the size induction principle, named [n_sexp_size_induction] presented above. Therefore, the induction hypothesis *)
-  intros e1 e2 x.
-  functional induction (subst_rec_fun e1 e2 x).
-  - intros e3 y XY IH. destruct (x == y) eqn:Hxy. subst. contradiction. subst. rewrite (m_subst_var_neq e3 x y). repeat rewrite m_subst_var_eq. apply aeq_refl.
-    assumption.
-  - intros e3 z XY IH. rewrite m_subst_var_neq. subst. destruct (x == z) eqn:Hxz. subst. contradiction. rewrite m_subst_var_neq. rewrite m_subst_var_neq. apply aeq_refl.
-    auto.
-    admit.
-    auto.
+  intros e1 e2 x. functional induction (subst_rec_fun e1 e2 x).
+  - intros e3 y XY IH. rewrite m_subst_var_eq. rewrite m_subst_var_neq.
+    + rewrite m_subst_var_eq. apply aeq_refl.
+    + assumption.
+  - intros e3 z XY IH. rewrite m_subst_var_neq.
+    + destruct (y == z) eqn:Hyz.
+      * subst. rewrite m_subst_var_eq. pose proof m_subst_notin. specialize (H e3 ([z := e3] u) x). apply aeq_sym. apply H; assumption.
+      * rewrite m_subst_var_neq.
+        ** rewrite m_subst_var_neq.
+           *** apply aeq_refl.
+           *** auto.
+        ** auto.
+    + auto.
   - intros e3 z XY IH. repeat rewrite m_subst_abs_eq. admit.
   - admit.
   - intros e3 z XY IH. rewrite m_subst_app. rewrite m_subst_app. rewrite m_subst_app.  rewrite m_subst_app. auto.
