@@ -795,6 +795,10 @@ Proof.
 Lemma fv_nom_m_subst: forall t u x, fv_nom ([x := u] t) = (remove x (fv_nom t)) `union` fv_nom u.
 Proof.
   Admitted.
+
+Lemma m_subst_notin_m_subst: forall t u v x y, y `notin` fv_nom t -> [y := v]([x := u] t) = [x := [y := v]u] t.
+Proof.
+  Admitted.
   
 Lemma m_subst_lemma: forall e1 e2 x e3 y, x <> y -> x `notin` (fv_nom e3) ->
  ([y := e3]([x := e2]e1)) =a ([x := ([y := e3]e2)]([y := e3]e1)).
@@ -835,8 +839,11 @@ Proof.
     apply aeq_sym. apply H. rewrite fv_nom_m_subst. simpl. clear H. apply notin_union_3.
     + apply notin_remove_2. apply notin_remove_3. reflexivity.
     + assumption.
-  - intros e3 y' XY IH.
-    admit.
+  - intros e3 y' XY IH. destruct (y == y').
+    + subst. rewrite m_subst_abs_eq. rewrite m_subst_notin_m_subst.
+      * apply aeq_refl.
+      * simpl. apply notin_remove_3. reflexivity.
+    + admit.
   (** *)
   (**The case of application is solved by using the auxiliary lemmas on application. First, it is rewritten so that the substitution is made inside the aplication, instead of on it. The same lemma is applied multiple times to make sure nothing can be replaced anymore. This leads to a case that can be solved using the standard library lemmas.*)
   - intros e3 z XY IH. rewrite m_subst_app. rewrite m_subst_app. rewrite m_subst_app.  rewrite m_subst_app. auto.
