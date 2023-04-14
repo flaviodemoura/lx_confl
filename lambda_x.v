@@ -795,22 +795,31 @@ Proof.
 Lemma m_subst_lemma: forall e1 e2 x e3 y, x <> y -> x `notin` (fv_nom e3) ->
  ([y := e3]([x := e2]e1)) =a ([x := ([y := e3]e2)]([y := e3]e1)).
 Proof.
-  (** We proceed by functional induction on the structure of subst_rec_fun, the definition of the substitution. The induction splits the proof in seven cases: two cases concern variables, the next two concern abstractions, the next case concerns the application and the last two concern the explicit substitution. *)
+  (** *)
+  (** We proceed by functional induction on the structure of subst_rec_fun, the definition of the substitution. The induction splits the proof in seven cases: two cases concern variables, the next two concern abstractions, the next case concerns the application and the last two concern the explicit substitution. *) 
   intros e1 e2 x. functional induction (subst_rec_fun e1 e2 x).
+  (** *)
   (**The first case is about the variable. It considers that there are two variables, $x$ and $y$ and they differ from one another. *)
   - intros e3 y XY IH. rewrite m_subst_var_eq. rewrite m_subst_var_neq.
+  (** *)
   (**When we rewrite the lemmas concerning equality and negation on variables substitution, we have two cases.*)
-  (** If we only have these two variables, we can use the equality lemma to find that both sides of the proof are equal and finish it using reflexivity and in the second case assumptions are used to finish the proof.*)
+  (** *)
+  (**If we only have these two variables, we can use the equality lemma to find that both sides of the proof are equal and finish it using reflexivity and in the second case assumptions are used to finish the proof.*)
     + rewrite m_subst_var_eq. apply aeq_refl.
     + assumption.
+  (** *)
   (**The second case is also about variables. In it, we consider a third variable, $z$, meaning that each variable is different from the other. In the former case, we had that $x = y$.*)
   - intros e3 z XY IH. rewrite m_subst_var_neq.
+  (** *)
   (**To unfold the cases in this proof, we need to destruct one variable as another. We chose to do $x == z$.*)
     + destruct (y == z) eqn:Hyz.
+  (** *)
   (**This splits the proof in two cases.*)
+  (** *)
   (**In the first case, we have that $x = z$. To expand this case, we use the lemma $m_subst_notin$ as an auxiliary lemma. It is added as an hypothesis, using the specialization tactics to match the last case in that hypothesis to the proof we want.*)
-  (**The rest of the cases are finished  using the varible substitution's negation of equality, the varible substitution's equality or the standard library lemmas.*)
-      * subst. rewrite m_subst_var_eq. pose proof m_subst_notin. specialize (H e3 ([z := e3] u) x). apply aeq_sym. apply H; assumption.
+  (** *)
+  (**The rest of the cases are finished  using the varible substitution's negation of equality, the varible substitution's equality or the standard library lemmas.*) 
+    * subst. rewrite m_subst_var_eq. pose proof m_subst_notin. specialize (H e3 ([z := e3] u) x). apply aeq_sym. apply H; assumption.
       * rewrite m_subst_var_neq.
         ** rewrite m_subst_var_neq.
            *** apply aeq_refl.
@@ -822,6 +831,7 @@ Proof.
     apply aeq_sym. apply H. pose proof m_subst_abs_diff. specialize (H0 t1 e3 z x). rewrite H0.
     admit. auto. admit.
   - admit.
+  (** *)
   (**The case of application is solved by using the auxiliary lemmas on application. First, it is rewritten so that the substitution is made inside the aplication, instead of on it. The same lemma is applied multiple times to make sure nothing can be replaced anymore. This leads to a case that can be solved using the standard library lemmas.*)
   - intros e3 z XY IH. rewrite m_subst_app. rewrite m_subst_app. rewrite m_subst_app.  rewrite m_subst_app. auto.
   - intros e3 z XY IH. admit.

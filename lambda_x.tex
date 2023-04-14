@@ -1,0 +1,398 @@
+\begin{coqdoccode}
+\coqdocemptyline
+\end{coqdoccode}
+\section{The substitution lemma for the metasubstitution}
+
+
+
+
+
+   In the pure $\lambda$-calculus, the substitution lemma is probably the first non trivial property. In our framework, we have defined two different substitution operation, namely, the metasubstitution denoted by [\coqdocvar{x}:=\coqdocvar{u}]\coqdocvar{t} and the explicit substitution that has \coqdocvar{n\_sub} as a constructor. In what follows, we present the main steps of our proof of the substitution lemma for the metasubstitution operation: 
+ 
+\begin{coqdoccode}
+\coqdocemptyline
+\coqdocnoindent
+\coqdockw{Lemma} \coqdef{lambda x.m subst lemma}{m\_subst\_lemma}{\coqdoclemma{m\_subst\_lemma}}: \coqdockw{\ensuremath{\forall}} \coqdef{lambda x.e1:210}{e1}{\coqdocbinder{e1}} \coqdef{lambda x.e2:211}{e2}{\coqdocbinder{e2}} \coqdef{lambda x.x:212}{x}{\coqdocbinder{x}} \coqdef{lambda x.e3:213}{e3}{\coqdocbinder{e3}} \coqdef{lambda x.y:214}{y}{\coqdocbinder{y}}, \coqref{lambda x.x:212}{\coqdocvariable{x}} \coqexternalref{::type scope:x '<>' x}{http://coq.inria.fr/distrib/V8.16.1/stdlib//Coq.Init.Logic}{\coqdocnotation{\ensuremath{\not=}}} \coqref{lambda x.y:214}{\coqdocvariable{y}} \coqexternalref{::type scope:x '->' x}{http://coq.inria.fr/distrib/V8.16.1/stdlib//Coq.Init.Logic}{\coqdocnotation{\ensuremath{\rightarrow}}} \coqref{lambda x.x:212}{\coqdocvariable{x}} \coqdocnotation{`}\coqdocnotation{notin}\coqdocnotation{`} \coqdocnotation{(}\coqdocdefinition{fv\_nom} \coqref{lambda x.e3:213}{\coqdocvariable{e3}}\coqdocnotation{)} \coqexternalref{::type scope:x '->' x}{http://coq.inria.fr/distrib/V8.16.1/stdlib//Coq.Init.Logic}{\coqdocnotation{\ensuremath{\rightarrow}}}\coqdoceol
+\coqdocindent{0.50em}
+\coqdocnotation{(}\coqref{lambda x.:::'[' x ':=' x ']' x}{\coqdocnotation{[}}\coqref{lambda x.y:214}{\coqdocvariable{y}} \coqref{lambda x.:::'[' x ':=' x ']' x}{\coqdocnotation{:=}} \coqref{lambda x.e3:213}{\coqdocvariable{e3}}\coqref{lambda x.:::'[' x ':=' x ']' x}{\coqdocnotation{]([}}\coqref{lambda x.x:212}{\coqdocvariable{x}} \coqref{lambda x.:::'[' x ':=' x ']' x}{\coqdocnotation{:=}} \coqref{lambda x.e2:211}{\coqdocvariable{e2}}\coqref{lambda x.:::'[' x ':=' x ']' x}{\coqdocnotation{]}}\coqref{lambda x.e1:210}{\coqdocvariable{e1}}\coqref{lambda x.:::'[' x ':=' x ']' x}{\coqdocnotation{)}}\coqdocnotation{)} \coqdocnotation{=}\coqdocnotation{a} \coqdocnotation{(}\coqref{lambda x.:::'[' x ':=' x ']' x}{\coqdocnotation{[}}\coqref{lambda x.x:212}{\coqdocvariable{x}} \coqref{lambda x.:::'[' x ':=' x ']' x}{\coqdocnotation{:=}} \coqref{lambda x.:::'[' x ':=' x ']' x}{\coqdocnotation{([}}\coqref{lambda x.y:214}{\coqdocvariable{y}} \coqref{lambda x.:::'[' x ':=' x ']' x}{\coqdocnotation{:=}} \coqref{lambda x.e3:213}{\coqdocvariable{e3}}\coqref{lambda x.:::'[' x ':=' x ']' x}{\coqdocnotation{]}}\coqref{lambda x.e2:211}{\coqdocvariable{e2}}\coqref{lambda x.:::'[' x ':=' x ']' x}{\coqdocnotation{)]([}}\coqref{lambda x.y:214}{\coqdocvariable{y}} \coqref{lambda x.:::'[' x ':=' x ']' x}{\coqdocnotation{:=}} \coqref{lambda x.e3:213}{\coqdocvariable{e3}}\coqref{lambda x.:::'[' x ':=' x ']' x}{\coqdocnotation{]}}\coqref{lambda x.e1:210}{\coqdocvariable{e1}}\coqref{lambda x.:::'[' x ':=' x ']' x}{\coqdocnotation{)}}\coqdocnotation{)}.\coqdoceol
+\coqdocnoindent
+\coqdockw{Proof}.\coqdoceol
+\end{coqdoccode}
+ We proceed by functional induction on the structure of subst\_rec\_fun, the definition of the substitution. The induction splits the proof in seven cases: two cases concern variables, the next two concern abstractions, the next case concerns the application and the last two concern the explicit substitution. 
+\begin{coqdoccode}
+\coqdocindent{1.00em}
+\coqdoctac{intros} \coqdocvar{e1} \coqdocvar{e2} \coqdocvar{x}. \coqdocvar{functional} \coqdoctac{induction} (\coqref{lambda x.subst rec fun}{\coqdoclemma{subst\_rec\_fun}} \coqdocvar{e1} \coqdocvar{e2} \coqdocvar{x}).\coqdoceol
+\end{coqdoccode}
+The first case is about the variable. It considers that there are two variables, $x$ and $y$ and they differ from one another. 
+\begin{coqdoccode}
+\coqdocindent{1.00em}
+- \coqdoctac{intros} \coqdocvar{e3} \coqdocvar{y} \coqdocvar{XY} \coqdocvar{IH}. \coqdoctac{rewrite} \coqref{lambda x.m subst var eq}{\coqdoclemma{m\_subst\_var\_eq}}. \coqdoctac{rewrite} \coqref{lambda x.m subst var neq}{\coqdoclemma{m\_subst\_var\_neq}}.\coqdoceol
+\end{coqdoccode}
+When we rewrite the lemmas concerning equality and negation on variables substitution, we have two cases. If we only have these two variables, we can use the equality lemma to find that both sides of the proof are equal and finish it using reflexivity and in the second case assumptions are used to finish the proof.
+\begin{coqdoccode}
+\coqdocindent{2.00em}
++ \coqdoctac{rewrite} \coqref{lambda x.m subst var eq}{\coqdoclemma{m\_subst\_var\_eq}}. \coqdoctac{apply} \coqdoclemma{aeq\_refl}.\coqdoceol
+\coqdocindent{2.00em}
++ \coqdoctac{assumption}.\coqdoceol
+\end{coqdoccode}
+The second case is also about variables. In it, we consider a third variable, $z$, meaning that each variable is different from the other. In the former case, we had that $x = y$.
+\begin{coqdoccode}
+\coqdocindent{1.00em}
+- \coqdoctac{intros} \coqdocvar{e3} \coqdocvar{z} \coqdocvar{XY} \coqdocvar{IH}. \coqdoctac{rewrite} \coqref{lambda x.m subst var neq}{\coqdoclemma{m\_subst\_var\_neq}}.\coqdoceol
+\end{coqdoccode}
+To unfold the cases in this proof, we need to destruct one variable as another. We chose to do $x == z$.
+\begin{coqdoccode}
+\coqdocindent{2.00em}
++ \coqdoctac{destruct} (\coqdocvar{y} \coqdocnotation{==} \coqdocvar{z}) \coqdocvar{eqn}:\coqdocvar{Hyz}.\coqdoceol
+\end{coqdoccode}
+This splits the proof in two cases. In the first case, we have that $x = z$. To expand this case, we use the lemma $m_subst_notin$ as an auxiliary lemma. It is added as an hypothesis, using the specialization tactics to match the last case in that hypothesis to the proof we want. The rest of the cases are finished  using the varible substitution's negation of equality, the varible substitution's equality or the standard library lemmas.
+\begin{coqdoccode}
+\coqdocindent{2.00em}
+\ensuremath{\times} \coqdoctac{subst}. \coqdoctac{rewrite} \coqref{lambda x.m subst var eq}{\coqdoclemma{m\_subst\_var\_eq}}. \coqdoctac{pose} \coqdocvar{proof} \coqref{lambda x.m subst notin}{\coqdocaxiom{m\_subst\_notin}}. \coqdoctac{specialize} (\coqdocvar{H} \coqdocvar{e3} (\coqref{lambda x.:::'[' x ':=' x ']' x}{\coqdocnotation{[}}\coqdocvar{z} \coqref{lambda x.:::'[' x ':=' x ']' x}{\coqdocnotation{:=}} \coqdocvar{e3}\coqref{lambda x.:::'[' x ':=' x ']' x}{\coqdocnotation{]}} \coqdocvar{u}) \coqdocvar{x}). \coqdoctac{apply} \coqdoclemma{aeq\_sym}. \coqdoctac{apply} \coqdocvar{H}; \coqdoctac{assumption}.\coqdoceol
+\coqdocindent{3.00em}
+\ensuremath{\times} \coqdoctac{rewrite} \coqref{lambda x.m subst var neq}{\coqdoclemma{m\_subst\_var\_neq}}.\coqdoceol
+\coqdocindent{4.00em}
+** \coqdoctac{rewrite} \coqref{lambda x.m subst var neq}{\coqdoclemma{m\_subst\_var\_neq}}.\coqdoceol
+\coqdocindent{5.50em}
+*** \coqdoctac{apply} \coqdoclemma{aeq\_refl}.\coqdoceol
+\coqdocindent{5.50em}
+*** \coqdoctac{auto}.\coqdoceol
+\coqdocindent{4.00em}
+** \coqdoctac{auto}.\coqdoceol
+\coqdocindent{2.00em}
++ \coqdoctac{auto}.\coqdoceol
+\coqdocindent{1.00em}
+- \coqdoctac{intros} \coqdocvar{e3} \coqdocvar{z} \coqdocvar{XY} \coqdocvar{IH}. \coqdoctac{destruct} (\coqdocvar{x} \coqdocnotation{==} \coqdocvar{z}) \coqdocvar{eqn}:\coqdocvar{Hxz}. \coqdocvar{contradiction}. \coqdoctac{rewrite} \coqref{lambda x.m subst abs eq}{\coqdoclemma{m\_subst\_abs\_eq}}.\coqdoceol
+\coqdocindent{2.00em}
+\coqdoctac{pose} \coqdocvar{proof} \coqref{lambda x.m subst notin}{\coqdocaxiom{m\_subst\_notin}}. \coqdoctac{specialize} (\coqdocvar{H} (\coqref{lambda x.:::'[' x ':=' x ']' x}{\coqdocnotation{[}}\coqdocvar{z} \coqref{lambda x.:::'[' x ':=' x ']' x}{\coqdocnotation{:=}} \coqdocvar{e3}\coqref{lambda x.:::'[' x ':=' x ']' x}{\coqdocnotation{]}} \coqdocconstructor{n\_abs} \coqdocvar{x} \coqdocvar{t1}) (\coqref{lambda x.:::'[' x ':=' x ']' x}{\coqdocnotation{[}}\coqdocvar{z} \coqref{lambda x.:::'[' x ':=' x ']' x}{\coqdocnotation{:=}} \coqdocvar{e3}\coqref{lambda x.:::'[' x ':=' x ']' x}{\coqdocnotation{]}} \coqdocvar{u}) \coqdocvar{x}).\coqdoceol
+\coqdocindent{2.00em}
+\coqdoctac{apply} \coqdoclemma{aeq\_sym}. \coqdoctac{apply} \coqdocvar{H}. \coqdoctac{pose} \coqdocvar{proof} \coqref{lambda x.m subst abs diff}{\coqdocaxiom{m\_subst\_abs\_diff}}. \coqdoctac{specialize} (\coqdocvar{H0} \coqdocvar{t1} \coqdocvar{e3} \coqdocvar{z} \coqdocvar{x}). \coqdoctac{rewrite} \coqdocvar{H0}.\coqdoceol
+\coqdocindent{2.00em}
+\coqdocvar{admit}. \coqdoctac{auto}. \coqdocvar{admit}.\coqdoceol
+\coqdocindent{1.00em}
+- \coqdocvar{admit}.\coqdoceol
+\end{coqdoccode}
+The case of application is solved by using the auxiliary lemmas on application. First, it is rewritten so that the substitution is made inside the aplication, instead of on it. The same lemma is applied multiple times to make sure nothing can be replaced anymore. This leads to a case that can be solved using the standard library lemmas.
+\begin{coqdoccode}
+\coqdocindent{1.00em}
+- \coqdoctac{intros} \coqdocvar{e3} \coqdocvar{z} \coqdocvar{XY} \coqdocvar{IH}. \coqdoctac{rewrite} \coqref{lambda x.m subst app}{\coqdoclemma{m\_subst\_app}}. \coqdoctac{rewrite} \coqref{lambda x.m subst app}{\coqdoclemma{m\_subst\_app}}. \coqdoctac{rewrite} \coqref{lambda x.m subst app}{\coqdoclemma{m\_subst\_app}}. \coqdoctac{rewrite} \coqref{lambda x.m subst app}{\coqdoclemma{m\_subst\_app}}. \coqdoctac{auto}.\coqdoceol
+\coqdocindent{1.00em}
+- \coqdoctac{intros} \coqdocvar{e3} \coqdocvar{z} \coqdocvar{XY} \coqdocvar{IH}. \coqdocvar{admit}.\coqdoceol
+\coqdocindent{1.00em}
+- \coqdocvar{admit}.\coqdoceol
+\coqdocemptyline
+\coqdocnoindent
+\coqdocvar{Admitted}.\coqdoceol
+\coqdocemptyline
+\coqdocnoindent
+\coqdockw{Lemma} \coqdef{lambda x.m subst lemma}{m\_subst\_lemma}{\coqdoclemma{m\_subst\_lemma}}: \coqdockw{\ensuremath{\forall}} \coqdef{lambda x.e1:215}{e1}{\coqdocbinder{e1}} \coqdef{lambda x.e2:216}{e2}{\coqdocbinder{e2}} \coqdef{lambda x.e3:217}{e3}{\coqdocbinder{e3}} \coqdef{lambda x.x:218}{x}{\coqdocbinder{x}} \coqdef{lambda x.y:219}{y}{\coqdocbinder{y}}, \coqref{lambda x.x:218}{\coqdocvariable{x}} \coqexternalref{::type scope:x '<>' x}{http://coq.inria.fr/distrib/V8.16.1/stdlib//Coq.Init.Logic}{\coqdocnotation{\ensuremath{\not=}}} \coqref{lambda x.y:219}{\coqdocvariable{y}} \coqexternalref{::type scope:x '->' x}{http://coq.inria.fr/distrib/V8.16.1/stdlib//Coq.Init.Logic}{\coqdocnotation{\ensuremath{\rightarrow}}} \coqref{lambda x.x:218}{\coqdocvariable{x}} \coqdocnotation{`}\coqdocnotation{notin}\coqdocnotation{`} \coqdocnotation{(}\coqdocdefinition{fv\_nom} \coqref{lambda x.e3:217}{\coqdocvariable{e3}}\coqdocnotation{)} \coqexternalref{::type scope:x '->' x}{http://coq.inria.fr/distrib/V8.16.1/stdlib//Coq.Init.Logic}{\coqdocnotation{\ensuremath{\rightarrow}}}\coqdoceol
+\coqdocindent{1.00em}
+\coqdocinductive{aeq} (\coqref{lambda x.m subst}{\coqdocdefinition{m\_subst}} \coqref{lambda x.e3:217}{\coqdocvariable{e3}} \coqref{lambda x.y:219}{\coqdocvariable{y}} (\coqref{lambda x.m subst}{\coqdocdefinition{m\_subst}} \coqref{lambda x.e2:216}{\coqdocvariable{e2}} \coqref{lambda x.x:218}{\coqdocvariable{x}} \coqref{lambda x.e1:215}{\coqdocvariable{e1}})) (\coqref{lambda x.m subst}{\coqdocdefinition{m\_subst}} (\coqref{lambda x.m subst}{\coqdocdefinition{m\_subst}} \coqref{lambda x.e3:217}{\coqdocvariable{e3}} \coqref{lambda x.y:219}{\coqdocvariable{y}} \coqref{lambda x.e2:216}{\coqdocvariable{e2}}) \coqref{lambda x.x:218}{\coqdocvariable{x}} (\coqref{lambda x.m subst}{\coqdocdefinition{m\_subst}} \coqref{lambda x.e3:217}{\coqdocvariable{e3}} \coqref{lambda x.y:219}{\coqdocvariable{y}} \coqref{lambda x.e1:215}{\coqdocvariable{e1}})).\coqdoceol
+\coqdocnoindent
+\coqdockw{Proof}.\coqdoceol
+\coqdocnoindent
+\coqdocvar{Admitted}.\coqdoceol
+\coqdocemptyline
+\coqdocindent{0.50em}
+*)\coqdoceol
+\coqdocnoindent
+\coqdoceol
+\coqdocnoindent
+\coqdoceol
+\coqdocnoindent
+\coqdockw{Inductive} \coqdocvar{betax} : \coqdocvar{n\_sexp} \ensuremath{\rightarrow} \coqdocvar{n\_sexp} \ensuremath{\rightarrow} \coqdockw{Prop} :=\coqdoceol
+\coqdocindent{0.50em}
+\ensuremath{|} \coqdocvar{step\_betax} : \coqdockw{\ensuremath{\forall}} (\coqdocvar{e1} \coqdocvar{e2}: \coqdocvar{n\_sexp}) (\coqdocvar{x}: \coqdocvar{atom}),\coqdoceol
+\coqdocindent{2.50em}
+\coqdocvar{betax} (\coqdocvar{n\_app}  (\coqdocvar{n\_abs} \coqdocvar{x} \coqdocvar{e1}) \coqdocvar{e2})  (\coqdocvar{n\_sub} \coqdocvar{e1} \coqdocvar{x} \coqdocvar{e2}).\coqdoceol
+\coqdocemptyline
+\coqdocemptyline
+\coqdocnoindent
+\coqdockw{Fixpoint} \coqdocvar{f\_pix} (\coqdocvar{t}: \coqdocvar{n\_sexp}): \coqdocvar{n\_sexp} :=\coqdoceol
+\coqdocindent{1.00em}
+\coqdockw{match} \coqdocvar{t} \coqdockw{with}\coqdoceol
+\coqdocindent{1.00em}
+\ensuremath{|} (\coqdocvar{n\_sub} (\coqdocvar{n\_var} \coqdocvar{x}) \coqdocvar{y} \coqdocvar{e}) \ensuremath{\Rightarrow} \coqdockw{if} \coqdocvar{x} == \coqdocvar{y} \coqdockw{then} \coqdocvar{e} \coqdockw{else} (\coqdocvar{n\_var} \coqdocvar{x})\coqdoceol
+\coqdocindent{1.00em}
+\ensuremath{|} (\coqdocvar{n\_sub} (\coqdocvar{n\_abs} \coqdocvar{x} \coqdocvar{e1}) \coqdocvar{y} \coqdocvar{e2}) \ensuremath{\Rightarrow}\coqdoceol
+\coqdocindent{3.00em}
+\coqdockw{let} (\coqdocvar{z},\coqdocvar{\_}) :=\coqdoceol
+\coqdocindent{4.00em}
+\coqdocvar{atom\_fresh} (\coqdocvar{fv\_nom} (\coqdocvar{n\_abs} \coqdocvar{x} \coqdocvar{e1}) `\coqdocvar{union}` \coqdocvar{fv\_nom} \coqdocvar{e2} `\coqdocvar{union}` \{\{\coqdocvar{y}\}\}) \coqdoctac{in}\coqdoceol
+\coqdocindent{3.00em}
+(\coqdocvar{n\_abs} \coqdocvar{z} (\coqdocvar{n\_sub} (\coqdocvar{swap} \coqdocvar{x} \coqdocvar{z} \coqdocvar{e1}) \coqdocvar{y} \coqdocvar{e2}))\coqdoceol
+\coqdocindent{1.00em}
+\ensuremath{|} (\coqdocvar{n\_sub} (\coqdocvar{n\_app} \coqdocvar{e1} \coqdocvar{e2}) \coqdocvar{y} \coqdocvar{e3}) \ensuremath{\Rightarrow} (\coqdocvar{n\_app} (\coqdocvar{n\_sub} \coqdocvar{e1} \coqdocvar{y} \coqdocvar{e3}) (\coqdocvar{n\_sub} \coqdocvar{e2} \coqdocvar{y} \coqdocvar{e3}))\coqdoceol
+\coqdocindent{1.00em}
+\ensuremath{|} \coqdocvar{\_} \ensuremath{\Rightarrow} \coqdocvar{t}\coqdoceol
+\coqdocindent{1.00em}
+\coqdockw{end}.\coqdoceol
+\coqdocemptyline
+\coqdocnoindent
+\coqdockw{Inductive} \coqdocvar{pix} : \coqdocvar{n\_sexp} \ensuremath{\rightarrow} \coqdocvar{n\_sexp} \ensuremath{\rightarrow} \coqdockw{Prop} :=\coqdoceol
+\coqdocnoindent
+\ensuremath{|} \coqdocvar{one\_step} : \coqdockw{\ensuremath{\forall}} \coqdocvar{t}, \coqdocvar{pix} \coqdocvar{t} (\coqdocvar{f\_pix} \coqdocvar{t}).\coqdoceol
+\coqdocemptyline
+\coqdocemptyline
+\coqdocnoindent
+\coqdockw{Inductive} \coqdocvar{betapi}: \coqdocvar{n\_sexp} \ensuremath{\rightarrow} \coqdocvar{n\_sexp} \ensuremath{\rightarrow} \coqdockw{Prop} :=\coqdoceol
+\coqdocnoindent
+\ensuremath{|} \coqdocvar{b\_rule} : \coqdockw{\ensuremath{\forall}} \coqdocvar{t} \coqdocvar{u}, \coqdocvar{betax} \coqdocvar{t} \coqdocvar{u} \ensuremath{\rightarrow} \coqdocvar{betapi} \coqdocvar{t} \coqdocvar{u}\coqdoceol
+\coqdocnoindent
+\ensuremath{|} \coqdocvar{x\_rule} : \coqdockw{\ensuremath{\forall}} \coqdocvar{t} \coqdocvar{u}, \coqdocvar{pix} \coqdocvar{t} \coqdocvar{u} \ensuremath{\rightarrow} \coqdocvar{betapi} \coqdocvar{t} \coqdocvar{u}.\coqdoceol
+\coqdocemptyline
+\coqdocnoindent
+\coqdockw{Inductive} \coqdocvar{ctx}  (\coqdocvar{R} : \coqdocvar{n\_sexp} \ensuremath{\rightarrow} \coqdocvar{n\_sexp} \ensuremath{\rightarrow} \coqdockw{Prop}): \coqdocvar{n\_sexp} \ensuremath{\rightarrow} \coqdocvar{n\_sexp} \ensuremath{\rightarrow} \coqdockw{Prop} :=\coqdoceol
+\coqdocindent{0.50em}
+\ensuremath{|} \coqdocvar{step\_aeq}: \coqdockw{\ensuremath{\forall}} \coqdocvar{e1} \coqdocvar{e2}, \coqdocvar{aeq} \coqdocvar{e1} \coqdocvar{e2} \ensuremath{\rightarrow} \coqdocvar{ctx} \coqdocvar{R} \coqdocvar{e1} \coqdocvar{e2}\coqdoceol
+\coqdocindent{0.50em}
+\ensuremath{|} \coqdocvar{step\_redex}: \coqdockw{\ensuremath{\forall}} (\coqdocvar{e1} \coqdocvar{e2} \coqdocvar{e3} \coqdocvar{e4}: \coqdocvar{n\_sexp}), \coqdocvar{aeq} \coqdocvar{e1} \coqdocvar{e2} \ensuremath{\rightarrow} \coqdocvar{R} \coqdocvar{e2} \coqdocvar{e3} \ensuremath{\rightarrow} \coqdocvar{aeq} \coqdocvar{e3} \coqdocvar{e4} \ensuremath{\rightarrow} \coqdocvar{ctx} \coqdocvar{R} \coqdocvar{e1} \coqdocvar{e4}\coqdoceol
+\coqdocindent{0.50em}
+\ensuremath{|} \coqdocvar{step\_abs\_in}: \coqdockw{\ensuremath{\forall}} (\coqdocvar{e} \coqdocvar{e'}: \coqdocvar{n\_sexp}) (\coqdocvar{x}: \coqdocvar{atom}), \coqdocvar{ctx} \coqdocvar{R} \coqdocvar{e} \coqdocvar{e'} \ensuremath{\rightarrow} \coqdocvar{ctx} \coqdocvar{R} (\coqdocvar{n\_abs} \coqdocvar{x} \coqdocvar{e}) (\coqdocvar{n\_abs} \coqdocvar{x} \coqdocvar{e'})\coqdoceol
+\coqdocindent{0.50em}
+\ensuremath{|} \coqdocvar{step\_app\_left}: \coqdockw{\ensuremath{\forall}} (\coqdocvar{e1} \coqdocvar{e1'} \coqdocvar{e2}: \coqdocvar{n\_sexp}) , \coqdocvar{ctx} \coqdocvar{R} \coqdocvar{e1} \coqdocvar{e1'} \ensuremath{\rightarrow} \coqdocvar{ctx} \coqdocvar{R} (\coqdocvar{n\_app} \coqdocvar{e1} \coqdocvar{e2}) (\coqdocvar{n\_app} \coqdocvar{e1'} \coqdocvar{e2})\coqdoceol
+\coqdocindent{0.50em}
+\ensuremath{|} \coqdocvar{step\_app\_right}: \coqdockw{\ensuremath{\forall}} (\coqdocvar{e1} \coqdocvar{e2} \coqdocvar{e2'}: \coqdocvar{n\_sexp}) , \coqdocvar{ctx} \coqdocvar{R} \coqdocvar{e2} \coqdocvar{e2'} \ensuremath{\rightarrow} \coqdocvar{ctx} \coqdocvar{R} (\coqdocvar{n\_app} \coqdocvar{e1} \coqdocvar{e2}) (\coqdocvar{n\_app} \coqdocvar{e1} \coqdocvar{e2'})\coqdoceol
+\coqdocindent{0.50em}
+\ensuremath{|} \coqdocvar{step\_sub\_left}: \coqdockw{\ensuremath{\forall}} (\coqdocvar{e1} \coqdocvar{e1'} \coqdocvar{e2}: \coqdocvar{n\_sexp}) (\coqdocvar{x} : \coqdocvar{atom}) , \coqdocvar{ctx} \coqdocvar{R} \coqdocvar{e1} \coqdocvar{e1'} \ensuremath{\rightarrow} \coqdocvar{ctx} \coqdocvar{R} (\coqdocvar{n\_sub} \coqdocvar{e1} \coqdocvar{x} \coqdocvar{e2}) (\coqdocvar{n\_sub} \coqdocvar{e1'} \coqdocvar{x} \coqdocvar{e2})\coqdoceol
+\coqdocindent{0.50em}
+\ensuremath{|} \coqdocvar{step\_sub\_right}: \coqdockw{\ensuremath{\forall}} (\coqdocvar{e1} \coqdocvar{e2} \coqdocvar{e2'}: \coqdocvar{n\_sexp}) (\coqdocvar{x}:\coqdocvar{atom}), \coqdocvar{ctx} \coqdocvar{R} \coqdocvar{e2} \coqdocvar{e2'} \ensuremath{\rightarrow} \coqdocvar{ctx} \coqdocvar{R} (\coqdocvar{n\_sub} \coqdocvar{e1} \coqdocvar{x} \coqdocvar{e2}) (\coqdocvar{n\_sub} \coqdocvar{e1} \coqdocvar{x} \coqdocvar{e2'}).\coqdoceol
+\coqdocemptyline
+\coqdocnoindent
+\coqdockw{Definition} \coqdocvar{lx} \coqdocvar{t} \coqdocvar{u} := \coqdocvar{ctx} \coqdocvar{betapi} \coqdocvar{t} \coqdocvar{u}.\coqdoceol
+\coqdocemptyline
+\coqdocnoindent
+\coqdockw{Lemma} \coqdocvar{step\_abs\_eq}: \coqdockw{\ensuremath{\forall}} (\coqdocvar{e1} \coqdocvar{e2}: \coqdocvar{n\_sexp}) (\coqdocvar{y}: \coqdocvar{atom}), \coqdoctac{\ensuremath{\exists}} (\coqdocvar{z}: \coqdocvar{atom}) (\coqdocvar{e}: \coqdocvar{n\_sexp}), \coqdocvar{refltrans\_aeq} (\coqdocvar{ctx} \coqdocvar{pix}) (\coqdocvar{n\_sub} (\coqdocvar{n\_abs} \coqdocvar{y} \coqdocvar{e1}) \coqdocvar{y} \coqdocvar{e2}) (\coqdocvar{n\_abs} \coqdocvar{z} \coqdocvar{e}) \ensuremath{\land} (\coqdocvar{n\_abs} \coqdocvar{z} \coqdocvar{e} =\coqdocvar{a} \coqdocvar{n\_abs} \coqdocvar{y} \coqdocvar{e1}).\coqdoceol
+\coqdocnoindent
+\coqdockw{Proof}.\coqdoceol
+\coqdocindent{1.00em}
+\coqdoctac{induction} \coqdocvar{e1} \coqdockw{using} \coqdocvar{n\_sexp\_size\_induction}. \coqdoctac{generalize} \coqdoctac{dependent} \coqdocvar{H}. \coqdoctac{case} \coqdocvar{e1}.\coqdoceol
+\coqdocindent{1.00em}
+- \coqdoctac{intros} \coqdocvar{x} \coqdocvar{IH} \coqdocvar{e2} \coqdocvar{y}. \coqdoctac{pose} \coqdocvar{proof} \coqdocvar{eq\_dec}. \coqdoctac{specialize} (\coqdocvar{H} \coqdocvar{x} \coqdocvar{y}). \coqdoctac{destruct} \coqdocvar{H}.\coqdoceol
+\coqdocindent{2.00em}
++ \coqdoctac{subst}.\coqdoceol
+\coqdocnoindent
+\coqdocvar{Admitted}.\coqdoceol
+\coqdocemptyline
+\coqdocemptyline
+\coqdocemptyline
+\coqdocnoindent
+\coqdockw{Lemma} \coqdocvar{step\_redex\_R} : \coqdockw{\ensuremath{\forall}} (\coqdocvar{R} : \coqdocvar{n\_sexp} \ensuremath{\rightarrow} \coqdocvar{n\_sexp} \ensuremath{\rightarrow} \coqdockw{Prop}) \coqdocvar{e1} \coqdocvar{e2},\coqdoceol
+\coqdocindent{2.00em}
+\coqdocvar{R} \coqdocvar{e1} \coqdocvar{e2} \ensuremath{\rightarrow} \coqdocvar{ctx} \coqdocvar{R} \coqdocvar{e1} \coqdocvar{e2}.\coqdoceol
+\coqdocnoindent
+\coqdockw{Proof}.\coqdoceol
+\coqdocindent{1.00em}
+\coqdoctac{intros}. \coqdoctac{pose} \coqdocvar{proof} \coqdocvar{step\_redex}. \coqdoctac{specialize} (\coqdocvar{H0} \coqdocvar{R} \coqdocvar{e1} \coqdocvar{e1} \coqdocvar{e2} \coqdocvar{e2}).\coqdoceol
+\coqdocindent{1.00em}
+\coqdoctac{apply} \coqdocvar{H0}.\coqdoceol
+\coqdocindent{1.00em}
+- \coqdoctac{apply} \coqdocvar{aeq\_refl}.\coqdoceol
+\coqdocindent{1.00em}
+- \coqdoctac{assumption}.\coqdoceol
+\coqdocindent{1.00em}
+- \coqdoctac{apply} \coqdocvar{aeq\_refl}.\coqdoceol
+\coqdocnoindent
+\coqdockw{Qed}.\coqdoceol
+\coqdocemptyline
+\coqdocemptyline
+\end{coqdoccode}
+\subsection{Capture-avoiding substitution}
+
+
+
+ We need to use size to define capture avoiding
+    substitution. Because we sometimes swap the name of the
+    bound variable, this function is \textit{not} structurally
+    recursive. So, we add an extra argument to the function
+    that decreases with each recursive call. 
+
+
+Fixpoint subst\_rec (n:nat) (t:n\_sexp) (u :n\_sexp) (x:atom)  : n\_sexp :=
+  match n with
+  | 0 => t
+  | S m => match t with
+          | n\_var y =>
+            if (x == y) then u else t
+          | n\_abs y t1 =>
+            if (x == y) then t
+            else
+                            let (z,\_) :=
+                  atom\_fresh (fv\_nom u `union` fv\_nom t `union` \footnote{\url{x}}) in
+                 n\_abs z (subst\_rec m (swap y z t1) u x)
+          | n\_app t1 t2 =>
+            n\_app (subst\_rec m t1 u x) (subst\_rec m t2 u x)
+          | n\_sub t1 y t2 =>
+            if (x == y) then n\_sub t1 y (subst\_rec m t2 u x)
+            else
+                            let (z,\_) :=
+                  atom\_fresh (fv\_nom u `union` fv\_nom t `union` \footnote{\url{x}}) in
+                 n\_sub  (subst\_rec m (swap y z t1) u x) z (subst\_rec m t2 u x) 
+           end
+  end. 
+
+ Our real substitution function uses the size of the size of the term
+    as that extra argument. 
+
+
+Definition m\_subst (u : n\_sexp) (x:atom) (t:n\_sexp) :=
+  subst\_rec (size t) t u x.
+Notation `` \coqdocvar{x} := \coqdocvar{u}  t'' := (m\_subst u x t) (at level 60). 
+
+
+Lemma m\_subst\_var\_eq : forall u x,
+    \coqdocvar{x} := \coqdocvar{u}(n\_var x) = u.
+Proof.
+  intros. unfold m\_subst. simpl. rewrite eq\_dec\_refl. reflexivity.
+Qed. 
+
+
+Lemma m\_subst\_var\_neq : forall u x y, x <> y ->
+    \coqdocvar{y} := \coqdocvar{u}(n\_var x) = n\_var x.
+Proof.
+  intros. unfold m\_subst. simpl. destruct (y == x) eqn:Hxy.
+
+\begin{itemize}
+\item  subst. contradiction.
+
+\item  reflexivity.
+
+\end{itemize}
+Qed. 
+
+
+Lemma m\_subst\_abs : forall u x y t , m\_subst u x (n\_abs y t)  =
+       if (x == y) then (n\_abs y t )
+       else let (z,\_) := atom\_fresh (fv\_nom u `union` fv\_nom (n\_abs y t ) `union` \footnote{\url{x}}) in
+       n\_abs z (m\_subst u x (swap y z t )).
+Proof.
+  intros. case (x == y).
+
+\begin{itemize}
+\item  intros. unfold m\_subst.  rewrite e. simpl. case (y == y).
+
+\begin{itemize}
+\item - trivial.
+
+\item - unfold not. intros. assert (y = y). \{
+         reflexivity.
+       \}
+       contradiction.
+
+\end{itemize}
+
+\item  intros. unfold m\_subst. simpl. case (x == y).
+
+\begin{itemize}
+\item - intros. contradiction.
+
+\item - intros. pose proof AtomSetImpl.union\_1.
+       assert (forall z, size t  = size (swap y z t )). \{
+         intros. case (y == z).
+
+\begin{itemize}
+\item  intros. rewrite e. rewrite swap\_id. reflexivity.
+
+\item  intros. rewrite swap\_size\_eq. reflexivity.         
+
+\end{itemize}
+       \}
+       destruct (atom\_fresh
+       (Metatheory.union (fv\_nom u)
+          (Metatheory.union (remove y (fv\_nom t )) (singleton x)))). 
+       specialize (H0 x0). rewrite H0. reflexivity.
+
+\end{itemize}
+
+\end{itemize}
+Qed.
+
+
+Corollary m\_subst\_abs\_eq : forall u x t, \coqdocvar{x} := \coqdocvar{u}(n\_abs x t) = n\_abs x t.
+Proof.
+  intros u x t.
+  pose proof m\_subst\_abs. specialize (H u x x t). rewrite eq\_dec\_refl in H. assumption.
+Qed.  
+
+
+Corollary m\_subst\_abs\_neq : forall u x y t, x <> y -> let (z,\_) := atom\_fresh (fv\_nom u `union` fv\_nom (n\_abs y t ) `union` \footnote{\url{x}}) in \coqdocvar{x} := \coqdocvar{u}(n\_abs y t) = n\_abs z (\coqdocvar{x} := \coqdocvar{u}(swap y z t)).
+Proof.
+  intros u x y t H. pose proof m\_subst\_abs. specialize (H0 u x y t). destruct (x == y) eqn:Hx.
+
+\begin{itemize}
+\item  subst. contradiction.
+
+\item  destruct (atom\_fresh (Metatheory.union (fv\_nom u) (Metatheory.union (fv\_nom (n\_abs y t)) (singleton x)))). assumption.    
+
+\end{itemize}
+Qed.  
+
+
+Lemma m\_subst\_notin : forall t u x, x `notin` fv\_nom t -> \coqdocvar{x} := \coqdocvar{u}t = t.
+Proof.
+  induction t.
+
+\begin{itemize}
+\item  intros u x' H. unfold m\_subst. simpl in *. apply notin\_singleton\_1' in H. destruct (x' == x) eqn:Hx.
+    + subst. contradiction.
+    + reflexivity.
+
+\item  intros u x' H. simpl in *.
+
+\item 
+
+\item 
+
+\end{itemize}
+
+
+  intros. unfold m\_subst. simpl. destruct (y == x) eqn:Hxy.
+
+\begin{itemize}
+\item  subst. contradiction.
+
+\item  reflexivity.
+
+\end{itemize}
+Qed.
+
+
+
+
+
+
+
+
+Lemma m\_subst\_lemma: forall e1 e2 e3 x y, x <> y -> x `notin` (fv\_nom e3) ->
+ (\coqdocvar{y} := \coqdocvar{e3}(\coqdocvar{x} := \coqdocvar{e2}e1)) =a (\coqdocvar{x} := ([\coqdocvar{y} := \coqdocvar{e3}]\coqdocvar{e2})(\coqdocvar{y} := \coqdocvar{e3}e1)).
+Proof.
+  
+
+  induction e1 using n\_sexp\_size\_induction.
+
+
+  
+
+  generalize dependent e1. intro e1; case e1 as \coqdocvar{z} \ensuremath{|} \coqdocvar{z} \coqdocvar{e11} \ensuremath{|} \coqdocvar{e11} \coqdocvar{e12} \ensuremath{|} \coqdocvar{e11} \coqdocvar{z} \coqdocvar{e12}.
+
+
+
+\begin{itemize}
+\item      intros IH e2 e3 x y Hneq Hfv. destruct (x == z) eqn:Hxz.
+    +       subst. rewrite (m\_subst\_var\_neq e3 z y).
+      * repeat rewrite m\_subst\_var\_eq. apply aeq\_refl.
+      * assumption.
+    + rewrite m\_subst\_var\_neq.
+      *         subst. apply aeq\_sym. pose proof subst\_fresh\_eq. change (subst\_rec (size e3) e3 (subst\_rec (size e2) e2 e3 z) x) with (m\_subst (m\_subst e3 z e2) x e3). apply H. assumption.
+      *         apply aeq\_sym. change (subst\_rec (size (n\_var z)) (n\_var z) (subst\_rec (size e2) e2 e3 y) x) with (m\_subst (m\_subst e3 y e2) x (n\_var z)). apply subst\_fresh\_eq. simpl. apply notin\_singleton\_2. intro H. subst. contradiction.
+
+\item      intros IH e2 e3 x y Hneq Hfv. unfold m\_subst at 2 3. simpl. destruct (x == z) eqn:Hxz.
+    +       subst. change (subst\_rec (size (m\_subst e3 y (n\_abs z e11))) (m\_subst e3 y (n\_abs z e11)) (m\_subst e3 y e2) z) with (m\_subst (m\_subst e3 y e2) z (m\_subst e3 y (n\_abs z e11))). rewrite subst\_abs\_eq.
+    +
+
+\end{itemize}
+Admitted.
+>>>>>>> 52cf4c422428638712e894346e04a71a1e69b53f 
+\begin{coqdoccode}
+\coqdocemptyline
+\end{coqdoccode}
