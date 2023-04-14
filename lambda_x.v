@@ -792,6 +792,10 @@ Proof.
    In the pure $\lambda$-calculus, the substitution lemma is probably the first non trivial property. In our framework, we have defined two different substitution operation, namely, the metasubstitution denoted by [[x:=u]t] and the explicit substitution that has [n_sub] as a constructor. In what follows, we present the main steps of our proof of the substitution lemma for the metasubstitution operation: 
  *)
 
+Lemma fv_nom_m_subst: forall t u x, fv_nom ([x := u] t) = (remove x (fv_nom t)) `union` fv_nom u.
+Proof.
+  Admitted.
+  
 Lemma m_subst_lemma: forall e1 e2 x e3 y, x <> y -> x `notin` (fv_nom e3) ->
  ([y := e3]([x := e2]e1)) =a ([x := ([y := e3]e2)]([y := e3]e1)).
 Proof.
@@ -826,11 +830,13 @@ Proof.
            *** auto.
         ** auto.
     + auto. 
-  - intros e3 z XY IH. destruct (x == z) eqn:Hxz. contradiction. rewrite m_subst_abs_eq.
+  - intros e3 z XY IH. rewrite m_subst_abs_eq.
     pose proof m_subst_notin. specialize (H ([z := e3] n_abs x t1) ([z := e3] u) x). 
-    apply aeq_sym. apply H. pose proof m_subst_abs_diff. specialize (H0 t1 e3 z x). rewrite H0.
-    admit. auto. admit.
-  - admit.
+    apply aeq_sym. apply H. rewrite fv_nom_m_subst. simpl. clear H. apply notin_union_3.
+    + apply notin_remove_2. apply notin_remove_3. reflexivity.
+    + assumption.
+  - intros e3 y' XY IH.
+    admit.
   (** *)
   (**The case of application is solved by using the auxiliary lemmas on application. First, it is rewritten so that the substitution is made inside the aplication, instead of on it. The same lemma is applied multiple times to make sure nothing can be replaced anymore. This leads to a case that can be solved using the standard library lemmas.*)
   - intros e3 z XY IH. rewrite m_subst_app. rewrite m_subst_app. rewrite m_subst_app.  rewrite m_subst_app. auto.
