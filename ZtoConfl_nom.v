@@ -446,36 +446,25 @@ Qed.
 Lemma remove_fv_swap: forall x y t, x `notin` fv_nom t -> remove x (fv_nom (swap y x t)) [=] remove y (fv_nom t).
 Proof.
   intros x y t. induction t.
-  - intro. simpl. unfold swap_var. case (x0 == y); intros; subst.
-    -- simpl. pose proof remove_singleton.
-       specialize (H0 x y); assumption.
-    -- case (x0 == x); intros; subst.
-       --- simpl in H. apply notin_singleton_is_false in H.
-           inversion H.
-       --- apply aux_not_equal in n; apply aux_not_equal in n.
-           apply notin_singleton_2 in n;
-           apply notin_singleton_2 in n0;
-           apply AtomSetProperties.remove_equal in n;
-           apply AtomSetProperties.remove_equal in n0.
-           rewrite n; rewrite n0; reflexivity.
-  - intros; simpl. unfold swap_var. case (x0 == y); intros; subst.
-    -- case (x == y); intros; subst.
-       --- rewrite swap_id. reflexivity.
-       --- rewrite double_remove. symmetry; rewrite double_remove.
-           symmetry; apply IHt. simpl in H.
-           apply notin_remove_1 in H. inversion H.
-           + symmetry in H0; contradiction.
-           + assumption.
-    -- case (x0 == x); intros; subst.
-       --- rewrite swap_remove_reduction. rewrite remove_symmetric.
-           reflexivity.
-       --- rewrite remove_symmetric. symmetry.
-           rewrite remove_symmetric. symmetry.
-           apply AtomSetProperties.Equal_remove.
-           apply IHt. simpl in H. apply notin_remove_1 in H.
-           inversion H.
-           + contradiction.
-           + assumption.           
+  - intro H. simpl. unfold swap_var. case (x0 == y).
+    + intro Heq. subst. apply remove_singleton.
+    + intro Hneq. case (x0 == x).
+      * intro Heq. subst. simpl in H. apply notin_singleton_is_false in H. contradiction.
+      * intro Hneq'. rewrite AtomSetProperties.remove_equal.
+        ** rewrite AtomSetProperties.remove_equal.
+           *** reflexivity.
+           *** apply notin_singleton_2; assumption.
+        ** apply notin_singleton_2; assumption.
+  - intro Hfv. simpl. unfold swap_var. case (x0 == y). 
+    + intro Heq. subst. simpl in Hfv. apply notin_remove_1 in Hfv. inversion Hfv; clear Hfv.
+      * subst. repeat rewrite double_remove. rewrite swap_id. reflexivity.
+      * repeat rewrite double_remove. apply IHt. assumption.
+    + intro Hneq. case (x0 == x).
+      * intro Heq. subst. rewrite swap_remove_reduction. rewrite remove_symmetric. reflexivity.
+      * intro Hneq'. rewrite remove_symmetric. symmetry. rewrite remove_symmetric. symmetry.
+        apply AtomSetProperties.Equal_remove. apply IHt. simpl in Hfv. apply notin_remove_1 in Hfv. inversion Hfv.
+        ** contradiction.
+        ** assumption.           
   - intros. simpl. simpl in H. pose proof H.
 
     apply notin_union_1 in H; apply notin_union_2 in H0.

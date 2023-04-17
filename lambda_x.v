@@ -668,6 +668,10 @@ Proof.
   - reflexivity.
 Qed.
 
+Lemma fv_nom_remove: forall t u x y, y `notin` fv_nom u -> y `notin` remove x (fv_nom t) ->  y `notin` fv_nom ([x := u] t).
+Proof.
+Admitted.
+  
 Lemma fv_nom_m_subst: forall t u x, x `in` fv_nom t -> fv_nom ([x := u] t) [=] (union (remove x (fv_nom t)) (fv_nom u)).
 Proof.
   intros t u x. unfold m_subst. functional induction (subst_rec_fun t u x).
@@ -676,14 +680,19 @@ Proof.
     + unfold AtomSetImpl.Empty. auto.
   - intro H. simpl in H. apply singleton_iff in H. symmetry in H. contradiction.
   - intro H. simpl in H. pose proof notin_remove_3'. specialize (H0 x x (fv_nom t1)). assert (H': x = x). { reflexivity. } apply H0 in H'. contradiction.
-  -
+  - simpl. intro H. rewrite IHn. Admitted.
+(*    + rewrite remove_union_distrib.
+      swap_remove_reduction
+        remove_fv_swap
+    +
+    rewrite remove_symmetric.
 
     
   induction t.
   - intros u x' H. simpl in *. apply singleton_iff in H. subst. unfold m_subst. rewrite subst_rec_fun_equation. rewrite eq_dec_refl. rewrite remove_singleton_empty. rewrite AtomSetProperties.empty_union_1.
     + reflexivity.
     + unfold AtomSetImpl.Empty. intro a. auto.
-  - intros u x' H.
+  - intros u x' H. *)
    
 (* Lemma subst_size : forall (n:nat) (u : n_sexp) (x:atom) (t:n_sexp),
     size t <= n -> subst_rec n t u x = subst_rec (size t) t u x.
@@ -772,13 +781,12 @@ Proof.
        specialize (H0 x0). rewrite H0. reflexivity.
 Qed. *)
 
-Corollary m_subst_abs_eq : forall u x t, [x := u](n_abs x t) = n_abs x t.
+Lemma m_subst_abs_eq : forall u x t, [x := u](n_abs x t) = n_abs x t.
 Proof.
-  intros u x t.
-  pose proof m_subst_abs. specialize (H u x x t). rewrite eq_dec_refl in H. assumption.
+  intros u x t. unfold m_subst. rewrite subst_rec_fun_equation. rewrite eq_dec_refl. reflexivity.
 Qed.  
 
-Corollary m_subst_abs_neq : forall u x y t, x <> y -> let (z,_) := atom_fresh (fv_nom u `union` fv_nom (n_abs y t ) `union` {{x}}) in [x := u](n_abs y t) = n_abs z ([x := u](swap y z t)).
+Corollary m_subst_abs_neq : forall u x y t, x <> y -> let (z,_) := atom_fresh (fv_nom u `union` fv_nom (n_abs y t ) `union` {{x}}) in [x := u](n_abs y t) =a n_abs z ([x := u](swap y z t)).
 Proof.
   intros u x y t H. pose proof m_subst_abs. specialize (H0 u x y t). destruct (x == y) eqn:Hx.
   - subst. contradiction.
@@ -815,10 +823,6 @@ Proof.
 (**
    In the pure $\lambda$-calculus, the substitution lemma is probably the first non trivial property. In our framework, we have defined two different substitution operation, namely, the metasubstitution denoted by [[x:=u]t] and the explicit substitution that has [n_sub] as a constructor. In what follows, we present the main steps of our proof of the substitution lemma for the metasubstitution operation: 
  *)
-
-Lemma fv_nom_m_subst: forall t u x, fv_nom ([x := u] t) = (remove x (fv_nom t)) `union` fv_nom u.
-Proof.
-  Admitted.
 
 Lemma m_subst_notin_m_subst: forall t u v x y, y `notin` fv_nom t -> [y := v]([x := u] t) = [x := [y := v]u] t.
 Proof.
@@ -860,24 +864,25 @@ Proof.
     + auto. 
   - intros e3 z XY IH. rewrite m_subst_abs_eq.
     pose proof m_subst_notin. specialize (H ([z := e3] n_abs x t1) ([z := e3] u) x). 
-    apply aeq_sym. apply H. rewrite fv_nom_m_subst. simpl. clear H. apply notin_union_3.
-    + apply notin_remove_2. apply notin_remove_3. reflexivity.
+    apply aeq_sym. apply H. apply fv_nom_remove.
     + assumption.
+    + apply diff_remove.
+      * assumption.
+      * simpl. apply notin_remove_3. reflexivity.
   - intros e3 y' XY IH. destruct (y == y').
     + subst. rewrite m_subst_abs_eq. rewrite m_subst_notin_m_subst.
       * apply aeq_refl.
       * simpl. apply notin_remove_3. reflexivity.
-    + pose proof m_subst_abs_neq. specialize (H u x y t1). destruct (atom_fresh (union (fv_nom u) (union (fv_nom (n_abs y t1)) (singleton x)))). clear e0. assert (Hxy := _x). apply H in _x. rewrite _x. clear H.
+    +
+(*
+      pose proof m_subst_abs_neq. specialize (H u x y t1). destruct (atom_fresh (union (fv_nom u) (union (fv_nom (n_abs y t1)) (singleton x)))). clear e0. assert (Hxy := _x). apply H in _x. rewrite _x. clear H.
       * destruct (x0 == y').
         ** pose proof m_subst_abs_neq. specialize (H e3 y' y t1). destruct (atom_fresh (union (fv_nom e3) (union (fv_nom (n_abs y t1)) (singleton y')))). rewrite H.
            ***
            ***
           subst. rewrite m_subst_abs_eq.
         **
-      *
-
-                
-
+      * *)
       admit.
   (** *)
   (**The case of application is solved by using the auxiliary lemmas on application. First, it is rewritten so that the substitution is made inside the aplication, instead of on it. The same lemma is applied multiple times to make sure nothing can be replaced anymore. This leads to a case that can be solved using the standard library lemmas.*)
