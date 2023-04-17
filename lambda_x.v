@@ -536,7 +536,7 @@ Proof.
     substitution. Because we sometimes swap the name of the
     bound variable, this function is _not_ structurally
     recursive. So, we add an extra argument to the function
-    that decreases with each recursive call. *)
+    that decreases with each recursive call. 
 
 Fixpoint subst_rec (n:nat) (t:n_sexp) (u :n_sexp) (x:atom)  : n_sexp :=
   match n with
@@ -561,7 +561,7 @@ Fixpoint subst_rec (n:nat) (t:n_sexp) (u :n_sexp) (x:atom)  : n_sexp :=
                   atom_fresh (fv_nom u `union` fv_nom t `union` {{x}}) in
                  n_sub  (subst_rec m (swap y z t1) u x) z (subst_rec m t2 u x) 
            end
-  end.
+  end. *)
 
 Require Import Recdef.
 
@@ -591,7 +591,7 @@ Proof.
  - intros. simpl. rewrite swap_size_eq. lia.
 Defined.
 
-(** The definitions subst_rec and subst_rec_fun are alpha-equivalent. *)
+(** The definitions subst_rec and subst_rec_fun are alpha-equivalent. 
 Theorem subst_rec_fun_equiv: forall t u x, (subst_rec (size t) t u x) =a (subst_rec_fun t u x).
 Proof.
   intros t u x. functional induction (subst_rec_fun t u x).
@@ -604,7 +604,6 @@ Proof.
   - simpl. rewrite e0.
 Admitted.
 
-(*
 Require Import EquivDec.
 Generalizable Variable A.
 
@@ -669,7 +668,24 @@ Proof.
   - reflexivity.
 Qed.
 
-Lemma subst_size : forall (n:nat) (u : n_sexp) (x:atom) (t:n_sexp),
+Lemma fv_nom_m_subst: forall t u x, x `in` fv_nom t -> fv_nom ([x := u] t) [=] (union (remove x (fv_nom t)) (fv_nom u)).
+Proof.
+  intros t u x. unfold m_subst. functional induction (subst_rec_fun t u x).
+  - intros H. simpl in H. rewrite remove_singleton_empty. rewrite AtomSetProperties.empty_union_1.
+    + reflexivity.
+    + unfold AtomSetImpl.Empty. auto.
+  - intro H. simpl in H. apply singleton_iff in H. symmetry in H. contradiction.
+  - intro H. simpl in H. pose proof notin_remove_3'. specialize (H0 x x (fv_nom t1)). assert (H': x = x). { reflexivity. } apply H0 in H'. contradiction.
+  -
+
+    
+  induction t.
+  - intros u x' H. simpl in *. apply singleton_iff in H. subst. unfold m_subst. rewrite subst_rec_fun_equation. rewrite eq_dec_refl. rewrite remove_singleton_empty. rewrite AtomSetProperties.empty_union_1.
+    + reflexivity.
+    + unfold AtomSetImpl.Empty. intro a. auto.
+  - intros u x' H.
+   
+(* Lemma subst_size : forall (n:nat) (u : n_sexp) (x:atom) (t:n_sexp),
     size t <= n -> subst_rec n t u x = subst_rec (size t) t u x.
 Proof.
   intro n. eapply (lt_wf_ind n). clear n.
@@ -715,20 +731,28 @@ Proof.
            ---- lia.
            ---- assumption.
        --- lia.
-Qed.
+Qed. *)
 
 Lemma m_subst_app: forall t1 t2 u x, [x := u](n_app t1 t2) = n_app ([x := u]t1) ([x := u]t2).
 Proof.
   intros t1 t2 u x. unfold m_subst. rewrite subst_rec_fun_equation. reflexivity.
 Qed.
 
-Lemma m_subst_abs : forall u x y t , m_subst u x (n_abs y t)  =
+Lemma m_subst_abs : forall u x y t , m_subst u x (n_abs y t)  =a
        if (x == y) then (n_abs y t )
        else let (z,_) := atom_fresh (fv_nom u `union` fv_nom (n_abs y t ) `union` {{x}}) in
        n_abs z (m_subst u x (swap y z t )).
 Proof.
-  intros. case (x == y).
-  - intros. unfold m_subst.  rewrite e. simpl. case (y == y).
+  intros u x y t. destruct (atom_fresh (union (fv_nom u) (union (fv_nom (n_abs y t)) (singleton x)))). destruct (x == y).
+  - subst. unfold m_subst. rewrite subst_rec_fun_equation. rewrite eq_dec_refl. apply aeq_refl.
+  - unfold m_subst. rewrite subst_rec_fun_equation. destruct (x == y).
+    + contradiction.
+    + destruct (atom_fresh (union (fv_nom u) (union (fv_nom (n_abs y t)) (singleton x)))). case (x1 == x0).
+      * intro H. subst. apply aeq_abs_same. apply aeq_refl.
+      * intro H. apply aeq_abs_diff.
+        ** assumption.
+        ** simpl.
+      
     -- trivial. Admitted.
 (*    -- unfold not. intros. assert (y = y). {
          reflexivity.
@@ -843,7 +867,18 @@ Proof.
     + subst. rewrite m_subst_abs_eq. rewrite m_subst_notin_m_subst.
       * apply aeq_refl.
       * simpl. apply notin_remove_3. reflexivity.
-    + admit.
+    + pose proof m_subst_abs_neq. specialize (H u x y t1). destruct (atom_fresh (union (fv_nom u) (union (fv_nom (n_abs y t1)) (singleton x)))). clear e0. assert (Hxy := _x). apply H in _x. rewrite _x. clear H.
+      * destruct (x0 == y').
+        ** pose proof m_subst_abs_neq. specialize (H e3 y' y t1). destruct (atom_fresh (union (fv_nom e3) (union (fv_nom (n_abs y t1)) (singleton y')))). rewrite H.
+           ***
+           ***
+          subst. rewrite m_subst_abs_eq.
+        **
+      *
+
+                
+
+      admit.
   (** *)
   (**The case of application is solved by using the auxiliary lemmas on application. First, it is rewritten so that the substitution is made inside the aplication, instead of on it. The same lemma is applied multiple times to make sure nothing can be replaced anymore. This leads to a case that can be solved using the standard library lemmas.*)
   - intros e3 z XY IH. rewrite m_subst_app. rewrite m_subst_app. rewrite m_subst_app.  rewrite m_subst_app. auto.
