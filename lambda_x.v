@@ -799,21 +799,18 @@ Proof.
   
 Lemma m_subst_notin : forall t u x, x `notin` fv_nom t -> [x := u]t =a t.
 Proof.
+(*
   intros t u x. unfold m_subst. functional induction (subst_rec_fun t u x).
-  - intro. apply aeq_sym. rewrite <- m_subst_var_eq with (x:=x). admit.
-  - Admitted.
-(**      reflexivity.
-  - intros u x' H. simpl in *. destruct (x' == x).
-    + subst. rewrite m_subst_abs_eq; reflexivity.
-    + pose proof diff_remove_2. specialize (H0 x' x (fv_nom t)). assert (n' := n). apply H0 in n.
-      * apply m_subst_abs_diff; assumption.
-      * assumption.
-  - intros u x H. rewrite m_subst_app. apply fv_nom_app in H. destruct H. rewrite IHt1.
-    + rewrite IHt2.
-      * reflexivity.
-      * assumption.
-    + assumption.
-  - intros u x' H. Admitted. *)
+  - intro. apply aeq_sym. admit.
+  - intro. reflexivity.
+  - intro. reflexivity. 
+  - intro. Search swap. pose proof m_subst_abs_diff. specialize (H0 t1 u x y). unfold m_subst in H0. rewrite <- H0.
+    Search n_abs. (*Aqui está a dúvida*) admit. admit. admit.
+  - intro. pose proof m_subst_app. specialize (H0 t1 t2 u x). unfold m_subst in H0. rewrite <- H0.  admit.
+  - intro. admit.
+  - intro. admit.
+*)
+Admitted.
  
 
 (* end hide *)
