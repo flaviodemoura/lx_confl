@@ -786,13 +786,30 @@ Proof.
   intros u x t. unfold m_subst. rewrite subst_rec_fun_equation. rewrite eq_dec_refl. reflexivity.
 Qed.  
 
+Corollary m_subst_abs_neq : forall u x y z t, x <> y -> z `notin` (fv_nom u `union` fv_nom (n_abs y t ) `union` {{x}}) -> [x := u](n_abs y t) =a n_abs z ([x := u](swap y z t)).
+Proof.
+  intros u x y z t H H1. pose proof m_subst_abs as H2. specialize (H2 u x y t). destruct (x == y) eqn:Hx.
+  - subst. contradiction.
+  - destruct (atom_fresh (Metatheory.union (fv_nom u) (Metatheory.union (fv_nom (n_abs y t)) (singleton x)))).
+    apply aeq_trans with (n_abs x0 ([x := u] swap y x0 t)).
+    + assumption.
+    + case (x0 == z).
+      * intro Heq. subst. apply aeq_refl.
+      * intro Hneq. apply aeq_abs_diff.
+        ** assumption.
+        ** admit.
+        ** Admitted.
+
+
+(*
 Corollary m_subst_abs_neq : forall u x y t, x <> y -> let (z,_) := atom_fresh (fv_nom u `union` fv_nom (n_abs y t ) `union` {{x}}) in [x := u](n_abs y t) =a n_abs z ([x := u](swap y z t)).
 Proof.
   intros u x y t H. pose proof m_subst_abs. specialize (H0 u x y t). destruct (x == y) eqn:Hx.
   - subst. contradiction.
   - destruct (atom_fresh (Metatheory.union (fv_nom u) (Metatheory.union (fv_nom (n_abs y t)) (singleton x)))). assumption.    
 Qed.  
-
+*)
+  
 Lemma m_subst_abs_diff : forall t u x y, x <> y -> x `notin` (remove y (fv_nom t)) -> [x := u](n_abs y t) = n_abs y t.
 Proof.  
   Admitted.
@@ -805,15 +822,11 @@ Proof.
   - intro. reflexivity. 
   - intro. pose proof m_subst_abs_diff. specialize (H0 t1 u x y).
     unfold m_subst in H0. rewrite <- H0.
-    + pose proof m_subst_abs_neq. specialize (H1 u x y t1). unfold m_subst in H1. apply aeq_sym. 
-      destruct (atom_fresh (union (fv_nom u) (union (fv_nom (n_abs y t1)) (singleton x)))).
-      Search swap. admit.
+    + pose proof m_subst_abs_neq as H1. apply aeq_sym. unfold m_subst in H1. apply H1; assumption.
     + assumption. 
-    + Search remove. apply diff_remove. 
-      * assumption.
-      * admit.
-  - intro. pose proof m_subst_app. specialize (H0 t1 t2 u x).
-    unfold m_subst in H0. rewrite <- H0. admit.
+    + simpl in H. assumption.
+  - intro. simpl in *. pose proof H as H1. apply notin_union_1 in H. apply notin_union_2 in H1.
+    apply IHn in H. clear IHn. apply IHn0 in H1. clear IHn0. apply aeq_app; assumption.
   - intro. admit.
   - intro. admit.
 Admitted.

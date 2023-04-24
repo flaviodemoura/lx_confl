@@ -465,39 +465,29 @@ Proof.
         apply AtomSetProperties.Equal_remove. apply IHt. simpl in Hfv. apply notin_remove_1 in Hfv. inversion Hfv.
         ** contradiction.
         ** assumption.           
-  - intros. simpl. simpl in H. pose proof H.
+  - intro Hfv. simpl in *. pose proof Hfv as Hfv'. apply notin_union_1 in Hfv'. apply notin_union_2 in Hfv.
+    apply IHt1 in Hfv'. apply IHt2 in Hfv. pose proof remove_union_distrib as H1. pose proof H1 as H2.
+    specialize (H1 (fv_nom (swap y x t1)) (fv_nom (swap y x t2)) x). specialize (H2 (fv_nom t1) (fv_nom t2) y). rewrite Hfv' in H1. rewrite Hfv in H1. rewrite H1. rewrite H2. reflexivity.
+  - intro Hfv. simpl in *. pose proof Hfv as Hfv'. apply notin_union_1 in Hfv'. apply notin_union_2 in Hfv.
+    pose proof remove_union_distrib as H1. pose proof H1 as H2.
+    specialize (H1 (remove (swap_var y x x0) (fv_nom (swap y x t1))) (fv_nom (swap y x t2)) x).
+    specialize (H2 (remove x0 (fv_nom t1)) (fv_nom t2) y). unfold swap_var. case (x0 == y); intros; subst.
+    + unfold swap_var in H1. rewrite eq_dec_refl in H1. rewrite double_remove in *. apply IHt2 in Hfv. case (x == y); intros; subst.
+      * repeat rewrite swap_id in *. reflexivity.
+      * apply notin_remove_1 in Hfv'. inversion Hfv'; subst.
+        ** contradiction.
+        ** clear Hfv'. pose proof remove_union_distrib as H3. pose proof H3 as H4.
+           specialize (H3 (remove y (fv_nom t1)) (fv_nom (swap y x t2)) x).
+           specialize (H4 (remove y (fv_nom t1)) (fv_nom t2) y). rewrite H1. rewrite H2. rewrite double_remove in H4.
+           apply diff_remove with x y (fv_nom t1) in n.
+           *** apply AtomSetProperties.remove_equal in n. Admitted.
+(*
 
-    apply notin_union_1 in H; apply notin_union_2 in H0.
-    apply IHt1 in H; apply IHt2 in H0.
-    pose proof remove_union_distrib. pose proof H1.
-    specialize (H1 (fv_nom (swap y x t1)) (fv_nom (swap y x t2)) x).
-    specialize (H2 (fv_nom t1) (fv_nom t2) y).
-    rewrite H in H1; rewrite H0 in H1.
-    rewrite H1; rewrite H2; reflexivity.
-  - intros. simpl. pose proof remove_union_distrib. pose proof H0.
-    specialize (H0 (remove (swap_var y x x0) (fv_nom (swap y x t1))) (fv_nom (swap y x t2)) x).
-    specialize (H1 (remove x0 (fv_nom t1)) (fv_nom t2) y).
-    unfold swap_var. case (x0 == y); intros; subst.
-    -- unfold swap_var in H0. case (y == y) in H0.
-       --- simpl in H. rewrite double_remove in H0.
-           rewrite double_remove in H1. pose proof H.
-           apply notin_union_1 in H; apply notin_union_2 in H2.
-           apply IHt2 in H2. case (x == y); intros; subst.
-           + rewrite swap_id; rewrite swap_id. reflexivity.
-           + apply notin_remove_1 in H. inversion H; subst.
-             ++ contradiction.
-             ++ pose proof H3 as Hnotin. apply IHt1 in H3.
-                rewrite H3. pose proof remove_union_distrib.
-                pose proof H4.
-                specialize (H4 (remove y (fv_nom t1)) (fv_nom (swap y x t2)) x).
-                specialize (H5 (remove y (fv_nom t1)) (fv_nom t2) y).
-                apply diff_remove with x y (fv_nom t1) in n.
-                +++ rewrite double_remove in H5. Search "remove".
-                    apply AtomSetProperties.remove_equal in n.
-                    rewrite H2 in H4.
-                    rewrite n in H4; rewrite H4; rewrite H5.
+
+               rewrite H2 in H4.
+               rewrite n in H4; rewrite H4; rewrite H5.
                       reflexivity.
-                +++ assumption.
+           *** assumption.
        --- contradiction.
   -- case (x0 == x); intros; subst.
      --- unfold swap_var in H0. case (x == y) in H0; intros.
@@ -519,7 +509,7 @@ Proof.
            rewrite H0. rewrite remove_symmetric.
            rewrite H1; rewrite H2; rewrite H3.
            rewrite remove_symmetric. reflexivity.        
-Qed.
+Qed.*)
 
 Lemma aeq_fv_nom:forall t1 t2, aeq t1 t2 -> fv_nom t1 [=] fv_nom t2.
 Proof.
