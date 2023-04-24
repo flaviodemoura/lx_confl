@@ -800,22 +800,17 @@ Proof.
 Lemma m_subst_notin : forall t u x, x `notin` fv_nom t -> [x := u]t =a t.
 Proof.
   unfold m_subst. intros t u x. functional induction (subst_rec_fun t u x).
-  - intro. apply aeq_sym. rewrite <- m_subst_var_eq with (x:=x). rewrite m_subst_var_neq. apply aeq_refl. destruct H. simpl. auto.
+  - intro. apply aeq_sym. admit.
   - intro. reflexivity.
   - intro. reflexivity. 
-  - intro. pose proof m_subst_abs_diff. specialize (H0 t1 u x y).
-    unfold m_subst in H0. rewrite <- H0.
-    + pose proof m_subst_abs_neq. specialize (H1 u x y t1). unfold m_subst in H1. apply aeq_sym. 
-      destruct (atom_fresh (union (fv_nom u) (union (fv_nom (n_abs y t1)) (singleton x)))).
-      Search swap. admit.
-    + assumption. 
-    + Search remove. apply diff_remove. 
-      * assumption.
-      * admit.
-  - intro. pose proof m_subst_app. specialize (H0 t1 t2 u x).
-    unfold m_subst in H0. rewrite <- H0. admit.
-  - intro. admit.
-  - intro. admit.
+  - intro. Search swap. pose proof m_subst_abs_diff. specialize (H0 t1 u x y). unfold m_subst in H0. rewrite <- H0.
+    pose proof m_subst_abs.  specialize (H1 u x y t1). destruct (x == y) eqn:Hx.
+  subst. contradiction.
+  destruct (atom_fresh (Metatheory.union (fv_nom u) (Metatheory.union (fv_nom (n_abs y t1)) (singleton z)))). unfold m_subst in H1. 
+  admit.
+  assumption.
+  Search remove. apply notin_remove_2. Search fv_nom.
+ admit.
 Admitted.
  
 
@@ -876,24 +871,7 @@ Proof.
     + subst. rewrite m_subst_abs_eq. rewrite m_subst_notin_m_subst.
       * apply aeq_refl.
       * simpl. apply notin_remove_3. reflexivity.
-    + unfold m_subst.  specialize (IHn e3 y'). unfold m_subst in IHn.
-      Search n_abs. pose proof m_subst_abs_diff. specialize (H t1 e3 y' y).
-      unfold m_subst in H. rewrite H. 
-      * pose proof m_subst_abs_diff. specialize (H0 t1 u x y).
-        unfold m_subst in H0. rewrite H0.
-        ** rewrite H.
-          *** pose proof m_subst_abs_diff. specialize (H1 t1 (subst_rec_fun u e3 y') x y).
-              unfold m_subst in H1. rewrite H1.
-              **** apply aeq_refl.
-              **** auto.
-              **** admit.
-          *** auto.
-          *** admit.
-        ** auto.
-        ** admit.
-      * auto.
-      * admit.
-
+    +
 (*
       pose proof m_subst_abs_neq. specialize (H u x y t1). destruct (atom_fresh (union (fv_nom u) (union (fv_nom (n_abs y t1)) (singleton x)))). clear e0. assert (Hxy := _x). apply H in _x. rewrite _x. clear H.
       * destruct (x0 == y').
@@ -903,6 +881,7 @@ Proof.
           subst. rewrite m_subst_abs_eq.
         **
       * *)
+      admit.
   (** *)
   (**The case of application is solved by using the auxiliary lemmas on application. First, it is rewritten so that the substitution is made inside the aplication, instead of on it. The same lemma is applied multiple times to make sure nothing can be replaced anymore. This leads to a case that can be solved using the standard library lemmas.*)
   - intros e3 z XY IH. rewrite m_subst_app. rewrite m_subst_app. rewrite m_subst_app.  rewrite m_subst_app. auto.
