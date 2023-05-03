@@ -669,7 +669,9 @@ Proof.
 Qed.
 
 Lemma fv_nom_remove: forall t u x y, y `notin` fv_nom u -> y `notin` remove x (fv_nom t) ->  y `notin` fv_nom ([x := u] t).
-Proof.
+Proof. 
+  intros t u x y H0 H1. unfold m_subst. functional induction (subst_rec_fun t u x).
+  - assumption.
 Admitted.
   
 Lemma fv_nom_m_subst: forall t u x, x `in` fv_nom t -> fv_nom ([x := u] t) [=] (union (remove x (fv_nom t)) (fv_nom u)).
@@ -784,7 +786,17 @@ Qed. *)
 Lemma m_subst_abs_eq : forall u x t, [x := u](n_abs x t) = n_abs x t.
 Proof.
   intros u x t. unfold m_subst. rewrite subst_rec_fun_equation. rewrite eq_dec_refl. reflexivity.
-Qed.  
+Qed.
+
+(*
+Corollary test1 : forall u x y w t, n_abs w ([x := u] swap y w t) = n_abs w (swap y w ([x := u] t)). 
+Proof.
+Admitted.
+
+Corollary test2 : forall u x y w z t, swap y w ([x := u] t) =a swap z w (swap y z ([x := u] t)).
+Proof.
+Admitted.
+*)
 
 Corollary m_subst_abs_neq : forall u x y z t, x <> y -> z `notin` (fv_nom u `union` fv_nom (n_abs y t ) `union` {{x}}) -> [x := u](n_abs y t) =a n_abs z ([x := u](swap y z t)).
 Proof.
@@ -794,11 +806,12 @@ Proof.
     apply aeq_trans with (n_abs x0 ([x := u] swap y x0 t)).
     + assumption.
     + case (x0 == z).
-      * intro Heq. subst. apply aeq_refl.
-      * intro Hneq. apply aeq_abs_diff.
-        ** assumption.
+      * intro H3. rewrite H3. apply aeq_refl.
+      * intro H3. admit. (*rewrite test1. rewrite test1. Search n_abs. apply aeq_abs_diff.
+        ** auto.
         ** admit.
-        ** Admitted.
+        ** apply test2.*)
+Admitted.
 
 
 (*
@@ -811,8 +824,9 @@ Qed.
 *)
   
 Lemma m_subst_abs_diff : forall t u x y, x <> y -> x `notin` (remove y (fv_nom t)) -> [x := u](n_abs y t) = n_abs y t.
-Proof.  
-  Admitted.
+Proof. 
+  intros t u x y H0 H1. Search n_abs. admit.
+Admitted.
   
 Lemma m_subst_notin : forall t u x, x `notin` fv_nom t -> [x := u]t =a t.
 Proof.
@@ -827,8 +841,20 @@ Proof.
     + simpl in H. assumption.
   - intro. simpl in *. pose proof H as H1. apply notin_union_1 in H. apply notin_union_2 in H1.
     apply IHn in H. clear IHn. apply IHn0 in H1. clear IHn0. apply aeq_app; assumption.
-  - intro. admit.
-  - intro. admit.
+  - intro. Search n_sub. pose proof aeq_sub_same. specialize (H0 t1 (subst_rec_fun t2 u x) t1 t2 x).
+    rewrite H0. 
+    + apply aeq_refl.
+    + apply aeq_refl.
+    + apply IHn. admit.
+  - intro. Search n_sub. rewrite aeq_sub_same with (t1:=(subst_rec_fun (swap y z t1) u x)) (t2:=(subst_rec_fun t2 u x)) (t1':=(swap y z t1)) (t2':=t2). 
+    + Search n_sub. apply aeq_sub. admit.
+    + rewrite IHn. 
+      * apply aeq_refl.
+      * Search swap. apply fv_nom_remove_swap. 
+        ** auto. admit.
+        ** auto.
+        ** admit.
+    + apply IHn0. Search n_sub. admit.
 Admitted.
  
 
@@ -842,6 +868,15 @@ Admitted.
 
 Lemma m_subst_notin_m_subst: forall t u v x y, y `notin` fv_nom t -> [y := v]([x := u] t) = [x := [y := v]u] t.
 Proof.
+  intros t u v x y H.
+  functional induction (subst_rec_fun t u x).
+  - subst. admit.
+  - subst. admit.
+  - subst. admit.
+  - subst. admit.
+  - subst. admit.
+  - subst. admit.
+  - subst. admit.
   Admitted.
   
 Lemma m_subst_lemma: forall e1 e2 x e3 y, x <> y -> x `notin` (fv_nom e3) ->
@@ -889,24 +924,7 @@ Proof.
     + subst. rewrite m_subst_abs_eq. rewrite m_subst_notin_m_subst.
       * apply aeq_refl.
       * simpl. apply notin_remove_3. reflexivity.
-    + unfold m_subst.  specialize (IHn e3 y'). unfold m_subst in IHn.
-      Search n_abs. pose proof m_subst_abs_diff. specialize (H t1 e3 y' y).
-      unfold m_subst in H. rewrite H. 
-      * pose proof m_subst_abs_diff. specialize (H0 t1 u x y).
-        unfold m_subst in H0. rewrite H0.
-        ** rewrite H.
-          *** pose proof m_subst_abs_diff. specialize (H1 t1 (subst_rec_fun u e3 y') x y).
-              unfold m_subst in H1. rewrite H1.
-              **** apply aeq_refl.
-              **** auto.
-              **** admit.
-          *** auto.
-          *** admit.
-        ** auto.
-        ** admit.
-      * auto.
-      * admit.
-
+    + unfold m_subst. specialize (IHn e3 y'). admit.
 (*
       pose proof m_subst_abs_neq. specialize (H u x y t1). destruct (atom_fresh (union (fv_nom u) (union (fv_nom (n_abs y t1)) (singleton x)))). clear e0. assert (Hxy := _x). apply H in _x. rewrite _x. clear H.
       * destruct (x0 == y').
