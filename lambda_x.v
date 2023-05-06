@@ -672,7 +672,15 @@ Lemma fv_nom_remove: forall t u x y, y `notin` fv_nom u -> y `notin` remove x (f
 Proof. 
   intros t u x y H0 H1. unfold m_subst. functional induction (subst_rec_fun t u x).
   - assumption.
-Admitted.
+  - apply notin_remove_1 in H1. destruct H1.
+    + subst. simpl. apply notin_singleton. apply aux_not_equal; assumption.
+    + assumption.
+  - simpl in *. rewrite double_remove in H1. assumption.
+  - apply notin_remove_1 in H1. simpl in *. destruct H1.
+    + subst. apply notin_remove_2. apply IHn.
+      * assumption.
+      * apply notin_remove_3. reflexivity.
+    + Admitted.
   
 Lemma fv_nom_m_subst: forall t u x, x `in` fv_nom t -> fv_nom ([x := u] t) [=] (union (remove x (fv_nom t)) (fv_nom u)).
 Proof.
