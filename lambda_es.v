@@ -1,9 +1,5 @@
-(** * A formalized extension of the substitution lemma *)
-
-(* begin hide *)
-
 (* Infrastructure *)
-
+(* begin hide *)
 Require Export Arith Lia.  Print LoadPath.
 Require Export Metalib.Metatheory.
 Require Export Metalib.LibDefaultSimp.
@@ -150,7 +146,7 @@ Lemma diff_remove: forall x y s,
 Proof.
   intros. apply notin_remove_2. assumption.
 Qed.
-
+(* end hide *)
 (** The lambda_x calculus *)
 
 Inductive n_sexp : Set :=
@@ -2264,9 +2260,6 @@ Proof.
     + apply IHn0. Search n_sub. admit.
 Admitted.
  
-
-(* end hide *)
-
 (** * The substitution lemma for the metasubstitution *)
 
 (**
