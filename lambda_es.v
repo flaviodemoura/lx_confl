@@ -20,6 +20,7 @@ Proof.
     apply lt_le_trans with m; assumption.
 Qed.
 
+(* não utilizado
 Lemma in_or_notin: forall x s, x `in` s \/ x `notin` s.
 Proof.
   intros. pose proof notin_diff_1. specialize (H x s s).
@@ -27,7 +28,7 @@ Proof.
   - apply or_comm. apply H.
     apply notin_empty_1.
   - reflexivity.
-Qed.
+Qed. 
 
 Lemma remove_singleton_neq: forall x y,
     x <> y -> remove y (singleton x) [=] singleton x.
@@ -42,13 +43,13 @@ Lemma diff_remove_2: forall x y s,
   x <> y -> x `notin` remove y s -> x `notin` s.
 Proof.
   intros. default_simp.
-Qed.
+Qed. 
 
 Lemma diff_equal: forall s s' t,
     s [=] s' -> AtomSetImpl.diff s t [=] AtomSetImpl.diff s' t.
 Proof.
 intros. rewrite H. reflexivity.
-Qed.
+Qed. *)
 
 Lemma aux_not_equal : forall (x:atom) (y:atom),
     x <> y -> y <> x.
@@ -60,6 +61,7 @@ Proof.
   contradiction.
 Qed.
 
+(* não utilizado 
 Lemma Sn_le_Sm__n_le_m : forall n m,
   S n <= S m -> n <= m.
 Proof.
@@ -68,7 +70,7 @@ Proof.
   - apply (le_trans n (S n) m).
     -- apply le_S. reflexivity.
     -- assumption.
-Qed.
+Qed. *)
 
 Lemma remove_singleton_empty: forall x,
     remove x (singleton x) [=] empty.
@@ -171,6 +173,7 @@ Fixpoint fv_nom (n : n_sexp) : atoms :=
   | n_sub t1 x t2 => (remove x (fv_nom t1)) `union` fv_nom t2
   end.
 
+(* não utilizado
 Lemma fv_nom_dec: forall t x, x `in` fv_nom t \/ x `notin` fv_nom t.
 Proof.
   induction t.
@@ -202,22 +205,23 @@ Proof.
       * specialize (IHt2 x'). destruct IHt2.
         ** left. default_simp.
         ** right. default_simp.
-Qed.
+Qed. 
 
 Lemma fv_nom_app: forall t1 t2 x, x `notin` fv_nom (n_app t1 t2) -> x `notin` fv_nom t1  /\ x `notin` fv_nom t2.
 Proof.
   intros t1 t2 x H. simpl in H. split.
   - apply notin_union_1 in H. assumption.
   - apply notin_union_2 in H. assumption.
-Qed.  
+Qed. *) 
   
 Definition swap_var (x:atom) (y:atom) (z:atom) :=
   if (z == x) then y else if (z == y) then x else z.
 
+(* não utilizado
 Lemma swap_var_id: forall x y, (swap_var x x y = y).
 Proof.
   intros. unfold swap_var. case (y == x); intros; subst; reflexivity.
-Qed.
+Qed. *)
 
 Fixpoint swap (x:atom) (y:atom) (t:n_sexp) : n_sexp :=
   match t with
@@ -238,6 +242,8 @@ Lemma swap_size_eq : forall x y t,
 Proof.
   induction t; simpl; auto.
 Qed.
+
+Hint Rewrite swap_size_eq.
 
 Lemma n_sexp_induction :
  forall P : n_sexp -> Prop,
@@ -293,8 +299,6 @@ Proof.
       ++ reflexivity.
 Qed. 
 
-Hint Rewrite swap_size_eq.
-
 Lemma swap_symmetric : forall t x y,
     swap x y t = swap y x t.
 Proof.
@@ -324,6 +328,7 @@ Proof.
   induction n; intros; simpl; unfold swap_var; default_simp.
 Qed.
 
+(* não utilizado
 Lemma shuffle_swap' : forall w y n z,
     w <> z -> y <> z ->
     (swap w y (swap y z n)) = (swap z w (swap y w n)).
@@ -336,7 +341,7 @@ Lemma swap_var_equivariance : forall v x y z w,
     swap_var (swap_var x y z) (swap_var x y w) (swap_var x y v).
 Proof.
   intros; unfold swap_var; case(v == z); case (w == x); default_simp.
-Qed.
+Qed.*)
 
 Lemma swap_equivariance : forall t x y z w,
     swap x y (swap z w t) = swap (swap_var x y z) (swap_var x y w) (swap x y t).
@@ -385,6 +390,7 @@ Lemma fv_nom_remove_swap: forall t x y y0, x <> y ->  x <> y0 -> x `notin` fv_no
     induction t; simpl in *; unfold swap_var; default_simp.
 Qed.
 
+
 Lemma notin_fv_nom_equivariance : forall x0 x y t ,
   x0 `notin` fv_nom t ->
   swap_var x y x0  `notin` fv_nom (swap x y t).
@@ -406,8 +412,9 @@ Proof.
            + simpl. unfold swap_var. default_simp.
        --- assumption.
        --- assumption.
-Qed.
+Qed. 
 
+(* não utilizado
 Lemma in_fv_nom_equivariance : forall x y x0 t,
   x0 `in` fv_nom t ->
   swap_var x y x0 `in` fv_nom (swap x y t).
@@ -675,7 +682,7 @@ Proof.
                 +++ case (x0 == y) in H0.
                     * contradiction.
                     * right. assumption.
-Qed.
+Qed.*)
 
 Lemma swap_remove_reduction: forall x y t,
     remove x (remove y (fv_nom (swap y x t))) [=] remove x (remove y (fv_nom t)).
@@ -1362,7 +1369,7 @@ Proof.
   - apply aeq_swap2.
 Qed.
 
-Lemma aeq_abs: forall t x y, y `notin` fv_nom t -> aeq (n_abs y (swap x y t)) (n_abs x t).
+Lemma aeq_abs: forall t x y, y `notin` fv_nom t -> (n_abs y (swap x y t)) =a (n_abs x t).
 Proof.
   intros. case (x == y); intros; subst.
   - rewrite swap_id. apply aeq_refl.
@@ -1373,7 +1380,7 @@ Proof.
 Qed.
 
 Lemma swap_reduction: forall t x y,
-    x `notin` fv_nom t -> y `notin` fv_nom t -> aeq (swap x y t)  t.
+    x `notin` fv_nom t -> y `notin` fv_nom t -> (swap x y t) =a  t.
 Proof.
   induction t.
   - intros x' y H1 H2.
@@ -1837,7 +1844,7 @@ Proof.
     + assumption.
 Qed. *)
 
-Lemma aeq_sub: forall t1 t2 x y, y `notin` fv_nom t1 -> aeq (n_sub (swap x y t1) y t2) (n_sub t1 x t2).
+Lemma aeq_sub: forall t1 t2 x y, y `notin` fv_nom t1 -> (n_sub (swap x y t1) y t2) =a (n_sub t1 x t2).
 Proof.
   intros. case (x == y); intros; subst.
   - rewrite swap_id; apply aeq_refl.
@@ -2071,12 +2078,13 @@ Proof.
     + subst. simpl. apply notin_singleton. apply aux_not_equal; assumption.
     + assumption.
   - simpl in *. rewrite double_remove in H1. assumption.
-  - apply notin_remove_1 in H1. simpl in *. destruct H1.
-    + subst. apply notin_remove_2. apply IHn.
-      * assumption.
-      * apply notin_remove_3. reflexivity.
-    + Admitted.
-  
+  - simpl in *. apply notin_remove_2. apply IHn.
+    + assumption.
+    + apply notin_remove_1 in H1. destruct H1.
+      * subst. apply notin_remove_3. reflexivity.
+      * apply notin_remove_2. Admitted.
+
+(* não utilizado
 Lemma fv_nom_m_subst: forall t u x, x `in` fv_nom t -> fv_nom ([x := u] t) [=] (union (remove x (fv_nom t)) (fv_nom u)).
 Proof.
   intros t u x. unfold m_subst. functional induction (subst_rec_fun t u x).
@@ -2085,7 +2093,8 @@ Proof.
     + unfold AtomSetImpl.Empty. auto.
   - intro H. simpl in H. apply singleton_iff in H. symmetry in H. contradiction.
   - intro H. simpl in H. pose proof notin_remove_3'. specialize (H0 x x (fv_nom t1)). assert (H': x = x). { reflexivity. } apply H0 in H'. contradiction.
-  - simpl. intro H. rewrite IHn. Admitted.
+  - simpl. intro H. rewrite IHn. Admitted. *)
+
 (*    + rewrite remove_union_distrib.
       swap_remove_reduction
         remove_fv_swap
