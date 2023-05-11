@@ -37,7 +37,7 @@ Proof.
   pose proof notin_singleton_2. specialize (H0 x y).
   apply H0 in H.
   apply AtomSetProperties.remove_equal in H. assumption.
-Qed.
+Qed. *)
 
 Lemma diff_remove_2: forall x y s,
   x <> y -> x `notin` remove y s -> x `notin` s.
@@ -45,6 +45,7 @@ Proof.
   intros. default_simp.
 Qed. 
 
+(* não utilizado
 Lemma diff_equal: forall s s' t,
     s [=] s' -> AtomSetImpl.diff s t [=] AtomSetImpl.diff s' t.
 Proof.
@@ -384,12 +385,11 @@ Lemma fv_nom_swap_remove: forall t x y y0, x <> y ->  x <> y0 -> x `notin` fv_no
 Proof.
   intros. induction t; simpl in *; unfold swap_var in *; default_simp.
 Qed.
-
+    
 Lemma fv_nom_remove_swap: forall t x y y0, x <> y ->  x <> y0 -> x `notin` fv_nom t -> x `notin` fv_nom (swap y0 y t).
   Proof.
     induction t; simpl in *; unfold swap_var; default_simp.
 Qed.
-
 
 Lemma notin_fv_nom_equivariance : forall x0 x y t ,
   x0 `notin` fv_nom t ->
@@ -1974,14 +1974,14 @@ Function subst_rec_fun (t:n_sexp) (u :n_sexp) (x:atom) {measure size t} : n_sexp
   | n_abs y t1 =>
       if (x == y) then t
       else let (z,_) :=
-                  atom_fresh (fv_nom u `union` fv_nom t `union` {{x}}) in
+                  atom_fresh (fv_nom u `union` fv_nom t1 `union` {{x}} `union` {{y}}) in
                 n_abs z (subst_rec_fun (swap y z t1) u x)
   | n_app t1 t2 =>
       n_app (subst_rec_fun t1 u x) (subst_rec_fun t2 u x)
   | n_sub t1 y t2 =>
       if (x == y) then n_sub t1 y (subst_rec_fun t2 u x)
       else let (z,_) :=
-                  atom_fresh (fv_nom u `union` fv_nom t `union` {{x}}) in
+                  atom_fresh (fv_nom u `union` fv_nom t1 `union` {{x}} `union` {{y}}) in
               n_sub  (subst_rec_fun (swap y z t1) u x) z (subst_rec_fun t2 u x) 
            end.
 Proof.
@@ -1993,6 +1993,37 @@ Proof.
  - intros. simpl. rewrite swap_size_eq. lia.
 Defined.
 
+(*
+Inductive meta_subst: n_sexp -> atom -> n_sexp -> n_sexp -> Prop :=
+| meta_var_eq: forall x u, meta_subst (n_var x) x u u
+| meta_var_neq: forall x y u, x <> y -> meta_subst (n_var y) x u (n_var y)
+| meta_app: forall t1 t1' t2 t2' x u, meta_subst t1 x u t1' -> meta_subst t2 x u t2' -> meta_subst (n_app t1 t2) x u (n_app t1' t2')
+| meta_abs_eq: forall t x u, meta_subst (n_abs x t) x u (n_abs x t) 
+| meta_abs_neq1: forall t x y u v, y `notin` fv_nom u -> meta_subst t x u v -> meta_subst (n_abs y t) x u v 
+| meta_abs_neq2: forall t x y z u v, y `in` fv_nom u -> z `notin` (fv_nom t `union` fv_nom u `union` {{x}} `union` {{y}}) -> meta_subst (swap y z t) x u v -> meta_subst (n_abs y t) x u v
+| meta_sub_eq: forall t1 t2 t2' x u, meta_subst t2 x u t2' -> meta_subst (n_sub t1 x t2) x u (n_sub t1 x t2') 
+| meta_sub_neq1: forall t1 t1' t2 t2' x y u, x <> y ->  y `notin` fv_nom u ->  meta_subst t1 x u t1' -> meta_subst t2 x u t2' -> meta_subst (n_sub t1 y t2) x u (n_sub t1' x t2')
+| meta_sub_neq2: forall t1 t1' t2 t2' x y z u, x <> y ->  y `in` fv_nom u -> z `notin` (fv_nom t1 `union` fv_nom u `union` {{x}} `union` {{y}}) ->  meta_subst (swap y z t1) x u t1' -> meta_subst t2 x u t2' -> meta_subst (n_sub t1 y t2) x u (n_sub t1' x t2'). 
+
+Lemma fv_nom_remove: forall t u v x y, y `notin` fv_nom u -> y `notin` remove x (fv_nom t) -> meta_subst t x u v ->  y `notin` fv_nom v.
+Proof. 
+  intros t u v x y H1 H2 H3. induction H3.
+  - assumption.
+  - apply notin_remove_1 in H2. destruct H2.
+    + subst. apply notin_singleton. apply aux_not_equal; assumption.
+    + assumption.
+  - simpl in *. rewrite remove_union_distrib in H2. assert (H3 := H2). apply notin_union_1 in H2. apply notin_union_2 in H3. apply notin_union.
+    + apply IHmeta_subst1; assumption.
+    + apply IHmeta_subst2; assumption.
+  - simpl in *. rewrite double_remove in H2. assumption.
+  - apply IHmeta_subst.
+    + assumption.
+    + simpl in H2.
+
+      rewrite remove_symmetric in H2. apply notin_remove_1 in H2. destruct H2.
+      * subst. assumption.
+      *)
+        
 (** The definitions subst_rec and subst_rec_fun are alpha-equivalent. 
 Theorem subst_rec_fun_equiv: forall t u x, (subst_rec (size t) t u x) =a (subst_rec_fun t u x).
 Proof.
@@ -2078,11 +2109,21 @@ Proof.
     + subst. simpl. apply notin_singleton. apply aux_not_equal; assumption.
     + assumption.
   - simpl in *. rewrite double_remove in H1. assumption.
-  - simpl in *. apply notin_remove_2. apply IHn.
-    + assumption.
-    + apply notin_remove_1 in H1. destruct H1.
-      * subst. apply notin_remove_3. reflexivity.
-      * apply notin_remove_2. Admitted.
+  - simpl in *. case (y == z).
+    + intro Heq. subst. apply notin_remove_3; reflexivity.
+    + intro Hneq. apply notin_remove_2. apply IHn.
+      * assumption.
+      * apply notin_remove_1 in H1. destruct H1.
+        ** subst. apply notin_remove_3; reflexivity.
+        ** clear IHn e1 e0. case (y == x).
+           *** intro Heq. subst. apply notin_remove_3; reflexivity.
+           *** intro Hneq'. apply notin_remove_2. apply notin_remove_1 in H. destruct H.
+               **** subst. apply fv_nom_swap. apply notin_union_2 in _x0. apply notin_union_1 in _x0. assumption.
+               **** case (y == y0).
+                    ***** intro Heq. subst. apply fv_nom_swap. apply notin_union_2 in _x0. apply notin_union_1 in _x0. assumption.
+                    ***** intro Hneq''. apply fv_nom_remove_swap; assumption.
+  - simpl in *. admit.
+  - simpl in *. Admitted.
 
 (* não utilizado
 Lemma fv_nom_m_subst: forall t u x, x `in` fv_nom t -> fv_nom ([x := u] t) [=] (union (remove x (fv_nom t)) (fv_nom u)).
