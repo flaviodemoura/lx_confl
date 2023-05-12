@@ -150,7 +150,18 @@ Proof.
   intros. apply notin_remove_2. assumption.
 Qed.
 (* end hide *)
-(** The lambda_x calculus *)
+
+(** * Introduction *)
+
+(** In this work, we are insterested in formalizing an extension of the Substitution Lemma%\cite{Bar84}% in the Coq proof assistant. The Substitution Lemma is an important result concerning the composition of the substitution operation. It is usually presented as follows: if $x$ does not occur in the set of free variables of the term $v$ then
+
+$$t\{x/u\}\{y/v\} = t\{y/v\}\{x/u\{y/v\}\}$$
+
+TBC
+
+*)
+
+(** * A syntactic extension of the $\lambda$-calculus *)
 
 Inductive n_sexp : Set :=
  | n_var (x:atom)
@@ -232,6 +243,7 @@ Fixpoint swap (x:atom) (y:atom) (t:n_sexp) : n_sexp :=
   | n_sub t1 z t2 => n_sub (swap x y t1) (swap_var x y z) (swap x y t2)
   end.
 
+(* begin hide *)
 Lemma swap_id : forall t x,
     swap x x t = t.
 Proof.
@@ -328,6 +340,7 @@ Lemma shuffle_swap : forall w y n z,
 Proof.
   induction n; intros; simpl; unfold swap_var; default_simp.
 Qed.
+(* end hide *)
 
 (* não utilizado
 Lemma shuffle_swap' : forall w y n z,
@@ -344,6 +357,7 @@ Proof.
   intros; unfold swap_var; case(v == z); case (w == x); default_simp.
 Qed.*)
 
+(* begin hide *)
 Lemma swap_equivariance : forall t x y z w,
     swap x y (swap z w t) = swap (swap_var x y z) (swap_var x y w) (swap x y t).
 Proof.
@@ -413,6 +427,8 @@ Proof.
        --- assumption.
        --- assumption.
 Qed. 
+(* end hide *)
+
 
 (* não utilizado
 Lemma in_fv_nom_equivariance : forall x y x0 t,
@@ -684,6 +700,7 @@ Proof.
                     * right. assumption.
 Qed.*)
 
+(* begin hide *)
 Lemma swap_remove_reduction: forall x y t,
     remove x (remove y (fv_nom (swap y x t))) [=] remove x (remove y (fv_nom t)).
 Proof.
@@ -744,21 +761,28 @@ Proof.
            rewrite IHt1. reflexivity.
        --- assumption.
 Qed.
+(* end hide *)
 
 Lemma remove_fv_swap: forall x y t, x `notin` fv_nom t -> remove x (fv_nom (swap y x t)) [=] remove y (fv_nom t).
 Proof.
+  (** %\noindent {\bf Proof.}% The proof is by induction on the structure of [t].%\newline% *)
   intros x y t. induction t.
-  - intro H. simpl. unfold swap_var. case (x0 == y).
+  (** %\noindent%$\bullet$ The first case is when [t] is a variable, say [x0]. By hypothesis [x0 <> x], and we need to show that [remove x (fv_nom (swap y x x0)) [=] remove y (fv_nom x0)]. There are two cases to consider: *)
+  - intro H. simpl in *. apply notin_singleton_1 in H. unfold swap_var. case (x0 == y).
+    (** If [x0 = y] then both sides of the equality are the empty set, and we are done. *)
     + intro Heq. subst. apply remove_singleton.
+    (** If [x0 <> y] then we are also done because both sets are equal to the singleton containing [x0].%\newline% *)
     + intro Hneq. case (x0 == x).
-      * intro Heq. subst. simpl in H. apply notin_singleton_is_false in H. contradiction.
+      * intro Heq. contradiction.
       * intro Hneq'. rewrite AtomSetProperties.remove_equal.
         ** rewrite AtomSetProperties.remove_equal.
            *** reflexivity.
            *** apply notin_singleton_2; assumption.
         ** apply notin_singleton_2; assumption.
-  - intro Hfv. simpl. unfold swap_var. case (x0 == y). 
-    + intro Heq. subst. simpl in Hfv. apply notin_remove_1 in Hfv. inversion Hfv; clear Hfv.
+  (** %\noindent% $\bullet$ If [t] is an abstraction, say [n_abs x0 t] then *)
+  - intro Hfv. simpl in *. unfold swap_var. case (x0 == y). 
+    + intro Heq. subst. repeat rewrite double_remove. apply IHt. 
+      simpl in Hfv. apply notin_remove_1 in Hfv. inversion Hfv; clear Hfv.
       * subst. repeat rewrite double_remove. rewrite swap_id. reflexivity.
       * repeat rewrite double_remove. apply IHt. assumption.
     + intro Hneq. case (x0 == x).
