@@ -2122,8 +2122,58 @@ Proof.
                **** case (y == y0).
                     ***** intro Heq. subst. apply fv_nom_swap. apply notin_union_2 in _x0. apply notin_union_1 in _x0. assumption.
                     ***** intro Hneq''. apply fv_nom_remove_swap; assumption.
-  - simpl in *. admit.
-  - simpl in *. Admitted.
+  - simpl in *. apply notin_union_3. 
+    + apply IHn.
+      * assumption.
+      * apply notin_remove_1 in H1. destruct H1. 
+        ** subst. apply notin_remove_3'. reflexivity.
+        ** apply notin_union_1 in H. apply notin_remove_2. assumption.
+    + apply IHn0.
+      * assumption.
+      * apply notin_remove_1 in H1. destruct H1. 
+        ** subst. apply notin_remove_3'. reflexivity.
+        ** apply notin_union_2 in H. apply notin_remove_2. assumption.
+  - simpl in *. apply notin_union_3. 
+    + apply notin_remove_1 in H1. destruct H1.
+      * subst. Search remove. apply notin_remove_3'. reflexivity.
+      * simpl. apply notin_union_1 in H. assumption.
+    + apply IHn. 
+      * assumption. 
+      * apply notin_remove_1 in H1. destruct H1.
+        ** subst. Search remove. apply notin_remove_3'. reflexivity.
+        ** simpl. apply notin_union_2 in H. apply notin_remove_2. assumption.
+  - simpl in *. apply notin_remove_1 in H1. destruct H1.
+    + subst. apply notin_union_3.
+      * case (y == z).
+        ** intros Heq. subst. apply notin_remove_3'. reflexivity.
+        ** intros Hneq. apply notin_remove_2. clear e1. apply notin_union_2 in _x0. apply notin_union_1 in _x0. 
+           apply IHn.
+          *** assumption.
+          *** apply notin_remove_3. reflexivity.
+      * simpl. apply IHn0. 
+        ** assumption.
+        ** apply notin_remove_3. reflexivity.
+    + simpl. apply notin_union_3.
+      * case (y == z). 
+        ** intro Heq. subst. apply notin_remove_3. reflexivity.
+        ** intro Hneq. apply notin_remove_2. apply notin_union_1 in H. apply IHn.
+            *** assumption.
+            *** apply notin_remove_1 in H. destruct H.
+                **** simpl. subst. apply notin_remove_2. apply fv_nom_swap.
+                     clear e1. apply notin_union_2 in _x0. apply notin_union_1 in _x0.
+                     assumption.
+                **** apply notin_remove_2. case (y == y0). 
+                      ***** intro Heq. subst. apply fv_nom_swap.
+                            clear e1. apply notin_union_2 in _x0. apply notin_union_1 in _x0.
+                            assumption.
+                      ***** intro Hneq'. apply fv_nom_remove_swap.
+                            ****** assumption.
+                            ****** assumption.
+                            ****** assumption.
+      * apply IHn0.
+        ** assumption.
+        ** apply notin_union_2 in H. apply notin_remove_2. assumption.
+Qed.
 
 (* não utilizado
 Lemma fv_nom_m_subst: forall t u x, x `in` fv_nom t -> fv_nom ([x := u] t) [=] (union (remove x (fv_nom t)) (fv_nom u)).
