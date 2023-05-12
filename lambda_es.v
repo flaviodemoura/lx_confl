@@ -2262,12 +2262,15 @@ Proof.
   - unfold m_subst. rewrite subst_rec_fun_equation. destruct (x == y).
     + contradiction.
     + destruct (atom_fresh (union (fv_nom u) (union (fv_nom (n_abs y t)) (singleton x)))). case (x1 == x0).
-      * intro H. subst. apply aeq_abs_same. apply aeq_refl.
-      * intro H. apply aeq_abs_diff.
-        ** assumption.
-        ** simpl.
-      
-    -- trivial. Admitted.
+      * intro H. subst. destruct (atom_fresh (union (fv_nom u) (union (fv_nom t) (union (singleton x) (singleton y))))).
+        case (x0 == x1). 
+        ** intro Heq. subst. apply aeq_refl.
+        ** intro Hneq. Search n_abs. admit.
+      * intro H. destruct (atom_fresh (union (fv_nom u) (union (fv_nom t) (union (singleton x) (singleton y))))).
+        case (x0 == x2). 
+        ** intro Heq. subst. apply aeq_refl.
+        ** intro Hneq. Search n_abs. admit.
+Admitted.
 (*    -- unfold not. intros. assert (y = y). {
          reflexivity.
        }
@@ -2310,7 +2313,7 @@ Proof.
     + assumption.
     + case (x0 == z).
       * intro H3. rewrite H3. apply aeq_refl.
-      * intro H3. admit. (*rewrite test1. rewrite test1. Search n_abs. apply aeq_abs_diff.
+      * intro H3. simpl in *. Search n_abs. admit. (*rewrite test1. rewrite test1. Search n_abs. apply aeq_abs_diff.
         ** auto.
         ** admit.
         ** apply test2.*)
@@ -2339,7 +2342,13 @@ Proof.
   - intro. reflexivity. 
   - intro. pose proof m_subst_abs_diff. specialize (H0 t1 u x y).
     unfold m_subst in H0. rewrite <- H0.
-    + pose proof m_subst_abs_neq as H1. apply aeq_sym. unfold m_subst in H1. apply H1; assumption.
+    + pose proof m_subst_abs_neq as H1. apply aeq_sym. unfold m_subst in H1. apply H1. 
+      * assumption.
+      * simpl. apply notin_union_3.
+        ** clear e1. apply notin_union_1 in _x0. assumption.
+        ** apply notin_union_3. apply notin_remove_2.
+            *** clear e1. apply notin_union_2 in _x0. apply notin_union_1 in _x0. assumption.
+            ***clear e1. apply notin_union_2 in _x0. apply notin_union_2 in _x0. apply notin_union_1 in _x0. assumption.
     + assumption. 
     + simpl in H. assumption.
   - intro. simpl in *. pose proof H as H1. apply notin_union_1 in H. apply notin_union_2 in H1.
@@ -2350,14 +2359,10 @@ Proof.
     + apply aeq_refl.
     + apply IHn. admit.
   - intro. Search n_sub. rewrite aeq_sub_same with (t1:=(subst_rec_fun (swap y z t1) u x)) (t2:=(subst_rec_fun t2 u x)) (t1':=(swap y z t1)) (t2':=t2). 
-    + Search n_sub. apply aeq_sub. admit.
+    + Search n_sub. apply aeq_sub. clear e1. apply notin_union_2 in _x0. apply notin_union_1 in _x0. assumption.
     + rewrite IHn. 
       * apply aeq_refl.
-      * Search swap. apply fv_nom_remove_swap. 
-        ** auto. admit.
-        ** auto.
-        ** admit.
-    + apply IHn0. Search n_sub. admit.
+      * admit.
 Admitted.
  
 (** * The substitution lemma for the metasubstitution *)
@@ -2405,7 +2410,7 @@ Proof.
   (** *)
   (**In the first case, we have that $x = z$. To expand this case, we use the lemma $m_subst_notin$ as an auxiliary lemma. It is added as an hypothesis, using the specialization tactics to match the last case in that hypothesis to the proof we want.*)
   (** *)
-  (**The rest of the cases are finished  using the varible substitution's negation of equality, the varible substitution's equality or the standard library lemmas.*) 
+(*   (**The rest of the caases are finished  using the varible substitution's negation of equality, the varible substitution's equality or the standard library lemmas.*)  *)
     * subst. rewrite m_subst_var_eq. pose proof m_subst_notin. specialize (H e3 ([z := e3] u) x). apply aeq_sym. apply H; assumption.
       * rewrite m_subst_var_neq.
         ** rewrite m_subst_var_neq.
@@ -2437,7 +2442,7 @@ Proof.
   (** *)
   (**The case of application is solved by using the auxiliary lemmas on application. First, it is rewritten so that the substitution is made inside the aplication, instead of on it. The same lemma is applied multiple times to make sure nothing can be replaced anymore. This leads to a case that can be solved using the standard library lemmas.*)
   - intros e3 z XY IH. rewrite m_subst_app. rewrite m_subst_app. rewrite m_subst_app.  rewrite m_subst_app. auto.
-  - intros e3 z XY IH. admit.
+  - intros e3 z XY IH.  admit.
   - admit. 
 
 (*
