@@ -768,7 +768,7 @@ Proof.
   (** %\noindent {\bf Proof.}% The proof is by induction on the structure of [t].%\newline% *)
   intros x y t. induction t.
   (** %\noindent%$\bullet$ The first case is when [t] is a variable, say [x0]. By hypothesis [x0 <> x], and we need to show that [remove x (fv_nom (swap y x x0)) [=] remove y (fv_nom x0)]. There are two cases to consider: *)
-  - intro H. simpl in *. apply notin_singleton_1 in H. unfold swap_var. case (x0 == y).
+  - intro Hfv. simpl in *. apply notin_singleton_1 in Hfv. unfold swap_var. case (x0 == y).
     (** If [x0 = y] then both sides of the equality are the empty set, and we are done. *)
     + intro Heq. subst. apply remove_singleton.
     (** If [x0 <> y] then we are also done because both sets are equal to the singleton containing [x0].%\newline% *)
@@ -780,10 +780,27 @@ Proof.
            *** apply notin_singleton_2; assumption.
         ** apply notin_singleton_2; assumption.
   (** %\noindent% $\bullet$ If [t] is an abstraction, say [n_abs x0 t] then *)
-  - intro Hfv. simpl in *. unfold swap_var. case (x0 == y). 
-    + intro Heq. subst. repeat rewrite double_remove. apply IHt. 
-      simpl in Hfv. apply notin_remove_1 in Hfv. inversion Hfv; clear Hfv.
-      * subst. repeat rewrite double_remove. rewrite swap_id. reflexivity.
+  - intros Hfv. simpl in *. apply notin_remove_1 in Hfv. destruct Hfv.
+    + subst. assert (H: swap_var y x x = y).
+      {
+        unfold swap_var. destruct (x == y).
+        - assumption.
+        - destruct (x == x).
+          + reflexivity.
+          + contradiction.
+      }
+      rewrite H. rewrite remove_symmetric. rewrite swap_symmetric. apply swap_remove_reduction.
+    + unfold swap_var. destruct (x0 == y).
+      * subst. repeat rewrite double_remove. apply IHt. assumption.
+      * destruct (x0 == x).
+        ** subst. rewrite remove_symmetric. rewrite swap_symmetric. apply swap_remove_reduction.
+        ** rewrite remove_symmetric. assert (Hr: remove y (remove x0 (fv_nom t)) [=] remove x0 (remove y (fv_nom t))).
+           {
+           rewrite remove_symmetric. reflexivity.
+           }
+           rewrite Hr. clear Hr. apply AtomSetProperties.Equal_remove. apply IHt. assumption.
+  -           
+(*        subst. repeat rewrite double_remove. rewrite swap_id. reflexivity.
       * repeat rewrite double_remove. apply IHt. assumption.
     + intro Hneq. case (x0 == x).
       * intro Heq. subst. rewrite swap_remove_reduction. rewrite remove_symmetric. reflexivity.
@@ -800,7 +817,7 @@ Proof.
     specialize (H2 (remove x0 (fv_nom t1)) (fv_nom t2) y). rewrite H2. apply Equal_union_compat.
     + unfold swap_var. case (x0 == y); intros; subst.
       unfold swap_var in H1. rewrite eq_dec_refl in H1. rewrite double_remove in *. apply IHt2 in Hfv. case (x == y); intros; subst.
-      * repeat rewrite swap_id in *. Admitted.
+      * repeat rewrite swap_id in *. Admitted. *)
 
 (*        
         reflexivity.
