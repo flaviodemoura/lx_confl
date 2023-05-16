@@ -799,7 +799,30 @@ Proof.
            rewrite remove_symmetric. reflexivity.
            }
            rewrite Hr. clear Hr. apply AtomSetProperties.Equal_remove. apply IHt. assumption.
-  -           
+  - intro Hfv. simpl in *. pose proof Hfv as Hfv'. apply notin_union_1 in Hfv'. apply notin_union_2 in Hfv.
+    apply IHt1 in Hfv'. apply IHt2 in Hfv. pose proof remove_union_distrib as H1. pose proof H1 as H2.
+    specialize (H1 (fv_nom (swap y x t1)) (fv_nom (swap y x t2)) x). specialize (H2 (fv_nom t1) (fv_nom t2) y). rewrite Hfv' in H1. rewrite Hfv in H1. rewrite H1. rewrite H2. reflexivity.
+  - intro Hfv. simpl in *. pose proof Hfv as Hfv'. apply notin_union_1 in Hfv'. apply notin_union_2 in Hfv.
+    pose proof remove_union_distrib as H1. pose proof H1 as H2.
+    specialize (H1 (remove (swap_var y x x0) (fv_nom (swap y x t1))) (fv_nom (swap y x t2)) x). rewrite H1.
+    specialize (H2 (remove x0 (fv_nom t1)) (fv_nom t2) y). rewrite H2. apply Equal_union_compat.
+    + unfold swap_var. case (x0 == y); intros; subst.
+      unfold swap_var in H1. rewrite eq_dec_refl in H1. rewrite double_remove in *. apply IHt2 in Hfv. case (x == y); intros; subst.
+      * repeat rewrite swap_id in *. rewrite double_remove. reflexivity.
+      * rewrite double_remove. apply IHt1. Search remove. apply diff_remove_2 in Hfv'.
+        ** assumption.
+        ** assumption.
+      * destruct (x0 == x).
+        ** subst. rewrite remove_symmetric. rewrite swap_symmetric. apply swap_remove_reduction.
+        ** subst. rewrite remove_symmetric. assert (Hr: remove y (remove x0 (fv_nom t1)) [=] remove x0 (remove y (fv_nom t1))).
+           {
+           rewrite remove_symmetric. reflexivity.
+           }
+           rewrite Hr. clear Hr. apply AtomSetProperties.Equal_remove. apply IHt1. Search remove. apply diff_remove_2 in Hfv'.
+            *** assumption.
+            *** auto.
+    + apply IHt2. apply Hfv.
+Qed.
 (*        subst. repeat rewrite double_remove. rewrite swap_id. reflexivity.
       * repeat rewrite double_remove. apply IHt. assumption.
     + intro Hneq. case (x0 == x).
