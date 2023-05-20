@@ -2304,14 +2304,31 @@ Proof.
   intros t1 t2 u x. unfold m_subst. rewrite subst_rec_fun_equation. reflexivity.
 Qed.
 
+(*
+Lemma test : 
+*)
+
 (* realocar *)
 Lemma swap_subst_rec_fun: forall x y z t u, swap x y (subst_rec_fun t u z) =a subst_rec_fun (swap x y t) (swap x y u) (swap_var x y z).
 Proof.
+  intros x y z t u. destruct (x == y).
+  - subst. Search swap. rewrite swap_id. rewrite swap_id. rewrite swap_id. pose proof swap_id as H.
+    Search swap. unfold swap_var. destruct (z == y). 
+    + subst. apply aeq_refl.
+    +  apply aeq_refl.
+  - simpl. unfold swap_var.  destruct (z == y). 
+    + subst. destruct (y == x). 
+      * subst. contradiction.
+      * Search swap. admit.
+    + destruct (z == x). 
+      * subst. admit.
+      * subst. admit.
   Admitted.
 
 (* realocar *)
 Lemma aeq_m_subst: forall t t' u u' x, t =a t' -> u =a u' -> ([x := u] t) =a ([x := u'] t').
 Proof.
+  intros t t' u u' x Ht Hu. unfold m_subst. Search eq_dec.
   Admitted.
   
 Lemma m_subst_abs : forall u x y t , m_subst u x (n_abs y t)  =a
@@ -2343,9 +2360,28 @@ Proof.
                 ****** apply notin_union_2 in n1. apply notin_union_2 in n1. apply notin_union_1 in n1. apply notin_singleton_1 in n1. contradiction.
                 ****** apply H1.
                 ******* apply aeq_sym. apply aeq_refl.
-                ******* admit.
+                ******* Search swap. apply aeq_sym. apply swap_reduction.
+                ******** apply notin_union_1 in H. assumption.
+                ******** apply notin_union_1 in n1. assumption.
            **** apply aeq_sym. apply swap_subst_rec_fun.
-           *** intro Heq. Admitted.
+           *** intro Heq. Search aeq_swap_swap. Search swap. rewrite swap_subst_rec_fun.
+               pose proof aeq_m_subst as H1. unfold m_subst in H1. unfold swap_var. destruct (x == z).
+                **** repeat apply notin_union_2 in H. apply notin_singleton_1 in H. contradiction.
+                **** destruct (x == x0).
+                ***** apply notin_union_2 in n1. apply notin_union_2 in n1. apply notin_union_1 in n1. apply notin_singleton_1 in n1. contradiction.
+                ***** apply H1.
+                ****** apply aeq_sym. Search aeq. rewrite swap_symmetric. pose proof swap_symmetric as H2. specialize (H2 t y z). rewrite H2.
+                       pose proof swap_symmetric as H3. specialize (H3 t y x0). rewrite H3. apply aeq_swap_swap.
+                ******* apply notin_union_2 in n1. apply notin_union_1 in n1. assumption.
+                ******* apply notin_union_2 in H. apply notin_union_1 in H. Search n_abs. simpl in H. Search remove.
+                        apply diff_remove_2 in H.
+                ******** assumption.
+                ******** auto.
+                ****** Search swap. rewrite swap_reduction.
+                ******* apply aeq_refl.
+                ******* apply notin_union_1 in H. assumption. 
+                ******* apply notin_union_1 in n1. assumption. 
+Qed.
 
 (* rewrite swap_symmetric. pose proof swap_symmetric as H2. specialize (H2 t y z). rewrite H2. pose proof swap_symmetric as H3. specialize (H3 t y x0). rewrite H3. apply aeq_swap_swap.
                     ******* apply notin_union_2 in n1. apply notin_union_1 in n1. assumption.
