@@ -229,11 +229,10 @@ Qed. *)
 Definition swap_var (x:atom) (y:atom) (z:atom) :=
   if (z == x) then y else if (z == y) then x else z.
 
-(* não utilizado
 Lemma swap_var_id: forall x y, (swap_var x x y = y).
 Proof.
   intros. unfold swap_var. case (y == x); intros; subst; reflexivity.
-Qed. *)
+Qed.
 
 Fixpoint swap (x:atom) (y:atom) (t:n_sexp) : n_sexp :=
   match t with
@@ -2312,18 +2311,34 @@ Lemma test :
 Lemma swap_subst_rec_fun: forall x y z t u, swap x y (subst_rec_fun t u z) =a subst_rec_fun (swap x y t) (swap x y u) (swap_var x y z).
 Proof.
   intros x y z t u. destruct (x == y).
-  - subst. Search swap. rewrite swap_id. rewrite swap_id. rewrite swap_id. pose proof swap_id as H.
-    Search swap. unfold swap_var. destruct (z == y). 
-    + subst. apply aeq_refl.
-    +  apply aeq_refl.
-  - simpl. unfold swap_var.  destruct (z == y). 
-    + subst. destruct (y == x). 
-      * subst. contradiction.
-      * Search swap. admit.
-    + destruct (z == x). 
-      * subst. admit.
-      * subst. admit.
-  Admitted.
+  - subst. repeat rewrite swap_id. rewrite swap_var_id. apply aeq_refl.
+  - generalize dependent y. generalize dependent x. functional induction (subst_rec_fun t u z).
+    + intros x' y H. simpl. unfold swap_var. destruct (x == x').
+      * subst. rewrite subst_rec_fun_equation. rewrite eq_dec_refl. apply aeq_refl.
+      * destruct (x == y). 
+        ** subst. rewrite subst_rec_fun_equation. rewrite eq_dec_refl. apply aeq_refl.
+        ** rewrite subst_rec_fun_equation. rewrite eq_dec_refl. apply aeq_refl.
+    + intros x' y' H. simpl. unfold swap_var. destruct (y == x').
+      * subst. rewrite e0. destruct (x == y').
+        ** subst. rewrite subst_rec_fun_equation. destruct (x' == y').
+           *** contradiction.
+           *** apply aeq_refl.
+        ** admit.
+      * destruct (y == y').
+        ** subst. rewrite e0. destruct (x == x').
+           *** subst. admit.
+           *** admit.
+        ** destruct (x == x').
+           *** subst. admit.
+           *** destruct (x == y').
+               **** subst. admit.
+               **** admit.
+    + intros x' y H. simpl. remember (swap_var x' y x) as z. rewrite subst_rec_fun_equation. rewrite eq_dec_refl. apply aeq_refl.
+    + intros x' y' H. simpl. clear e1. apply aeq_trans with (n_abs (swap_var x' y' z) (subst_rec_fun (swap x'  y' (swap y z t1)) (swap x' y' u) (swap_var x' y' x))).
+      * apply aeq_abs_same. apply IHn. assumption.
+      * case (x == z).
+        ** intro Heq. subst.
+        ** Admitted.
 
 (* realocar *)
 Lemma aeq_m_subst: forall t t' u u' x, t =a t' -> u =a u' -> ([x := u] t) =a ([x := u'] t').
