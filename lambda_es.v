@@ -2323,21 +2323,49 @@ Proof.
         ** subst. rewrite subst_rec_fun_equation. destruct (x' == y').
            *** contradiction.
            *** apply aeq_refl.
-        ** admit.
+        ** subst. rewrite subst_rec_fun_equation. destruct (x == y').
+           *** contradiction.
+           *** apply aeq_refl.
       * destruct (y == y').
         ** subst. rewrite e0. destruct (x == x').
-           *** subst. admit.
-           *** admit.
+           *** subst. rewrite subst_rec_fun_equation. destruct (y' == x').
+               **** contradiction.
+               **** apply aeq_refl.
+           *** rewrite subst_rec_fun_equation. destruct (x == x').
+               **** contradiction.
+               **** apply aeq_refl.
         ** destruct (x == x').
-           *** subst. admit.
-           *** destruct (x == y').
-               **** subst. admit.
-               **** admit.
+           *** subst. rewrite subst_rec_fun_equation. destruct (y' == y).
+               **** apply eq_sym in e. contradiction.
+               **** apply aeq_refl.
+           *** destruct (x == y'). 
+               **** subst. rewrite subst_rec_fun_equation. destruct (x' == y).
+                    ***** apply eq_sym in e. contradiction.
+                    ***** apply aeq_refl.
+               **** rewrite subst_rec_fun_equation. destruct (x == y).
+                    ***** contradiction.
+                    ***** apply aeq_refl.
     + intros x' y H. simpl. remember (swap_var x' y x) as z. rewrite subst_rec_fun_equation. rewrite eq_dec_refl. apply aeq_refl.
     + intros x' y' H. clear e1. simpl.
       assert (Hdiff: ((swap_var x' y' x) <> (swap_var x' y' y))).
       {
-        admit.
+        unfold swap_var at 1. destruct (x == x').
+        * subst. unfold swap_var. destruct (y == x').
+          ** subst. contradiction.
+          ** destruct (y == y'). 
+              *** subst. auto.
+              *** auto.
+        * destruct (x == y').
+          ** unfold swap_var.  destruct (y == x').
+             *** subst. assumption.
+             *** apply eq_sym in e. subst. destruct (y == x).
+                 **** subst. contradiction.
+                 **** auto.
+          ** unfold swap_var.  destruct (y == x').
+             *** subst. assumption.
+             *** destruct (y == y').
+                 **** auto.
+                 **** auto.
       }
       assert (Hdiff': ((swap_var x' y' x) == (swap_var x' y' y)) = right Hdiff).
       {
@@ -2345,9 +2373,21 @@ Proof.
       }
       remember (subst_rec_fun (swap y z t1) u x) as ee. rewrite subst_rec_fun_equation. rewrite Hdiff'.
       destruct (atom_fresh (union (fv_nom (swap x' y' u)) (union (fv_nom (swap x' y' t1)) (union (singleton (swap_var x' y' x)) (singleton (swap_var x' y' y)))))). subst.
+      unfold swap_var at 2. destruct (y == x').
+      * subst. unfold swap_var at 1. destruct (z == x').
+        ** subst. destruct (x0 == y').
+           *** subst. apply aeq_abs_same. rewrite IHn. 
 
-      unfold swap_var at 1. destruct (z == x').
-      * subst. destruct (y' == x0).
+
+           rewrite swap_equivariance in IHn. replace x0 with (swap_var x' x0 x') at 3. apply IHn.
+           *** assumption.
+           *** unfold swap_var. rewrite eq_dec_refl. reflexivity.
+        
+
+
+
+
+        unfold swap_var at 1. destruct (z == x').
         ** subst. apply aeq_abs_same. specialize (IHn x' x0).
            rewrite swap_equivariance in IHn. replace x0 with (swap_var x' x0 x') at 3. apply IHn.
            *** assumption.
