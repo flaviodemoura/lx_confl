@@ -344,7 +344,106 @@ Lemma swap_comp : forall x y z t, x `notin` fv_nom t -> y `notin` fv_nom t ->
     (swap x y (swap y z t)) = (swap x z t).
 Proof.
   induction t.
-  - Admitted.
+  - intros H1 H2. simpl. destruct (x0 == z). 
+    + subst. destruct (x == z). 
+      * subst. destruct (y == z).
+        ** subst. unfold swap_var. rewrite eq_dec_refl. rewrite eq_dec_refl. reflexivity.
+        ** unfold swap_var. rewrite eq_dec_refl. destruct (z == y).
+            *** destruct (z == z). 
+                **** rewrite e. reflexivity.
+                ****  contradiction.
+            *** destruct (y == z). 
+                **** contradiction.
+                **** destruct (y == y).
+                     ***** reflexivity.
+                     ***** contradiction.
+      * unfold swap_var. destruct (z == y).
+        ** destruct (z == x). 
+            *** subst. contradiction.
+            *** subst. destruct (y == y).
+                **** reflexivity.
+                **** contradiction.
+        ** destruct (z == x). 
+            *** subst. destruct (x == x).
+                **** destruct (y == x).
+                      ***** subst. contradiction.
+                      ***** contradiction.
+                **** contradiction.
+            *** simpl. rewrite eq_dec_refl. destruct (y == x).
+                **** subst. reflexivity.
+                **** rewrite eq_dec_refl. reflexivity.
+    + unfold swap_var. destruct (x0 == y).
+      * subst. destruct (z == x). 
+        ** subst. destruct (y == x). 
+            *** subst. contradiction.
+            *** reflexivity.
+        ** destruct (z == y).
+            *** subst. destruct (y == x). 
+                **** contradiction.
+                **** rewrite eq_dec_refl. reflexivity.
+            *** subst. destruct (y == x). 
+                **** subst. reflexivity.
+                **** destruct (y == x).
+                      ***** destruct (y == z).
+                            ****** subst. reflexivity.
+                            ****** subst. contradiction.
+                      ***** destruct (y == z).
+                            ****** subst. contradiction.
+                            ****** subst. simpl in H2. Search singleton. apply notin_singleton_is_false in H2. exfalso. assumption.
+      * subst. destruct (x0 == z). 
+        ** subst. destruct (y == x). 
+            *** subst. contradiction.
+            *** rewrite eq_dec_refl. destruct (z == x).
+                **** subst. contradiction.
+                **** subst. contradiction.
+        ** destruct (x0 == x).
+            *** subst. apply notin_singleton_is_false in H1. exfalso. assumption.
+            *** subst. destruct (x0 == y). 
+                **** subst. contradiction.
+                **** reflexivity.
+  - intros H1 H2. simpl. rewrite IHt. 
+    + unfold swap_var. destruct (x0 == x).
+      * subst. destruct (x == y).
+        ** subst. destruct (z == y).
+            *** subst. reflexivity.
+            *** reflexivity.
+        ** destruct (x == z).
+            *** subst. destruct (y == z).
+                **** subst. reflexivity.
+                **** destruct (y == y).
+                     ***** reflexivity.
+                     ***** contradiction.
+            *** destruct (x == y). 
+                **** subst. contradiction.
+                **** destruct (x == x).
+                     ***** subst. admit.
+                     ***** subst. contradiction.
+      * simpl. destruct (x0 == y).
+        ** subst. destruct (z == x). 
+           *** subst. destruct (y == x).
+               **** subst. reflexivity.
+               **** reflexivity.
+           *** destruct (z == y).
+               **** subst. destruct (y == y).
+                    ***** subst. reflexivity.
+                    ***** contradiction.
+               **** destruct (y == z).
+                    ***** subst. contradiction.
+                    ***** subst. admit.
+        ** destruct (x0 == z).
+           *** subst. destruct (y == x).
+               **** subst. reflexivity.
+               **** destruct (y == y).
+                    ***** subst. reflexivity.
+                    ***** contradiction.
+           *** simpl. destruct (x0 == x).
+               **** subst. contradiction.
+               **** subst. destruct (x0 == y).
+                    ***** subst. contradiction.
+                    ***** reflexivity.
+    + simpl. Search n_abs.
+    
+Admitted.
 
 
 (* end hide *)
