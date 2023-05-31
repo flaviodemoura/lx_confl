@@ -2329,7 +2329,53 @@ Proof.
     + intros x' y H z u. simpl. admit.
     + intros x y Hneq z' u. rewrite subst_rec_fun_equation. case (z' == z).
       * intro Heq. subst. simpl. admit. (* ok *)
-      * intro Hneq'. destruct (atom_fresh (union (fv_nom u) (union (fv_nom t) (union (singleton z') (singleton z))))). simpl.
+      * intro Hneq'. destruct (atom_fresh (union (fv_nom u) (union (fv_nom t) (union (singleton z') (singleton z))))). simpl. remember (subst_rec_fun (swap z x0 t) u z') as ee. rewrite subst_rec_fun_equation.
+        assert (Hdiff: ((swap_var x y z') <> (swap_var x y z))).
+      {
+        unfold swap_var at 1. destruct (z' == x).
+        * subst. unfold swap_var. destruct (z == x).
+          ** subst. contradiction.
+          ** destruct (z == y). 
+              *** subst. auto.
+              *** auto.
+        * destruct (z' == y).
+          ** unfold swap_var.  destruct (z == x).
+             *** subst. assumption.
+             *** apply eq_sym in e. subst. destruct (z == z').
+                 **** subst. contradiction.
+                 **** auto.
+          ** unfold swap_var.  destruct (z == x).
+             *** subst. assumption.
+             *** destruct (z == y).
+                 **** auto.
+                 **** auto.
+      }
+      assert (Hdiff': ((swap_var x y z') == (swap_var x y z)) = right Hdiff).
+      {
+        admit. (* ? *)
+      }
+        rewrite Hdiff'.
+      destruct (atom_fresh (union (fv_nom (swap x y u)) (union (fv_nom (swap x y t)) (union (singleton (swap_var x y z')) (singleton (swap_var x y z)))))). subst. case ((swap_var x y x0) == x1).
+        ** intro Heq. subst. apply aeq_abs_same. rewrite H.
+           *** pose proof aeq_m_subst as Haeq. unfold m_subst in Haeq. apply Haeq.
+               **** rewrite swap_equivariance. apply aeq_refl.
+               **** apply aeq_refl.
+           *** reflexivity.
+           *** assumption.          
+        ** intro Hneq''. apply aeq_abs_diff.
+           *** assumption.
+           *** apply fv_nom_remove.
+               **** apply notin_fv_nom_equivariance. apply notin_union_1 in n. assumption.
+               **** apply diff_remove.
+                    ***** apply notin_union_2 in n. apply notin_union_2 in n. apply notin_union_1 in n. apply notin_singleton_1 in n. apply aux_not_equal. admit. (* ok *)
+                    ***** admit. (* ok *)
+           *** rewrite H.
+               **** admit.
+               **** reflexivity.
+               **** assumption.
+    + Admitted.
+
+(*      
     + intros x' y H z u. simpl. rewrite subst_rec_fun_equation. rewrite eq_dec_refl. apply aeq_refl.
     + intros x' y' H. clear e1. simpl.
       assert (Hdiff: ((swap_var x' y' x) <> (swap_var x' y' y))).
@@ -2398,7 +2444,7 @@ Proof.
         ** apply aeq_abs_diff.
            *** assumption.
            *** admit.
-           *** Admitted.
+           *** Admitted. *)
 
 (* indução funcional utilizando a definição de subst_rec_fun
 
