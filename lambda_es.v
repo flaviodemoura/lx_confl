@@ -340,112 +340,6 @@ Proof.
   induction n; intros; simpl; unfold swap_var; default_simp.
 Qed.
 
-Lemma swap_comp : forall x y z t, x `notin` fv_nom t -> y `notin` fv_nom t ->
-    (swap x y (swap y z t)) = (swap x z t).
-Proof.
-  induction t.
-  - intros H1 H2. simpl. destruct (x0 == z). 
-    + subst. destruct (x == z). 
-      * subst. destruct (y == z).
-        ** subst. unfold swap_var. rewrite eq_dec_refl. rewrite eq_dec_refl. reflexivity.
-        ** unfold swap_var. rewrite eq_dec_refl. destruct (z == y).
-            *** destruct (z == z). 
-                **** rewrite e. reflexivity.
-                ****  contradiction.
-            *** destruct (y == z). 
-                **** contradiction.
-                **** destruct (y == y).
-                     ***** reflexivity.
-                     ***** contradiction.
-      * unfold swap_var. destruct (z == y).
-        ** destruct (z == x). 
-            *** subst. contradiction.
-            *** subst. destruct (y == y).
-                **** reflexivity.
-                **** contradiction.
-        ** destruct (z == x). 
-            *** subst. destruct (x == x).
-                **** destruct (y == x).
-                      ***** subst. contradiction.
-                      ***** contradiction.
-                **** contradiction.
-            *** simpl. rewrite eq_dec_refl. destruct (y == x).
-                **** subst. reflexivity.
-                **** rewrite eq_dec_refl. reflexivity.
-    + unfold swap_var. destruct (x0 == y).
-      * subst. destruct (z == x). 
-        ** subst. destruct (y == x). 
-            *** subst. contradiction.
-            *** reflexivity.
-        ** destruct (z == y).
-            *** subst. destruct (y == x). 
-                **** contradiction.
-                **** rewrite eq_dec_refl. reflexivity.
-            *** subst. destruct (y == x). 
-                **** subst. reflexivity.
-                **** destruct (y == x).
-                      ***** destruct (y == z).
-                            ****** subst. reflexivity.
-                            ****** subst. contradiction.
-                      ***** destruct (y == z).
-                            ****** subst. contradiction.
-                            ****** subst. simpl in H2. Search singleton. apply notin_singleton_is_false in H2. exfalso. assumption.
-      * subst. destruct (x0 == z). 
-        ** subst. destruct (y == x). 
-            *** subst. contradiction.
-            *** rewrite eq_dec_refl. destruct (z == x).
-                **** subst. contradiction.
-                **** subst. contradiction.
-        ** destruct (x0 == x).
-            *** subst. apply notin_singleton_is_false in H1. exfalso. assumption.
-            *** subst. destruct (x0 == y). 
-                **** subst. contradiction.
-                **** reflexivity.
-  - intros H1 H2. simpl. rewrite IHt. 
-    + unfold swap_var. destruct (x0 == x).
-      * subst. destruct (x == y).
-        ** subst. destruct (z == y).
-            *** subst. reflexivity.
-            *** reflexivity.
-        ** destruct (x == z).
-            *** subst. destruct (y == z).
-                **** subst. reflexivity.
-                **** destruct (y == y).
-                     ***** reflexivity.
-                     ***** contradiction.
-            *** destruct (x == y). 
-                **** subst. contradiction.
-                **** destruct (x == x).
-                     ***** subst. admit.
-                     ***** subst. contradiction.
-      * simpl. destruct (x0 == y).
-        ** subst. destruct (z == x). 
-           *** subst. destruct (y == x).
-               **** subst. reflexivity.
-               **** reflexivity.
-           *** destruct (z == y).
-               **** subst. destruct (y == y).
-                    ***** subst. reflexivity.
-                    ***** contradiction.
-               **** destruct (y == z).
-                    ***** subst. contradiction.
-                    ***** subst. admit.
-        ** destruct (x0 == z).
-           *** subst. destruct (y == x).
-               **** subst. reflexivity.
-               **** destruct (y == y).
-                    ***** subst. reflexivity.
-                    ***** contradiction.
-           *** simpl. destruct (x0 == x).
-               **** subst. contradiction.
-               **** subst. destruct (x0 == y).
-                    ***** subst. contradiction.
-                    ***** reflexivity.
-    + simpl. Search n_abs.
-    
-Admitted.
-
-
 (* end hide *)
 
 (* não utilizado
@@ -1953,6 +1847,104 @@ Proof.
                     * assumption.
 Qed.                 
 
+Lemma swap_comp : forall x y z t, x `notin` fv_nom t -> y `notin` fv_nom t ->
+    (swap x y (swap y z t)) =a (swap x z t).
+Proof.
+  induction t.
+  - intros H1 H2. simpl. destruct (x0 == z). 
+    + subst. destruct (x == z). 
+      * subst. destruct (y == z).
+        ** subst. unfold swap_var. rewrite eq_dec_refl. rewrite eq_dec_refl. apply aeq_refl.
+        ** unfold swap_var. rewrite eq_dec_refl. destruct (z == y).
+            *** rewrite eq_dec_refl. subst. apply aeq_refl.
+            *** destruct (y == z). 
+                **** contradiction.
+                **** rewrite eq_dec_refl. apply aeq_refl.
+      * unfold swap_var. destruct (z == y).
+        ** destruct (z == x). 
+            *** subst. contradiction.
+            *** subst. rewrite eq_dec_refl. apply aeq_refl.
+        ** rewrite eq_dec_refl. 
+            *** destruct (y == x).
+                **** subst. destruct (z == x).
+                      ***** contradiction.
+                      ***** apply aeq_refl.
+                **** rewrite eq_dec_refl. destruct (z == x).
+                      ***** subst. apply aeq_refl.
+                      ***** apply aeq_refl.
+    + unfold swap_var. destruct (x0 == y).
+      * subst. destruct (z == x). 
+        ** subst. destruct (y == x). 
+            *** subst. contradiction.
+            *** apply aeq_refl.
+        ** destruct (z == y).
+            *** subst. destruct (y == x). 
+                **** contradiction.
+                **** rewrite eq_dec_refl. apply aeq_refl.
+            *** destruct (y == x). 
+                **** apply aeq_refl.
+                **** destruct (y == z).
+                      ***** subst. contradiction.
+                      ***** simpl in H2. apply notin_singleton_is_false in H2. exfalso. assumption.
+      * destruct (x0 == z). 
+        ** subst. destruct (y == x). 
+            *** subst. contradiction.
+            *** rewrite eq_dec_refl. destruct (z == x).
+                **** subst. contradiction.
+                **** contradiction.
+        ** destruct (x0 == x).
+            *** subst. apply notin_singleton_is_false in H1. exfalso. assumption.
+            *** subst. destruct (x0 == y). 
+                **** subst. contradiction.
+                **** apply aeq_refl.
+  - intros H1 H2. simpl. unfold swap_var. destruct (x0 == z). 
+    + destruct (x0 == y). 
+      * subst. destruct (y == x). 
+        ** subst. repeat rewrite swap_id. apply aeq_refl.
+        ** rewrite eq_dec_refl. apply aeq_abs_same. apply IHt.
+          *** admit.
+          *** admit.
+      * subst. destruct (y == x). 
+        ** destruct (z == x).
+          *** subst. repeat rewrite swap_id. apply aeq_refl.
+          *** subst. repeat rewrite swap_id. apply aeq_refl.
+        ** rewrite eq_dec_refl. destruct (z == x).
+          *** subst. apply aeq_abs_same. apply IHt.
+              **** admit.
+              **** admit.
+          *** apply aeq_abs_same. apply IHt.
+              **** admit.
+              **** admit.
+    + destruct (x0 == y). 
+      * subst. destruct (y == x). 
+        ** subst. destruct (z == x).
+          *** subst. contradiction.
+          *** rewrite swap_id. apply aeq_refl.
+        ** destruct (z == x). 
+          *** subst. apply aeq_abs_same. apply IHt.
+              **** admit.
+              **** admit.
+          *** destruct (z == y). 
+              **** subst. contradiction.
+              **** admit.
+      * destruct (x0 == x).
+        ** subst. admit.
+        ** destruct (x0 == y).
+          *** subst. contradiction.
+          *** apply aeq_abs_same. apply IHt.
+              **** admit.
+              **** admit.
+   - intros H1 H2. simpl. apply aeq_app.
+    + apply IHt1. 
+      * simpl in H1. apply notin_union_1 in H1. assumption.
+      * simpl in H2. apply notin_union_1 in H2. assumption.
+    + apply IHt2. 
+      * simpl in H1. apply notin_union_2 in H1. assumption.
+      * simpl in H2. apply notin_union_2 in H2. assumption.
+  - intros H1 H2. simpl. admit.
+
+Admitted.
+
 Require Import Setoid Morphisms.
 
 Instance Equivalence_aeq: Equivalence aeq.
@@ -2428,53 +2420,7 @@ Proof.
     + intros x' y H z u. simpl. admit.
     + intros x y Hneq z' u. rewrite subst_rec_fun_equation. case (z' == z).
       * intro Heq. subst. simpl. admit. (* ok *)
-      * intro Hneq'. destruct (atom_fresh (union (fv_nom u) (union (fv_nom t) (union (singleton z') (singleton z))))). simpl. remember (subst_rec_fun (swap z x0 t) u z') as ee. rewrite subst_rec_fun_equation.
-        assert (Hdiff: ((swap_var x y z') <> (swap_var x y z))).
-      {
-        unfold swap_var at 1. destruct (z' == x).
-        * subst. unfold swap_var. destruct (z == x).
-          ** subst. contradiction.
-          ** destruct (z == y). 
-              *** subst. auto.
-              *** auto.
-        * destruct (z' == y).
-          ** unfold swap_var.  destruct (z == x).
-             *** subst. assumption.
-             *** apply eq_sym in e. subst. destruct (z == z').
-                 **** subst. contradiction.
-                 **** auto.
-          ** unfold swap_var.  destruct (z == x).
-             *** subst. assumption.
-             *** destruct (z == y).
-                 **** auto.
-                 **** auto.
-      }
-      assert (Hdiff': ((swap_var x y z') == (swap_var x y z)) = right Hdiff).
-      {
-        admit. (* ? *)
-      }
-        rewrite Hdiff'.
-      destruct (atom_fresh (union (fv_nom (swap x y u)) (union (fv_nom (swap x y t)) (union (singleton (swap_var x y z')) (singleton (swap_var x y z)))))). subst. case ((swap_var x y x0) == x1).
-        ** intro Heq. subst. apply aeq_abs_same. rewrite H.
-           *** pose proof aeq_m_subst as Haeq. unfold m_subst in Haeq. apply Haeq.
-               **** rewrite swap_equivariance. apply aeq_refl.
-               **** apply aeq_refl.
-           *** reflexivity.
-           *** assumption.          
-        ** intro Hneq''. apply aeq_abs_diff.
-           *** assumption.
-           *** apply fv_nom_remove.
-               **** apply notin_fv_nom_equivariance. apply notin_union_1 in n. assumption.
-               **** apply diff_remove.
-                    ***** apply notin_union_2 in n. apply notin_union_2 in n. apply notin_union_1 in n. apply notin_singleton_1 in n. apply aux_not_equal. admit. (* ok *)
-                    ***** admit. (* ok *)
-           *** rewrite H.
-               **** admit.
-               **** reflexivity.
-               **** assumption.
-    + Admitted.
-
-(*      
+      * intro Hneq'. destruct (atom_fresh (union (fv_nom u) (union (fv_nom t) (union (singleton z') (singleton z))))). simpl.
     + intros x' y H z u. simpl. rewrite subst_rec_fun_equation. rewrite eq_dec_refl. apply aeq_refl.
     + intros x' y' H. clear e1. simpl.
       assert (Hdiff: ((swap_var x' y' x) <> (swap_var x' y' y))).
@@ -2543,7 +2489,7 @@ Proof.
         ** apply aeq_abs_diff.
            *** assumption.
            *** admit.
-           *** Admitted. *)
+           *** Admitted.
 
 (* indução funcional utilizando a definição de subst_rec_fun
 
