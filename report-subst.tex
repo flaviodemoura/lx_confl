@@ -1,4 +1,14 @@
-\documentclass[12pt]{article}
+\documentclass[submission,copyright,creativecommons]{eptcs}
+\providecommand{\event}{FROM 2023} % Name of the event you are submitting to
+
+\usepackage{iftex}
+
+\ifpdf
+  \usepackage{underscore}         % Only needed if you use pdflatex.
+  \usepackage[T1]{fontenc}        % Recommended with pdflatex
+\else
+  \usepackage{breakurl}           % Not needed if you use pdflatex only.
+\fi
 
 \usepackage[utf8]{inputenc}
 \usepackage{babel}
@@ -9,30 +19,36 @@
 \usepackage{minibox}
 \usepackage{tabto,calc}
 
-% 
-\setlength{\textwidth}{17.5cm}                    % increase line length (page width)
-\setlength{\textheight}{24cm}                   % increase page length (page height)
-\setlength{\oddsidemargin}{-.2in}               % change page offset
-\setlength{\evensidemargin}{-.1in}              % change page offset
-\setlength{\topmargin}{-.6in}                   % change offset from page top
-%\setlength{\headsep}{15pt}                      %change space between
-%
-
-\newcommand{\comm}[1]{\tabto{\CurrentLineWidth}\fbox{\begin{minipage}[t]{0.98\linewidth-\TabPrevPos} #1 \end{minipage}}}
-
-% \Pagestyle{empty}
-
 \title{A formalized extension of the substitution lemma in Coq}
-\author{Flávio L. C. de Moura \and Maria Julia}
-
+\author{Flávio L. C. de Moura
+  \institute{Departamento de Ciência da Computação \\
+    Universidade de Brasília, Brasília, Brazil}
+  \email{flaviomoura@unb.br}
+  \and
+  Maria Julia
+  \institute{Departamento de Ciência da Computação \\
+    Universidade de Brasília, Brasília, Brazil}
+  \email{majuhdl@gmail.com}
+}
+\def\titlerunning{A formalized extension of the substitution lemma}
+\def\authorrunning{Flávio L. C. de Moura \& Maria Julia}
 \begin{document}
 \maketitle
+
+\begin{abstract}
+  TBD
+\end{abstract}
+
+
 \input{lambda_es.tex}
 
 % Para gerar o arquivo tex: 
 % 1.Em um terminal digite:  coqdoc --latex --body-only -s -g lambda_es.v
 % 2. Em um terminal digite: pdflatex report.tex *)
 
+% \nocite{*}
+\bibliographystyle{eptcs}
+\bibliography{zotLib}
 \end{document}
 
 %%% Local Variables:

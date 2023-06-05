@@ -153,7 +153,7 @@ Qed.
 
 (** * Introduction *)
 
-(** In this work, we are insterested in formalizing an extension of the Substitution Lemma%\cite{Bar84}% in the Coq proof assistant. The Substitution Lemma is an important result concerning the composition of the substitution operation. It is usually presented as follows: if $x$ does not occur in the set of free variables of the term $v$ then
+(** In this work, we are insterested in formalizing an extension of the Substitution Lemma%\cite{barendregtLambdaCalculusIts1984}% in the Coq proof assistant. The Substitution Lemma is an important result concerning the composition of the substitution operation. It is usually presented as follows: if $x$ does not occur in the set of free variables of the term $v$ then
 
 $$t\{x/u\}\{y/v\} = t\{y/v\}\{x/u\{y/v\}\}$$
 
