@@ -153,9 +153,9 @@ Qed.
 
 (** * Introduction *)
 
-(** In this work, we are insterested in formalizing an extension of the substitution lemma%\cite{barendregtLambdaCalculusIts1984}% in the Coq proof assistant. The substitution lemma is an important result concerning the composition of the substitution operation, and is usually presented as follows: if $x$ does not occur in the set of free variables of the term $v$ then $t\{x/u\}\{y/v\} = t\{y/v\}\{x/u\{y/v\}\}$. This is a well known result already formalized several times in the context of the $\lambda$-calculus %\cite{berghoferHeadtoHeadComparisonBruijn2007}%.
+(** In this work, we are insterested in formalizing an extension of the substitution lemma%\cite{barendregtLambdaCalculusIts1984}% in the Coq proof assistant. The substitution lemma is an important result concerning the composition of the substitution operation, and is usually presented as follows: if $x$ does not occur in the set of free variables of the term $v$ then $t\{x/u\}\{y/v\} =_\alpha t\{y/v\}\{x/u\{y/v\}\}$. This is a well known result already formalized several times in the context of the $\lambda$-calculus %\cite{berghoferHeadtoHeadComparisonBruijn2007}%.
 
-In the context of the $\lambda$-calculus with explicit substitutions its formalization is not straightforward because, in addition to the metasubstitution, there is the explicit substitution operation of the calculus.
+In the context of the $\lambda$-calculus with explicit substitutions its formalization is not straightforward because, in addition to the metasubstitution operation, there is the explicit substitution operator. Our formalization is done in a nominal setting that uses the MetaLib package of Coq, but no particular explicit substitution calculi is taken into account because the expected behaviour between the metasubstitution operation with the explicit substitutition constructor is the same regardless the calculus.
 
 *)
 
@@ -1625,7 +1625,7 @@ Proof.
         ** apply swap_id.
       * apply aeq_abs_diff.
         ** assumption.
-        ** assumption.
+       ** assumption.
         ** apply aeq_sym.
            apply H with t4.
            *** apply eq_trans with (size t4).
@@ -2784,7 +2784,7 @@ Proof.
 Admitted.
 *)
 
-Corollary m_subst_abs_neq : forall u x y z t, x <> y -> z `notin` (fv_nom u `union` fv_nom (n_abs y t ) `union` {{x}}) -> [x := u](n_abs y t) =a n_abs z ([x := u](swap y z t)).
+Lemma m_subst_abs_neq : forall u x y z t, x <> y -> z `notin` (fv_nom u `union` fv_nom (n_abs y t ) `union` {{x}}) -> [x := u](n_abs y t) =a n_abs z ([x := u](swap y z t)).
 Proof.
   intros u x y z t H H1. pose proof m_subst_abs as H2. specialize (H2 u x y t). destruct (x == y) eqn:Hx.
   - subst. contradiction.
@@ -2867,12 +2867,11 @@ Proof.
 Lemma m_subst_lemma: forall e1 e2 x e3 y, x <> y -> x `notin` (fv_nom e3) ->
  ([y := e3]([x := e2]e1)) =a ([x := ([y := e3]e2)]([y := e3]e1)).
 Proof.
-  (** *)
-  (** We proceed by functional induction on the structure of subst_rec_fun, the definition of the substitution. The induction splits the proof in seven cases: two cases concern variables, the next two concern abstractions, the next case concerns the application and the last two concern the explicit substitution. *) 
+  (** We proceed by functional induction on the structure of function [subst_rec_fun], i.e. the definition of the meta-substitution. The induction splits the proof in seven cases: two cases concern variables, the next two concern abstractions, the next case concerns the application and the last two concern the explicit substitution.  *) 
   intros e1 e2 x. functional induction (subst_rec_fun e1 e2 x).
   (** *)
   (**The first case is about the variable. It considers that there are two variables, $x$ and $y$ and they differ from one another. *)
-  - intros e3 y XY IH. rewrite m_subst_var_eq. rewrite m_subst_var_neq.
+  - intros e3 y XY H. rewrite m_subst_var_eq. rewrite m_subst_var_neq.
   (** *)
   (**When we rewrite the lemmas concerning equality and negation on variables substitution, we have two cases.*)
   (** *)
@@ -2881,7 +2880,7 @@ Proof.
     + assumption.
   (** *)
   (**The second case is also about variables. In it, we consider a third variable, $z$, meaning that each variable is different from the other. In the former case, we had that $x = y$.*)
-  - intros e3 z XY IH. rewrite m_subst_var_neq.
+  - intros e3 z XY H. rewrite m_subst_var_neq.
   (** *)
   (**To unfold the cases in this proof, we need to destruct one variable as another. We chose to do $x == z$.*)
     + destruct (y == z) eqn:Hyz.
@@ -2891,21 +2890,21 @@ Proof.
   (**In the first case, we have that $x = z$. To expand this case, we use the lemma $m_subst_notin$ as an auxiliary lemma. It is added as an hypothesis, using the specialization tactics to match the last case in that hypothesis to the proof we want.*)
   (** *)
 (*   (**The rest of the caases are finished  using the varible substitution's negation of equality, the varible substitution's equality or the standard library lemmas.*)  *)
-    * subst. rewrite m_subst_var_eq. pose proof m_subst_notin. specialize (H e3 ([z := e3] u) x). apply aeq_sym. apply H; assumption.
+    * subst. rewrite m_subst_var_eq. pose proof m_subst_notin as H'. specialize (H' e3 ([z := e3] u) x). apply aeq_sym. apply H'; assumption.
       * rewrite m_subst_var_neq.
         ** rewrite m_subst_var_neq.
            *** apply aeq_refl.
            *** auto.
         ** auto.
     + auto. 
-  - intros e3 z XY IH. rewrite m_subst_abs_eq.
-    pose proof m_subst_notin. specialize (H ([z := e3] n_abs x t1) ([z := e3] u) x). 
-    apply aeq_sym. apply H. apply fv_nom_remove.
+  - intros e3 z XY H. rewrite m_subst_abs_eq.
+    pose proof m_subst_notin as H'. specialize (H' ([z := e3] n_abs x t1) ([z := e3] u) x). 
+    apply aeq_sym. apply H'. apply fv_nom_remove.
     + assumption.
     + apply diff_remove.
       * assumption.
       * simpl. apply notin_remove_3. reflexivity.
-  - intros e3 y' XY IH. destruct (y == y').
+  - intros e3 y' XY H. destruct (y == y').
     + subst. rewrite m_subst_abs_eq. rewrite m_subst_notin_m_subst.
       * apply aeq_refl.
       * simpl. apply notin_remove_3. reflexivity.
