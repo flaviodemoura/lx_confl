@@ -2867,6 +2867,8 @@ Proof.
 Lemma m_subst_lemma: forall e1 e2 x e3 y, x <> y -> x `notin` (fv_nom e3) ->
  ([y := e3]([x := e2]e1)) =a ([x := ([y := e3]e2)]([y := e3]e1)).
 Proof.
+
+(* Due to permutation propagation, a stronger induction hypothesis is needed.
   (** We proceed by functional induction on the structure of function [subst_rec_fun], i.e. the definition of the meta-substitution. The induction splits the proof in seven cases: two cases concern variables, the next two concern abstractions, the next case concerns the application and the last two concern the explicit substitution.  *) 
   intros e1 e2 x. functional induction (subst_rec_fun e1 e2 x).
   (** *)
@@ -2908,7 +2910,7 @@ Proof.
     + subst. rewrite m_subst_abs_eq. rewrite m_subst_notin_m_subst.
       * apply aeq_refl.
       * simpl. apply notin_remove_3. reflexivity.
-    + unfold m_subst. specialize (IHn e3 y'). admit.
+    + unfold m_subst. specialize (IHn e3 y'). admit. 
 (*
       pose proof m_subst_abs_neq. specialize (H u x y t1). destruct (atom_fresh (union (fv_nom u) (union (fv_nom (n_abs y t1)) (singleton x)))). clear e0. assert (Hxy := _x). apply H in _x. rewrite _x. clear H.
       * destruct (x0 == y').
@@ -2922,18 +2924,20 @@ Proof.
   (**The case of application is solved by using the auxiliary lemmas on application. First, it is rewritten so that the substitution is made inside the aplication, instead of on it. The same lemma is applied multiple times to make sure nothing can be replaced anymore. This leads to a case that can be solved using the standard library lemmas.*)
   - intros e3 z XY IH. rewrite m_subst_app. rewrite m_subst_app. rewrite m_subst_app.  rewrite m_subst_app. auto.
   - intros e3 z XY IH.  admit.
-  - admit. 
+  - admit.  *)
 
-(*
 
 (*  induction e1 using n_sexp_size_induction. *) 
 
   (** We procced by case analisys on the structure of [e1]. The cases in between square brackets below mean that in the first case, [e1] is a variable named [z], in the second case [e1] is an abstraction of the form $\lambda$[z.e11], in the third case [e1] is an application of the form ([e11] [e12]), and finally in the fourth case [e1] is an explicit substitution of the form [e11] $\langle$ [z] := [e12] $\rangle$. *)
   
-  intro e1.
-  generalize dependent e1. intro e1; case e1 as [z | z e11 | e11 e12 | e11 z e12].
+  induction e1 using n_sexp_induction. 
+  - (* variable case: *) intros e2 x' e3 y Hneq Hfv. admit. (* to be completed as in the previous attempt. *)
+  - (* abstraction case: *) intros e2 x e3 y Hneq Hfv. Admitted.
 
-  - (** The first case: [e1] is a variable, say [z], and there are several subcases to analyse. *)
+    
+    (*
+    (** The first case: [e1] is a variable, say [z], and there are several subcases to analyse. *)
     intros IH e2 e3 x y Hneq. destruct (x == z) eqn:Hxz.
     + (** In the first subcase [z] is equal to [x]. *)
       subst. rewrite (m_subst_var_neq e3 z y).
@@ -2951,8 +2955,9 @@ Proof.
       subst. change (subst_rec (size (m_subst e3 y (n_abs z e11))) (m_subst e3 y (n_abs z e11)) (m_subst e3 y e2) z) with (m_subst (m_subst e3 y e2) z (m_subst e3 y (n_abs z e11))). rewrite subst_abs_eq.
     +
 *)
-*)
-Admitted.
+Admitted. *)
+
+   
 
 
 
