@@ -2441,45 +2441,45 @@ Proof.
            pose proof m_subst_var_eq as H1. specialize (H1 (swap x' y u) y). unfold m_subst in H1. rewrite H1. apply aeq_refl.
         ** destruct (z == y). 
            *** subst. pose proof m_subst_var_neq as H0. specialize (H0 u x' y). unfold m_subst in H0. rewrite H0.
-           pose proof m_subst_var_neq as H1. specialize (H1 (swap x' y u) y x'). unfold m_subst in H1. rewrite H1. 
-           Search n_var. simpl. unfold swap_var. rewrite eq_dec_refl. 
-              **** apply aeq_refl.
-              **** assumption.
-              **** assumption.
+
+               **** pose proof m_subst_var_neq as H1. specialize (H1 (swap x' y u) y x'). unfold m_subst in H1. rewrite H1. 
+                    ***** simpl. unfold swap_var. rewrite eq_dec_refl. apply aeq_refl.
+                    ***** assumption.
+               **** assumption.
            *** pose proof m_subst_var_neq as H0. specialize (H0 u x' z). unfold m_subst in H0. rewrite H0.
-               pose proof m_subst_var_neq as H1. specialize (H1 (swap x' y u) y z). unfold m_subst in H1. rewrite H1.
-               **** simpl. unfold swap_var. rewrite eq_dec_refl. apply aeq_refl.
-               **** auto.
+               **** pose proof m_subst_var_neq as H1. specialize (H1 (swap x' y u) y z). unfold m_subst in H1. rewrite H1.
+                    ***** simpl. unfold swap_var. rewrite eq_dec_refl. apply aeq_refl.
+                    ***** auto.
                **** auto.
       * destruct (z == x'). 
         ** subst. destruct (x == y).
             *** subst. pose proof m_subst_var_neq as H0. specialize (H0 u y x'). unfold m_subst in H0. rewrite H0.
-               pose proof m_subst_var_neq as H1. specialize (H1 (swap x' y u) x' y). unfold m_subst in H1. rewrite H1.
-               **** simpl. unfold swap_var. rewrite eq_dec_refl. destruct (y == x').
-                    ***** subst. contradiction.
-                    ***** apply aeq_refl.
-               **** assumption.
-               **** assumption.
-            *** pose proof m_subst_var_neq as H0. specialize (H0 u x x'). unfold m_subst in H0. rewrite H0.
-               pose proof m_subst_var_neq as H1. specialize (H1 (swap x' y u) x y). unfold m_subst in H1. rewrite H1.
-               simpl. unfold swap_var. destruct (x == x').
-                **** subst. contradiction.
-                **** destruct (x == y).
-                    ***** subst. contradiction.
-                    ***** apply aeq_refl. 
+                **** pose proof m_subst_var_neq as H1. specialize (H1 (swap x' y u) x' y). unfold m_subst in H1. rewrite H1.
+                     ***** simpl. unfold swap_var. rewrite eq_dec_refl. destruct (y == x').
+                     ****** subst. contradiction.
+                     ****** apply aeq_refl.
+                     ***** assumption.
                 **** assumption.
+            *** pose proof m_subst_var_neq as H0. specialize (H0 u x x'). unfold m_subst in H0. rewrite H0.
+                **** pose proof m_subst_var_neq as H1. specialize (H1 (swap x' y u) x y). unfold m_subst in H1. rewrite H1.
+                     ***** simpl. unfold swap_var. destruct (x == x').
+                     ****** subst. contradiction.
+                     ****** destruct (x == y).
+                     ******* subst. contradiction.
+                     ******* apply aeq_refl. 
+                ***** assumption.
                 **** assumption.
         ** destruct (x == y).
             *** subst. destruct (z == y). 
                 **** subst. pose proof m_subst_var_eq as H0. specialize (H0 u y). unfold m_subst in H0. rewrite H0.
                pose proof m_subst_var_eq as H1. specialize (H1 (swap x' y u) x'). unfold m_subst in H1. rewrite H1. apply aeq_refl.
                 **** pose proof m_subst_var_neq as H0. specialize (H0 u y z). unfold m_subst in H0. rewrite H0.
-               pose proof m_subst_var_neq as H1. specialize (H1 (swap x' y u) x' z). unfold m_subst in H1. rewrite H1.
-               simpl. unfold swap_var. rewrite eq_dec_refl. destruct (y == x').
-                      ***** subst. apply aeq_refl.
-                      ***** apply aeq_refl.
-                      ***** auto.
-                      ***** auto.
+                     ***** pose proof m_subst_var_neq as H1. specialize (H1 (swap x' y u) x' z). unfold m_subst in H1. rewrite H1.
+                     ****** simpl. unfold swap_var. rewrite eq_dec_refl. destruct (y == x').
+                     ******* subst. apply aeq_refl.
+                     ******* apply aeq_refl.
+                     ****** auto.
+                     ***** auto.
             *** destruct (z == y).
                 **** subst. pose proof m_subst_var_neq as H0. specialize (H0 u x y). unfold m_subst in H0. rewrite H0.
                pose proof m_subst_var_neq as H1. specialize (H1 (swap x' y u) x x'). unfold m_subst in H1. rewrite H1.
@@ -2554,7 +2554,7 @@ Proof.
                   ***** admit.
               **** reflexivity.
               **** assumption.
-   + Admitted.
+   + Admitted. 
 
 (*
         
@@ -2629,7 +2629,7 @@ Proof.
            *** admit.
            *** Admitted. *)
 
-(* indução funcional utilizando a definição de subst_rec_fun
+(* indução funcional utilizando a definição de subst_rec_fun 
 
   intros x y z t u. destruct (x == y).
   - subst. repeat rewrite swap_id. rewrite swap_var_id. apply aeq_refl.
@@ -3002,8 +3002,37 @@ Proof.
 
   (** We procced by case analisys on the structure of [e1]. The cases in between square brackets below mean that in the first case, [e1] is a variable named [z], in the second case [e1] is an abstraction of the form $\lambda$[z.e11], in the third case [e1] is an application of the form ([e11] [e12]), and finally in the fourth case [e1] is an explicit substitution of the form [e11] $\langle$ [z] := [e12] $\rangle$. *)
   
-  induction e1 using n_sexp_induction. 
-  - (* variable case: *) intros e2 x' e3 y Hneq Hfv. admit. (* to be completed as in the previous attempt. *)
+  induction e1 using n_sexp_induction.
+  - (* variable case: *) intros e2 x' e3 y Hneq Hfv. case (x == x').
+    + intro Heq. subst. rewrite m_subst_var_eq. case (x' == y).
+      * intro Heq. subst. contradiction.
+      * intro Hneq'. rewrite m_subst_var_neq.
+        ** rewrite m_subst_var_eq. apply aeq_refl.
+        ** assumption.
+    + intro Hneq'. case (x == y).
+      * intro Heq. subst. case (x' == y).
+        ** intro Heq. subst. contradiction.
+        ** intro Hneq''. rewrite m_subst_var_neq.
+           *** rewrite m_subst_var_eq. rewrite m_subst_notin.
+               **** apply aeq_refl.
+               **** assumption.
+           *** assumption.
+      * intro Hneq''. rewrite m_subst_var_neq.
+        ** rewrite m_subst_var_neq.
+           *** rewrite m_subst_var_neq.
+               **** apply aeq_refl.
+               **** assumption.
+           *** assumption.
+        ** assumption.
+  - admit.
+    (** *)
+  (**When we rewrite the lemmas concerning equality and negation on variables substitution, we have two cases.*)
+  (** *)
+  (**If we only have these two variables, we can use the equality lemma to find that both sides of the proof are equal and finish it using reflexivity and in the second case assumptions are used to finish the proof.*)
+    + rewrite m_subst_var_eq. apply aeq_refl.
+    + assumption.
+
+    admit. (* to be completed as in the previous attempt. *)
   - (* abstraction case: *) intros e2 x e3 y Hneq Hfv. Admitted.
 
     
