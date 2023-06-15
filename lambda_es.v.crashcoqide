@@ -255,34 +255,6 @@ Proof.
   induction t; simpl; unfold swap_var; default_simp.
 Qed.
 
-Lemma swap_eq: forall x y z w, swap_var x y z = swap_var x y w -> z = w.
-Proof.
-  intros x y z w H. unfold swap_var in H. destruct (z == x).
-  - subst. destruct (w == x).
-    + rewrite e. reflexivity.
-    + destruct (w == y).
-      * subst. contradiction.
-      * subst. contradiction.
-  - destruct (z == y).
-    + subst. destruct (w == x).
-      * subst. contradiction.
-      * destruct (w == y).
-        ** subst. reflexivity.
-        ** subst. contradiction.
-    + destruct (w == x).
-      * subst. contradiction.
-      * destruct (w == y).
-        ** subst. contradiction.
-        ** assumption.
-Qed.  
-
-Lemma swap_neq: forall x y z w, z <> w -> swap_var x y z <> swap_var x y w.
-Proof.
-  intros x y z w H1 H2. unfold swap_var. destruct (z == x).
-  - subst. apply swap_eq in H2. contradiction.
-  - apply swap_eq in H2. contradiction.
-Qed.
-  
 Lemma swap_size_eq : forall x y t,
     size (swap x y t) = size t.
 Proof.
@@ -2463,49 +2435,126 @@ Proof.
   - subst. repeat rewrite swap_id. rewrite swap_var_id. apply aeq_refl.
   - generalize dependent u. generalize dependent z. generalize dependent y. generalize dependent x.
     induction t using n_sexp_induction.
-    + intros x' y H z u. rewrite subst_rec_fun_equation. destruct (z == x).
-      * subst. simpl swap at 2. rewrite subst_rec_fun_equation. rewrite eq_dec_refl. apply aeq_refl.
-      * pose proof swap_neq. specialize (H0 x' y z x). apply H0 in n; clear H0.
-        simpl swap at 2. rewrite subst_rec_fun_equation. destruct (swap_var x' y z == swap_var x' y x).
-        ** contradiction.
-        ** simpl swap. apply aeq_refl.
+    + intros x' y H z u. simpl. unfold swap_var. destruct (x == x').
+      * subst. destruct (z == x'). 
+        ** subst. pose proof m_subst_var_eq as H0. specialize (H0 u x'). unfold m_subst in H0. rewrite H0.
+           pose proof m_subst_var_eq as H1. specialize (H1 (swap x' y u) y). unfold m_subst in H1. rewrite H1. apply aeq_refl.
+        ** destruct (z == y). 
+           *** subst. pose proof m_subst_var_neq as H0. specialize (H0 u x' y). unfold m_subst in H0. rewrite H0.
+
+               **** pose proof m_subst_var_neq as H1. specialize (H1 (swap x' y u) y x'). unfold m_subst in H1. rewrite H1. 
+                    ***** simpl. unfold swap_var. rewrite eq_dec_refl. apply aeq_refl.
+                    ***** assumption.
+               **** assumption.
+           *** pose proof m_subst_var_neq as H0. specialize (H0 u x' z). unfold m_subst in H0. rewrite H0.
+               **** pose proof m_subst_var_neq as H1. specialize (H1 (swap x' y u) y z). unfold m_subst in H1. rewrite H1.
+                    ***** simpl. unfold swap_var. rewrite eq_dec_refl. apply aeq_refl.
+                    ***** auto.
+               **** auto.
+      * destruct (z == x'). 
+        ** subst. destruct (x == y).
+            *** subst. pose proof m_subst_var_neq as H0. specialize (H0 u y x'). unfold m_subst in H0. rewrite H0.
+                **** pose proof m_subst_var_neq as H1. specialize (H1 (swap x' y u) x' y). unfold m_subst in H1. rewrite H1.
+                     ***** simpl. unfold swap_var. rewrite eq_dec_refl. destruct (y == x').
+                     ****** subst. contradiction.
+                     ****** apply aeq_refl.
+                     ***** assumption.
+                **** assumption.
+            *** pose proof m_subst_var_neq as H0. specialize (H0 u x x'). unfold m_subst in H0. rewrite H0.
+                **** pose proof m_subst_var_neq as H1. specialize (H1 (swap x' y u) x y). unfold m_subst in H1. rewrite H1.
+                     ***** simpl. unfold swap_var. destruct (x == x').
+                     ****** subst. contradiction.
+                     ****** destruct (x == y).
+                     ******* subst. contradiction.
+                     ******* apply aeq_refl. 
+                ***** assumption.
+                **** assumption.
+        ** destruct (x == y).
+            *** subst. destruct (z == y). 
+                **** subst. pose proof m_subst_var_eq as H0. specialize (H0 u y). unfold m_subst in H0. rewrite H0.
+               pose proof m_subst_var_eq as H1. specialize (H1 (swap x' y u) x'). unfold m_subst in H1. rewrite H1. apply aeq_refl.
+                **** pose proof m_subst_var_neq as H0. specialize (H0 u y z). unfold m_subst in H0. rewrite H0.
+                     ***** pose proof m_subst_var_neq as H1. specialize (H1 (swap x' y u) x' z). unfold m_subst in H1. rewrite H1.
+                     ****** simpl. unfold swap_var. rewrite eq_dec_refl. destruct (y == x').
+                     ******* subst. apply aeq_refl.
+                     ******* apply aeq_refl.
+                     ****** auto.
+                     ***** auto.
+            *** destruct (z == y).
+                **** subst. pose proof m_subst_var_neq as H0. specialize (H0 u x y). unfold m_subst in H0. rewrite H0.
+               pose proof m_subst_var_neq as H1. specialize (H1 (swap x' y u) x x'). unfold m_subst in H1. rewrite H1.
+               simpl. unfold swap_var. destruct (x == x'). 
+                      ***** subst. contradiction.
+                      ***** destruct (x == y).
+                            ****** subst. contradiction.
+                            ****** apply aeq_refl.
+                      ***** assumption.
+                      ***** assumption.
+                **** pose proof m_subst_var_neq as H0. specialize (H0 u x z). unfold m_subst in H0. rewrite H0.
+               pose proof m_subst_var_neq as H1. specialize (H1 (swap x' y u) x z). unfold m_subst in H1. rewrite H1.
+               simpl. unfold swap_var. destruct (x == x'). 
+                      ***** subst. contradiction.
+                      ***** destruct (x == y). 
+                            ****** subst. contradiction.
+                            ****** apply aeq_refl.
+                      ***** admit.
+                      ***** admit.
     + intros x y Hneq z' u. rewrite subst_rec_fun_equation. case (z' == z).
-      * intro Heq. subst. simpl. rewrite subst_rec_fun_equation. rewrite eq_dec_refl. apply aeq_refl.
+      * intro Heq. subst. simpl. admit. (* ok *)
+        
       * intro Hneq'. destruct (atom_fresh (union (fv_nom u) (union (fv_nom t) (union (singleton z') (singleton z))))). simpl. remember (subst_rec_fun (swap z x0 t) u z') as ee. rewrite subst_rec_fun_equation.
-        pose proof swap_neq as Hsw. specialize (Hsw x y z' z). assert (Hneq'' := Hneq). Admitted.
-(* parei aqui
-        apply Hsw in Hneq; clear Hsw.
-        ** destruct (swap_var x y z' == swap_var x y z).
-           *** unfold swap in Hneq. rewrite e in Hneq. contradiction.
-           *** destruct (atom_fresh (union (fv_nom (swap x y u)) (union (fv_nom (swap x y t)) (union (singleton (swap_var x y z')) (singleton (swap_var x y z)))))). subst. case ((swap_var x y x0) == x1).
-           **** intro Heq. subst. apply aeq_abs_same. rewrite H.
-                ***** pose proof aeq_m_subst as Haeq. unfold m_subst in Haeq. apply Haeq.
-                ****** rewrite swap_equivariance. apply aeq_refl.
-                ****** apply aeq_refl.
-                ***** reflexivity.
-                ***** assumption.          
-           **** intro Hneq'''. apply aeq_abs_diff.
-                ***** assumption.
-                ***** apply fv_nom_remove.
-                ****** apply notin_fv_nom_equivariance. apply notin_union_1 in n. assumption.
-                ****** apply diff_remove.
-                ******* apply notin_union_2 in n. apply notin_union_2 in n. apply notin_union_1 in n. apply notin_singleton_1 in n. apply aux_not_equal. apply swap_neq.
-                admit. (* ok *)
-                ****** admit. (* ok *)
-           **** rewrite H.
-                ***** unfold swap_var at 2. destruct (x0 == x).
-                ****** rewrite H. unfold swap_var at 2. destruct (z == x).
-                ******* subst. admit.
-                ******* subst. destruct (z == y). 
-                ******** subst. admit.
-                ******** admit.
-                ******* subst. admit.
-                ******* subst. admit.
-                ****** admit.
-                ***** reflexivity.
-                ***** assumption.
-        ** assumption
-   + Admitted. *)
+       assert (Hdiff: ((swap_var x y z') <> (swap_var x y z))).
+     {
+       unfold swap_var at 1. destruct (z' == x).
+       * subst. unfold swap_var. destruct (z == x).
+         ** subst. contradiction.
+         ** destruct (z == y). 
+             *** subst. auto.
+             *** auto.
+       * destruct (z' == y).
+         ** unfold swap_var.  destruct (z == x).
+            *** subst. assumption.
+            *** apply eq_sym in e. subst. destruct (z == z').
+                **** subst. contradiction.
+                **** auto.
+         ** unfold swap_var.  destruct (z == x).
+            *** subst. assumption.
+            *** destruct (z == y).
+                **** auto.
+                **** auto.
+     }
+     assert (Hdiff': ((swap_var x y z') == (swap_var x y z)) = right Hdiff).
+     {
+       admit. (* ? *)
+     }
+       rewrite Hdiff'.
+     destruct (atom_fresh (union (fv_nom (swap x y u)) (union (fv_nom (swap x y t)) (union (singleton (swap_var x y z')) (singleton (swap_var x y z)))))). subst. case ((swap_var x y x0) == x1).
+       ** intro Heq. subst. apply aeq_abs_same. rewrite H.
+          *** pose proof aeq_m_subst as Haeq. unfold m_subst in Haeq. apply Haeq.
+              **** rewrite swap_equivariance. apply aeq_refl.
+              **** apply aeq_refl.
+          *** reflexivity.
+          *** assumption.          
+       ** intro Hneq''. apply aeq_abs_diff.
+          *** assumption.
+          *** apply fv_nom_remove.
+              **** apply notin_fv_nom_equivariance. apply notin_union_1 in n. assumption.
+              **** apply diff_remove.
+                   ***** apply notin_union_2 in n. apply notin_union_2 in n. apply notin_union_1 in n. apply notin_singleton_1 in n. apply aux_not_equal. admit. (* ok *)
+                   ***** admit. (* ok *)
+          *** rewrite H.
+              **** unfold swap_var at 2. destruct (x0 == x).
+                  ***** rewrite H. unfold swap_var at 2. destruct (z == x).
+                        ****** subst. admit.
+                        ****** subst. destruct (z == y). 
+                              ******* subst. admit.
+                              ******* admit.
+                        ****** subst. admit.
+                        ****** subst. admit.
+                  ***** admit.
+              **** reflexivity.
+              **** assumption.
+   + Admitted. 
 
 (*
         
@@ -2955,7 +3004,8 @@ Proof.
   
   induction e1 using n_sexp_induction.
   - (* variable case: *) intros e2 x' e3 y Hneq Hfv. case (x == x').
-    + intro Heq. subst. rewrite m_subst_var_eq. case (x' == y).
+    + intro Heq. subst. 
+rewrite m_subst_var_eq. case (x' == y).
       * intro Heq. subst. contradiction.
       * intro Hneq'. rewrite m_subst_var_neq.
         ** rewrite m_subst_var_eq. apply aeq_refl.
@@ -2975,40 +3025,17 @@ Proof.
                **** assumption.
            *** assumption.
         ** assumption.
-  - intros e2 x e3 y Hxy Hfv. case (z == x).
-    + intro Heq. subst. rewrite m_subst_abs_eq. rewrite m_subst_abs_diff.
-      * rewrite m_subst_abs_eq. apply aeq_refl.
-      * auto.
-      * admit.
-    + intro Hneq. case (z == y). 
-      * intro Heq. subst. rewrite m_subst_abs_eq. rewrite m_subst_notin. 
-        ** rewrite m_subst_notin. 
-            *** rewrite m_subst_notin. 
-                **** apply aeq_refl.
-                **** admit.
-            *** admit.
-        ** admit.
-      * intro Hneq'. rewrite m_subst_notin.
-        ** rewrite m_subst_notin.
-            *** rewrite m_subst_notin. 
-                **** rewrite m_subst_notin. 
-                      ***** apply aeq_refl.
-                      ***** admit.
-                **** admit.
-            *** admit.
-        ** admit.
-    (** *)
+  - intros e2 x e3 y Hneq Hfv. 
+
+(** *)
   (**When we rewrite the lemmas concerning equality and negation on variables substitution, we have two cases.*)
   (** *)
   (**If we only have these two variables, we can use the equality lemma to find that both sides of the proof are equal and finish it using reflexivity and in the second case assumptions are used to finish the proof.*)
-  (* to be completed as in the previous attempt. *)
-  - (* abstraction case: *) 
-    intros e2 x e3 y Hneq Hfv. rewrite m_subst_notin. 
-    + Search m_subst. rewrite m_subst_app. rewrite m_subst_app. rewrite m_subst_app.
-      Search n_app. apply aeq_app.
-      ** rewrite <- IHe1_1. 
-          *** Search m_subst.
-Admitted.
+    + rewrite m_subst_var_eq. apply aeq_refl.
+    + assumption.
+
+    admit. (* to be completed as in the previous attempt. *)
+  - (* abstraction case: *) intros e2 x e3 y Hneq Hfv. Admitted.
 
     
     (*
