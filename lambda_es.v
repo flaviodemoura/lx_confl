@@ -2982,7 +2982,14 @@ Proof.
         ** apply notin_remove_2. simpl. apply notin_remove_3. reflexivity.
       * apply aeq_sym. auto.
     + intro Hneq. case (z == y). 
-      * intro Heq. subst. rewrite m_subst_abs_eq. unfold m_subst. (* ? *) rewrite subst_rec_fun_equation.
+      * intro Heq. subst. rewrite m_subst_abs_eq. rewrite m_subst_notin_m_subst.
+        ** apply aeq_refl.
+        ** simpl. apply notin_remove_3. reflexivity.
+      * intro Hneq'. Search m_subst.
+Admitted.
+
+
+(*
         rewrite m_subst_notin. 
         ** rewrite m_subst_notin. 
             *** rewrite m_subst_notin. 
@@ -3011,7 +3018,7 @@ Proof.
       ** rewrite <- IHe1_1. 
           *** Search m_subst.
 Admitted.
-
+*)
     
     (*
     (** The first case: [e1] is a variable, say [z], and there are several subcases to analyse. *)
