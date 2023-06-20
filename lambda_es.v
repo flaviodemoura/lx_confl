@@ -2451,11 +2451,17 @@ Lemma test :
 *)
 
 (* realocar *)
+Lemma aeq_m_subst': forall t t' u u' x x', t =a (swap x x' t') -> u =a u' -> ([x := u] t) =a ([x' := u'] t').
+Proof.
+  intros t t' u u' x Ht Hu. unfold m_subst. Search eq_dec.
+  Admitted.
+
 Lemma aeq_m_subst: forall t t' u u' x, t =a t' -> u =a u' -> ([x := u] t) =a ([x := u'] t').
 Proof.
   intros t t' u u' x Ht Hu. unfold m_subst. Search eq_dec.
   Admitted.
-  
+
+
 (* realocar *)
 Lemma swap_subst_rec_fun: forall x y z t u, swap x y (subst_rec_fun t u z) =a subst_rec_fun (swap x y t) (swap x y u) (swap_var x y z).
 Proof.
@@ -2472,40 +2478,38 @@ Proof.
     + intros x y Hneq z' u. rewrite subst_rec_fun_equation. case (z' == z).
       * intro Heq. subst. simpl. rewrite subst_rec_fun_equation. rewrite eq_dec_refl. apply aeq_refl.
       * intro Hneq'. destruct (atom_fresh (union (fv_nom u) (union (fv_nom t) (union (singleton z') (singleton z))))). simpl. remember (subst_rec_fun (swap z x0 t) u z') as ee. rewrite subst_rec_fun_equation.
-        pose proof swap_neq as Hsw. specialize (Hsw x y z' z). assert (Hneq'' := Hneq). Admitted.
-(* parei aqui
-        apply Hsw in Hneq; clear Hsw.
-        ** destruct (swap_var x y z' == swap_var x y z).
-           *** unfold swap in Hneq. rewrite e in Hneq. contradiction.
-           *** destruct (atom_fresh (union (fv_nom (swap x y u)) (union (fv_nom (swap x y t)) (union (singleton (swap_var x y z')) (singleton (swap_var x y z)))))). subst. case ((swap_var x y x0) == x1).
-           **** intro Heq. subst. apply aeq_abs_same. rewrite H.
-                ***** pose proof aeq_m_subst as Haeq. unfold m_subst in Haeq. apply Haeq.
-                ****** rewrite swap_equivariance. apply aeq_refl.
-                ****** apply aeq_refl.
-                ***** reflexivity.
-                ***** assumption.          
-           **** intro Hneq'''. apply aeq_abs_diff.
-                ***** assumption.
-                ***** apply fv_nom_remove.
-                ****** apply notin_fv_nom_equivariance. apply notin_union_1 in n. assumption.
-                ****** apply diff_remove.
-                ******* apply notin_union_2 in n. apply notin_union_2 in n. apply notin_union_1 in n. apply notin_singleton_1 in n. apply aux_not_equal. apply swap_neq.
-                admit. (* ok *)
-                ****** admit. (* ok *)
-           **** rewrite H.
-                ***** unfold swap_var at 2. destruct (x0 == x).
-                ****** rewrite H. unfold swap_var at 2. destruct (z == x).
-                ******* subst. admit.
-                ******* subst. destruct (z == y). 
-                ******** subst. admit.
-                ******** admit.
-                ******* subst. admit.
-                ******* subst. admit.
-                ****** admit.
-                ***** reflexivity.
-                ***** assumption.
-        ** assumption
-   + Admitted. *)
+        pose proof swap_neq as Hsw. specialize (Hsw x y z' z). assert (Hneq'' := Hneq'). apply Hsw in Hneq''; clear Hsw.
+        destruct (swap_var x y z' == swap_var x y z).
+        ** contradiction.
+        ** destruct (atom_fresh (union (fv_nom (swap x y u)) (union (fv_nom (swap x y t)) (union (singleton (swap_var x y z')) (singleton (swap_var x y z)))))). subst. case ((swap_var x y x0) == x1).
+           *** intro Heq. subst. apply aeq_abs_same. rewrite H.
+               **** pose proof aeq_m_subst as Haeq. unfold m_subst in Haeq. apply Haeq.
+                    ***** rewrite swap_equivariance. apply aeq_refl.
+                    ***** apply aeq_refl.
+               **** reflexivity.
+               **** assumption.          
+           *** intro Hneq'''. apply aeq_abs_diff.
+               **** assumption.
+               **** apply fv_nom_remove.
+                    ***** apply notin_fv_nom_equivariance. apply notin_union_1 in n. assumption.
+                    ***** apply diff_remove.
+                    ****** apply notin_union_2 in n. apply notin_union_2 in n. apply notin_union_1 in n. apply notin_singleton_1 in n. apply aux_not_equal. apply swap_neq. assumption.
+                    ****** apply fv_nom_remove_swap.
+                    ******* assumption.
+                    ******* repeat apply notin_union_2 in n. apply notin_singleton_1 in n. apply swap_neq. auto.
+                    ******* apply notin_fv_nom_equivariance. apply notin_union_2 in n. apply notin_union_1 in n. assumption.
+               **** rewrite H.
+                    ***** rewrite H.
+                    ****** pose proof aeq_m_subst' as Haeq. unfold m_subst in Haeq. specialize (Haeq (swap x y (swap z x0 t))  (swap x1 (swap_var x y x0) (swap (swap_var x y z) x1 (swap x y t))) (swap x y u) (swap x1 (swap_var x y x0) (swap x y u)) (swap_var x y z') (swap_var x1 (swap_var x y x0) (swap_var x y z'))). apply Haeq.
+                    ******* admit. (* ? *)
+                    ******* apply aeq_sym. apply swap_reduction.
+                    ******** apply notin_union_1 in n1. assumption.
+                    ******** apply notin_fv_nom_equivariance. apply notin_union_1 in n. assumption.
+                    ****** apply swap_size_eq.
+                    ****** auto.
+                    ***** reflexivity.
+                    ***** assumption.
+    + Admitted.
 
 (*
         
@@ -2932,7 +2936,8 @@ Proof.
     + subst. rewrite m_subst_abs_eq. rewrite m_subst_notin_m_subst.
       * apply aeq_refl.
       * simpl. apply notin_remove_3. reflexivity.
-    + unfold m_subst. specialize (IHn e3 y'). admit. 
+    + rewrite m_subst_abs_neq.
+      unfold m_subst in *. specialize (IHn e3 y'). admit. 
 (*
       pose proof m_subst_abs_neq. specialize (H u x y t1). destruct (atom_fresh (union (fv_nom u) (union (fv_nom (n_abs y t1)) (singleton x)))). clear e0. assert (Hxy := _x). apply H in _x. rewrite _x. clear H.
       * destruct (x0 == y').
@@ -2985,7 +2990,21 @@ Proof.
       * intro Heq. subst. rewrite m_subst_abs_eq. rewrite m_subst_notin_m_subst.
         ** apply aeq_refl.
         ** simpl. apply notin_remove_3. reflexivity.
-      * intro Hneq'. Search m_subst.
+      * intro Hneq'. pose proof m_subst_abs_neq as Habs. pick_fresh w. specialize (Habs e2 x z w e1). assert (Hzx := Hneq). apply aux_not_equal in Hzx. apply Habs in Hzx.
+        ** apply aeq_trans with ([y := e3] (n_abs w ([x := e2] swap z w e1))).
+           *** admit. (* ok *)
+           *** (* continuar aqui *)
+        **
+
+        unfold m_subst in *. 
+
+
+        rewrite subst_rec_fun_equation. destruct (subst_rec_fun (n_abs z e1) e2 x).
+        ** subst. contradiction.
+        ** destruct (atom_fresh (union (fv_nom e2) (union (fv_nom e1) (union (singleton x) (singleton z))))) in Heqee. subst. rewrite subst_rec_fun_equation. destruct (y == x0).
+           *** subst.
+           ***
+        Search m_subst.
 Admitted.
 
 
