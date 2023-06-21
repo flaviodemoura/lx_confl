@@ -2993,7 +2993,17 @@ Proof.
       * intro Hneq'. pose proof m_subst_abs_neq as Habs. pick_fresh w. specialize (Habs e2 x z w e1). assert (Hzx := Hneq). apply aux_not_equal in Hzx. apply Habs in Hzx.
         ** apply aeq_trans with ([y := e3] (n_abs w ([x := e2] swap z w e1))).
            *** admit. (* ok *)
-           *** (* continuar aqui *)
+           *** pose proof m_subst_abs_neq as Habs'. pick_fresh w'. specialize (Habs' e3 y w w' ([x := e2] swap z w e1)). assert (Hwy := Fr). 
+               repeat apply notin_union_2 in Hwy. simpl in Hwy. apply notin_singleton_1 in Hwy. apply Habs' in Hwy.
+               **** rewrite Habs'.
+                    ***** pose proof m_subst_abs_neq as Habs''. pick_fresh w''. specialize (Habs'' e3 y z w'' e1). assert (Hyz := Hneq'). 
+                          apply aux_not_equal in Hyz. apply Habs'' in Hyz. 
+                          ****** apply aeq_trans with ([x := [y := e3] e2] (n_abs w'' ([y := e3] swap z w'' e1))).
+                                 ******* pose proof m_subst_abs_neq as Habs'''. pick_fresh w'''. specialize (Habs''' ([y := e3] e2) x w'' w''' ([y := e3] swap z w'' e1)). assert (Hxw := Fr1). 
+                                         apply notin_union_2 in Hxw. apply notin_union_1 in Hxw. simpl in Hxw. apply notin_singleton_1 in Hxw. apply Habs''' in Hxw. 
+                                         ******** rewrite Hxw. apply aeq_abs_diff.
+
+
         **
 
         unfold m_subst in *. 
