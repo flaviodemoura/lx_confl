@@ -2526,6 +2526,9 @@ Proof.
                     ****** apply aux_not_equal. assumption.
                     ***** reflexivity.
                     ***** assumption.
+    + intros x y H z u. rewrite subst_rec_fun_equation. simpl. apply aeq_sym. rewrite subst_rec_fun_equation. apply aeq_sym. apply aeq_app.
+      * apply IHt1. assumption.
+      * apply IHt2. assumption.
     + Admitted.
       
                       (* 
