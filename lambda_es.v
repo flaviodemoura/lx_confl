@@ -2529,7 +2529,25 @@ Proof.
     + intros x y H z u. rewrite subst_rec_fun_equation. simpl. apply aeq_sym. rewrite subst_rec_fun_equation. apply aeq_sym. apply aeq_app.
       * apply IHt1. assumption.
       * apply IHt2. assumption.
-    + Admitted.
+    + intros x y Hneq z' u. rewrite subst_rec_fun_equation. destruct (z' == z).
+      * subst. simpl. apply aeq_sym. rewrite subst_rec_fun_equation. rewrite eq_dec_refl. apply aeq_sub_same.
+        ** apply aeq_refl.
+        ** apply aeq_sym. apply IHt1. assumption.
+      * destruct (atom_fresh (union (fv_nom u) (union (fv_nom t1) (union (singleton z') (singleton z))))). simpl. apply aeq_sym. rewrite subst_rec_fun_equation. destruct (swap_var x y z' == swap_var x y z).
+        ** apply (swap_neq x y) in n. contradiction.
+        ** destruct (atom_fresh
+       (union (fv_nom (swap x y u))
+          (union (fv_nom (swap x y t1)) (union (singleton (swap_var x y z')) (singleton (swap_var x y z)))))). case (x1 == swap_var x y x0).
+           *** intro Heq. subst. apply aeq_sub_same.
+               **** apply aeq_sym. rewrite <- swap_equivariance. apply H.
+                    ***** reflexivity.
+                    ***** assumption.
+               **** apply aeq_sym. apply IHt1. assumption.
+           *** intro Hneq'. apply aeq_sub_diff.
+               **** apply aeq_sym. apply IHt1. assumption.
+               **** assumption.
+               **** admit.
+               **** Admitted.
       
                       (* 
                     ******* replace (swap (swap_var x y z) x1 (swap x y t)) with (swap x1 (swap_var x y z) (swap x y t)).
