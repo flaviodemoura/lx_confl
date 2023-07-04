@@ -2940,7 +2940,15 @@ Proof.
       * apply aeq_refl.
       * admit.
 Admitted.
- 
+
+Lemma m_subst_sub: forall t1 t2 u x y, [x := u](n_sub t1 y t2)  =a
+       if (x == y) then (n_sub t1 y ([x := u]t2))
+       else let (z,_) := atom_fresh (fv_nom u `union` fv_nom t1 `union` fv_nom t2 `union` {{x}} `union` {{y}}) in
+       n_sub ([x := u](swap y z t1)) z ([x := u]t2).
+Proof.
+  Admitted.
+
+
 (** * The substitution lemma for the metasubstitution *)
 
 (**
@@ -3123,10 +3131,23 @@ Proof.
     + apply IHe1_2; assumption.
   - intros e2 x e3 y Hneq Hfv. case (z == x).
     + intro Heq. case (z == y).
-      * intros. subst. contradiction.
-      * intros Hneq'. pick fresh w for (union (fv_nom e1_1) (union (fv_nom e1_2) (union (fv_nom e2) (union (fv_nom e3) (union (singleton z) (union (singleton x) (singleton y))))))).
-        subst. 
-
+      * intros Heq'. subst. contradiction.
+      * intros Hneq'. subst. apply aeq_trans with ([y := e3] (n_sub e1_1 x ([x := e2] e1_2))).
+        ** apply aeq_m_subst.
+           *** rewrite m_subst_sub. rewrite eq_dec_refl. apply aeq_refl.
+           *** apply aeq_refl.
+        ** apply aeq_sym. unfold m_subst. remember (subst_rec_fun (n_sub e1_1 x e1_2) e3 y) as ee. rewrite subst_rec_fun_equation in Heqee. destruct (y == x).
+           *** symmetry in e. contradiction.
+           *** destruct (atom_fresh (union (fv_nom e3) (union (fv_nom e1_1) (union (singleton y) (singleton x))))). remember (subst_rec_fun (n_sub e1_1 x (subst_rec_fun e1_2 e2 x)) e3 y) as eee. rewrite subst_rec_fun_equation in Heqeee. destruct (y == x).
+               **** contradiction.
+               **** destruct (atom_fresh (union (fv_nom e3) (union (fv_nom e1_1) (union (singleton y) (singleton x))))). subst. pose proof m_subst_sub as H'. unfold m_subst in H'. rewrite H'. Admitted.
+(*           rewrite m_subst_notin.
+           *** apply aeq_refl.
+           *** apply fv_nom_remove.
+               **** assumption.
+               **** apply notin_remove_2. simpl.
+          remember ([y := e3] n_sub e1_1 x e1_2) as ee. symmetry in Heqee. rewrite m_subst_sub in Heqee.
+*)
 
 
 Admitted.              
