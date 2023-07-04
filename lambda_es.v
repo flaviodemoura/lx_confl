@@ -3121,5 +3121,12 @@ Proof.
     + apply aeq_refl.
     + apply IHe1_1; assumption.
     + apply IHe1_2; assumption.
-  - intros e2 x e3 y Hneq Hfv. pose proof aeq_m_subst'.
+  - intros e2 x e3 y Hneq Hfv. case (z == x).
+    + intro Heq. case (z == y).
+      * intros. subst. contradiction.
+      * intros Hneq'. pick fresh w for (union (fv_nom e1_1) (union (fv_nom e1_2) (union (fv_nom e2) (union (fv_nom e3) (union (singleton z) (union (singleton x) (singleton y))))))).
+        subst. 
+
+
+
 Admitted.              
