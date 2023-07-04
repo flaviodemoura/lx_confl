@@ -2459,10 +2459,16 @@ Proof.
       * apply aeq_refl.
       * assumption.
       * assumption.
-  - intros u u' x Haeq. unfold m_subst. rewrite subst_rec_fun_equation. destruct (x == z).
-    + subst. rewrite subst_rec_fun_equation. rewrite eq_dec_refl. apply aeq_refl.
-    + destruct (atom_fresh (union (fv_nom u) (union (fv_nom t) (union (singleton x) (singleton z))))).       
-Admitted.
+  - intros u u' x Haeq. unfold m_subst in *. repeat rewrite subst_rec_fun_equation. destruct (x == z).
+    + apply aeq_refl.
+    + destruct (atom_fresh (union (fv_nom u) (union (fv_nom t) (union (singleton x) (singleton z))))). destruct (atom_fresh (union (fv_nom u') (union (fv_nom t) (union (singleton x) (singleton z))))). case (x0 == x1).
+        ** intro Heq. subst. apply aeq_abs_same. apply H.
+           *** reflexivity.
+           *** assumption.
+        ** intro Hneq. apply aeq_abs_diff.
+           *** assumption.
+           *** admit.
+           *** Admitted. (* circular problem *)
 
 Lemma aeq_m_subst_2: forall t t' u x, t =a t' -> ([x := u] t) =a ([x := u] t').
 Proof.
