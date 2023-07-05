@@ -345,8 +345,7 @@ Proof.
       ++ reflexivity.
 Qed. 
 
-Lemma swap_symmetric : forall t x y,
-    swap x y t = swap y x t.
+Lemma swap_symmetric : forall t x y, swap x y t = swap y x t.
 Proof.
   induction t.
   - intros x' y. simpl. unfold swap_var. default_simp.
@@ -2000,25 +1999,21 @@ Proof.
   - unfold Transitive. apply aeq_trans.
 Qed.
 
-(*
-Lemma aeq_same_abs: forall x t1 t2,
-    aeq (n_abs x t1) (n_abs x t2) -> aeq t1 t2.
+Lemma aeq_same_abs: forall x t1 t2, n_abs x t1 =a n_abs x t2 -> t1 =a t2.
 Proof.
   intros. inversion H.
   - assumption.
   - rewrite swap_id in H6; assumption.
 Qed.
 
-Lemma aeq_diff_abs: forall x y t1 t2,
-    aeq (n_abs x t1) (n_abs y t2) -> aeq t1 (swap x y t2).
+Lemma aeq_diff_abs: forall x y t1 t2, (n_abs x t1) =a (n_abs y t2) -> t1 =a (swap x y t2).
 Proof.
   intros. inversion H; subst.
   - rewrite swap_id; assumption.
   - rewrite swap_symmetric; assumption.
 Qed.
 
-Lemma aeq_same_sub: forall x t1 t1' t2 t2',
-    aeq (n t1 x t2) (n_sub t1' x t2') -> aeq t1 t1' /\ aeq t2 t2'.
+Lemma aeq_same_sub: forall x t1 t1' t2 t2', (n_sub t1 x t2) =a (n_sub t1' x t2') -> t1 =a t1' /\ t2 =a t2'.
 Proof.
   intros. inversion H; subst.
   - split; assumption.
@@ -2027,8 +2022,7 @@ Proof.
     + assumption.
 Qed.
 
-Lemma aeq_diff_sub: forall x y t1 t1' t2 t2',
-    aeq (n_sub t1 x t2) (n_sub t1' y t2') -> aeq t1 (swap x y t1') /\ aeq t2 t2'.
+Lemma aeq_diff_sub: forall x y t1 t1' t2 t2', (n_sub t1 x t2) =a (n_sub t1' y t2') -> t1 =a (swap x y t1') /\ t2 =a t2'.
 Proof.
   intros. inversion H; subst.
   - split.
@@ -2037,7 +2031,7 @@ Proof.
   - split.
     + rewrite swap_symmetric; assumption.
     + assumption.
-Qed. *)
+Qed.
 
 Lemma aeq_sub: forall t1 t2 x y, y `notin` fv_nom t1 -> (n_sub (swap x y t1) y t2) =a (n_sub t1 x t2).
 Proof.
@@ -2104,17 +2098,17 @@ Proof.
                **** Admitted.
 
   - intros. simpl. unfold swap_var. default_simp.
-  - intros. simpl. unfold swap_var. default_simp.
+  - intros. simpl. unfold swap_var. default_simp. 
 
-Lemma aeq_diff_abs': forall x y t1 t2, x `notin` fv_nom t2 -> aeq t1 (swap x y t2) -> aeq (n_abs x t1) (n_abs y t2).
+Lemma aeq_diff_abs': forall x y t1 t2, x `notin` fv_nom t2 -> t1 =a (swap x y t2) -> (n_abs x t1) =a (n_abs y t2).
 Proof.
   intros x y t1 t2 Hnotin H.
   inversion H; subst.
   - rewrite H2.
     rewrite swap_symmetric.
     apply aeq_abs; assumption.
-  - rewrite swap_symmetric; assumption.
-Qed.
+  - inversion H. rewrite swap_symmetric; assumption.
+Qed. *)
 
 Lemma aeq_abs_diff_swap: forall t1 t2 x y z, x <> y -> z `notin` fv_nom t1 -> z `notin` fv_nom t2 -> aeq (n_abs x t1) (n_abs y t2) -> aeq (swap x z t1) (swap y z t2).
 Proof.
