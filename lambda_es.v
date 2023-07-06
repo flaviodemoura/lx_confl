@@ -2496,9 +2496,38 @@ Proof.
                     ****** apply notin_union_2 in n1. apply notin_union_2 in n1. apply notin_union_1 in n1. apply notin_singleton_1 in n1. apply aux_not_equal. assumption.
                     ****** apply notin_union_1 in n0. admit. (* ok *)
                     ****** apply notin_union_1 in n1. assumption.
-                    ***** apply aeq_trans with (subst_rec_fun (swap (swap_var x y x0) x1 (swap (swap_var x y z) (swap_var x y x0) (swap x y t))) u z').
-                    ****** pose proof swap_equivariance as Hequiv. specialize (Hequiv t x y z x0). rewrite Hequiv. apply aeq_refl.
-                    ****** (* aqui *) Admitted.
+                    ***** apply aeq_trans with (subst_rec_fun (swap x1 (swap_var x y x0) (swap (swap_var x y x0) (swap_var x y z) (swap x y t))) u z').
+                    ****** rewrite swap_symmetric. rewrite <- swap_equivariance. replace (swap z x0 t) with (swap x0 z t).
+                    ******* apply aeq_refl.
+                    ******* apply swap_symmetric.
+                    ****** (* perto *)
+
+
+
+                      rewrite swap_equivariance. unfold swap_var at 1. rewrite eq_dec_refl. destruct (swap_var x y x0 == x1).
+                    ******* symmetry in e. contradiction.
+                    ******* rewrite swap_equivariance. assert (Hsimp: swap_var x1 (swap_var x y x0) (swap_var x y z) = swap_var x y z).
+                    ******** unfold swap_var at 1. destruct (swap_var x y z == x1).
+                    ********* repeat apply notin_union_2 in n1. apply notin_singleton_1 in n1. contradiction.
+                    ********* destruct (swap_var x y z == swap_var x y x0).
+                    ********** repeat apply notin_union_2 in n0. apply notin_singleton_1 in n0. apply (swap_neq x y) in n0. contradiction.
+                    ********** reflexivity.
+                    ******** rewrite Hsimp. unfold swap_var at 1. rewrite eq_dec_refl.
+                    rewrite Heqee. assert (Hsimp': (swap_var x1 (swap_var x y z) (swap_var x y x0)) = (swap_var x y x0)).
+                    ********* unfold swap_var at 1. destruct (swap_var x y x0 == x1).
+                    ********** contradiction.
+                    ********** destruct (swap_var x y x0 == swap_var x y z).
+                    *********** repeat apply notin_union_2 in n0. apply notin_singleton_1 in n0. apply (swap_neq x y) in n0. symmetry in e. contradiction.
+                    *********** reflexivity.
+                    ********* rewrite Hsimp'. assert (Hsimp'': (swap (swap_var x y z) (swap_var x y x0) (swap x1 (swap_var x y z) (swap x y t))) = (swap x1 (swap_var x y z) (swap x y t))).
+                    ********** 
+
+                    subst.
+
+                    
+                    replace (swap_var x1 (swap_var x1 (swap_var x y x0) (swap_var x y z)) (swap_var x y x0)) with (swap_var x1 (swap_var x1 (swap_var x y x0) (swap_var x y z)) (swap_var x y x0)) unfold swap_var at 9. swap_id. apply aeq_trans with (subst_rec_fun (swap x1 (swap_var x y z) (swap x y t)) u z').
+
+                      aeq_swap_swap.
                
 Lemma aeq_m_subst_out: forall t t' u x, t =a t' -> ([x := u] t) =a ([x := u] t').
 Proof.
