@@ -2477,8 +2477,7 @@ Proof.
       * apply aeq_abs_same. apply H.
         ** reflexivity.
         ** apply aeq_swap. assumption.
-    + 
-
+    + pose proof H5 as Hfv. apply aeq_fv_nom in Hfv. apply Eq_implies_equality in Hfv. unfold m_subst in *. repeat rewrite subst_rec_fun_equation. rewrite Hfv. (* make sets equal *) Admitted.
       
 Corollary aeq_m_subst: forall t t' u u' x, t =a t' -> u =a u' -> ([x := u] t) =a ([x := u'] t').
 Proof.
