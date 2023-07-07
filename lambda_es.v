@@ -2439,31 +2439,58 @@ Proof.
   intros t1 t2 u x. unfold m_subst. rewrite subst_rec_fun_equation. reflexivity.
 Qed.
 
-(*
-Lemma test : 
-*)
 
-(* circular *)
+Axiom Eq_implies_equality: forall s s': atoms, s [=] s' -> s = s'.
+
+Lemma aeq_m_subst_in: forall t u u' x, u =a u' -> ([x := u] t) =a ([x := u'] t).
+Proof.
+  induction t using n_sexp_induction.
+  - intros u u' x' Haeq. pose proof Haeq as Hfv. apply aeq_fv_nom in Hfv. apply Eq_implies_equality in Hfv. unfold m_subst in *. repeat rewrite subst_rec_fun_equation. destruct (x' == x).
+    + assumption.
+    + reflexivity.
+  - intros u u' x Haeq. pose proof Haeq as Hfv. apply aeq_fv_nom in Hfv. apply Eq_implies_equality in Hfv. unfold m_subst in *. repeat rewrite subst_rec_fun_equation. rewrite Hfv. destruct (atom_fresh (union (fv_nom u') (union (fv_nom t) (union (singleton x) (singleton z))))). destruct (x == z).
+      * apply aeq_refl.
+      * apply aeq_abs_same. apply H.
+        ** reflexivity.
+        ** assumption.
+  - intros u u' x Haeq. unfold m_subst in *. rewrite subst_rec_fun_equation. apply aeq_sym. rewrite subst_rec_fun_equation. apply aeq_app.
+    + apply IHt1. apply aeq_sym. assumption.
+    + apply IHt2. apply aeq_sym. assumption.
+  - intros u u' x Haeq. unfold m_subst in *. rewrite subst_rec_fun_equation. apply aeq_sym. rewrite subst_rec_fun_equation. pose proof Haeq as Hfv. apply aeq_fv_nom in Hfv. apply Eq_implies_equality in Hfv. rewrite Hfv. destruct (atom_fresh (union (fv_nom u') (union (fv_nom t1) (union (singleton x) (singleton z))))). destruct (x == z).
+    + apply aeq_sub_same.
+      * apply aeq_refl.
+      * apply IHt1. apply aeq_sym. assumption.
+    + apply aeq_sub_same.
+      * apply H.
+        ** reflexivity.
+        ** apply aeq_sym. assumption.
+      * apply IHt1. apply aeq_sym. assumption.
+Qed.
 
 Lemma aeq_m_subst_out: forall t t' u x, t =a t' -> ([x := u] t) =a ([x := u] t').
 Proof.
-  intro t. induction t using n_sexp_induction.
+  induction t using n_sexp_induction.
   - intros t' u x' Haeq. inversion Haeq; subst. apply aeq_refl.
   - intros t' u x Haeq. inversion Haeq; subst.
-    + unfold m_subst in *. repeat rewrite subst_rec_fun_equation. destruct (atom_fresh (union (fv_nom u) (union (fv_nom t) (union (singleton x) (singleton z))))). destruct (atom_fresh (union (fv_nom u) (union (fv_nom t2) (union (singleton x) (singleton z))))). destruct (x == z).
-      * assumption.
-      * case (x0 == x1).
-        ** intro Heq. subst. apply aeq_abs_same. apply H.
-           *** reflexivity.
-           *** apply aeq_swap. assumption.
-        ** intro Hneq. apply aeq_abs_diff.
-           *** assumption.
-           *** admit.
-           *** Admitted.
+    + unfold m_subst in *. repeat rewrite subst_rec_fun_equation. pose proof H3 as Hfv. apply aeq_fv_nom in Hfv. apply Eq_implies_equality in Hfv. rewrite Hfv. destruct (atom_fresh (union (fv_nom u) (union (fv_nom t2) (union (singleton x) (singleton z))))). destruct (x == z).
+      * apply aeq_abs_same. assumption.
+      * apply aeq_abs_same. apply H.
+        ** reflexivity.
+        ** apply aeq_swap. assumption.
+    + 
 
+      
+Corollary aeq_m_subst: forall t t' u u' x, t =a t' -> u =a u' -> ([x := u] t) =a ([x := u'] t').
+Proof.
+  intros t t' u u' x H1 H2. apply aeq_trans with ([x:=u]t').
+  - apply aeq_m_subst_out. assumption.
+  - apply aeq_m_subst_in. assumption.
+Qed.
+  
 Lemma swap_subst_rec_fun_out: forall t u x y z, x <> z -> y <> z -> x `notin` fv_nom u -> y `notin` fv_nom u -> swap x y (subst_rec_fun t u z) =a subst_rec_fun (swap x y t) u z.
 Proof.
-  intros t u x y z.
+  Admitted.
+(*  intros t u x y z.
   functional induction (subst_rec_fun t u x).
   - intros. admit.
   -  admit.
@@ -2543,7 +2570,37 @@ Proof.
                     ********* unfold swap_var. default_simp.
                     ******** rewrite swap_symmetric. reflexivity.
                     ****** symmetry. apply swap_equivariance.
-  - Admitted.
+  - Admitted. *)
+
+Lemma aeq_m_subst_in': forall t u u' x, u =a u' -> ([x := u] t) =a ([x := u'] t).
+Proof.
+  induction t using n_sexp_induction.
+  - intros u u' x' Haeq. unfold m_subst in *. repeat rewrite subst_rec_fun_equation. destruct (x' == x).
+    + assumption.
+    + reflexivity.
+  - intros u u' x Haeq. unfold m_subst in *. repeat rewrite subst_rec_fun_equation. destruct (atom_fresh (union (fv_nom u') (union (fv_nom t) (union (singleton x) (singleton z))))). destruct (atom_fresh (union (fv_nom u) (union (fv_nom t) (union (singleton x) (singleton z))))). destruct (x == z).
+      * apply aeq_refl.
+      * (** The metasubstitution were propagated in two steps, one in the lhs and another in the rhs. Therefore, two different renamings were necessary. *) case (x0 == x1). 
+        ** intro Heq. subst. apply aeq_abs_same. apply H.
+           *** reflexivity.
+           *** assumption.
+        ** intro Hneq. apply aeq_abs_diff.
+           *** apply aux_not_equal. assumption.
+           *** admit.
+           *** apply aeq_sym. apply aeq_trans with (subst_rec_fun (swap x0 x1 (swap z x0 t)) u' x).
+               **** apply swap_subst_rec_fun_out. (** Now we have a swap outside the metasubstitution and a lemma for the propagation of the swap inside the metasubstitution is necessary. *)
+                    ***** admit. (* ok *)
+                    ***** admit. (* ok *)
+                    ***** admit. (* ok *)
+                    ***** apply aeq_fv_nom in Haeq. rewrite <- Haeq. admit. (* ok *)
+               **** rewrite swap_symmetric. replace (swap z x0 t) with (swap x0 z t).
+                    ***** rewrite swap_reduction.
+                    ***** apply swap_symmetric.
+Admitted.
+             
+
+
+
 
 (*
 apply aeq_swap. apply H.
