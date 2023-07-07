@@ -2447,18 +2447,11 @@ Lemma test :
 
 Lemma aeq_m_subst_out: forall t t' u x, t =a t' -> ([x := u] t) =a ([x := u] t').
 Proof.
-  induction 1.
-  - apply aeq_refl.
-  - unfold m_subst in *. (* !!! *) repeat rewrite subst_rec_fun_equation. destruct (atom_fresh (union (fv_nom u) (union (fv_nom t1) (union (singleton x) (singleton x0))))). destruct (atom_fresh (union (fv_nom u) (union (fv_nom t2) (union (singleton x) (singleton x0))))). destruct (x == x0).
-    + apply aeq_abs_same. assumption.
-    + case (x1 == x2).
-      * intro Heq. subst. apply aeq_abs_same. apply aeq_trans with (subst_rec_fun t1 u x).
-        ** assert (Haeq: swap x0 x2 t1 =a t1).  {admit.} rewrite <- Haeq in IHaeq.
-    
+  intro t. induction t using n_sexp_induction.
   - intros t' u x' Haeq. inversion Haeq; subst. apply aeq_refl.
   - intros t' u x Haeq. inversion Haeq; subst.
     + unfold m_subst in *. repeat rewrite subst_rec_fun_equation. destruct (atom_fresh (union (fv_nom u) (union (fv_nom t) (union (singleton x) (singleton z))))). destruct (atom_fresh (union (fv_nom u) (union (fv_nom t2) (union (singleton x) (singleton z))))). destruct (x == z).
-      * apply aeq_abs_same. assumption.
+      * assumption.
       * case (x0 == x1).
         ** intro Heq. subst. apply aeq_abs_same. apply H.
            *** reflexivity.
@@ -2466,8 +2459,7 @@ Proof.
         ** intro Hneq. apply aeq_abs_diff.
            *** assumption.
            *** admit.
-           *** 
-Admitted.
+           *** Admitted.
 
 Lemma swap_subst_rec_fun_out: forall t u x y z, x <> z -> y <> z -> x `notin` fv_nom u -> y `notin` fv_nom u -> swap x y (subst_rec_fun t u z) =a subst_rec_fun (swap x y t) u z.
 Proof.
