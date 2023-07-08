@@ -2477,7 +2477,7 @@ Proof.
   - intros u x Hfv. simpl in *. unfold m_subst in *. rewrite subst_rec_fun_equation. destruct (atom_fresh (union (fv_nom u) (union (fv_nom (n_sub t1 z t2)) (singleton x)))). destruct (x == z).
     + subst. apply aeq_sub_same.
       * apply aeq_refl.
-      * admit. (* ok *)
+      * apply notin_union_2 in Hfv. apply IHt1. assumption.
     + case (x0 == z).
       * intro Heq. subst.  apply aeq_sub_same.
         ** apply aeq_trans with (swap z z t1). apply H.
@@ -2486,16 +2486,22 @@ Proof.
                **** symmetry in H0. contradiction.
                **** assumption.
            *** rewrite swap_id. apply aeq_refl.
-        ** admit. (* ok *)
+        ** apply IHt1. apply notin_union_2 in Hfv. assumption.
       * intro Hneq. apply aeq_sub_diff.
-        ** admit. (* ok *)
+        ** apply IHt1. apply notin_union_2 in Hfv. assumption.
         ** assumption.
         ** apply notin_union_2 in n. apply notin_union_1 in n. simpl in n. apply notin_union_1 in n. apply notin_remove_1 in n. destruct n.
            *** symmetry in H0. contradiction.
            *** assumption.
         ** apply H.
            *** reflexivity.
-           *** Admitted.
+           *** apply fv_nom_remove_swap.
+               **** repeat apply notin_union_2 in n. apply notin_singleton_1 in n. assumption.
+               **** assumption.
+               **** apply notin_union_1 in Hfv. apply notin_remove_1 in Hfv. destruct Hfv.
+                    ***** symmetry in H0. contradiction.
+                    ***** assumption.
+Qed.
 
 Axiom Eq_implies_equality: forall s s': atoms, s [=] s' -> s = s'.
 
