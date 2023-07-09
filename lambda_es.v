@@ -2288,7 +2288,7 @@ Proof.
   - reflexivity.
 Qed.
 
-(** The free variables of a metasubstitution. *)
+(** The behaviour of free variables in a metasubstitution. *)
 Lemma fv_nom_m_subst_in: forall t u x, x `in` fv_nom t -> fv_nom ([x := u] t) [=] (union (remove x (fv_nom t)) (fv_nom u)).
 Proof.
   intros t u x. unfold m_subst. functional induction (subst_rec_fun t u x).
