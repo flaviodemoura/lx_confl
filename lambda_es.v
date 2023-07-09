@@ -2301,7 +2301,25 @@ Proof.
 
 Lemma remove_fv_nom_swap: forall t x y, x `notin` fv_nom t -> remove x (fv_nom (swap y x t)) [=] remove y (fv_nom t).
 Proof.
-Admitted.
+  induction t using n_sexp_induction.
+  - intros x' y Hfv. simpl in *. apply notin_singleton_1 in Hfv. unfold swap_var. destruct (x == y).
+    + subst. repeat rewrite remove_singleton_empty. reflexivity.
+    + destruct (x == x').
+      * contradiction.
+      * rewrite AtomSetProperties.remove_equal.
+        ** symmetry. rewrite AtomSetProperties.remove_equal.
+           *** reflexivity.
+           *** apply notin_singleton. assumption.
+        ** apply notin_singleton. assumption.
+  - intros x y Hfv. simpl in *. pose proof Hfv as Hfv'. apply notin_remove_1 in Hfv. destruct Hfv.
+    + subst. case (x == y).
+      * intro Heq. subst. rewrite swap_id. rewrite swap_var_id. reflexivity.
+      * intro Hneq. unfold swap_var. destruct (x == y).
+        ** contradiction.
+        ** rewrite eq_dec_refl. symmetry. rewrite remove_symmetric. symmetry. apply swap_remove_reduction.
+    + case (x == y).
+      * intro Heq. subst. rewrite swap_var_id. rewrite swap_id. reflexivity.
+      * intro Hneq. Admitted.
 
 Lemma m_subst_notin: forall t u x, x `notin` fv_nom t -> [x := u]t =a t.
 Proof.
@@ -2394,10 +2412,6 @@ Proof.
                   ****** symmetry in H0. contradiction.
                   ****** assumption.
 - Admitted.
-
-
-    
-
 
 Lemma fv_nom_remove: forall t u x y, y `notin` fv_nom u -> y `notin` remove x (fv_nom t) ->  y `notin` fv_nom ([x := u] t).
 Proof. 
