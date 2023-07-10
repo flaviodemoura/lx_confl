@@ -2620,10 +2620,12 @@ Proof.
     + assumption.
   - intros Hneq H1 H2. unfold m_subst. apply aeq_trans with (subst_rec_fun (swap x x' t') u x).
     + apply aeq_m_subst_eq.
-      * admit.
+      * apply (aeq_swap1 _ _ x x') in H1. rewrite H1. rewrite swap_involutive. apply aeq_refl.
       * apply aeq_refl.
-    + admit.
-Admitted.
+    + apply aeq_trans with (subst_rec_fun (swap x x' t') u' x).
+      * apply aeq_m_subst_in. assumption.
+      * replace (subst_rec_fun (swap x x' t') u' x) with (subst_rec_fun (swap x x' t') u' (swap_var x x' x')).
+        ** Admitted. (* verificar a estrutura utilizada *)
 
 
 (** The following lemma states that a swap can be propagated inside the metasubstitution resulting in an $\alpha$-equivalent term. *)
