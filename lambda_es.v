@@ -2390,9 +2390,9 @@ Proof.
 Qed.
 
 Axiom Eq_implies_equality: forall s s': atoms, s [=] s' -> s = s'.
-
-Lemma fv_nom_m_subst_notin: forall t u x, x `notin` fv_nom t -> fv_nom ([x := u] t) [=] (remove x (fv_nom t)).
-Proof.
+(*
+Lemma fv_nom_m_subst_notin: forall t u x, x `notin` fv_nom t -> fv_nom ([x := u] t) [=] fv_nom t.
+Proof. 
   induction t using n_sexp_induction.
   - intros u x' Hfv. simpl in *. rewrite AtomSetProperties.remove_equal. 
     + unfold m_subst. rewrite subst_rec_fun_equation. destruct (x' == x).
@@ -2420,8 +2420,8 @@ Proof.
                   ***** assumption.
                   ***** apply notin_remove_1 in Hfv. destruct Hfv.
                   ****** symmetry in H0. contradiction.
-                  ****** assumption.
-- Admitted.
+                  ****** assumption. Admitted. *)
+
 
 Lemma fv_nom_remove: forall t u x y, y `notin` fv_nom u -> y `notin` remove x (fv_nom t) ->  y `notin` fv_nom ([x := u] t).
 Proof. 
@@ -2612,21 +2612,6 @@ Proof.
   - apply aeq_m_subst_in. assumption.
 Qed.
 
-Lemma aeq_m_subst: forall t t' u u' x x', t' =a (swap x x' t) -> u =a u' -> ([x := u] t) =a ([x' := u'] t').
-Proof.
-  intros t t' u u' x x'. case (x == x').
-  - intro Heq; subst. intros H1 H2. apply aeq_m_subst_eq.
-    + rewrite swap_id in H1. apply aeq_sym. assumption.
-    + assumption.
-  - intros Hneq H1 H2. unfold m_subst. apply aeq_trans with (subst_rec_fun (swap x x' t') u x).
-    + apply aeq_m_subst_eq.
-      * apply (aeq_swap1 _ _ x x') in H1. rewrite H1. rewrite swap_involutive. apply aeq_refl.
-      * apply aeq_refl.
-    + apply aeq_trans with (subst_rec_fun (swap x x' t') u' x).
-      * apply aeq_m_subst_in. assumption.
-      * replace (subst_rec_fun (swap x x' t') u' x) with (subst_rec_fun (swap x x' t') u' (swap_var x x' x')).
-        ** Admitted. (* verificar a estrutura utilizada *)
-
 
 (** The following lemma states that a swap can be propagated inside the metasubstitution resulting in an $\alpha$-equivalent term. *)
 Lemma swap_subst_rec_fun: forall x y z t u, swap x y (subst_rec_fun t u z) =a subst_rec_fun (swap x y t) (swap x y u) (swap_var x y z).
@@ -2638,15 +2623,18 @@ Proof.
   - generalize dependent u. generalize dependent z. generalize dependent y. generalize dependent x.
     induction t using n_sexp_induction.
     
-    + intros x' y H z u. rewrite subst_rec_fun_equation. destruct (z == x).
+    + intros x' y Hneq z u. rewrite subst_rec_fun_equation. destruct (z == x).
       * subst. simpl swap at 2. rewrite subst_rec_fun_equation. rewrite eq_dec_refl. apply aeq_refl.
-      * pose proof swap_neq. specialize (H0 x' y z x). apply H0 in n; clear H0.
+      * pose proof swap_neq as Hswap. specialize (Hswap x' y z x). apply Hswap in n; clear Hswap.
         simpl swap at 2. rewrite subst_rec_fun_equation. destruct (swap_var x' y z == swap_var x' y x).
         ** contradiction.
         ** simpl swap. apply aeq_refl.
     + intros x y Hneq z' u. rewrite subst_rec_fun_equation. case (z' == z).
       * intro Heq. subst. simpl. rewrite subst_rec_fun_equation. rewrite eq_dec_refl. apply aeq_refl.
-      * intro Hneq'. destruct (atom_fresh (union (fv_nom u) (union (fv_nom t) (union (singleton z') (singleton z))))). simpl. apply aeq_sym. rewrite subst_rec_fun_equation. destruct (swap_var x y z' == swap_var x y z).
+      * intro Hneq'. apply aeq_sym. simpl. rewrite subst_rec_fun_equation. Admitted.
+
+(*
+        destruct (atom_fresh (union (fv_nom u) (union (fv_nom t) (union (singleton z') (singleton z))))). simpl. apply aeq_sym. rewrite subst_rec_fun_equation. destruct (swap_var x y z' == swap_var x y z).
         ** apply (swap_neq x y) in Hneq'. contradiction.
         ** destruct (atom_fresh (union (fv_nom (swap x y u)) (union (fv_nom (swap x y t)) (union (singleton (swap_var x y z')) (singleton (swap_var x y z)))))). case ((swap_var x y x0) == x1).
            *** intro Heq. subst. apply aeq_abs_same. apply aeq_sym. rewrite H.
@@ -2750,9 +2738,24 @@ Proof.
                     ****** reflexivity.
                     ****** assumption.
                     *****apply aeq_refl.
-Qed. *)
+Qed. *) *)
+(* talvez possa ser substituído pelos lemas parciais anteriores
+Theorem aeq_m_subst: forall t t' u u' x x', x `notin` fv_nom t' -> t =a (swap x x' t') -> u =a u' -> ([x := u] t) =a ([x' := u'] t').
+Proof.
+  intros t t' u u' x x'. case (x == x').
+  - intro Heq; subst. intros Hfv Haeq Haeq'. apply aeq_m_subst_eq.
+    + rewrite swap_id in Haeq. assumption.
+    + assumption.
+  - intros Hneq Hfv Haeq Haeq'. unfold m_subst. apply aeq_trans with (subst_rec_fun (swap x x' t') u x).
+    + apply aeq_m_subst_eq. Admitted.
+(*      * apply (aeq_swap1 _ _ x x') in H1. rewrite H1. rewrite swap_involutive. apply aeq_refl.
+      * apply aeq_refl.
+    + apply aeq_trans with (subst_rec_fun (swap x x' t') u' x).
+      * apply aeq_m_subst_in. assumption.
+      * replace (subst_rec_fun (swap x x' t') u' x) with (subst_rec_fun (swap x x' t') u' (swap_var x x' x')).
+        ** Admitted. (* verificar a estrutura utilizada *) *) *)
 
-
+(* substituído pelos dois lemas seguintes (corolário)
 Lemma m_subst_abs : forall u x y t , m_subst u x (n_abs y t)  =a
        if (x == y) then (n_abs y t )
        else let (z,_) := atom_fresh (fv_nom u `union` fv_nom (n_abs y t ) `union` {{x}}) in
@@ -2763,7 +2766,9 @@ Proof.
   - unfold m_subst. rewrite subst_rec_fun_equation. destruct (x == y).
     + contradiction.
     + destruct (atom_fresh (union (fv_nom u) (union (fv_nom t) (union (singleton x) (singleton y))))). case (x0 == z).
-      * intro Heq. subst. apply aeq_refl.
+      * intro Heq. subst. Admitted. *)
+
+(*        apply aeq_refl.
       * intro Hneq. apply aeq_abs_diff.
         ** assumption.
         ** apply fv_nom_remove.
@@ -2781,7 +2786,9 @@ Proof.
                 ***** destruct (x == x0).
                 ****** apply notin_union_2 in n1. apply notin_union_2 in n1. apply notin_union_1 in n1. apply notin_singleton_1 in n1. contradiction.
                 ****** apply H1.
-                ******* apply aeq_sym. Admitted. (* apply aeq_refl.
+                ******* apply aeq_sym. Admitted. *)
+
+(* apply aeq_refl.
                 ******* Search swap. apply aeq_sym. apply swap_reduction.
                 ******** apply notin_union_1 in H. assumption.
                 ******** apply notin_union_1 in n1. assumption.
@@ -2820,11 +2827,13 @@ Proof.
 Admitted.
 *)
 
+
 Lemma m_subst_abs_neq : forall t u x y z, x <> y -> z `notin` fv_nom t `union` fv_nom u  `union` {{x}} `union` {{y}} -> [x := u](n_abs y t) =a n_abs z ([x := u](swap y z t)).
 Proof.
   intros t u x y z H1 H2. unfold m_subst. rewrite subst_rec_fun_equation. destruct (x == y).
   - contradiction.  
-  - destruct (atom_fresh (union (fv_nom u) (union (fv_nom t) (union (singleton x) (singleton y))))). case (x0 == z) eqn: H.
+  - Admitted.
+(*    destruct (atom_fresh (union (fv_nom u) (union (fv_nom t) (union (singleton x) (singleton y))))). case (x0 == z) eqn: H.
     + subst. apply aeq_abs_same. apply aeq_refl.
     + apply aeq_abs_diff.
       * assumption.
@@ -2844,7 +2853,7 @@ Proof.
         ** auto.
         ** admit.
         ** apply test2.*)
-Admitted.
+Admitted. *) 
 
 
 (*
