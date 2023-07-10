@@ -2319,7 +2319,17 @@ Proof.
         ** rewrite eq_dec_refl. symmetry. rewrite remove_symmetric. symmetry. apply swap_remove_reduction.
     + case (x == y).
       * intro Heq. subst. rewrite swap_var_id. rewrite swap_id. reflexivity.
-      * intro Hneq. Admitted.
+      * intro Hneq. unfold swap_var. destruct (z == y).
+        ** subst. repeat rewrite double_remove. specialize (H t x x). rewrite swap_id in H. assert (Ht: size t = size t). { reflexivity. } apply H.
+           *** reflexivity.
+           *** assumption.
+        ** destruct (z == x).
+           *** subst. symmetry. rewrite remove_symmetric. symmetry. apply swap_remove_reduction.
+           *** rewrite remove_symmetric. symmetry. rewrite remove_symmetric. symmetry. specialize (H t x x). rewrite swap_id in H. assert (Ht: size t = size t). { reflexivity. } rewrite H.
+               **** reflexivity.
+               **** reflexivity.
+               **** assumption.
+  - Admitted.
 
 Lemma m_subst_notin: forall t u x, x `notin` fv_nom t -> [x := u]t =a t.
 Proof.
