@@ -2289,6 +2289,7 @@ Proof.
 Qed.
 
 (** The behaviour of free variables in a metasubstitution. *)
+(* probably not needed now
 Lemma fv_nom_m_subst_in: forall t u x, x `in` fv_nom t -> fv_nom ([x := u] t) [=] (union (remove x (fv_nom t)) (fv_nom u)).
 Proof.
   intros t u x. unfold m_subst. functional induction (subst_rec_fun t u x).
@@ -2329,7 +2330,7 @@ Proof.
                **** reflexivity.
                **** reflexivity.
                **** assumption.
-  - Admitted.
+  - Admitted. *)
 
 Lemma m_subst_notin: forall t u x, x `notin` fv_nom t -> [x := u]t =a t.
 Proof.
@@ -2390,7 +2391,7 @@ Proof.
 Qed.
 
 Axiom Eq_implies_equality: forall s s': atoms, s [=] s' -> s = s'.
-(*
+(* probably not needed now
 Lemma fv_nom_m_subst_notin: forall t u x, x `notin` fv_nom t -> fv_nom ([x := u] t) [=] fv_nom t.
 Proof. 
   induction t using n_sexp_induction.
@@ -2540,6 +2541,13 @@ Proof.
   - assumption.
 Qed.
 
+Lemma aeq_sub_notin: forall t1 t1' t2 t2' x y, x <> y ->  n_sub t1 x t2 =a n_sub t1' y t2' -> x `notin` fv_nom t1'.
+Proof.
+  intros t1 t1' t2 t2' x y Hneq Haeq. inversion Haeq; subst.
+  - contradiction.
+  - assumption.
+Qed.
+
 Lemma aeq_m_subst_out: forall t t' u x, t =a t' -> ([x := u] t) =a ([x := u] t').
 Proof.
   induction t using n_sexp_induction.
@@ -2594,7 +2602,7 @@ Proof.
     + apply aeq_sym. apply IHt1. assumption.
     + apply aeq_sym. apply IHt2. assumption.
   - intros t u x Haeq. inversion Haeq; subst.
-    + unfold m_subst in *. rewrite subst_rec_fun_equation. apply aeq_sym. rewrite subst_rec_fun_equation. apply aeq_fv_nom in Haeq. apply Eq_implies_equality in Haeq. rewrite Haeq. destruct (atom_fresh (union (fv_nom u) (union (fv_nom (n_sub t1' z t2')) (singleton x)))). destruct (x == z).
+    + unfold m_subst in *. rewrite subst_rec_fun_equation. apply aeq_sym. rewrite subst_rec_fun_equation. apply aeq_fv_nom in Haeq. apply Eq_implies_equality in Haeq. rewrite Haeq. destruct (atom_fresh (union (fv_nom u) (union (fv_nom (n_sub t1' z t2')) (singleton x)))). simpl in *. destruct (x == z).
       * apply aeq_sub_same.
         ** apply aeq_sym. assumption.
         ** apply aeq_sym. apply IHt1. assumption.
@@ -2603,7 +2611,58 @@ Proof.
            *** reflexivity.
            *** apply aeq_swap. assumption.
         ** apply aeq_sym. apply IHt1. assumption.
-    + Admitted.
+    + unfold m_subst in *. rewrite subst_rec_fun_equation. apply aeq_sym. rewrite subst_rec_fun_equation. pose proof Haeq as Hfv. apply aeq_fv_nom in Hfv. apply Eq_implies_equality in Hfv. rewrite Hfv. destruct (atom_fresh (union (fv_nom u) (union (fv_nom (n_sub t1' y t2')) (singleton x)))). destruct (x == y).
+      * subst. destruct (y == z).
+        ** subst. contradiction.
+        ** pose proof n as Hx0. repeat apply notin_union_2 in n. apply notin_singleton_1 in n. apply aeq_sym. apply aeq_sub_diff.
+           *** apply IHt1. assumption.
+           *** apply aux_not_equal. assumption.
+           *** apply notin_union_2 in Hx0. apply notin_union_1 in Hx0. simpl in Hx0. apply notin_union_1 in Hx0. apply notin_remove_1 in Hx0. destruct Hx0.
+               **** contradiction.
+               ****assumption.
+           *** apply aeq_trans with (swap z x0 t1).
+               **** apply m_subst_notin. apply aeq_sym in Haeq. apply aeq_sub_notin in Haeq.
+                    ***** apply fv_nom_remove_swap.
+                    ****** assumption.
+                    ****** apply aux_not_equal. assumption.
+                    ****** assumption.
+                    ***** assumption.
+               **** apply aeq_trans with (swap z x0 (swap y z t1')).
+                    ***** apply aeq_swap. assumption.
+                    ***** rewrite (swap_symmetric _ z x0). rewrite (swap_symmetric _ y z). rewrite (swap_symmetric _ y x0). apply aeq_swap_swap.
+                    ****** apply notin_union_2 in Hx0. apply notin_union_1 in Hx0. simpl in Hx0. apply notin_union_1 in Hx0. apply notin_remove_1 in Hx0. destruct Hx0.
+                    ******* contradiction.
+                    ******* assumption.
+                    ****** assumption.
+      * destruct (x == z).
+        ** subst. pose proof n as Hx0. repeat apply notin_union_2 in n. apply notin_singleton_1 in n. apply aeq_sub_diff.
+           *** apply aeq_sym. apply IHt1. assumption.
+           *** apply aux_not_equal. assumption.
+           *** rewrite <- Hfv in Hx0. apply notin_union_2 in Hx0. apply notin_union_1 in Hx0. simpl in Hx0. apply notin_union_1 in Hx0. apply notin_remove_1 in Hx0. destruct Hx0.
+               **** contradiction.
+               **** assumption.
+           *** apply aeq_trans with (swap y x0 t1').
+               **** apply m_subst_notin. apply fv_nom_remove_swap; assumption.
+               **** rewrite <- Hfv in Hx0. apply (aeq_swap1  _ _ y z) in H7. rewrite swap_involutive in H7. apply aeq_sym in H7. apply (aeq_swap1 _ _ y x0) in H7. rewrite H7. rewrite (swap_symmetric _ y x0). rewrite (swap_symmetric _ z x0). apply aeq_swap_swap.
+                    ****** apply notin_union_2 in Hx0. apply notin_union_1 in Hx0. simpl in Hx0. apply notin_union_1 in Hx0. apply notin_remove_1 in Hx0. destruct Hx0.
+                    ******* contradiction.
+                    ******* assumption.
+                    ****** apply aeq_sym in Haeq. apply aeq_sub_notin in Haeq.
+                    ******* assumption.
+                    ******* apply aux_not_equal. assumption.
+        ** apply aeq_sub_same.
+           *** apply H.
+               **** apply aeq_size in H7. symmetry. rewrite swap_size_eq in H7. assumption.
+               **** case (x0 == y). 
+                    ***** intro Heq. subst. rewrite swap_id. rewrite (swap_symmetric _ z y). apply (aeq_swap1 _ _ y z) in H7.
+                    rewrite H7. rewrite swap_involutive. apply aeq_refl.
+                    ***** intro Hneq. apply (aeq_swap1 _ _ z x0) in H7. rewrite H7. apply aeq_sym. rewrite (swap_symmetric _ z x0). rewrite (swap_symmetric _ y z). rewrite (swap_symmetric _ y x0). apply aeq_swap_swap.
+                    ****** apply notin_union_2 in n. apply notin_union_1 in n. simpl in n. apply notin_union_1 in n. apply notin_remove_1 in n. destruct n.
+                    ******* symmetry in H0. contradiction.
+                    ******* assumption.
+                    ****** assumption.
+           *** apply aeq_sym. apply IHt1. assumption.
+Qed.
           
 Corollary aeq_m_subst_eq: forall t t' u u' x, t =a t' -> u =a u' -> ([x := u] t) =a ([x := u'] t').
 Proof.
