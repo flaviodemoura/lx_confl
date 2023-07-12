@@ -3249,8 +3249,9 @@ Proof.
                                                                                    ************ admit.
                                                                        *********** pose proof m_subst_notin as H1. unfold m_subst in H1. rewrite H1.
                                                                                    ************ apply aeq_sym. rewrite H1.
-                                                                                                ************* admit. (*?*)
-                                                                                                ************* apply notin_union_2 in H'''. apply notin_union_2 in H'''. apply notin_union_2 in H'''. apply notin_union_2 in H'''.
+                                                                                                ************* apply notin_union_2 in H'''. apply  notin_union_2 in H'''. apply notin_union_2 in H'''. apply notin_union_2 in H'''.
+                                                                                                              apply notin_union_1 in H'''. apply notin_singleton_1 in H'''. contradiction.
+                                                                                                ************* apply notin_union_2 in H'''. apply  notin_union_2 in H'''. apply notin_union_2 in H'''. apply notin_union_2 in H'''.
                                                                                                               apply notin_union_1 in H'''. apply notin_singleton_1 in H'''. contradiction.
                                                                                    ************ apply notin_union_2 in H'''. apply notin_union_2 in H'''. apply notin_union_2 in H'''. apply notin_union_2 in H'''.
                                                                                                 apply notin_union_1 in H'''. apply notin_singleton_1 in H'''. contradiction.
@@ -3271,11 +3272,27 @@ Proof.
                                                                                                               ************** admit.
                                                                                                               ************** admit.
                                                                        *********** pose proof aeq_m_subst_eq as H1. unfold m_subst in H1. apply H1. 
-                                                                                   ************ admit. (*?*)
+                                                                                   ************ rewrite swap_reduction.
+                                                                                                ************* apply aeq_sym. rewrite swap_reduction.
+                                                                                                              ************** pose proof m_subst_notin as H2. unfold m_subst in H2. rewrite H2.
+                                                                                                                             *************** apply aeq_refl.
+                                                                                                                             *************** apply fv_nom_remove_swap. 
+                                                                                                                                             **************** admit. 
+                                                                                                                                             **************** admit. 
+                                                                                                                                             **************** admit. (*?*)
+                                                                                                              ************** admit.
+                                                                                                              ************** admit.
+                                                                                                ************* admit.
+                                                                                                ************* admit.
                                                                                    ************ apply swap_reduction.
                                                                                                 ************* admit.
                                                                                                 ************* admit.
-                                         ******** apply fv_nom_swap. admit.
+                                         ******** Search swap. apply fv_nom_remove_swap. 
+                                                  ********* admit.
+                                                  ********* admit.
+                                                  ********* apply fv_nom_remove.
+                                                            ********** admit. (*?*)
+                                                            ********** apply notin_remove_3'. reflexivity.
                                  ******* apply IHe1_1; assumption.
                           ****** admit.
                     ***** apply aeq_m_subst_out. apply aeq_sym. apply Hsubneq''.
