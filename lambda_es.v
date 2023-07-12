@@ -2688,15 +2688,13 @@ Proof.
         simpl swap at 2. rewrite subst_rec_fun_equation. destruct (swap_var x' y z == swap_var x' y x).
         ** contradiction.
         ** simpl swap. apply aeq_refl.
-    + intros x y Hneq z' u. Admitted.
-
-(* reavaliar a prova abaixo:
-
- rewrite subst_rec_fun_equation. case (z' == z).
+    + intros x y Hneq z' u. rewrite subst_rec_fun_equation. case (z' == z).
       * intro Heq. subst. simpl. rewrite subst_rec_fun_equation. rewrite eq_dec_refl. apply aeq_refl.
       * intro Hneq'. simpl in *. rewrite subst_rec_fun_equation. destruct (swap_var x y z' == swap_var x y z).
         ** apply (swap_neq x y) in Hneq'. contradiction.
-        ** simpl. destruct (atom_fresh (union (fv_nom u) (union (remove z (fv_nom t)) (singleton z')))). destruct (atom_fresh (union (fv_nom (swap x y u)) (union (remove (swap_var x y z) (fv_nom (swap x y t))) (singleton (swap_var x y z'))))). simpl. case ((swap_var x y x0) == x1).
+        ** simpl. Admitted.
+
+(* sono          destruct (atom_fresh (union (fv_nom u) (union (remove z (fv_nom t)) (singleton z')))). destruct (atom_fresh (union (fv_nom (swap x y u)) (union (remove (swap_var x y z) (fv_nom (swap x y t))) (singleton (swap_var x y z'))))). simpl. case ((swap_var x y x0) == x1).
            *** intro Heq. subst. apply aeq_abs_same. apply aeq_sym. rewrite H.
                **** apply aeq_sym. rewrite swap_equivariance. apply aeq_refl.
                **** reflexivity.
