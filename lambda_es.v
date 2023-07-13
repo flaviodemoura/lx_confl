@@ -2747,11 +2747,18 @@ Proof.
                     ***** reflexivity.
                     ***** assumption.
                **** apply aeq_sym. apply IHt1. assumption.
-           *** intro Hneq'. simpl in *. apply aeq_trans with (n_sub (subst_rec_fun (swap x y (swap z x0 t1)) (swap x y u) (swap_var x y z')) (swap_var x y x0) (swap x y (subst_rec_fun t2 u z'))). 
+           *** intro Hneq'. (* verificar a partir daqui. *)
+               simpl in *. apply aeq_trans with (n_sub (subst_rec_fun (swap x y (swap z x0 t1)) (swap x y u) (swap_var x y z')) (swap_var x y x0) (swap x y (subst_rec_fun t2 u z'))). 
                **** apply aeq_sub_diff.
                     ***** apply aeq_sym. apply IHt1. assumption.
                     ***** assumption.
-                    ***** admit.
+                    ***** apply notin_union_2 in n2. apply notin_union_1 in n2. apply notin_union_1 in n2. apply notin_remove_1 in n2. destruct n2.
+                    ****** pose proof n0 as Hx0. apply notin_union_2 in n0. apply notin_union_1 in n0. apply notin_union_1 in n0. apply notin_remove_1 in n0. destruct n0.
+                    ******* symmetry in H0. rewrite H1 in H0. contradiction.
+                    ******* rewrite swap_equivariance. subst. apply fv_nom_remove.
+                    ********
+                    ********   
+                      admit.
                     ***** admit.
 (*                      apply fv_nom_remove.
                     ****** apply notin_union_1 in n2. assumption.
