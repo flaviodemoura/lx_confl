@@ -3203,73 +3203,160 @@ Proof.
                           ****** rewrite H'''. apply aeq_sub_same.
                                  ******* apply aeq_trans with ([y := e3] ([x := e2] swap y w' e1_1)).
                                          ******** apply aeq_m_subst_out. pose proof swap_subst_rec_fun as Hswap. unfold m_subst in *. rewrite Hswap. unfold swap_var. destruct (x == w).
-                                                  ********* subst. admit. (*contr*)
+                                                  ********* subst. apply notin_union_2 in Fr. apply notin_union_2 in Fr. apply notin_union_2 in Fr. apply notin_union_2 in Fr. apply notin_union_1 in Fr. apply notin_singleton_1 in Fr. contradiction.
                                                   ********* destruct (x == w').
-                                                            ********** subst. admit. (*contr*)
+                                                            ********** subst. apply notin_union_2 in Fr0. apply notin_union_2 in Fr0. apply notin_union_2 in Fr0. apply notin_union_2 in Fr0. apply notin_union_1 in Fr0. apply notin_singleton_1 in Fr0. contradiction.
                                                             ********** pose proof swap_reduction as Hswap'. specialize (Hswap' e2 w w'). apply aeq_trans with (subst_rec_fun (swap w w' (swap y w e1_1)) e2 x).
                                                                        *********** pose proof aeq_m_subst_eq as Hmsubst. unfold m_subst in *. apply Hmsubst.
                                                                                    ************ apply aeq_refl.
                                                                                    ************ apply Hswap'.
-                                                                                                ************* admit. (*ok*)
-                                                                                                ************* admit. (*ok*)
+                                                                                                ************* apply notin_union_2 in Fr. apply notin_union_2 in Fr. apply notin_union_1 in Fr. assumption.
+                                                                                                ************* apply notin_union_2 in Fr0. apply notin_union_2 in Fr0. apply notin_union_1 in Fr0. assumption.
                                                                        *********** apply aeq_m_subst_out. rewrite swap_symmetric. pose proof swap_symmetric as Hswap''. specialize (Hswap'' e1_1 y w). rewrite Hswap''. 
                                                                                    pose proof swap_symmetric as Hswap'''. specialize (Hswap''' e1_1 y w'). rewrite Hswap'''. apply aeq_swap_swap.
-                                                                                   ************ admit. (*ok*)
-                                                                                   ************ admit. (*ok*)
-                                         ******** rewrite H. apply aeq_m_subst_out. apply m_subst_notin. apply fv_nom_swap. admit. admit. admit. admit. (*ok*)
+                                                                                   ************ apply notin_union_1 in Fr0. assumption.
+                                                                                   ************ apply notin_union_1 in Fr. assumption.
+                                         ******** rewrite H. apply aeq_m_subst_out. apply m_subst_notin. apply fv_nom_swap.
+                                                  ********* apply notin_union_1 in Fr0. assumption.
+                                                  ********* reflexivity.
+                                                  ********* assumption.
+                                                  ********* assumption.
                                   ******* apply IHe1_1; assumption.
-                           ****** admit.
-                     ***** admit.
-           *** admit.
+                           ****** apply notin_union.
+                                  ******* apply fv_nom_remove.
+                                          ******** apply notin_union_2 in Fr0. apply notin_union_2 in Fr0. apply notin_union_2 in Fr0. apply notin_union_1 in Fr0. assumption.
+                                          ******** apply notin_remove_2. apply notin_union_2 in Fr0. apply notin_union_2 in Fr0. apply notin_union_1 in Fr0. assumption.
+                                  ******* apply notin_union.
+                                          ******** apply notin_union_1 in Fr0. assumption.
+                                          ******** apply notin_union.
+                                                   ********* apply fv_nom_remove.
+                                                             ********** apply notin_union_2 in Fr0. apply notin_union_2 in Fr0. apply notin_union_2 in Fr0. apply notin_union_1 in Fr0. assumption.
+                                                             ********** apply notin_remove_2. apply notin_union_2 in Fr0. apply notin_union_1 in Fr0. assumption.
+                                                   ********* apply notin_union.
+                                                             ********** apply notin_union_2 in Fr0. apply notin_union_2 in Fr0. apply notin_union_2 in Fr0. apply notin_union_2 in Fr0. apply notin_union_1 in Fr0. assumption.
+                                                             ********** repeat apply notin_union_2 in Fr0. assumption.
+                     ***** apply notin_union.
+                           ****** apply notin_union_2 in Fr0. apply notin_union_2 in Fr0. apply notin_union_2 in Fr0. apply notin_union_1 in Fr0. assumption.
+                           ****** apply notin_union. 
+                                  ******* apply fv_nom_remove.
+                                          ******** apply notin_union_2 in Fr0. apply notin_union_2 in Fr0. apply notin_union_1 in Fr0. assumption.
+                                          ******** apply notin_remove_2. apply fv_nom_remove_swap. 
+                                                   ********* apply notin_union_2 in Fr0. apply notin_union_2 in Fr0. apply notin_union_2 in Fr0. apply notin_union_2 in Fr0. apply notin_union_2 in Fr0. apply notin_union_1 in Fr0. apply notin_singleton_1 in Fr0. apply not_eq_sym. assumption.
+                                                   ********* repeat apply notin_union_2 in Fr0. apply notin_singleton_1 in Fr0. apply not_eq_sym. assumption.
+                                                   ********* apply notin_union_1 in Fr0. assumption.
+                                  ******* apply notin_union.
+                                          ******** apply fv_nom_remove. 
+                                                   ********* apply notin_union_2 in Fr0. apply notin_union_2 in Fr0. apply notin_union_1 in Fr0. assumption.
+                                                   ********* apply notin_remove_2. apply notin_union_2 in Fr0. apply notin_union_1 in Fr0. assumption.
+                                          ******** apply notin_union.
+                                                   ********* repeat apply notin_union_2 in Fr0. assumption.
+                                                   ********* apply notin_union_2 in Fr0. apply notin_union_2 in Fr0. apply notin_union_2 in Fr0. apply notin_union_2 in Fr0. apply notin_union_2 in Fr0. apply notin_union_1 in Fr0. assumption.
+           *** apply notin_union. 
+               **** apply notin_union_2 in Fr. apply notin_union_2 in Fr. apply notin_union_1 in Fr. assumption.
+               **** apply notin_union.
+                    ***** apply notin_union_1 in Fr. assumption.
+                    ***** apply notin_union.
+                          ****** apply notin_union_2 in Fr. apply notin_union_1 in Fr. assumption.
+                          ****** apply notin_union.
+                                 ******* apply notin_union_2 in Fr. apply notin_union_2 in Fr. apply notin_union_2 in Fr. apply notin_union_2 in Fr. apply notin_union_1 in Fr. assumption.
+                                 ******* repeat apply notin_union_2 in Fr. assumption.
         ** apply aeq_m_subst_out. apply aeq_sym. rewrite m_subst_sub_eq. apply aeq_refl.
-      * intro Hneq''. pose proof m_subst_sub_neq as Hsubneq. pick fresh w for (union (fv_nom e1_1) (union (fv_nom e1_2) (union (fv_nom e2) (union (fv_nom e3) (union (singleton x) (singleton y)))))).
+      * intro Hneq''. pose proof m_subst_sub_neq as Hsubneq. pick fresh w for (union (fv_nom e1_1) (union (fv_nom e1_2) (union (fv_nom e2) (union (fv_nom e3) (union (singleton x) (union (singleton z) (singleton y))))))).
         specialize (Hsubneq e1_1 e1_2 e3 y z w). apply aeq_trans with ([x := [y := e3] e2] (n_sub ([y := e3] swap z w e1_1) w ([y := e3] e1_2))).
         ** pose proof m_subst_sub_neq as Hsubneq'. specialize (Hsubneq' e1_1 e1_2 e2 x z w). pose proof Hneq' as H'. apply not_eq_sym in H'. apply Hsubneq' in H'. 
            *** apply aeq_trans with ([y := e3] (n_sub ([x := e2] swap z w e1_1) w ([x := e2] e1_2))).
                **** apply aeq_m_subst_out. apply H'.
-               **** pose proof m_subst_sub_neq as Hsubneq''. pick fresh w' for (union (fv_nom e1_1) (union (fv_nom e1_2) (union (fv_nom e2) (union (fv_nom e3) (union (singleton x) (union (singleton w) (singleton y))))))).
+               **** pose proof m_subst_sub_neq as Hsubneq''. pick fresh w' for (union (fv_nom e1_1) (union (fv_nom e1_2) (union (fv_nom e2) (union (fv_nom e3) (union (singleton x) (union (singleton w) (union (singleton z) (singleton y)))))))).
                     specialize (Hsubneq'' ([x := e2] swap z w e1_1) ([x := e2] e1_2) e3 y w w'). pose proof Fr as H''. repeat apply notin_union_2 in H''. apply notin_singleton_1 in H''. apply Hsubneq'' in H''.
                     ***** rewrite H''. pose proof m_subst_sub_neq as Hsubneq'''. specialize (Hsubneq''' ([y := e3] swap z w e1_1) ([y := e3] e1_2) ([y := e3] e2) x w w'). pose proof Hneq as H'''. pose proof Fr as H''''. 
                           apply notin_union_2 in H''''. apply notin_union_2 in H''''. apply notin_union_2 in H''''. apply notin_union_2 in H''''. apply notin_union_1 in H''''. apply notin_singleton_1 in H''''. apply Hsubneq''' in H''''. 
                           ****** rewrite H''''. apply aeq_sub_same.
                                  ******* apply aeq_trans with ([y := e3] ([x := e2] swap z w' e1_1)).
                                          ******** apply aeq_m_subst_out. pose proof swap_subst_rec_fun as Hswap. unfold m_subst in *. rewrite Hswap. unfold swap_var. destruct (x == w).
-                                                  ********* subst. admit. (*contr*)
+                                                  ********* subst. apply notin_union_2 in Fr. apply notin_union_2 in Fr. apply notin_union_2 in Fr. apply notin_union_2 in Fr. apply notin_union_1 in Fr. apply notin_singleton_1 in Fr. contradiction.
                                                   ********* destruct (x == w').
-                                                            ********** subst. admit. (*contr*)
+                                                            ********** subst. apply notin_union_2 in Fr0. apply notin_union_2 in Fr0. apply notin_union_2 in Fr0. apply notin_union_2 in Fr0. apply notin_union_1 in Fr0. apply notin_singleton_1 in Fr0. contradiction.
                                                             ********** pose proof swap_reduction as Hswap'. specialize (Hswap' e2 w w'). apply aeq_trans with (subst_rec_fun (swap w w' (swap z w e1_1)) e2 x).
                                                                        *********** pose proof aeq_m_subst_eq as Hmsubst. unfold m_subst in *. apply Hmsubst.
                                                                                    ************ apply aeq_refl.
                                                                                    ************ apply Hswap'.
-                                                                                                ************* admit. (*ok*)
-                                                                                                ************* admit. (*ok*)
+                                                                                                ************* apply notin_union_2 in Fr. apply notin_union_2 in Fr. apply notin_union_1 in Fr. assumption.
+                                                                                                ************* apply notin_union_2 in Fr0. apply notin_union_2 in Fr0. apply notin_union_1 in Fr0. assumption.
                                                                        *********** apply aeq_m_subst_out. rewrite swap_symmetric. pose proof swap_symmetric as Hswap''. specialize (Hswap'' e1_1 z w). rewrite Hswap''. 
                                                                                    pose proof swap_symmetric as Hswap'''. specialize (Hswap''' e1_1 z w'). rewrite Hswap'''. apply aeq_swap_swap.
-                                                                                   ************ admit. (*ok*)
-                                                                                   ************ admit. (*ok*)
+                                                                                   ************ apply notin_union_1 in Fr0. assumption.
+                                                                                   ************ apply notin_union_1 in Fr. assumption.
                                          ******** rewrite H. apply aeq_m_subst_out.
                                                   ********* apply aeq_sym. unfold m_subst. rewrite swap_subst_rec_fun. unfold swap_var. destruct (y == w).
-                                                            ********** subst. admit. (*contr*)
+                                                            ********** subst. repeat apply notin_union_2 in Fr. apply notin_singleton_1 in Fr. contradiction.
                                                             ********** destruct (y == w').
-                                                                       *********** subst. admit. (*contr*)
+                                                                       *********** subst. repeat apply notin_union_2 in Fr0. apply notin_singleton_1 in Fr0. contradiction.
                                                                        *********** pose proof swap_reduction as Hswap'. specialize (Hswap' e3 w w'). apply aeq_trans with (subst_rec_fun (swap w w' (swap z w e1_1)) e3 y).
                                                                                    ************ pose proof aeq_m_subst_eq as Hmsubst. unfold m_subst in *. apply Hmsubst.
                                                                                                 ************* apply aeq_refl.
                                                                                                 ************* apply Hswap'.
-                                                                                                              ************** admit. (*ok*)
-                                                                                                              ************** admit. (*ok*)
+                                                                                                              ************** apply notin_union_2 in Fr. apply notin_union_2 in Fr. apply notin_union_2 in Fr. apply notin_union_1 in Fr. assumption.
+                                                                                                              ************** apply notin_union_2 in Fr0. apply notin_union_2 in Fr0. apply notin_union_2 in Fr0. apply notin_union_1 in Fr0. assumption.
                                                                                    ************ apply aeq_m_subst_out. rewrite swap_symmetric. pose proof swap_symmetric as Hswap''. specialize (Hswap'' e1_1 z w). rewrite Hswap''. 
                                                                                    pose proof swap_symmetric as Hswap'''. specialize (Hswap''' e1_1 z w'). rewrite Hswap'''. apply aeq_swap_swap.
-                                                                                                ************* admit. (*ok*)
-                                                                                                ************* admit. (*ok*)
-                                                  ********* admit.
-                                                  ********* admit.
-                                                  ********* admit.
+                                                                                                ************* apply notin_union_1 in Fr0. assumption.
+                                                                                                ************* apply notin_union_1 in Fr. assumption.
+                                                  ********* reflexivity.
+                                                  ********* assumption.
+                                                  ********* assumption.
                                  ******* apply IHe1_1; assumption.
-                          ****** admit.
-                    ***** admit.
-               *** admit.
-            ** apply aeq_m_subst_out. pose proof Hneq'' as Hxz. apply not_eq_sym in Hxz. apply Hsubneq in Hxz. apply aeq_sym. assumption.
-               admit. (*ok*)
- 
-Admitted.
+                          ****** apply notin_union. 
+                                 ******* apply fv_nom_remove.
+                                         ******** apply notin_union_2 in Fr0. apply notin_union_2 in Fr0. apply notin_union_2 in Fr0. apply notin_union_1 in Fr0. assumption.
+                                         ******** apply notin_remove_2. apply notin_union_2 in Fr0. apply notin_union_2 in Fr0. apply notin_union_1 in Fr0. assumption.
+                                 ******* apply notin_union. 
+                                         ******** apply fv_nom_remove.
+                                                  ********* apply notin_union_2 in Fr0. apply notin_union_2 in Fr0. apply notin_union_2 in Fr0. apply notin_union_1 in Fr0. assumption.
+                                                  ********* apply notin_remove_2. apply fv_nom_remove_swap.
+                                                            ********** apply notin_union_2 in Fr0. apply notin_union_2 in Fr0. apply notin_union_2 in Fr0. apply notin_union_2 in Fr0. apply notin_union_2 in Fr0. apply notin_union_1 in Fr0. apply notin_singleton_1 in Fr0. apply not_eq_sym. assumption.
+                                                            ********** apply notin_union_2 in Fr0. apply notin_union_2 in Fr0. apply notin_union_2 in Fr0. apply notin_union_2 in Fr0. apply notin_union_2 in Fr0. apply notin_union_2 in Fr0. apply notin_union_1 in Fr0. apply notin_singleton_1 in Fr0. apply not_eq_sym. assumption.
+                                                            ********** apply notin_union_1 in Fr0. assumption.
+                                         ******** apply notin_union.
+                                                  ********* apply fv_nom_remove.
+                                                            ********** apply notin_union_2 in Fr0. apply notin_union_2 in Fr0. apply notin_union_2 in Fr0. apply notin_union_1 in Fr0. assumption.
+                                                            ********** apply notin_remove_2. apply notin_union_2 in Fr0. apply notin_union_1 in Fr0. assumption.
+                                                  ********* apply notin_union.
+                                                            ********** apply notin_union_2 in Fr0. apply notin_union_2 in Fr0. apply notin_union_2 in Fr0. apply notin_union_2 in Fr0. apply notin_union_1 in Fr0. assumption.
+                                                            ********** apply notin_union_2 in Fr0. apply notin_union_2 in Fr0. apply notin_union_2 in Fr0. apply notin_union_2 in Fr0. apply notin_union_2 in Fr0. apply notin_union_1 in Fr0. assumption.
+                    ***** apply notin_union. 
+                          ****** apply notin_union_2 in Fr0. apply notin_union_2 in Fr0. apply notin_union_2 in Fr0. apply notin_union_1 in Fr0. assumption.
+                          ****** apply notin_union. 
+                                 ******* apply fv_nom_remove.
+                                         ******** apply notin_union_2 in Fr0. apply notin_union_2 in Fr0. apply notin_union_1 in Fr0. assumption.
+                                         ******** apply notin_remove_2. apply fv_nom_remove_swap.
+                                                  ********* apply notin_union_2 in Fr0. apply notin_union_2 in Fr0. apply notin_union_2 in Fr0. apply notin_union_2 in Fr0. apply notin_union_2 in Fr0. apply notin_union_1 in Fr0. apply notin_singleton_1 in Fr0. apply not_eq_sym. assumption.
+                                                  ********* apply notin_union_2 in Fr0. apply notin_union_2 in Fr0. apply notin_union_2 in Fr0. apply notin_union_2 in Fr0. apply notin_union_2 in Fr0. apply notin_union_2 in Fr0. apply notin_union_1 in Fr0. apply notin_singleton_1 in Fr0. apply not_eq_sym. assumption.
+                                                  ********* apply notin_union_1 in Fr0. assumption.
+                                 ******* apply notin_union.
+                                         ******** apply fv_nom_remove.
+                                                  ********* apply notin_union_2 in Fr0. apply notin_union_2 in Fr0. apply notin_union_1 in Fr0. assumption.
+                                                  ********* apply notin_remove_2. apply notin_union_2 in Fr0. apply notin_union_1 in Fr0. assumption.
+                                         ******** apply notin_union.
+                                                  ********* repeat apply notin_union_2 in Fr0. assumption.
+                                                  ********* apply notin_union_2 in Fr0. apply notin_union_2 in Fr0. apply notin_union_2 in Fr0. apply notin_union_2 in Fr0. apply notin_union_2 in Fr0. apply notin_union_1 in Fr0. assumption.
+               *** apply notin_union.
+                   **** apply notin_union_2 in Fr. apply notin_union_2 in Fr. apply notin_union_1 in Fr. assumption.
+                   **** apply notin_union.
+                        ***** apply notin_union_1 in Fr. assumption.
+                        ***** apply notin_union.
+                              ****** apply notin_union_2 in Fr. apply notin_union_1 in Fr. assumption.
+                              ****** apply notin_union.
+                                     ******* apply notin_union_2 in Fr. apply notin_union_2 in Fr. apply notin_union_2 in Fr. apply notin_union_2 in Fr. apply notin_union_1 in Fr. assumption.
+                                     ******* apply notin_union_2 in Fr. apply notin_union_2 in Fr. apply notin_union_2 in Fr. apply notin_union_2 in Fr. apply notin_union_2 in Fr. apply notin_union_1 in Fr. assumption.
+            ** apply aeq_m_subst_out. pose proof Hneq'' as Hxz. apply not_eq_sym in Hxz. apply Hsubneq in Hxz.
+               *** apply aeq_sym. assumption.
+               *** apply notin_union.
+                   **** apply notin_union_2 in Fr. apply notin_union_2 in Fr. apply notin_union_2 in Fr. apply notin_union_1 in Fr. assumption.
+                   **** apply notin_union.
+                        ***** apply notin_union_1 in Fr. assumption.
+                        ***** apply notin_union.
+                              ****** apply notin_union_2 in Fr. apply notin_union_1 in Fr. assumption.
+                              ****** apply notin_union.
+                                     ******* repeat apply notin_union_2 in Fr. assumption.
+                                     ******* apply notin_union_2 in Fr. apply notin_union_2 in Fr. apply notin_union_2 in Fr. apply notin_union_2 in Fr. apply notin_union_2 in Fr. apply notin_union_1 in Fr. assumption.
+Qed.
