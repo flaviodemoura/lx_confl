@@ -2692,46 +2692,46 @@ Proof.
       * intro Heq. subst. simpl. rewrite subst_rec_fun_equation. rewrite eq_dec_refl. apply aeq_refl.
       * intro Hneq'. simpl in *. rewrite subst_rec_fun_equation. destruct (swap_var x y z' == swap_var x y z).
         ** apply (swap_neq x y) in Hneq'. contradiction.
-        ** simpl. destruct (atom_fresh (union (fv_nom u) (union (remove z (fv_nom t)) (singleton z')))). destruct (atom_fresh (union (fv_nom (swap x y u)) (union (remove (swap_var x y z) (fv_nom (swap x y t))) (singleton (swap_var x y z'))))). simpl. case (swap_var x y x0 == x1).
-           *** intro Heq. subst. apply aeq_abs_same. apply aeq_trans with (subst_rec_fun (swap x y (swap z x0 t)) (swap x y u) (swap_var x y z')).
-               **** apply H.
-                    ***** reflexivity.
-                    ***** assumption.
-               **** apply aeq_m_subst_out. rewrite swap_equivariance. apply aeq_refl.                   
-           *** intro Hneq''. apply aeq_abs_diff.
+        ** simpl. destruct (atom_fresh (union (fv_nom u) (union (remove z (fv_nom t)) (singleton z')))). destruct (atom_fresh (union (fv_nom (swap x y u)) (union (remove (swap_var x y z) (fv_nom (swap x y t))) (singleton (swap_var x y z'))))). simpl. apply aeq_trans with (n_abs (swap_var x y x0) (subst_rec_fun (swap x y (swap z x0 t)) (swap x y u) (swap_var x y z'))).
+           *** apply aeq_abs_same. apply H. 
+               **** reflexivity.
                **** assumption.
-               **** apply fv_nom_remove.
-                    ***** apply notin_fv_nom_equivariance. apply notin_union_1 in n0. assumption.
-                    ***** apply diff_remove.
-                    ****** apply notin_union_2 in n0. apply notin_union_2 in n0. apply notin_singleton_1 in n0. apply aux_not_equal. apply swap_neq. assumption.
-                    ****** case (x0 == z). 
-                    ******* intro Heq. subst. apply notin_union_2 in n1. apply notin_union_1 in n1. apply notin_remove_1 in n1. destruct n1.
-                    ******** contradiction.
-                    ******** apply fv_nom_swap. assumption.  
-                    ******* intro Hneq'''. apply notin_union_2 in n0. apply notin_union_1 in n0. apply notin_remove_1 in n0. destruct n0.
-                    ******** symmetry in H0. contradiction.
-                    ******** apply (notin_fv_nom_equivariance _ x y) in H0. apply (swap_neq x y) in Hneq'''. apply fv_nom_remove_swap; assumption.
-                    **** rewrite H.
-                         ***** apply aeq_sym. rewrite H. 
-                         ******* replace (swap_var x1 (swap_var x y x0) (swap_var x y z')) with (swap_var x y z').
-                         ******** apply aeq_trans with (subst_rec_fun (swap x1 (swap_var x y x0) (swap (swap_var x y z) x1 (swap x y t))) (swap x y u) (swap_var x y z')).
-                         ********* apply aeq_m_subst_eq.
-                         ********** apply aeq_refl.
-                         ********** apply swap_reduction.
-                         *********** apply notin_union_1 in n1. assumption.
-                         *********** apply notin_union_1 in n0. apply notin_fv_nom_equivariance. assumption.
-                         ********* apply aeq_m_subst_out. rewrite (swap_symmetric _ (swap_var x y z) x1). rewrite (swap_symmetric _ x1 (swap_var x y x0)). rewrite (swap_symmetric _ z x0). rewrite (swap_equivariance _ x y x0 z). apply notin_union_2 in n0. apply notin_union_1 in n0. apply notin_remove_1 in n0. apply notin_union_2 in n1. apply notin_union_1 in n1. apply notin_remove_1 in n1. destruct n0.
-                         ********** subst. rewrite (swap_symmetric _ (swap_var x y x0) x1). rewrite swap_involutive. rewrite swap_id. apply aeq_refl.
-                         ********** destruct n1. 
-                         *********** subst. rewrite swap_id. apply aeq_refl.
-                         *********** apply aeq_swap_swap.
-                         ************ apply notin_fv_nom_equivariance. assumption.
-                         ************ assumption.
-                         ******** repeat apply notin_union_2 in n1. repeat apply notin_union_2 in n0. apply notin_singleton_1 in n0. apply aux_not_equal in n0. apply (swap_neq x y) in n0. apply notin_singleton_1 in n1. symmetry. unfold swap_var at 1. default_simp. symmetry in e. contradiction.                         
-                         ******* rewrite swap_size_eq. reflexivity.
-                         ******* apply aux_not_equal. assumption.
-                         ***** reflexivity.
-                         ***** assumption.
+           *** case (x1 == swap_var x y x0). 
+               **** intro Heq. subst. apply aeq_abs_same. apply aeq_m_subst_out. rewrite swap_equivariance. apply aeq_refl.
+               **** intro Hneq''. rewrite (swap_equivariance _ x y z x0). apply aeq_abs_diff. 
+                    ***** apply aux_not_equal. assumption.
+                    ***** apply fv_nom_remove.
+                    ****** apply notin_union_1 in n0. apply notin_fv_nom_equivariance. assumption.
+                    ****** apply notin_remove_2. pose proof n0 as Hx0. apply notin_union_2 in n0. apply notin_union_1 in n0. apply notin_remove_1 in n0. case (z == x0).
+                    ******** intro Heq. subst. apply fv_nom_swap. apply notin_union_2 in n1. apply notin_union_1 in n1. apply notin_remove_1 in n1. destruct n1.
+                    ********* symmetry in H0. contradiction.
+                    ********* assumption.
+                    ******** intros Hneq'''. apply fv_nom_remove_swap.
+                    ********* apply aux_not_equal. assumption.
+                    ********* apply aux_not_equal. apply swap_neq. assumption.
+                    ********* destruct n0.
+                    ********** contradiction.
+                    ********** apply notin_fv_nom_equivariance. assumption.
+                    ***** rewrite H.
+                    ****** replace (swap_var x1 (swap_var x y x0) (swap_var x y z')) with (swap_var x y z').
+                    ******* apply aeq_m_subst_eq.
+                    ******** apply notin_union_2 in n0. apply notin_union_1 in n0. apply notin_remove_1 in n0. destruct n0. 
+                    *********** subst. repeat rewrite swap_id. rewrite (swap_symmetric _ x1 (swap_var x y x0)). rewrite swap_involutive. apply aeq_refl.
+                    *********** apply notin_union_2 in n1. apply notin_union_1 in n1. apply notin_remove_1 in n1. destruct n1.
+                    ************ subst. rewrite swap_id. apply aeq_refl.
+                    ************ apply aeq_sym. rewrite (swap_symmetric _ x1 (swap_var x y x0)). rewrite (swap_symmetric _ (swap_var x y z) x1). pose proof aeq_swap_swap as Hswap. specialize (Hswap (swap x y t) x1 (swap_var x y z) (swap_var x y x0)). rewrite (swap_symmetric _ (swap_var x y z) (swap_var x y x0)). apply Hswap.
+                    ************* apply notin_fv_nom_equivariance. assumption.
+                    ************* assumption.
+                    ******** apply aeq_sym. apply swap_reduction.
+                    ********* apply notin_union_1 in n1. assumption.
+                    ********* apply notin_union_1 in n0. apply notin_fv_nom_equivariance. assumption.
+                    ******* symmetry. unfold swap_var at 1. destruct (swap_var x y z' ==  x1).
+                    ******** repeat apply notin_union_2 in n1. apply notin_singleton_1 in n1. contradiction.
+                    ******** destruct (swap_var x y z' == swap_var x y x0).
+                    ********* repeat apply notin_union_2 in n0. apply notin_singleton_1 in n0. apply (swap_neq x y) in n0. contradiction.
+                    ********* reflexivity.
+                    ****** apply swap_size_eq.
+                    ****** assumption.
     + intros x y H z u. rewrite subst_rec_fun_equation. simpl. apply aeq_sym. rewrite subst_rec_fun_equation. apply aeq_sym. apply aeq_app.
       * apply IHt1. assumption.
       * apply IHt2. assumption.
@@ -2747,161 +2747,61 @@ Proof.
                     ***** reflexivity.
                     ***** assumption.
                **** apply aeq_sym. apply IHt1. assumption.
-           *** intro Hneq'. (* verificar a partir daqui. *)
-               simpl in *. apply aeq_trans with (n_sub (subst_rec_fun (swap x y (swap z x0 t1)) (swap x y u) (swap_var x y z')) (swap_var x y x0) (swap x y (subst_rec_fun t2 u z'))). 
+           *** intro Hneq'. simpl in *. apply aeq_trans with (n_sub (subst_rec_fun (swap x y (swap z x0 t1)) (swap x y u) (swap_var x y z')) (swap_var x y x0) (subst_rec_fun (swap x y t2) (swap x y u) (swap_var x y z'))). 
                **** apply aeq_sub_diff.
-                    ***** apply aeq_sym. apply IHt1. assumption.
-                    ***** assumption.
-                    ***** apply notin_union_2 in n2. apply notin_union_1 in n2. apply notin_union_1 in n2. apply notin_remove_1 in n2. destruct n2.
-                    ****** pose proof n0 as Hx0. apply notin_union_2 in n0. apply notin_union_1 in n0. apply notin_union_1 in n0. apply notin_remove_1 in n0. destruct n0.
-                    ******* symmetry in H0. rewrite H1 in H0. contradiction.
-                    ******* rewrite swap_equivariance. subst. apply fv_nom_remove.
-                    ********
-                    ********   
-                      admit.
-                    ***** admit.
-(*                      apply fv_nom_remove.
-                    ****** apply notin_union_1 in n2. assumption.
-                    ****** apply notin_remove_2. rewrite swap_equivariance. apply fv_nom_remove_swap.
-                    ******* assumption.
-                    *******    
-                    ******* apply notin_union_2 in n2. apply notin_union_1 in n2. admit.
-                    ***** apply aeq_sym.  apply aeq_trans with (subst_rec_fun (swap (swap_var x y x0) x1 (swap x y (swap z x0 t1))) (swap (swap_var x y x0) x1 (swap x y u)) (swap_var (swap_var x y x0) x1 (swap_var x y z'))).
-                    ****** apply H.
-                    ******* apply swap_size_eq.
-                    ******* apply aux_not_equal. assumption.
-                    ****** admit. 
-                    ******* rewrite swap_symmetric. apply aeq_trans with (swap x1 (swap_var x y x0) (swap x y (swap x0 z t1))).
-                    ******** repeat apply aeq_swap. rewrite swap_symmetric. apply aeq_refl.
-                    ******** apply aeq_trans with (swap x1 (swap_var x y x0) (swap (swap_var x y x0) (swap_var x y z) (swap x y t1))).
-                    ********* apply aeq_swap. rewrite swap_equivariance. apply aeq_refl.
-                    ********* rewrite aeq_swap_swap.
-                    ********** rewrite swap_symmetric. apply aeq_sym. replace (swap_var (swap_var x y x0) x1 (swap_var x y z')) with (swap_var x y z').
-                    *********** rewrite swap_id. apply aeq_refl.
-                    *********** unfold swap_var at 2. destruct (swap_var x y z' == swap_var x y x0).
-                    ************ apply notin_union_2 in n0. apply notin_union_2 in n0. apply notin_union_1 in n0. apply notin_singleton_1 in n0. apply (swap_neq x y) in n0. contradiction.
-                    ************ destruct (swap_var x y z' == x1).
-                    ************* apply notin_union_2 in n2. apply notin_union_2 in n2. apply notin_union_1 in n2. apply notin_singleton_1 in n2. contradiction.
-                    ************* reflexivity.
-                    ********** apply notin_union_2 in n2. apply notin_union_1 in n2. assumption.
-                    ********** apply notin_fv_nom_equivariance. apply notin_union_2 in n0. apply notin_union_1 in n0. assumption.
-                    ******* apply swap_reduction.
-                    ******** apply notin_fv_nom_equivariance. apply notin_union_1 in n0. assumption.
-                    ******** apply notin_union_1 in n2. assumption. *)
+               ***** apply aeq_refl.
+               ***** assumption.
+               ***** pose proof n2 as Hx1. apply notin_union_2 in n2. apply notin_union_1 in n2. apply notin_union_1 in n2. apply notin_remove_1 in n2. destruct n2.
+               ****** apply fv_nom_remove.
+               ******* apply notin_union_1 in Hx1. assumption.
+               ******* apply notin_remove_2. rewrite swap_equivariance. subst. pose proof n0 as Hx0. apply notin_union_2 in n0. apply notin_union_1 in n0. apply notin_union_1 in n0. apply notin_remove_1 in n0. destruct n0.
+               ******** subst. contradiction.
+               ******** apply fv_nom_swap. apply notin_fv_nom_equivariance. assumption.
+               ****** apply fv_nom_remove.
+               ******* apply notin_union_1 in Hx1. assumption.
+               ******* apply notin_remove_2. rewrite swap_equivariance. apply notin_union_2 in Hx1. apply notin_union_1 in Hx1. apply notin_union_1 in Hx1. apply notin_remove_1 in Hx1. case (swap_var x y z == x1).
+               ******** intro Heq. subst. apply fv_nom_swap. apply notin_union_2 in n0. apply notin_union_1 in n0. apply notin_union_1 in n0. apply notin_remove_1 in n0. destruct n0.
+               ********* subst. contradiction.
+               ********* apply notin_fv_nom_equivariance. assumption.
+               ******** intro Hneq''. destruct Hx1.
+               ********* contradiction.
+               ********* apply fv_nom_remove_swap.
+               ********** assumption.
+               ********** apply aux_not_equal. assumption.
+               ********** assumption.
+               ***** rewrite H.
+               ****** replace (swap_var (swap_var x y x0) x1 (swap_var x y z')) with (swap_var x y z').
+               ******* apply aeq_m_subst_eq.
+               ******** rewrite (swap_equivariance _ x y z x0). apply aeq_sym. rewrite swap_symmetric. rewrite (swap_symmetric _ (swap_var x y z) (swap_var x y x0)). rewrite (swap_symmetric _ (swap_var x y z) x1). pose proof n0 as Hx0. pose proof n2 as Hx1. apply notin_union_2 in n2. apply notin_union_1 in n2. apply notin_union_1 in n2. apply notin_remove_1 in n2. destruct n2.
+               ********* subst. rewrite swap_id. apply notin_union_2 in n0. apply notin_union_1 in n0. apply notin_union_1 in n0. apply notin_remove_1 in n0. case (z == x0).
+               ********** intro Heq. subst. repeat rewrite swap_id. apply aeq_refl.
+               ********** intro Hneq''. rewrite (swap_symmetric _ (swap_var x y z) (swap_var x y x0)). rewrite swap_involutive. apply aeq_refl.
+               ********* apply notin_union_2 in n0. apply notin_union_1 in n0. apply notin_union_1 in n0. apply notin_remove_1 in n0. case (z == x0).
+               ********** intro Heq. subst. rewrite swap_id. apply aeq_refl.
+               ********** intro Hneq''. destruct n0.
+               *********** contradiction.
+               *********** apply aeq_swap_swap.
+               ************ assumption.
+               ************ apply notin_union_2 in Hx0. apply notin_union_1 in Hx0. apply notin_union_1 in Hx0. apply notin_remove_1 in Hx0. destruct Hx0.
+               ************* contradiction.
+               ************* apply notin_fv_nom_equivariance. assumption.
+               ******** symmetry. apply swap_reduction.
+               ********* apply notin_fv_nom_equivariance. apply notin_union_1 in n0. assumption.
+               ********* apply notin_union_1 in n2. assumption.
+               ******* symmetry. unfold swap_var at 1. destruct (swap_var x y z' == swap_var x y x0).
+               ******** repeat apply notin_union_2 in n0. apply notin_singleton_1 in n0. apply (swap_neq x y) in n0. contradiction.
+               ******** destruct (swap_var x y z' == x1).
+               ********* repeat apply notin_union_2 in n2. apply notin_singleton_1 in n2. contradiction.
+               ********* reflexivity.
+               ****** apply swap_size_eq.
+               ****** apply aux_not_equal. assumption.
                **** apply aeq_sub_same.
                     ***** apply aeq_sym. apply H.
                     ****** reflexivity.
                     ****** assumption.
-                    *****apply aeq_refl.
-Admitted.
-
-
-(*
-        destruct (atom_fresh (union (fv_nom u) (union (fv_nom t) (union (singleton z') (singleton z))))). simpl. apply aeq_sym. rewrite subst_rec_fun_equation. destruct (swap_var x y z' == swap_var x y z).
-        ** apply (swap_neq x y) in Hneq'. contradiction.
-        ** destruct (atom_fresh (union (fv_nom (swap x y u)) (union (fv_nom (swap x y t)) (union (singleton (swap_var x y z')) (singleton (swap_var x y z)))))). case ((swap_var x y x0) == x1).
-           *** intro Heq. subst. apply aeq_abs_same. apply aeq_sym. rewrite H.
-               **** rewrite swap_equivariance. apply aeq_refl.
-               **** reflexivity.
-               **** assumption.          
-           *** intro Hneq''. apply aeq_sym. apply aeq_trans with (n_abs (swap_var x y x0) (subst_rec_fun (swap x y (swap z x0 t)) (swap x y u) (swap_var x y z'))). 
-               **** apply aeq_abs_same. apply H.
-                    ***** reflexivity.
-                    ***** assumption.
-               **** apply aeq_abs_diff.
-                    ***** assumption.
-                    ***** apply fv_nom_remove.
-                    ****** apply notin_fv_nom_equivariance. apply notin_union_1 in n. assumption.
-                    ****** apply diff_remove.
-                    ******* apply notin_union_2 in n. apply notin_union_2 in n. apply notin_union_1 in n. apply notin_singleton_1 in n. apply aux_not_equal. apply swap_neq. assumption.
-                    ******* apply fv_nom_remove_swap. 
-                    ******** assumption.
-                    ******** repeat apply notin_union_2 in n. apply notin_singleton_1 in n. apply swap_neq. auto.
-                    ******** apply notin_fv_nom_equivariance. apply notin_union_2 in n. apply notin_union_1 in n. assumption.
-                    ***** rewrite H.
-                    ****** Admitted. (* rewrite <- swap_equivariance.
-                      pose proof aeq_m_subst' as Haeq. unfold m_subst in Haeq. replace (swap (swap_var x y z) x1 (swap x y t)) with (swap x1 (swap_var x y z) (swap x y t)).
-                    ******* replace (swap x1 (swap_var x y x0) (swap x1 (swap_var x y z) (swap x y t))) with (swap (swap_var x y x0) x1 (swap x1 (swap_var x y z) (swap x y t))).
-                    ******** apply aeq_trans  with (subst_rec_fun (swap (swap_var x y x0) (swap_var x y z) (swap x y t))
-    (swap x1 (swap_var x y x0) (swap x y u)) (swap_var x1 (swap_var x y x0) (swap_var x y z'))).
-                    ********* apply aeq_m_subst'.
-                    ********** apply aeq_sym. replace (swap_var x1 (swap_var x y x0) (swap_var x y z')) with (swap_var x y z').
-                    *********** rewrite swap_id. rewrite <- swap_equivariance. replace (swap x0 z t) with (swap z x0 t).
-                    ************ apply aeq_refl.
-                    ************ apply swap_symmetric.
-                    *********** apply notin_union_2 in n. apply notin_union_2 in n. apply notin_union_1 in n. apply notin_singleton_1 in n. apply (swap_neq x y) in n. apply notin_union_2 in n1. apply notin_union_2 in n1. apply notin_union_1 in n1. apply notin_singleton_1 in n1. unfold swap_var at 2. destruct (swap_var x y z' == x1).
-                    ************ contradiction.
-                    ************ destruct (swap_var x y z' == swap_var x y x0).
-                    ************* contradiction.
-                    ************* reflexivity.
-                    ********** apply aeq_sym. apply swap_reduction.
-                    *********** apply notin_union_1 in n1. assumption.
-                    *********** apply notin_fv_nom_equivariance. apply notin_union_1 in n. assumption.
-                    ********* apply aeq_sym. apply aeq_m_subst' .
-                    ********** rewrite swap_id. apply aeq_sym. apply aeq_swap_swap.
-                    *********** apply notin_fv_nom_equivariance. apply notin_union_2 in n. apply notin_union_1 in n. assumption.
-                    *********** apply notin_union_2 in n1. apply notin_union_1 in n1. assumption.
-                    ********** apply aeq_refl.
-                    ******** apply swap_symmetric.
-                    ******* apply swap_symmetric.
-                    ****** apply swap_size_eq.
-                    ****** apply aux_not_equal. assumption.
-    + intros x y H z u. rewrite subst_rec_fun_equation. simpl. apply aeq_sym. rewrite subst_rec_fun_equation. apply aeq_sym. apply aeq_app.
-      * apply IHt1. assumption.
-      * apply IHt2. assumption.
-    + intros x y Hneq z' u. simpl. rewrite subst_rec_fun_equation. destruct (z' == z).
-      * subst. simpl. apply aeq_sym. rewrite subst_rec_fun_equation. rewrite eq_dec_refl. apply aeq_sub_same.
-        ** apply aeq_refl.
-        ** apply aeq_sym. apply IHt1. assumption.
-      * destruct (atom_fresh (union (fv_nom u) (union (fv_nom t1) (union (singleton z') (singleton z))))). simpl. apply aeq_sym. rewrite subst_rec_fun_equation. destruct (swap_var x y z' == swap_var x y z).
-        ** apply (swap_neq x y) in n. contradiction.
-        ** destruct (atom_fresh
-       (union (fv_nom (swap x y u))
-          (union (fv_nom (swap x y t1)) (union (singleton (swap_var x y z')) (singleton (swap_var x y z)))))).
-           case (x1 == (swap_var x y x0)).
-           *** intro Heq. subst. apply aeq_sub_same.
-               **** apply aeq_sym. rewrite <- swap_equivariance. apply H.
-                    ***** reflexivity.
-                    ***** assumption.
-               **** apply aeq_sym. apply IHt1. assumption.
-           *** intro Hneq'. apply aeq_trans with (n_sub (subst_rec_fun (swap x y (swap z x0 t1)) (swap x y u) (swap_var x y z')) (swap_var x y x0) (swap x y (subst_rec_fun t2 u z'))). 
-               **** apply aeq_sub_diff.
                     ***** apply aeq_sym. apply IHt1. assumption.
-                    ***** assumption.
-                    ***** apply fv_nom_remove.
-                    ****** apply notin_union_1 in n2. assumption.
-                    ****** apply notin_remove_2. rewrite swap_equivariance. apply fv_nom_remove_swap.
-                    ******* assumption.
-                    ******* repeat apply notin_union_2 in n2. apply notin_singleton_1 in n2. apply aux_not_equal. assumption.
-                    ******* apply notin_union_2 in n2. apply notin_union_1 in n2. assumption.
-                    ***** apply aeq_sym.  apply aeq_trans with (subst_rec_fun (swap (swap_var x y x0) x1 (swap x y (swap z x0 t1))) (swap (swap_var x y x0) x1 (swap x y u)) (swap_var (swap_var x y x0) x1 (swap_var x y z'))).
-                    ****** apply H.
-                    ******* apply swap_size_eq.
-                    ******* apply aux_not_equal. assumption.
-                    ****** apply aeq_m_subst'.
-                    ******* rewrite swap_symmetric. apply aeq_trans with (swap x1 (swap_var x y x0) (swap x y (swap x0 z t1))).
-                    ******** repeat apply aeq_swap. rewrite swap_symmetric. apply aeq_refl.
-                    ******** apply aeq_trans with (swap x1 (swap_var x y x0) (swap (swap_var x y x0) (swap_var x y z) (swap x y t1))).
-                    ********* apply aeq_swap. rewrite swap_equivariance. apply aeq_refl.
-                    ********* rewrite aeq_swap_swap.
-                    ********** rewrite swap_symmetric. apply aeq_sym. replace (swap_var (swap_var x y x0) x1 (swap_var x y z')) with (swap_var x y z').
-                    *********** rewrite swap_id. apply aeq_refl.
-                    *********** unfold swap_var at 2. destruct (swap_var x y z' == swap_var x y x0).
-                    ************ apply notin_union_2 in n0. apply notin_union_2 in n0. apply notin_union_1 in n0. apply notin_singleton_1 in n0. apply (swap_neq x y) in n0. contradiction.
-                    ************ destruct (swap_var x y z' == x1).
-                    ************* apply notin_union_2 in n2. apply notin_union_2 in n2. apply notin_union_1 in n2. apply notin_singleton_1 in n2. contradiction.
-                    ************* reflexivity.
-                    ********** apply notin_union_2 in n2. apply notin_union_1 in n2. assumption.
-                    ********** apply notin_fv_nom_equivariance. apply notin_union_2 in n0. apply notin_union_1 in n0. assumption.
-                    ******* apply swap_reduction.
-                    ******** apply notin_fv_nom_equivariance. apply notin_union_1 in n0. assumption.
-                    ******** apply notin_union_1 in n2. assumption.
-               **** apply aeq_sub_same.
-                    ***** apply aeq_sym. apply H.
-                    ****** reflexivity.
-                    ****** assumption.
-                    *****apply aeq_refl.
-Qed. *) *)
+Qed.
+
 (* talvez possa ser substituído pelos lemas parciais anteriores
 Theorem aeq_m_subst: forall t t' u u' x x', x `notin` fv_nom t' -> t =a (swap x x' t') -> u =a u' -> ([x := u] t) =a ([x' := u'] t').
 Proof.
