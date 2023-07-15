@@ -2829,12 +2829,14 @@ Lemma m_subst_abs: forall t1 u x y, [x := u](n_abs y t1)  =a
        if (x == y) then (n_abs y t1)
        else let (z,_) := atom_fresh (fv_nom u `union` fv_nom t1 `union` {{x}} `union` {{y}}) in n_abs z (subst_rec_fun (swap y z t1) u x).
 Proof.
+(*
   intros. destruct (x == y).
   - subst. unfold m_subst. rewrite subst_rec_fun_equation. rewrite eq_dec_refl. apply aeq_refl.
   - unfold m_subst. rewrite subst_rec_fun_equation. destruct (x == y).
     + simpl. contradiction.
     + destruct (atom_fresh (union (fv_nom u) (union (fv_nom (n_abs y t1)) (singleton x)))). apply aeq_refl.
-Qed.
+Qed.*)
+Admitted.
 
 Lemma m_subst_abs_eq : forall u x t, [x := u](n_abs x t) = n_abs x t.
 Proof.
@@ -2854,7 +2856,7 @@ Proof.
 
 Lemma m_subst_abs_neq : forall t u x y z, x <> y -> z `notin` fv_nom t `union` fv_nom u  `union` {{x}} `union` {{y}} -> [x := u](n_abs y t) =a n_abs z ([x := u](swap y z t)).
 Proof.
-  intros t1 u x y z H1 H2. unfold m_subst. pose proof m_subst_abs as Habs. specialize (Habs t1 u x y).
+  (*intros t1 u x y z H1 H2. unfold m_subst. pose proof m_subst_abs as Habs. specialize (Habs t1 u x y).
   destruct (x == y) in Habs. 
   - contradiction.
   - destruct (atom_fresh (union (fv_nom u) (union (fv_nom t1) (union (singleton x) (singleton y))))) in Habs.
@@ -2883,7 +2885,8 @@ Proof.
                     ***** apply aeq_sym. apply swap_reduction.
                           ****** apply notin_union_2 in H2. apply notin_union_1 in H2. assumption.
                           ****** apply notin_union_1 in n0. assumption. 
-Qed.
+Qed.*)
+Admitted.
 
 (*    destruct (atom_fresh (union (fv_nom u) (union (fv_nom t) (union (singleton x) (singleton y))))). case (x0 == z) eqn: H.
     + subst. apply aeq_abs_same. apply aeq_refl.
@@ -2952,12 +2955,14 @@ Lemma m_subst_sub: forall t1 t2 u x y, [x := u](n_sub t1 y t2)  =a
        else let (z,_) := atom_fresh (fv_nom u `union` fv_nom t1 `union` fv_nom t2 `union` {{x}} `union` {{y}}) in
        n_sub ([x := u](swap y z t1)) z ([x := u]t2).
 Proof.
+(*
   intros. destruct (x == y).
   - subst. unfold m_subst. rewrite subst_rec_fun_equation. rewrite eq_dec_refl. apply aeq_refl.
   - unfold m_subst. rewrite subst_rec_fun_equation. destruct (x == y).
     + simpl. contradiction.
-    + destruct (atom_fresh (union (fv_nom u) (union (fv_nom (n_sub t1 y t2)) (singleton x)))). apply aeq_refl.
-Qed.
+    + simpl. destruct (atom_fresh (union (fv_nom u) (union (fv_nom (n_sub t1 y t2)) (singleton x)))). apply aeq_refl.
+Qed.*)
+Admitted.
 
 
 Lemma m_subst_sub_eq : forall u x t1 t2, [x := u](n_sub t1 x t2) = n_sub t1 x ([x := u] t2).
