@@ -153,7 +153,7 @@ Qed.
 
 (** * Introduction *)
 
-(** In this work, we are insterested in formalizing an extension of the substitution lemma%\cite{barendregtLambdaCalculusIts1984}% in the Coq proof assistant. The substitution lemma is an important result concerning the composition of the substitution operation, and is usually presented as follows: if $x$ does not occur in the set of free variables of the term $v$ then $t\{x/u\}\{y/v\} =_\alpha t\{y/v\}\{x/u\{y/v\}\}$. This is a well known result already formalized several times in the context of the $\lambda$-calculus %\cite{berghoferHeadtoHeadComparisonBruijn2007}%.
+(** In this work, we present a formalization of an extension of the substitution lemma%\cite{barendregtLambdaCalculusIts1984}% with an explicit substitution operator in the Coq proof assistant%\cite{teamCoqProofAssistant2021}%. The substitution lemma is an important result concerning the composition of the substitution operation, and is usually presented as follows: if $x$ does not occur in the set of free variables of the term $v$ then $t\{x/u\}\{y/v\} =_\alpha t\{y/v\}\{x/u\{y/v\}\}$. This is a well known result already formalized several times in the context of the $\lambda$-calculus %\cite{berghoferHeadtoHeadComparisonBruijn2007}%.
 
 In the context of the $\lambda$-calculus with explicit substitutions its formalization is not straightforward because, in addition to the metasubstitution operation, there is the explicit substitution operator. Our formalization is done in a nominal setting that uses the MetaLib package of Coq, but no particular explicit substitution calculi is taken into account because the expected behaviour between the metasubstitution operation with the explicit substitutition constructor is the same regardless the calculus.
 
