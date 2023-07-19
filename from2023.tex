@@ -1,0 +1,62 @@
+\documentclass[submission,copyright,creativecommons]{eptcs}
+\providecommand{\event}{FROM 2023} % Name of the event you are submitting to
+
+\usepackage{iftex}
+
+\ifpdf
+  \usepackage{underscore}         % Only needed if you use pdflatex.
+  \usepackage[T1]{fontenc}        % Recommended with pdflatex
+\else
+  \usepackage{breakurl}           % Not needed if you use pdflatex only.
+\fi
+
+\usepackage[utf8]{inputenc}
+\usepackage{babel}
+\usepackage{amsmath,amsfonts}
+\usepackage{xcolor}
+\usepackage[color]{coqdoc}
+\usepackage{mathpartir}
+\usepackage{minibox}
+\usepackage{tabto,calc}
+
+\newcommand{\vswap}[3]{(\!\!(#1\ #2)\!\!) #3}
+\newcommand{\swap}[3]{(#1\ #2) #3}
+
+\title{A formalized extension of the substitution lemma in Coq}
+\author{Flávio L. C. de Moura
+  \institute{Departamento de Ciência da Computação \\
+    Universidade de Brasília, Brasília, Brazil}
+  \email{flaviomoura@unb.br}
+  \and
+  Maria Julia
+  \institute{Departamento de Ciência da Computação \\
+    Universidade de Brasília, Brasília, Brazil}
+  \email{majuhdl@gmail.com}
+}
+\def\titlerunning{A formalized extension of the substitution lemma}
+\def\authorrunning{Flávio L. C. de Moura \& Maria Julia}
+\begin{document}
+\maketitle
+
+\begin{abstract}
+  The substitution lemma is a renowned theorem within the realm of $\lambda$-calculus theory and concerns the interactional behavior of the metasubstitution operation. In this study, we augment the $\lambda$-calculus's grammar with an uninterpreted explicit substitution operation. Our primary contribution lies in verifying that, despite these modifications, the substitution lemma continues to remain valid. This confirmation was achieved using the Coq proof assistant. Our formalization methodology employs a nominal approach, which provides a remarkably direct implementation of the $\alpha$-equivalence concept. Despite this simplicity, the strategy involved in variable renaming within the proofs presents a substantial challenge, ensuring a comprehensive exploration of the implications of our extension to the grammar of the $\lambda$-calculus.
+\end{abstract}
+
+
+\input{lambda_es.tex} 
+
+% Para gerar o arquivo tex: 
+% 1.Em um terminal digite:  coqdoc --latex --body-only -s -g lambda_es.v
+% 2. Em um terminal digite: pdflatex report.tex *)
+
+% \nocite{*}
+\bibliographystyle{eptcs}
+\bibliography{zotLib}
+\end{document}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% End:
+
+

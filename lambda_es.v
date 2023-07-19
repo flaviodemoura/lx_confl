@@ -153,15 +153,47 @@ Qed.
 
 (** * Introduction *)
 
-(** In this work, we are insterested in formalizing an extension of the substitution lemma%\cite{barendregtLambdaCalculusIts1984}% in the Coq proof assistant. The substitution lemma is an important result concerning the composition of the substitution operation, and is usually presented as follows: if $x$ does not occur in the set of free variables of the term $v$ then $t\{x/u\}\{y/v\} =_\alpha t\{y/v\}\{x/u\{y/v\}\}$. This is a well known result already formalized several times in the context of the $\lambda$-calculus %\cite{berghoferHeadtoHeadComparisonBruijn2007}%.
+(** TBD  In this work, we present a formalization of an extension of the substitution lemma%\cite{barendregtLambdaCalculusIts1984}% with an explicit substitution operator in the Coq proof assistant%\cite{teamCoqProofAssistant2021}%. The substitution lemma is an important result concerning the composition of the substitution operation, and is usually presented as follows: if $x$ does not occur in the set of free variables of the term $v$ then $t\{x/u\}\{y/v\} =_\alpha t\{y/v\}\{x/u\{y/v\}\}$. This is a well known result already formalized several times in the context of the $\lambda$-calculus %\cite{berghoferHeadtoHeadComparisonBruijn2007}%.
 
 In the context of the $\lambda$-calculus with explicit substitutions its formalization is not straightforward because, in addition to the metasubstitution operation, there is the explicit substitution operator. Our formalization is done in a nominal setting that uses the MetaLib package of Coq, but no particular explicit substitution calculi is taken into account because the expected behaviour between the metasubstitution operation with the explicit substitutition constructor is the same regardless the calculus.
+
+- This paper is written from a Coq script file.
+- include %\cite{berghoferHeadtoHeadComparisonBruijn2007}%
 
 *)
 
 (** * A syntactic extension of the $\lambda$-calculus *)
 
-(** We consider a generic signature with the following constructors: *)
+(** In this section, we present the framework of the formalization, which is based on a nominal approach%\cite{gabbayNewApproachAbstract1999}% where variables use names instead of De Bruijn indexes%\cite{bruijnLambdaCalculusNotation1972}%. In the nominal setting, variables are represented by atoms that are structureless entities with a decidable equality: 
+
+<<
+Parameter eq_dec : forall x y : atom, {x = y} + {x <> y}.
+>>
+
+Variable renaming is done via name-swapping defined as follows:
+
+$\vswap{x}{y}{z} := \left\{ \begin{array}{ll}
+y, & \mbox{ if } z = x; \\
+x, & \mbox{ if } z = y; \\
+z, & \mbox{ otherwise. } \\
+\end{array}\right.$
+
+\noindent and the corresponding Coq definition:
+
+ *)
+
+Definition swap_var (x:atom) (y:atom) (z:atom) :=
+  if (z == x) then y else if (z == y) then x else z.
+
+
+(* begin hide *)
+Lemma swap_var_id: forall x y, (swap_var x x y = y).
+Proof.
+  intros. unfold swap_var. case (y == x); intros; subst; reflexivity.
+Qed.
+(* end hide *)
+
+(** The next step is to extend the variable renaming operation to terms, which in our case corresponds to $\lambda$-terms augmented with an explicit substitution operation given by the following inductive grammar: *)
 
 Inductive n_sexp : Set :=
  | n_var (x:atom)
@@ -169,7 +201,18 @@ Inductive n_sexp : Set :=
  | n_app (t1:n_sexp) (t2:n_sexp)
  | n_sub (t1:n_sexp) (x:atom) (t2:n_sexp).
 
-(** %\noindent% where [n_var] is the constructor for variables, [n_abs] for abstractions, [n_app] for applications and [n_sub] for the explicit substitution operation. *)
+(** %\noindent% where [n_var] is the constructor for variables, [n_abs] for abstractions, [n_app] for applications and [n_sub] for the explicit substitution operation. Explicit substitution calculi are formalisms that decompose the metasubstitution operation into more atomic steps behaving as a bridge between the $\lambda$-calculus and its implementations. In other words, explicit substitution calculi "allow a better understanding of the execution models of higher-order languages"%\cite{kesnerTheoryExplicitSubstitutions2009}%. The action of a permutation on a term, written $\swap{x}{y}{t}$, is inductively defined as follows:%\vspace{.5cm}%
+
+$\swap{x}{y}{t} := \left\{ \begin{array}{ll}
+\vswap{x}{y}{v}, & \mbox{ if } t \mbox{ is the variable } v; \\
+\lambda_{\vswap{x}{y}{z}}. \swap{x}{y}{t_1}, & \mbox{ if } t = \lambda_z.t_1; \\
+\swap{x}{y}{t_1}\ \swap{x}{y}{t_2}, & \mbox{ if } t = t_1\ t_2;\\
+\swap{x}{y}{t_1}[\vswap{x}{y}{z} := \swap{x}{y}{t_2}], & \mbox{ if } t = t_1[z := t_2].
+\end{array}\right.$%\vspace{.5cm}%
+
+The corresponding Coq definition is given by the following recursive function:
+
+ *)
 
 (* begin hide *)
 Fixpoint size (t : n_sexp) : nat :=
@@ -189,56 +232,6 @@ Fixpoint fv_nom (n : n_sexp) : atoms :=
   end.
 (* end hide *)
 
-(* não utilizado
-Lemma fv_nom_dec: forall t x, x `in` fv_nom t \/ x `notin` fv_nom t.
-Proof.
-  induction t.
-  - intros x'. pose proof eq_dec. specialize (H x x'). destruct H.
-    + subst. left. simpl. auto.
-    + right. simpl. auto.
-  - intro x'. simpl. pose proof eq_dec. specialize (H x x'). destruct H.
-    + subst. specialize (IHt x'). destruct IHt; default_simp.
-    + specialize (IHt x'). destruct IHt.
-      * left. default_simp.
-      * right. default_simp.
-  - intro x. simpl. specialize (IHt1 x). destruct IHt1.
-    + left. default_simp.
-    + specialize (IHt2 x). destruct IHt2.
-      * left. default_simp.
-      * right. default_simp.
-  - intro x'. simpl. pose proof eq_dec. specialize (H x x'). destruct H.
-    + subst. specialize (IHt1 x'). destruct IHt1.
-      * specialize (IHt2 x'). destruct IHt2.
-        ** left. default_simp.
-        ** right. default_simp.
-      * specialize (IHt2 x'). destruct IHt2.
-        ** left. default_simp.
-        ** right. default_simp.
-    + specialize (IHt1 x'). destruct IHt1.
-      * specialize (IHt2 x'). destruct IHt2.
-        ** left. default_simp.
-        ** left. default_simp.
-      * specialize (IHt2 x'). destruct IHt2.
-        ** left. default_simp.
-        ** right. default_simp.
-Qed. 
-
-Lemma fv_nom_app: forall t1 t2 x, x `notin` fv_nom (n_app t1 t2) -> x `notin` fv_nom t1  /\ x `notin` fv_nom t2.
-Proof.
-  intros t1 t2 x H. simpl in H. split.
-  - apply notin_union_1 in H. assumption.
-  - apply notin_union_2 in H. assumption.
-Qed. *) 
-
-(* begin hide *)
-Definition swap_var (x:atom) (y:atom) (z:atom) :=
-  if (z == x) then y else if (z == y) then x else z.
-
-Lemma swap_var_id: forall x y, (swap_var x x y = y).
-Proof.
-  intros. unfold swap_var. case (y == x); intros; subst; reflexivity.
-Qed.
-
 Fixpoint swap (x:atom) (y:atom) (t:n_sexp) : n_sexp :=
   match t with
   | n_var z     => n_var (swap_var x y z)
@@ -246,7 +239,8 @@ Fixpoint swap (x:atom) (y:atom) (t:n_sexp) : n_sexp :=
   | n_app t1 t2 => n_app (swap x y t1) (swap x y t2)
   | n_sub t1 z t2 => n_sub (swap x y t1) (swap_var x y z) (swap x y t2)
   end.
-(* end hide *)
+
+(** The key point of this approach is that the swap opearation ... *)
 
 (* begin hide *)
 Lemma swap_id : forall t x,
