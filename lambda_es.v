@@ -2268,6 +2268,8 @@ Definition m_subst (u : n_sexp) (x:atom) (t:n_sexp) :=
   subst_rec_fun t u x.
 Notation "[ x := u ] t" := (m_subst u x t) (at level 60).
 
+(** The lemmas following say that the application of the meta-substitution to the same variable that is in it return the expression in the meta-substitution. The next lemma says that if the variables in the meta-substitution and in the expression are different, that is equal to the variable expression. **)
+
 Lemma m_subst_var_eq : forall u x,
     [x := u](n_var x) = u.
 Proof.
@@ -2325,6 +2327,9 @@ Proof.
                **** reflexivity.
                **** assumption.
   - Admitted. *)
+
+(** The following lemma defines that if the variable in the meta-substitution is not in the free variables in the expression the meta-substitution is applied to, then the meta-substitution is alpha-equivalent to the expression itself. **)
+(** The proof of this lemma is done using the induction in the expression the meta-substitution is applied to and the definition of the meta-substittution was also used in all cases. The application and the variable cases are done similarly. For both the abstraction and explicit substitution, it was necessary to compare the variables of the meta-substitition and the expression. The lemmas for alpha-substitution equalities above were used in the proofs for abstraction and explicit substitution.**)
 
 Lemma m_subst_notin: forall t u x, x `notin` fv_nom t -> [x := u]t =a t.
 Proof.
@@ -2384,7 +2389,10 @@ Proof.
                     ***** assumption.
 Qed.
 
+(** I was necessary to use an axiom stating that if two atoms are equal, they have the same elements in the following proof. **)
+
 Axiom Eq_implies_equality: forall s s': atoms, s [=] s' -> s = s'.
+
 (* probably not needed now
 Lemma fv_nom_m_subst_notin: forall t u x, x `notin` fv_nom t -> fv_nom ([x := u] t) [=] fv_nom t.
 Proof. 
@@ -2417,6 +2425,8 @@ Proof.
                   ****** symmetry in H0. contradiction.
                   ****** assumption. Admitted. *)
 
+(** The lemma below states that if a variable is not in the free-variables the application of a meta-substitution on an expression, it is not in the of free-variables of the expression the meta-substitution is applied to, removing the variable in the meta-substitution and it is not in the free variables of the expression inside of the meta-substitution. **)
+(** The proof of the lemma is done by functional induction in the meta substitution. The variable and application cases are trivial, and so are the first ones in the abstraction and explicit substitution. The second case in the abstraction is solved by comparing the variables inside the meta-substitution and the abstraction. The same is done for the left side os the explicit substitution, and its right side is solved similarly to the application.**)
 
 Lemma fv_nom_remove: forall t u x y, y `notin` fv_nom u -> y `notin` remove x (fv_nom t) ->  y `notin` fv_nom ([x := u] t).
 Proof. 
@@ -2498,10 +2508,8 @@ Proof.
         ** apply notin_union_2 in H. apply notin_remove_2. assumption.
 Qed.
 
-Lemma m_subst_app: forall t1 t2 u x, [x := u](n_app t1 t2) = n_app ([x := u]t1) ([x := u]t2).
-Proof.
-  intros t1 t2 u x. unfold m_subst. rewrite subst_rec_fun_equation. reflexivity.
-Qed.
+(** The next lemma states that if the variable in the meta-substitution and the expression the meta- substition is applied to are alpha-equivalent, then the exxpression inside the meta-substition has to be alpha-equivalent in both sides.**)
+(** The proof for this lemma is done on induction in the expression, generating one case for each of the possible expressions and the definition of the meta-substitution is used to complete the proof. **)
 
 Lemma aeq_m_subst_in: forall t u u' x, u =a u' -> ([x := u] t) =a ([x := u'] t).
 Proof.
@@ -2528,6 +2536,8 @@ Proof.
       * apply IHt1. apply aeq_sym. assumption.
 Qed.
 
+(* begin hide *)
+
 Lemma aeq_abs_notin: forall t1 t2 x y, x <> y ->  n_abs x t1 =a n_abs y t2 -> x `notin` fv_nom t2.
 Proof.
   intros t1 t2 x y Hneq Haeq. inversion Haeq; subst.
@@ -2541,6 +2551,15 @@ Proof.
   - contradiction.
   - assumption.
 Qed.
+
+(* end hide *)
+
+(** The next lemma states that if the meta-substitution in both sides of an alpha-equivalency is the same and the expression the meta-substition is applied to are different, then the expressions outside the meta-substitions have to be alpha-equivalent in both sides.**)
+(** The proof for this lemma is done on induction in the expression, generating one case for each of the possible expressions and the definition of the meta-substitution is used to complete the proof. In the case of the variable, the proof is trivial. **)
+(** In the abstraction, we use the technique of comparing the variables of the meta-substitution and the one for the abstraction. **)
+(** The apllication case is also trivial. **)
+(** In the explicit substitution case, we have that the left side of the substitution generates a case similar to the one of the abstraction and the right side generates one similar to the one in the application.**)
+
 
 Lemma aeq_m_subst_out: forall t t' u x, t =a t' -> ([x := u] t) =a ([x := u] t').
 Proof.
@@ -2657,6 +2676,8 @@ Proof.
                     ****** assumption.
            *** apply aeq_sym. apply IHt1. assumption.
 Qed.
+
+(** The corollary bellow states that if the variable is the same in two meta substitutions, they are alpha-equivalent if the other terms are alpha-equivalent, respectively. The proof of this corollary is done using both lemmas above to show the equality amongst the terms.**)
           
 Corollary aeq_m_subst_eq: forall t t' u u' x, t =a t' -> u =a u' -> ([x := u] t) =a ([x := u'] t').
 Proof.
@@ -2871,6 +2892,13 @@ Proof.
                 ******* apply notin_union_1 in n1. assumption. 
 Qed. *)
 
+(** The following lemma states that applying the meta-substitution to the application is equivalent to applying it to eacch term of the application separately. **)
+
+Lemma m_subst_app: forall t1 t2 u x, [x := u](n_app t1 t2) = n_app ([x := u]t1) ([x := u]t2).
+Proof.
+  intros t1 t2 u x. unfold m_subst. rewrite subst_rec_fun_equation. reflexivity.
+Qed.
+
 (* begin hide *)
 
 Lemma m_subst_abs: forall t1 u x y, [x := u](n_abs y t1)  =a
@@ -2887,6 +2915,7 @@ Qed.
 
 (** The following lemmas state, respectively, what hapens when the variable in the meta-substitution is equal or different from the one in the abstraction. When it is equal, the meta-substitution is irrelevant. When they are different, we take a new variable that does not occur freely in the substituted term in the meta-substitution nor in the abstraction and is not the variable in the meta-substitution, and the abstraction of this new variable using the meta-substitution of the swap of the former variable in the meta-substitution is alpha-equivalent to the original meta-substitution of the abstraction. **)
 (** The proofs were made using the definition of the meta-substitution, each case being respectively each one in the definition.**)
+
 Lemma m_subst_abs_eq : forall u x t, [x := u](n_abs x t) = n_abs x t.
 Proof.
   intros u x t. unfold m_subst. rewrite subst_rec_fun_equation. rewrite eq_dec_refl. reflexivity.
@@ -3391,7 +3420,7 @@ Proof.
                ****** apply notin_union_2 in Fr. apply notin_union_2 in Fr. apply notin_union_1 in Fr. assumption.
                ****** repeat apply notin_union_2 in Fr. assumption.  
 
-    (** The case of the application is quite simple to solve. It consisted of applying the auxiliary lemma of removing the application from inside the meta-substitution. **)
+    (** The case of the application is simple to solve. It consisted of applying the auxiliary lemma of removing the application from inside the meta-substitution. **)
 
   - intros e2 x e3 y Hneq Hfv. repeat rewrite m_subst_app. pose proof aeq_app as H. specialize (H ([y := e3] ([x := e2] e1_1)) ([y := e3] ([x := e2] e1_2)) ([x := [y := e3] e2] ([y := e3] e1_1)) ([x := [y := e3] e2] ([y := e3] e1_2))). rewrite H. 
     + apply aeq_refl.
