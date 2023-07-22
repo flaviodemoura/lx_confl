@@ -165,7 +165,7 @@ In the context of the $\lambda$-calculus with explicit substitutions its formali
 
 (** * A syntactic extension of the $\lambda$-calculus *)
 
-(** In this section, we present the framework of the formalization, which is based on a nominal approach%\cite{gabbayNewApproachAbstract1999}% where variables use names instead of De Bruijn indexes%\cite{bruijnLambdaCalculusNotation1972}%. In the nominal setting, variables are represented by atoms that are structureless entities with a decidable equality: 
+(** In this section, we present the framework of the formalization, which is based on a nominal approach%\cite{gabbayNewApproachAbstract1999}% where variables use names. This approach contrasts with the use of  De Bruijn indexes detailed in De Bruijn's landmark paper on $\lambda$-calculus notation%\cite{bruijnLambdaCalculusNotation1972}%. In the nominal setting, variables are represented by atoms that are structureless entities with a decidable equality: 
 
 <<
 Parameter eq_dec : forall x y : atom, {x = y} + {x <> y}.
@@ -194,7 +194,7 @@ Proof.
 Qed.
 (* end hide *)
 
-(** The next step is to extend the variable renaming operation to terms, which in our case corresponds to $\lambda$-terms augmented with an explicit substitution operation given by the following inductive grammar: *)
+(** The next step is to extend the variable renaming operation to terms, which in our case corresponds to $\lambda$-terms augmented with an explicit substitution operation. We use [n_sexp] to denote the set of nominal expressions equipped with an explicit substitution operator, which, for simplicity, we will refer to as just "terms", and the corresponding grammar is outlined below: *)
 
 Inductive n_sexp : Set :=
  | n_var (x:atom)
@@ -202,20 +202,8 @@ Inductive n_sexp : Set :=
  | n_app (t1:n_sexp) (t2:n_sexp)
  | n_sub (t1:n_sexp) (x:atom) (t2:n_sexp).
 
-(** %\noindent% where [n_var] is the constructor for variables, [n_abs] for abstractions, [n_app] for applications and [n_sub] for the explicit substitution operation. Explicit substitution calculi are formalisms that decompose the metasubstitution operation into more atomic steps behaving as a bridge between the $\lambda$-calculus and its implementations. In other words, explicit substitution calculi "allow a better understanding of the execution models of higher-order languages"%\cite{kesnerTheoryExplicitSubstitutions2009}%. The action of a permutation on a term, written $\swap{x}{y}{t}$, is inductively defined as follows:%\vspace{.5cm}%
+(** %\noindent% where [n_var] is the constructor for variables, [n_abs] for abstractions, [n_app] for applications and [n_sub] for the explicit substitution. Explicit substitution calculi are formalisms that deconstruct the metasubstitution operation into more granular steps, thereby functioning as an intermediary between the $\lambda$-calculus and its practical implementations. In other words, these calculi shed light on the execution models of higher-order languages%\cite{kesnerTheoryExplicitSubstitutions2009}%. The [size] of terms and the set [fv_nom] of the free variables of a term are defined as usual: *)
 
-$\swap{x}{y}{t} := \left\{ \begin{array}{ll}
-\vswap{x}{y}{v}, & \mbox{ if } t \mbox{ is the variable } v; \\
-\lambda_{\vswap{x}{y}{z}}. \swap{x}{y}{t_1}, & \mbox{ if } t = \lambda_z.t_1; \\
-\swap{x}{y}{t_1}\ \swap{x}{y}{t_2}, & \mbox{ if } t = t_1\ t_2;\\
-\swap{x}{y}{t_1}[\vswap{x}{y}{z} := \swap{x}{y}{t_2}], & \mbox{ if } t = t_1[z := t_2].
-\end{array}\right.$%\vspace{.5cm}%
-
-The corresponding Coq definition is given by the following recursive function:
-
- *)
-
-(* begin hide *)
 Fixpoint size (t : n_sexp) : nat :=
   match t with
   | n_var x => 1
@@ -224,14 +212,24 @@ Fixpoint size (t : n_sexp) : nat :=
   | n_sub t1 x t2 => 1 + size t1 + size t2
   end.
 
-Fixpoint fv_nom (n : n_sexp) : atoms :=
-  match n with
+Fixpoint fv_nom (t : n_sexp) : atoms :=
+  match t with
   | n_var x => {{x}}
-  | n_abs x n => remove x (fv_nom n)
+  | n_abs x t1 => remove x (fv_nom t1)
   | n_app t1 t2 => fv_nom t1 `union` fv_nom t2
   | n_sub t1 x t2 => (remove x (fv_nom t1)) `union` fv_nom t2
   end.
-(* end hide *)
+
+(** The action of a permutation on a term, written $\swap{x}{y}{t}$, is inductively defined as follows:%\vspace{.5cm}%
+
+$\swap{x}{y}{t} := \left\{ \begin{array}{ll}
+\vswap{x}{y}{v}, & \mbox{ if } t \mbox{ is the variable } v; \\
+\lambda_{\vswap{x}{y}{z}}. \swap{x}{y}{t_1}, & \mbox{ if } t = \lambda_z.t_1; \\
+\swap{x}{y}{t_1}\ \swap{x}{y}{t_2}, & \mbox{ if } t = t_1\ t_2;\\
+\swap{x}{y}{t_1}[\vswap{x}{y}{z} := \swap{x}{y}{t_2}], & \mbox{ if } t = t_1[z := t_2].
+\end{array}\right.$%\vspace{.5cm}%
+
+The corresponding Coq definition is given by the following recursive function: *)
 
 Fixpoint swap (x:atom) (y:atom) (t:n_sexp) : n_sexp :=
   match t with
@@ -275,25 +273,26 @@ Proof.
   - subst. apply swap_eq in H2. contradiction.
   - apply swap_eq in H2. contradiction.
 Qed.
-  
-Lemma swap_size_eq : forall x y t,
-    size (swap x y t) = size t.
+(* end hide *)
+
+(** The [swap] function preserves the size of terms, as stated by the following lemma: *)
+Lemma swap_size_eq : forall x y t, size (swap x y t) = size t.
 Proof.
   induction t; simpl; auto.
 Qed.
 
+(* begin hide *)
 Hint Rewrite swap_size_eq.
+(* end hide *)
 
-Lemma n_sexp_induction :
+(** The standard proof strategy for the non trivial properties is induction on the structure of the terms. Nevertheless, the builtin induction principle automatically generated for the inductive definition [n_sexp] is not strong enough due to swappings. In fact, in general, the induction hypothesis in the abstraction case, for instance, refer to the body of the abstraction, while the goal involves a swap acting on the body of the abstraction. In order to circunvet this problem, we defined an induction principle based on the size of terms: *)
+
+Lemma n_sexp_induction:
  forall P : n_sexp -> Prop,
  (forall x, P (n_var x)) ->
- (forall t1 z,
-    (forall t2 x y, size t2 = size t1 ->
-    P (swap x y t2)) -> P (n_abs z t1)) ->
+ (forall t1 z, (forall t2 x y, size t2 = size t1 -> P (swap x y t2)) -> P (n_abs z t1)) ->
  (forall t1 t2, P t1 -> P t2 -> P (n_app t1 t2)) ->
- (forall t1 t3 z, P t3 -> 
-    (forall t2 x y, size t2 = size t1 ->
-    P (swap x y t2)) -> P (n_sub t1 z t3)) -> 
+ (forall t1 t3 z, P t3 -> (forall t2 x y, size t2 = size t1 -> P (swap x y t2)) -> P (n_sub t1 z t3)) -> 
  (forall t, P t).
 Proof.
   intros P Hvar Habs Happ Hsub t.
@@ -338,6 +337,7 @@ Proof.
       ++ reflexivity.
 Qed. 
 
+(* begin hide *)
 Lemma swap_symmetric : forall t x y, swap x y t = swap y x t.
 Proof.
   induction t.
@@ -594,35 +594,22 @@ Each of these rules correspond to a constructor in the [aeq] inductive definitio
  *)
 
 Inductive aeq : n_sexp -> n_sexp -> Prop :=
- | aeq_var : forall x,
-     aeq (n_var x) (n_var x)
- | aeq_abs_same : forall x t1 t2,
-     aeq t1 t2 -> aeq (n_abs x t1) (n_abs x t2)
- | aeq_abs_diff : forall x y t1 t2,
-     x <> y -> x `notin` fv_nom t2 ->
-     aeq t1 (swap y x t2) ->
-     aeq (n_abs x t1) (n_abs y t2)
- | aeq_app : forall t1 t2 t1' t2',
-     aeq t1 t1' -> aeq t2 t2' ->
-     aeq (n_app t1 t2) (n_app t1' t2')
- | aeq_sub_same : forall t1 t2 t1' t2' x,
-     aeq t1 t1' -> aeq t2 t2' ->
-     aeq (n_sub t1 x t2) (n_sub t1' x t2')
- | aeq_sub_diff : forall t1 t2 t1' t2' x y,
-     aeq t2 t2' -> x <> y -> x `notin` fv_nom t1' ->
-     aeq t1 (swap y x t1') ->
-     aeq (n_sub t1 x t2) (n_sub t1' y t2').
+| aeq_var : forall x, aeq (n_var x) (n_var x)
+| aeq_abs_same : forall x t1 t2, aeq t1 t2 -> aeq (n_abs x t1)(n_abs x t2)
+| aeq_abs_diff : forall x y t1 t2, x <> y -> x `notin` fv_nom t2 -> aeq t1 (swap y x t2) -> aeq (n_abs x t1) (n_abs y t2)
+| aeq_app : forall t1 t2 t1' t2', aeq t1 t1' -> aeq t2 t2' -> aeq (n_app t1 t2) (n_app t1' t2')
+| aeq_sub_same : forall t1 t2 t1' t2' x, aeq t1 t1' -> aeq t2 t2' -> aeq (n_sub t1 x t2) (n_sub t1' x t2')
+| aeq_sub_diff : forall t1 t2 t1' t2' x y, aeq t2 t2' -> x <> y -> x `notin` fv_nom t1' -> aeq t1 (swap y x t1') -> aeq (n_sub t1 x t2) (n_sub t1' y t2').
 (* begin hide *)
 Hint Constructors aeq.
 (* end hide *)
 
 (** In what follows, we use a infix notation for $\alpha$-equivalence in the Coq code: we write [t =a u] instead of [aeq t u].
  *)
-
+(* begin hide *)
 Notation "t =a u" := (aeq t u) (at level 60).
-
-(** The above notion defines an equivalence relation over the set [n_sexp] of nominal expressions with explicit substitutions: *)
-
+(* end hide *)
+(** The above notion defines an equivalence relation over the set [n_sexp] of nominal expressions with explicit substitutions, %{\it i.e.}% the [aeq] relation is reflexive, symmetric and transitive. *)
 (* begin hide *)
 Example aeq1 : forall x y, x <> y -> (n_abs x (n_var x)) =a (n_abs y (n_var y)).
 Proof.
@@ -635,6 +622,8 @@ Lemma aeq_var_2 : forall x y, (n_var x) =a (n_var y) -> x = y.
 Proof.
   intros. inversion H; subst. reflexivity.
 Qed.
+(* end hide *)
+(** Informally, two terms are $\alpha$-equivalent if they differ only by the names of the bound variables. Therefore, $\alpha$-equivalent terms have the same size, and the same set of free variables: *)
 
 Lemma aeq_size: forall t1 t2, t1 =a t2 -> size t1 = size t2.
 Proof.
@@ -646,39 +635,6 @@ Proof.
   - simpl. rewrite IHaeq1. rewrite IHaeq2. reflexivity.
   - simpl. rewrite IHaeq1. rewrite IHaeq2. rewrite swap_size_eq. reflexivity.
 Qed.
-(* end hide *)
-
-Lemma aeq_refl : forall n, n =a n.
-Proof.
-  induction n; auto.
-Qed.
-
-Lemma aeq_sym: forall t1 t2, t1 =a t2 -> t2 =a t1.
-Proof.
-  induction 1.
-  - apply aeq_refl.
-  - apply aeq_abs_same; assumption.
-  - apply aeq_abs_diff.
-    -- apply aux_not_equal; assumption.
-    -- apply fv_nom_swap with x y t2 in H0.
-       apply aeq_fv_nom in H1.
-       rewrite H1; assumption.
-    -- apply aeq_swap2 with x y.
-       rewrite swap_involutive.
-       rewrite swap_symmetric.
-       assumption.
-  - apply aeq_app; assumption.
-  - apply aeq_sub_same; assumption.
-  - apply aeq_sub_diff.
-    -- assumption.
-    -- apply aux_not_equal. assumption.
-    -- apply aeq_fv_nom in H2. rewrite H2.
-       apply fv_nom_swap. assumption.
-    -- rewrite swap_symmetric. apply aeq_swap2 with y x.
-       rewrite swap_involutive. assumption.
-Qed.
-
-(* begin hide *)
 Lemma aeq_fv_nom : forall t1 t2, t1 =a t2 -> fv_nom t1 [=] fv_nom t2.
 Proof.
   intros. induction H.
@@ -691,6 +647,11 @@ Proof.
     specialize (H3 x y t1'). apply H3 in H1.
     inversion H2; subst; rewrite IHaeq1; rewrite IHaeq2; rewrite H1; reflexivity.
 Qed.  
+(* begin hide *)
+Lemma aeq_refl : forall n, n =a n.
+Proof.
+  induction n; auto.
+Qed.
 
 Lemma aeq_swap1: forall t1 t2 x y, t1 =a t2 -> (swap x y t1) =a (swap x y t2).
 Proof.
@@ -1160,34 +1121,40 @@ Proof.
                 +++ apply aux_not_equal; assumption.
                 +++ apply aux_not_equal; assumption.
 Qed.
+
+Lemma aeq_sym: forall t1 t2, t1 =a t2 -> t2 =a t1.
+Proof.
+  induction 1.
+  - apply aeq_refl.
+  - apply aeq_abs_same; assumption.
+  - apply aeq_abs_diff.
+    -- apply aux_not_equal; assumption.
+    -- apply fv_nom_swap with x y t2 in H0.
+       apply aeq_fv_nom in H1.
+       rewrite H1; assumption.
+    -- apply aeq_swap2 with x y.
+       rewrite swap_involutive.
+       rewrite swap_symmetric.
+       assumption.
+  - apply aeq_app; assumption.
+  - apply aeq_sub_same; assumption.
+  - apply aeq_sub_diff.
+    -- assumption.
+    -- apply aux_not_equal. assumption.
+    -- apply aeq_fv_nom in H2. rewrite H2.
+       apply fv_nom_swap. assumption.
+    -- rewrite swap_symmetric. apply aeq_swap2 with y x.
+       rewrite swap_involutive. assumption.
+Qed.
 (* end hide *)
 
-(** The key point of the nominal approach is that the swap operation is stable under $\alpha$-equivalence in the sense that, $t_1 =_\alpha t_2$ if, and only if $\swap{x}{y}{t_1} =_\alpha \swap{x}{y}{t_2}$. Note that this is not true for renaming substitutions: in fact, $\lambda_x.z =_\alpha \lambda_y.z$, but $(\lambda_x.z)\msub{z}{x} = \lambda_x.x \neq_\alpha \lambda_y.x (\lambda_y.z)\msub{z}{x}$, assuming that $x \neq y$. This result is formalized by the corollary [aeq_swap]: *)
+(** The key point of the nominal approach is that the swap operation is stable under $\alpha$-equivalence in the sense that, $t_1 =_\alpha t_2$ if, and only if $\swap{x}{y}{t_1} =_\alpha \swap{x}{y}{t_2}$. Note that this is not true for renaming substitutions: in fact, $\lambda_x.z =_\alpha \lambda_y.z$, but $(\lambda_x.z)\msub{z}{x} = \lambda_x.x \neq_\alpha \lambda_y.x (\lambda_y.z)\msub{z}{x}$, assuming that $x \neq y$. This stability result is formalized as follows: *)
 
 Corollary aeq_swap: forall t1 t2 x y, t1 =a t2 <-> (swap x y t1) =a (swap x y t2).
 Proof.
   intros. split.
   - apply aeq_swap1.
   - apply aeq_swap2.
-Qed.
-
-(** There are several interesting properties that need to be proved before achieving the substitution lemma. We refer only to the tricky or challenging ones. Note that, a swap is introduced in a proof by the rules $({\rm\it aeq\_abs\_diff})$ and $({\rm\it aeq\_sub\_diff})$ so that one can establish the $\alpha$-equivalence between two abstractions or two explicit substitutions with different binders. The following proposition states when two swaps with a common name collapse, and it is used in the transitivity proof of [aeq]:
- *)
-
-Lemma aeq_swap_swap: forall t x y z, z `notin` fv_nom t -> x `notin` fv_nom t -> (swap z x (swap x y t)) =a (swap z y t).
-Proof.
-  intros. case (x == z); intros; subst.
-  - rewrite swap_id; apply aeq_refl.
-  - case (y == z); intros; subst.
-    -- replace (swap x z t) with (swap z x t).
-       --- rewrite swap_involutive; rewrite swap_id. apply aeq_refl.
-       --- rewrite swap_symmetric; reflexivity.
-    -- case (x == y); intros; subst.
-       --- rewrite swap_id; apply aeq_refl.
-       --- rewrite shuffle_swap.
-           + apply aeq_swap. apply swap_reduction; assumption.
-           + apply aux_not_equal; assumption.
-           + assumption.
 Qed.
 
 (* begin hide *)
@@ -1317,7 +1284,25 @@ Proof.
                     ***** apply IHt2; assumption.
                **** apply swap_symmetric.
 Qed.
-(* end hide *)
+
+(** There are several interesting auxiliary properties that need to be proved before achieving the substitution lemma. We refer only to the tricky or challenging ones, but the interested reader can have a detailed look in the source files. Note that, swaps are introduced in proofs by the rules $({\rm\it aeq\_abs\_diff})$ and $({\rm\it aeq\_sub\_diff})$. As we will see, the proof steps involving these rules are trick because a naïve strategy can easily result in a proofless branch. so that one can establish the $\alpha$-equivalence between two abstractions or two explicit substitutions with different binders. The following proposition states when two swaps with a common name collapse, and it is used in the transitivity proof of [aeq]:
+ *)
+
+Lemma aeq_swap_swap: forall t x y z, z `notin` fv_nom t -> x `notin` fv_nom t -> (swap z x (swap x y t)) =a (swap z y t).
+Proof.
+  intros. case (x == z); intros; subst.
+  - rewrite swap_id; apply aeq_refl.
+  - case (y == z); intros; subst.
+    -- replace (swap x z t) with (swap z x t).
+       --- rewrite swap_involutive; rewrite swap_id. apply aeq_refl.
+       --- rewrite swap_symmetric; reflexivity.
+    -- case (x == y); intros; subst.
+       --- rewrite swap_id; apply aeq_refl.
+       --- rewrite shuffle_swap.
+           + apply aeq_swap. apply swap_reduction; assumption.
+           + apply aux_not_equal; assumption.
+           + assumption.
+Qed.
 
 Lemma aeq_trans: forall t1 t2 t3, t1 =a t2 -> t2 =a t3 -> t1 =a t3.
 Proof.
@@ -1567,7 +1552,6 @@ Proof.
                     * assumption.
 Qed.
 
-(* begin hide *)
 Require Import Setoid Morphisms.
 
 Instance Equivalence_aeq: Equivalence aeq.
@@ -1624,58 +1608,29 @@ Proof.
 Qed.
 (* end hide *)
 
-(** ** Capture-avoiding substitution *)
+(** ** The metasubstitution operation of the $\lambda$-calculus *)
 
-(** We need to use size to define capture avoiding
-    substitution. Because we sometimes swap the name of the
-    bound variable, this function is _not_ structurally
-    recursive. So, we add an extra argument to the function
-    that decreases with each recursive call. 
+(** The main operation of the $\lambda$-calculus is the $\beta$-reduction that express how to evaluate a function applied to a given argument:
 
-Fixpoint subst_rec (n:nat) (t:n_sexp) (u :n_sexp) (x:atom)  : n_sexp :=
-  match n with
-  | 0 => t
-  | S m => match t with
-          | n_var y =>
-            if (x == y) then u else t
-          | n_abs y t1 =>
-            if (x == y) then t
-            else
-              (* rename to avoid capture *)
-              let (z,_) :=
-                  atom_fresh (fv_nom u `union` fv_nom t `union` {{x}}) in
-                 n_abs z (subst_rec m (swap y z t1) u x)
-          | n_app t1 t2 =>
-            n_app (subst_rec m t1 u x) (subst_rec m t2 u x)
-          | n_sub t1 y t2 =>
-            if (x == y) then n_sub t1 y (subst_rec m t2 u x)
-            else
-              (* rename to avoid capture *)
-              let (z,_) :=
-                  atom_fresh (fv_nom u `union` fv_nom t `union` {{x}}) in
-                 n_sub  (subst_rec m (swap y z t1) u x) z (subst_rec m t2 u x) 
-           end
-  end. *)
+$(\lambda_x.t)\ u \to_\beta t\msub{x}{u}$
 
+In a less formal context, the concept of $\beta$-reduction means that the result of evaluating the function $(\lambda_x.t)$ with argument $u$ is obtained by replacing all free ocurrences of the variable $x$ by $u$ in $t$. This operation is in the meta level because it is outside the grammar of the $\lambda$-calculus, and that's why it is called metasubstitution.
+
+We define the metasubstitution as a recursive function as follows: *)
+
+(* begin hide *)
 Require Import Recdef.
-
+(* end hide *)
 Function subst_rec_fun (t:n_sexp) (u :n_sexp) (x:atom) {measure size t} : n_sexp :=
   match t with
-  | n_var y =>
-      if (x == y) then u else t
-  | n_abs y t1 =>
-      if (x == y) then t
-      else let (z,_) :=
-                  atom_fresh (fv_nom u `union` fv_nom t `union` {{x}}) in
-                n_abs z (subst_rec_fun (swap y z t1) u x)
-  | n_app t1 t2 =>
-      n_app (subst_rec_fun t1 u x) (subst_rec_fun t2 u x)
-  | n_sub t1 y t2 =>
-      if (x == y) then n_sub t1 y (subst_rec_fun t2 u x)
-      else let (z,_) :=
-                  atom_fresh (fv_nom u `union` fv_nom t `union` {{x}}) in
-              n_sub  (subst_rec_fun (swap y z t1) u x) z (subst_rec_fun t2 u x) 
-           end.
+  | n_var y => if (x == y) then u else t
+  | n_abs y t1 => if (x == y) then t else let (z,_) :=
+    atom_fresh (fv_nom u `union` fv_nom t `union` {{x}}) in n_abs z (subst_rec_fun (swap y z t1) u x)
+  | n_app t1 t2 => n_app (subst_rec_fun t1 u x) (subst_rec_fun t2 u x)
+  | n_sub t1 y t2 => if (x == y) then n_sub t1 y (subst_rec_fun t2 u x) else let (z,_) :=
+    atom_fresh (fv_nom u `union` fv_nom t `union` {{x}}) in
+    n_sub (subst_rec_fun (swap y z t1) u x) z (subst_rec_fun t2 u x) 
+end.
 Proof.
  - intros. simpl. rewrite swap_size_eq. auto.
  - intros. simpl. lia.
@@ -1685,96 +1640,8 @@ Proof.
  - intros. simpl. rewrite swap_size_eq. lia.
 Defined.
 
-(*
-Inductive meta_subst: n_sexp -> atom -> n_sexp -> n_sexp -> Prop :=
-| meta_var_eq: forall x u, meta_subst (n_var x) x u u
-| meta_var_neq: forall x y u, x <> y -> meta_subst (n_var y) x u (n_var y)
-| meta_app: forall t1 t1' t2 t2' x u, meta_subst t1 x u t1' -> meta_subst t2 x u t2' -> meta_subst (n_app t1 t2) x u (n_app t1' t2')
-| meta_abs_eq: forall t x u, meta_subst (n_abs x t) x u (n_abs x t) 
-| meta_abs_neq1: forall t x y u v, y `notin` fv_nom u -> meta_subst t x u v -> meta_subst (n_abs y t) x u v 
-| meta_abs_neq2: forall t x y z u v, y `in` fv_nom u -> z `notin` (fv_nom t `union` fv_nom u `union` {{x}} `union` {{y}}) -> meta_subst (swap y z t) x u v -> meta_subst (n_abs y t) x u v
-| meta_sub_eq: forall t1 t2 t2' x u, meta_subst t2 x u t2' -> meta_subst (n_sub t1 x t2) x u (n_sub t1 x t2') 
-| meta_sub_neq1: forall t1 t1' t2 t2' x y u, x <> y ->  y `notin` fv_nom u ->  meta_subst t1 x u t1' -> meta_subst t2 x u t2' -> meta_subst (n_sub t1 y t2) x u (n_sub t1' x t2')
-| meta_sub_neq2: forall t1 t1' t2 t2' x y z u, x <> y ->  y `in` fv_nom u -> z `notin` (fv_nom t1 `union` fv_nom u `union` {{x}} `union` {{y}}) ->  meta_subst (swap y z t1) x u t1' -> meta_subst t2 x u t2' -> meta_subst (n_sub t1 y t2) x u (n_sub t1' x t2'). 
-
-Lemma fv_nom_remove: forall t u v x y, y `notin` fv_nom u -> y `notin` remove x (fv_nom t) -> meta_subst t x u v ->  y `notin` fv_nom v.
-Proof. 
-  intros t u v x y H1 H2 H3. induction H3.
-  - assumption.
-  - apply notin_remove_1 in H2. destruct H2.
-    + subst. apply notin_singleton. apply aux_not_equal; assumption.
-    + assumption.
-  - simpl in *. rewrite remove_union_distrib in H2. assert (H3 := H2). apply notin_union_1 in H2. apply notin_union_2 in H3. apply notin_union.
-    + apply IHmeta_subst1; assumption.
-    + apply IHmeta_subst2; assumption.
-  - simpl in *. rewrite double_remove in H2. assumption.
-  - apply IHmeta_subst.
-    + assumption.
-    + simpl in H2.
-
-      rewrite remove_symmetric in H2. apply notin_remove_1 in H2. destruct H2.
-      * subst. assumption.
-      *)
-        
-(** The definitions subst_rec and subst_rec_fun are alpha-equivalent. 
-Theorem subst_rec_fun_equiv: forall t u x, (subst_rec (size t) t u x) =a (subst_rec_fun t u x).
-Proof.
-  intros t u x. functional induction (subst_rec_fun t u x).
-  - simpl. rewrite e0. apply aeq_refl.
-  - simpl. rewrite e0. apply aeq_refl.
-  - simpl. rewrite e0. apply aeq_refl.
-  - simpl. rewrite e0. destruct (atom_fresh (Metatheory.union (fv_nom u) (Metatheory.union (remove y (fv_nom t1)) (singleton x)))).  admit.
-  - simpl. admit.
-  - simpl. rewrite e0. admit.
-  - simpl. rewrite e0.
-Admitted.
-
-Require Import EquivDec.
-Generalizable Variable A.
-
-Definition equiv_decb `{EqDec A} (x y : A) : bool :=
-  if x == y then true else false.
-
-Definition nequiv_decb `{EqDec A} (x y : A) : bool :=
-  negb (equiv_decb x y).
-
-Infix "==b" := equiv_decb (no associativity, at level 70).
-Infix "<>b" := nequiv_decb (no associativity, at level 70).
-
-Parameter Inb : atom -> atoms -> bool.
-Definition equalb s s' := forall a, Inb
-
-Function subst_rec_b (t:n_sexp) (u :n_sexp) (x:atom) {measure size t} : n_sexp :=
-  match t with
-  | n_var y =>
-      if (x == y) then u else t
-  | n_abs y t1 =>
-      if (x == y) then t
-      else if (Inb y (fv_nom u)) then let (z,_) :=
-                  atom_fresh (fv_nom u `union` fv_nom t `union` {{x}}) in
-                                      n_abs z (subst_rec_b (swap y z t1) u x)
-                                            else n_abs y (subst_rec_b t1 u x)
-  | n_app t1 t2 =>
-      n_app (subst_rec_b t1 u x) (subst_rec_b t2 u x)
-  | n_sub t1 y t2 =>
-      if (x == y) then n_sub t1 y (subst_rec_b t2 u x)
-      else if (Inb y (fv_nom u)) then let (z,_) :=
-                  atom_fresh (fv_nom u `union` fv_nom t `union` {{x}}) in
-                                      n_sub  (subst_rec_b (swap y z t1) u x) z (subst_rec_b t2 u x)
-                                             else n_sub (subst_rec_b t1 u x) y (subst_rec_b t2 u x)
-           end.
-Proof.
- - intros. simpl. rewrite swap_size_eq. auto.
- - intros. simpl. lia.
- - intros. simpl. lia.
- - intros. simpl. lia.
- - intros. simpl. lia.
- - intros. simpl. rewrite swap_size_eq. lia.
-Defined. *)
-
-(** Our real substitution function uses the size of the size of the term
-    as that extra argument. *)
-
+(** Note that this function is not structurally recursive due to the swaps in the recursive calls. A structurally recursive version of the function [subst_rec_fun] can be found in the file [nominal.v] of the [Metalib] library%\footnote{\url{https://github.com/plclub/metalib}}%, but it uses the size of the term in which the substitution will be performed as an extra argument that decreases with each recursive call. We write [[x:=u]t] instead of [subst_rec_fun t u x] in the Coq code to represent $t\msub{x}{u}$. *)
+(* begin hide *)
 Definition m_subst (u : n_sexp) (x:atom) (t:n_sexp) :=
   subst_rec_fun t u x.
 Notation "[ x := u ] t" := (m_subst u x t) (at level 60).
@@ -1793,49 +1660,11 @@ Proof.
   - reflexivity.
 Qed.
 
-(** The behaviour of free variables in a metasubstitution. *)
-(* probably not needed now
-Lemma fv_nom_m_subst_in: forall t u x, x `in` fv_nom t -> fv_nom ([x := u] t) [=] (union (remove x (fv_nom t)) (fv_nom u)).
+Lemma m_subst_app: forall t1 t2 u x, [x := u](n_app t1 t2) = n_app ([x := u]t1) ([x := u]t2).
 Proof.
-  intros t u x. unfold m_subst. functional induction (subst_rec_fun t u x).
-  - intros H. rewrite remove_singleton_empty. rewrite AtomSetProperties.empty_union_1.
-    + reflexivity.
-    + unfold AtomSetImpl.Empty. auto.
-  - intro H. simpl in H. apply singleton_iff in H. symmetry in H. contradiction.
-  - intro H. simpl in H. pose proof notin_remove_3'. specialize (H0 x x (fv_nom t1)). assert (H': x = x). { reflexivity. } apply H0 in H'. contradiction.
-  - simpl. intro H. rewrite IHn. Admitted. 
-
-Lemma remove_fv_nom_swap: forall t x y, x `notin` fv_nom t -> remove x (fv_nom (swap y x t)) [=] remove y (fv_nom t).
-Proof.
-  induction t using n_sexp_induction.
-  - intros x' y Hfv. simpl in *. apply notin_singleton_1 in Hfv. unfold swap_var. destruct (x == y).
-    + subst. repeat rewrite remove_singleton_empty. reflexivity.
-    + destruct (x == x').
-      * contradiction.
-      * rewrite AtomSetProperties.remove_equal.
-        ** symmetry. rewrite AtomSetProperties.remove_equal.
-           *** reflexivity.
-           *** apply notin_singleton. assumption.
-        ** apply notin_singleton. assumption.
-  - intros x y Hfv. simpl in *. pose proof Hfv as Hfv'. apply notin_remove_1 in Hfv. destruct Hfv.
-    + subst. case (x == y).
-      * intro Heq. subst. rewrite swap_id. rewrite swap_var_id. reflexivity.
-      * intro Hneq. unfold swap_var. destruct (x == y).
-        ** contradiction.
-        ** rewrite eq_dec_refl. symmetry. rewrite remove_symmetric. symmetry. apply swap_remove_reduction.
-    + case (x == y).
-      * intro Heq. subst. rewrite swap_var_id. rewrite swap_id. reflexivity.
-      * intro Hneq. unfold swap_var. destruct (z == y).
-        ** subst. repeat rewrite double_remove. specialize (H t x x). rewrite swap_id in H. assert (Ht: size t = size t). { reflexivity. } apply H.
-           *** reflexivity.
-           *** assumption.
-        ** destruct (z == x).
-           *** subst. symmetry. rewrite remove_symmetric. symmetry. apply swap_remove_reduction.
-           *** rewrite remove_symmetric. symmetry. rewrite remove_symmetric. symmetry. specialize (H t x x). rewrite swap_id in H. assert (Ht: size t = size t). { reflexivity. } rewrite H.
-               **** reflexivity.
-               **** reflexivity.
-               **** assumption.
-  - Admitted. *)
+  intros t1 t2 u x. unfold m_subst. rewrite subst_rec_fun_equation. reflexivity.
+Qed.
+(* end hide *)
 
 Lemma m_subst_notin: forall t u x, x `notin` fv_nom t -> [x := u]t =a t.
 Proof.
@@ -1894,40 +1723,6 @@ Proof.
                     ***** symmetry in H0. contradiction.
                     ***** assumption.
 Qed.
-
-Axiom Eq_implies_equality: forall s s': atoms, s [=] s' -> s = s'.
-(* probably not needed now
-Lemma fv_nom_m_subst_notin: forall t u x, x `notin` fv_nom t -> fv_nom ([x := u] t) [=] fv_nom t.
-Proof. 
-  induction t using n_sexp_induction.
-  - intros u x' Hfv. simpl in *. rewrite AtomSetProperties.remove_equal. 
-    + unfold m_subst. rewrite subst_rec_fun_equation. destruct (x' == x).
-      * apply notin_singleton_1 in Hfv. symmetry in e. contradiction.
-      * reflexivity.
-    + assumption.
-  - intros u x Hfv. simpl in *. unfold m_subst in *. rewrite subst_rec_fun_equation. 
-    * destruct (x == z). 
-      ** simpl. symmetry. rewrite AtomSetProperties.remove_equal.
-         *** reflexivity.
-         *** assumption.
-      ** destruct (atom_fresh (union (fv_nom u) (union (fv_nom (n_abs z t)) (singleton x)))). case (x0 == z).
-         *** intro Heq. subst. rewrite swap_id. simpl in  *. pose proof m_subst_notin. pose proof Hfv as Hfv'. apply notin_remove_1 in Hfv'. destruct Hfv' as [Hfv'' |Hfv'''].
-             **** symmetry in Hfv''. contradiction.
-             **** apply (H0 _ u) in Hfv'''. unfold m_subst in Hfv'''. apply aeq_fv_nom in Hfv'''. apply Eq_implies_equality in Hfv'''. rewrite Hfv'''. symmetry. apply AtomSetProperties.remove_equal. assumption.
-         *** intro Hneq. simpl in *. rewrite H.
-             **** rewrite remove_symmetric. rewrite remove_fv_nom_swap.
-                  ***** reflexivity.
-                  ***** apply notin_union_2 in n0. apply notin_union_1 in n0. apply notin_remove_1 in n0. destruct n0.
-                  ****** symmetry in H0. contradiction.
-                  ****** assumption.
-             **** reflexivity.
-             **** apply fv_nom_remove_swap.
-                  ***** repeat apply notin_union_2 in n0. apply notin_singleton_1 in n0. assumption.
-                  ***** assumption.
-                  ***** apply notin_remove_1 in Hfv. destruct Hfv.
-                  ****** symmetry in H0. contradiction.
-                  ****** assumption. Admitted. *)
-
 
 Lemma fv_nom_remove: forall t u x y, y `notin` fv_nom u -> y `notin` remove x (fv_nom t) ->  y `notin` fv_nom ([x := u] t).
 Proof. 
@@ -2009,10 +1804,7 @@ Proof.
         ** apply notin_union_2 in H. apply notin_remove_2. assumption.
 Qed.
 
-Lemma m_subst_app: forall t1 t2 u x, [x := u](n_app t1 t2) = n_app ([x := u]t1) ([x := u]t2).
-Proof.
-  intros t1 t2 u x. unfold m_subst. rewrite subst_rec_fun_equation. reflexivity.
-Qed.
+Axiom Eq_implies_equality: forall s s': atoms, s [=] s' -> s = s'.
 
 Lemma aeq_m_subst_in: forall t u u' x, u =a u' -> ([x := u] t) =a ([x := u'] t).
 Proof.
@@ -2176,7 +1968,6 @@ Proof.
   - apply aeq_m_subst_in. assumption.
 Qed.
 
-
 (** The following lemma states that a swap can be propagated inside the metasubstitution resulting in an $\alpha$-equivalent term. *)
 
 Lemma swap_subst_rec_fun: forall x y z t u, swap x y (subst_rec_fun t u z) =a subst_rec_fun (swap x y t) (swap x y u) (swap_var x y z).
@@ -2309,79 +2100,6 @@ Proof.
                     ***** apply aeq_sym. apply IHt1. assumption.
 Qed.
 
-(* talvez possa ser substituído pelos lemas parciais anteriores
-Theorem aeq_m_subst: forall t t' u u' x x', x `notin` fv_nom t' -> t =a (swap x x' t') -> u =a u' -> ([x := u] t) =a ([x' := u'] t').
-Proof.
-  intros t t' u u' x x'. case (x == x').
-  - intro Heq; subst. intros Hfv Haeq Haeq'. apply aeq_m_subst_eq.
-    + rewrite swap_id in Haeq. assumption.
-    + assumption.
-  - intros Hneq Hfv Haeq Haeq'. unfold m_subst. apply aeq_trans with (subst_rec_fun (swap x x' t') u x).
-    + apply aeq_m_subst_eq. Admitted.
-(*      * apply (aeq_swap1 _ _ x x') in H1. rewrite H1. rewrite swap_involutive. apply aeq_refl.
-      * apply aeq_refl.
-    + apply aeq_trans with (subst_rec_fun (swap x x' t') u' x).
-      * apply aeq_m_subst_in. assumption.
-      * replace (subst_rec_fun (swap x x' t') u' x) with (subst_rec_fun (swap x x' t') u' (swap_var x x' x')).
-        ** Admitted. (* verificar a estrutura utilizada *) *) *)
-
-(* substituído pelos dois lemas seguintes (corolário)
-Lemma m_subst_abs : forall u x y t , m_subst u x (n_abs y t)  =a
-       if (x == y) then (n_abs y t )
-       else let (z,_) := atom_fresh (fv_nom u `union` fv_nom (n_abs y t ) `union` {{x}}) in
-       n_abs z (m_subst u x (swap y z t )).
-Proof.
-  intros u x y t. destruct (atom_fresh (union (fv_nom u) (union (fv_nom (n_abs y t)) (singleton x)))) as [z H]. destruct (x == y).
-  - subst. unfold m_subst. rewrite subst_rec_fun_equation. rewrite eq_dec_refl. apply aeq_refl.
-  - unfold m_subst. rewrite subst_rec_fun_equation. destruct (x == y).
-    + contradiction.
-    + destruct (atom_fresh (union (fv_nom u) (union (fv_nom t) (union (singleton x) (singleton y))))). case (x0 == z).
-      * intro Heq. subst. Admitted. *)
-
-(*        apply aeq_refl.
-      * intro Hneq. apply aeq_abs_diff.
-        ** assumption.
-        ** apply fv_nom_remove.
-           *** apply notin_union_1 in n1. assumption.
-           *** apply notin_union_2 in H. apply notin_union_1 in H. simpl in H. apply notin_remove_1 in H. destruct H.
-               **** subst. rewrite swap_id. apply notin_remove_2. apply notin_union_2 in n1. apply notin_union_1 in n1. assumption.
-               **** apply notin_remove_2. apply fv_nom_remove_swap.
-                    ***** assumption.
-                    ***** repeat apply notin_union_2 in n1. apply notin_singleton_1 in n1. apply aux_not_equal. assumption.
-                    ***** apply notin_union_2 in n1. apply notin_union_1 in n1. assumption.
-        ** case (y == z).
-           *** intro Heq. subst. rewrite swap_id. apply aeq_trans with (subst_rec_fun (swap z x0 t) (swap z x0 u) (swap_var z x0 x)).
-           **** pose proof aeq_m_subst as H1. unfold m_subst in H1. unfold swap_var. destruct (x == z).
-                ***** repeat apply notin_union_2 in H. apply notin_singleton_1 in H. contradiction.
-                ***** destruct (x == x0).
-                ****** apply notin_union_2 in n1. apply notin_union_2 in n1. apply notin_union_1 in n1. apply notin_singleton_1 in n1. contradiction.
-                ****** apply H1.
-                ******* apply aeq_sym. Admitted. *)
-
-(* apply aeq_refl.
-                ******* Search swap. apply aeq_sym. apply swap_reduction.
-                ******** apply notin_union_1 in H. assumption.
-                ******** apply notin_union_1 in n1. assumption.
-           **** apply aeq_sym. apply swap_subst_rec_fun.
-           *** intro Heq. Search aeq_swap_swap. Search swap. rewrite swap_subst_rec_fun.
-               pose proof aeq_m_subst as H1. unfold m_subst in H1. unfold swap_var. destruct (x == z).
-                **** repeat apply notin_union_2 in H. apply notin_singleton_1 in H. contradiction.
-                **** destruct (x == x0).
-                ***** apply notin_union_2 in n1. apply notin_union_2 in n1. apply notin_union_1 in n1. apply notin_singleton_1 in n1. contradiction.
-                ***** apply H1.
-                ****** apply aeq_sym. Search aeq. rewrite swap_symmetric. pose proof swap_symmetric as H2. specialize (H2 t y z). rewrite H2.
-                       pose proof swap_symmetric as H3. specialize (H3 t y x0). rewrite H3. apply aeq_swap_swap.
-                ******* apply notin_union_2 in n1. apply notin_union_1 in n1. assumption.
-                ******* apply notin_union_2 in H. apply notin_union_1 in H. Search n_abs. simpl in H. Search remove.
-                        apply diff_remove_2 in H.
-                ******** assumption.
-                ******** auto.
-                ****** Search swap. rewrite swap_reduction.
-                ******* apply aeq_refl.
-                ******* apply notin_union_1 in H. assumption. 
-                ******* apply notin_union_1 in n1. assumption. 
-Qed. *)
-
 (* begin hide *)
 
 Lemma m_subst_abs: forall t1 u x y, [x := u](n_abs y t1)  =a
@@ -2513,62 +2231,6 @@ Proof.
                **** subst. repeat apply notin_union_2 in n0. apply notin_singleton_1 in n0. contradiction.
                **** reflexivity.
 Qed.
-
-(*       unfold swap_var. destruct (x == z).
-        ** subst. apply notin_union_2 in H2. apply notin_union_2 in H2. apply notin_singleton_1 in H2. contradiction.
-        ** destruct (x == x0).
-           *** subst. repeat apply notin_union_2 in n0. apply notin_singleton_1 in n0. contradiction.
-           *** pose proof aeq_m_subst_eq as Heq. unfold m_subst in *. apply Heq.
-               **** rewrite swap_symmetric. apply aeq_sym. rewrite swap_symmetric. pose proof swap_symmetric as Hswap. specialize (Hswap t1 y z).
-                    rewrite Hswap. apply aeq_swap_swap.
-                    ***** destruct (x0 == y).
-                          ****** subst. apply notin_union_2 in n0. apply notin_union_1 in n0. simpl in n0. apply remove_notin in n0.  assumption.
-                          ****** apply notin_union_2 in n0. apply notin_union_1 in n0. simpl in n0. apply diff_remove_2 in n0; assumption.
-                    ***** apply notin_union_2 in H2. apply notin_union_1 in H2. destruct (z == y).
-                          ****** subst. apply remove_notin in H2. assumption.
-                          ****** simpl in H2. apply diff_remove_2 in H2; assumption.                    
-               **** apply aeq_sym. apply swap_reduction.
-                    ***** apply notin_union_1 in H2. assumption.
-                    ***** apply notin_union_1 in n0. assumption.
-Qed. *)
-
-(*    destruct (atom_fresh (union (fv_nom u) (union (fv_nom t) (union (singleton x) (singleton y))))). case (x0 == z) eqn: H.
-    + subst. apply aeq_abs_same. apply aeq_refl.
-    + apply aeq_abs_diff.
-      * assumption.
-      * admit.
-      * apply aeq_sym. rewrite swap_subst_rec_fun_out.
-        
-    induction t using n_sexp_induction.
-  - intros u x' y z H1 H2. sim
-  intros u x y z t H H1. pose proof m_subst_abs as H2. specialize (H2 u x y t). destruct (x == y) eqn:Hx.
-  - subst. contradiction.
-  - destruct (atom_fresh (Metatheory.union (fv_nom u) (Metatheory.union (fv_nom (n_abs y t)) (singleton x)))).
-    apply aeq_trans with (n_abs x0 ([x := u] swap y x0 t)).
-    + assumption.
-    + case (x0 == z).
-      * intro H3. rewrite H3. apply aeq_refl.
-      * intro H3. simpl in *. Search n_abs. admit. (*rewrite test1. rewrite test1. Search n_abs. apply aeq_abs_diff.
-        ** auto.
-        ** admit.
-        ** apply test2.*)
- *) 
-
-
-(*
-Corollary m_subst_abs_neq : forall u x y t, x <> y -> let (z,_) := atom_fresh (fv_nom u `union` fv_nom (n_abs y t ) `union` {{x}}) in [x := u](n_abs y t) =a n_abs z ([x := u](swap y z t)).
-Proof.
-  intros u x y t H. pose proof m_subst_abs. specialize (H0 u x y t). destruct (x == y) eqn:Hx.
-  - subst. contradiction.
-  - destruct (atom_fresh (Metatheory.union (fv_nom u) (Metatheory.union (fv_nom (n_abs y t)) (singleton x)))). assumption.    
-Qed.  
-*)
-  
-(*Lemma m_subst_abs_diff : forall t u x y, x <> y -> x `notin` (remove y (fv_nom t)) -> [x := u](n_abs y t) = n_abs y t.
-Proof. 
-  intros t u x y H0 H1. Search n_abs. admit.
-
-  *)
  
 (** * The substitution lemma for the metasubstitution *)
 
@@ -2577,8 +2239,7 @@ Proof.
  *)
 
 
-Lemma m_subst_lemma: forall e1 e2 x e3 y, x <> y -> x `notin` (fv_nom e3) ->
- ([y := e3]([x := e2]e1)) =a ([x := ([y := e3]e2)]([y := e3]e1)).
+Lemma m_subst_lemma: forall e1 e2 x e3 y, x <> y -> x `notin` (fv_nom e3) -> ([y := e3]([x := e2]e1)) =a ([x := ([y := e3]e2)]([y := e3]e1)).
 Proof.
 
 (* Due to permutation propagation, a stronger induction hypothesis is needed.
