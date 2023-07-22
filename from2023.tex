@@ -19,10 +19,15 @@
 \usepackage{minibox}
 \usepackage{tabto,calc}
 
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{corollary}{Corollary}[theorem]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{definition}[theorem]{Definition}
+
 \newcommand{\vswap}[3]{(\!\!(#1\ #2)\!\!) #3}
 \newcommand{\swap}[3]{(#1\ #2) #3}
 \newcommand{\msub}[2]{\{#1 / #2\}}
-\newcommand{\esub}[3]{#1 [ #2 := #3 ] }
+\newcommand{\esub}[3]{#1 [ #2 / #3 ]}
 
 \title{A formalized extension of the substitution lemma in Coq}
 \author{Flávio L. C. de Moura

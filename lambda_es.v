@@ -160,7 +160,8 @@ In the context of the $\lambda$-calculus with explicit substitutions its formali
 - This paper is written from a Coq script file.
 - include %\cite{berghoferHeadtoHeadComparisonBruijn2007}%
 - repository
-
+- constructive logic
+- contributions
 *)
 
 (** * A syntactic extension of the $\lambda$-calculus *)
@@ -226,7 +227,7 @@ $\swap{x}{y}{t} := \left\{ \begin{array}{ll}
 \vswap{x}{y}{v}, & \mbox{ if } t \mbox{ is the variable } v; \\
 \lambda_{\vswap{x}{y}{z}}. \swap{x}{y}{t_1}, & \mbox{ if } t = \lambda_z.t_1; \\
 \swap{x}{y}{t_1}\ \swap{x}{y}{t_2}, & \mbox{ if } t = t_1\ t_2;\\
-\swap{x}{y}{t_1}[\vswap{x}{y}{z} := \swap{x}{y}{t_2}], & \mbox{ if } t = t_1[z := t_2].
+\esub{\swap{x}{y}{t_1}}{\vswap{x}{y}{z}}{\swap{x}{y}{t_2}}, & \mbox{ if } t = \esub{t_1}{z}{t_2}.
 \end{array}\right.$%\vspace{.5cm}%
 
 The corresponding Coq definition is given by the following recursive function: *)
@@ -283,61 +284,7 @@ Qed.
 
 (* begin hide *)
 Hint Rewrite swap_size_eq.
-(* end hide *)
 
-(** The standard proof strategy for the non trivial properties is induction on the structure of the terms. Nevertheless, the builtin induction principle automatically generated for the inductive definition [n_sexp] is not strong enough due to swappings. In fact, in general, the induction hypothesis in the abstraction case, for instance, refer to the body of the abstraction, while the goal involves a swap acting on the body of the abstraction. In order to circunvet this problem, we defined an induction principle based on the size of terms: *)
-
-Lemma n_sexp_induction:
- forall P : n_sexp -> Prop,
- (forall x, P (n_var x)) ->
- (forall t1 z, (forall t2 x y, size t2 = size t1 -> P (swap x y t2)) -> P (n_abs z t1)) ->
- (forall t1 t2, P t1 -> P t2 -> P (n_app t1 t2)) ->
- (forall t1 t3 z, P t3 -> (forall t2 x y, size t2 = size t1 -> P (swap x y t2)) -> P (n_sub t1 z t3)) -> 
- (forall t, P t).
-Proof.
-  intros P Hvar Habs Happ Hsub t.
-  remember (size t) as n.
-  generalize dependent t.
-  induction n using strong_induction.
-  intro t; case t.
-  - intros x Hsize.
-    apply Hvar.
-  - intros x t' Hsize.
-    apply Habs.
-    intros t'' x1 x2 Hsize'.
-    apply H with (size t'').
-    + rewrite Hsize'.
-      rewrite Hsize.
-      simpl.
-      apply Nat.lt_succ_diag_r.
-    + symmetry.
-      apply swap_size_eq.
-  - intros. apply Happ.
-    + apply H with ((size t1)).
-      ++ simpl in Heqn. rewrite Heqn.
-         apply le_lt_n_Sm.
-         apply le_plus_l.
-      ++ reflexivity.
-    + apply H with ((size t2)).
-      ++ simpl in Heqn. rewrite Heqn.
-          apply le_lt_n_Sm.
-         apply le_plus_r.
-      ++ reflexivity.
-  - intros. apply Hsub.
-    + apply H with ((size t2)).
-      ++ simpl in Heqn. rewrite Heqn.
-          apply le_lt_n_Sm.
-         apply le_plus_r.
-      ++ reflexivity.
-    + intros. apply H with ((size (swap x0 y t0))).
-      ++ rewrite swap_size_eq. rewrite H0.
-         simpl in Heqn. rewrite Heqn.
-         apply le_lt_n_Sm.
-         apply le_plus_l.
-      ++ reflexivity.
-Qed. 
-
-(* begin hide *)
 Lemma swap_symmetric : forall t x y, swap x y t = swap y x t.
 Proof.
   induction t.
@@ -1147,7 +1094,6 @@ Proof.
        rewrite swap_involutive. assumption.
 Qed.
 (* end hide *)
-
 (** The key point of the nominal approach is that the swap operation is stable under $\alpha$-equivalence in the sense that, $t_1 =_\alpha t_2$ if, and only if $\swap{x}{y}{t_1} =_\alpha \swap{x}{y}{t_2}$. Note that this is not true for renaming substitutions: in fact, $\lambda_x.z =_\alpha \lambda_y.z$, but $(\lambda_x.z)\msub{z}{x} = \lambda_x.x \neq_\alpha \lambda_y.x (\lambda_y.z)\msub{z}{x}$, assuming that $x \neq y$. This stability result is formalized as follows: *)
 
 Corollary aeq_swap: forall t1 t2 x y, t1 =a t2 <-> (swap x y t1) =a (swap x y t2).
@@ -1285,7 +1231,53 @@ Proof.
                **** apply swap_symmetric.
 Qed.
 
-(** There are several interesting auxiliary properties that need to be proved before achieving the substitution lemma. We refer only to the tricky or challenging ones, but the interested reader can have a detailed look in the source files. Note that, swaps are introduced in proofs by the rules $({\rm\it aeq\_abs\_diff})$ and $({\rm\it aeq\_sub\_diff})$. As we will see, the proof steps involving these rules are trick because a naïve strategy can easily result in a proofless branch. so that one can establish the $\alpha$-equivalence between two abstractions or two explicit substitutions with different binders. The following proposition states when two swaps with a common name collapse, and it is used in the transitivity proof of [aeq]:
+Lemma aeq_same_abs: forall x t1 t2, n_abs x t1 =a n_abs x t2 -> t1 =a t2.
+Proof.
+  intros. inversion H.
+  - assumption.
+  - rewrite swap_id in H6; assumption.
+Qed.
+
+Lemma aeq_diff_abs: forall x y t1 t2, (n_abs x t1) =a (n_abs y t2) -> t1 =a (swap x y t2).
+Proof.
+  intros. inversion H; subst.
+  - rewrite swap_id; assumption.
+  - rewrite swap_symmetric; assumption.
+Qed.
+
+Lemma aeq_same_sub: forall x t1 t1' t2 t2', (n_sub t1 x t2) =a (n_sub t1' x t2') -> t1 =a t1' /\ t2 =a t2'.
+Proof.
+  intros. inversion H; subst.
+  - split; assumption.
+  - split.
+    + rewrite swap_id in H9; assumption.
+    + assumption.
+Qed.
+
+Lemma aeq_diff_sub: forall x y t1 t1' t2 t2', (n_sub t1 x t2) =a (n_sub t1' y t2') -> t1 =a (swap x y t1') /\ t2 =a t2'.
+Proof.
+  intros. inversion H; subst.
+  - split.
+    + rewrite swap_id; assumption.
+    + assumption.
+  - split.
+    + rewrite swap_symmetric; assumption.
+    + assumption.
+Qed.
+
+Lemma aeq_sub: forall t1 t2 x y, y `notin` fv_nom t1 -> (n_sub (swap x y t1) y t2) =a (n_sub t1 x t2).
+Proof.
+  intros. case (x == y); intros; subst.
+  - rewrite swap_id; apply aeq_refl.
+  - apply aeq_sub_diff.
+    -- apply aeq_refl.
+    -- apply aux_not_equal; assumption.
+    -- assumption.
+    -- apply aeq_refl.
+Qed.
+(* end hide *)
+
+(** There are several interesting auxiliary properties that need to be proved before achieving the substitution lemma. In what follows, we refer only to the tricky or challenging ones, but the interested reader can have a detailed look in the source files. Note that, swaps are introduced in proofs by the rules $({\rm\it aeq\_abs\_diff})$ and $({\rm\it aeq\_sub\_diff})$. As we will see, the proof steps involving these rules are trick because a naïve strategy can easily result in a proofless branch. so that one can establish the $\alpha$-equivalence between two abstractions or two explicit substitutions with different binders. The following proposition states when two swaps with a common name collapse, and it is used in the transitivity proof of [aeq]:
  *)
 
 Lemma aeq_swap_swap: forall t x y z, z `notin` fv_nom t -> x `notin` fv_nom t -> (swap z x (swap x y t)) =a (swap z y t).
@@ -1304,6 +1296,144 @@ Proof.
            + assumption.
 Qed.
 
+(** ** The metasubstitution operation of the $\lambda$-calculus *)
+
+(** The main operation of the $\lambda$-calculus is the $\beta$-reduction that express how to evaluate a function applied to a given argument:
+
+$(\lambda_x.t)\ u \to_\beta t\msub{x}{u}$
+
+In a less formal context, the concept of $\beta$-reduction means that the result of evaluating the function $(\lambda_x.t)$ with argument $u$ is obtained by substituting $u$ for the free ocurrences of the variable $x$ in $t$. Moreover, it is a capture free substitution in the sense that no free variable becomes bound after the substitution. This operation is in the meta level because it is outside the grammar of the $\lambda$-calculus, and that's why it is called metasubstitution. As a metaoperation, its definition usually comes with a degree of informality. For instance, Barendregt%\cite{barendregtLambdaCalculusIts1984}% defines it as follows:
+
+$t\msub{x}{u} = \left\{
+ \begin{array}{ll}
+  u, & \mbox{ if } t = x; \\
+  y, & \mbox{ if } t = y \mbox{ and } x \neq y; \\
+  t_1\msub{x}{u}\ t_2\msub{x}{u}, & \mbox{ if } t = (t_1\ t_2)\msub{x}{u}; \\
+  \lambda_y.(t_1\msub{x}{u}), & \mbox{ if } t = \lambda_y.t_1.
+ \end{array}\right.$%\vspace{.5cm}%
+
+%\noindent% where it is assumed the so called "Barendregt's variable convention": if $t_1, t_2, \ldots, t_n$ occur in a certain mathematical context (e.g. definition, proof), then in these terms all bound variables are chosen to be different from the free variables.
+
+This means that we are assumming that both $x \neq y$ and $y\notin fv(u)$ in the case $t = \lambda_y.t_1$. This approach is very convenient in informal proofs because it avoids having to rename bound variables. In order to formalize the capture free substitution of the $\lambda$-calculus, %{\it i.e.}% the metasubstitution, a renaming is performed whenever it is propagated inside a binder. In our case, there are two binders: the abstraction and the explicit substitution. 
+
+%\begin{definition}
+
+Let $t$ and $u$ be terms, and $x$ a variable. The result of substituting $u$ for the free ocurrences of $x$ in $t$, written $t\msub{x}{u}$ is defined as follows:
+
+$t\msub{x}{u} = \left\{
+ \begin{array}{ll}
+  u, & \mbox{ if } t = x; \\
+  y, & \mbox{ if } t = y \mbox{ and } x \neq y; \\
+  t_1\msub{x}{u}\ t_2\msub{x}{u}, & \mbox{ if } t = (t_1\ t_2)\msub{x}{u}; \\
+  \lambda_x.t_1, & \mbox{ if } t = \lambda_x.t_1; \\
+  \lambda_z.((\swap{y}{z}{t_1})\msub{x}{u}), & \mbox{ if } t = \lambda_y.t_1, x \neq y \mbox{ and } z\notin fv(\lambda_y.t_1)\cup fv(u) \cup \{x\}; \\
+  \esub{t_1}{x}{t_2\msub{x}{u}}, & \mbox{ if } t = \esub{t_1}{x}{t_2}; \\
+  \esub{(\swap{y}{z}{t_1})\msub{x}{u}}{z}{t_2\msub{x}{u}}, & \mbox{ if } t = \esub{t_1}{y}{t_2}, x \neq y \mbox{ and } z\notin fv(\esub{t_1}{y}{t_2})\cup fv(u) \cup \{x\}; \\
+ \end{array}\right.$
+
+\end{definition}%
+
+Note that this function is not structurally recursive due to the swaps in the recursive calls. A structurally recursive version of the function [subst_rec_fun] can be found in the file [nominal.v] of the [Metalib] library%\footnote{\url{https://github.com/plclub/metalib}}%, but it uses the size of the term in which the substitution will be performed as an extra argument that decreases with each recursive call. We write [[x:=u]t] instead of [subst_rec_fun t u x] in the Coq code to represent $t\msub{x}{u}$. The corresponding Coq code is as follows: *)
+
+(* begin hide *)
+Require Import Recdef.
+(* end hide *)
+Function subst_rec_fun (t:n_sexp) (u :n_sexp) (x:atom) {measure size t} : n_sexp :=
+  match t with
+  | n_var y => if (x == y) then u else t
+  | n_abs y t1 => if (x == y) then t else let (z,_) :=
+    atom_fresh (fv_nom u `union` fv_nom t `union` {{x}}) in n_abs z (subst_rec_fun (swap y z t1) u x)
+  | n_app t1 t2 => n_app (subst_rec_fun t1 u x) (subst_rec_fun t2 u x)
+  | n_sub t1 y t2 => if (x == y) then n_sub t1 y (subst_rec_fun t2 u x) else let (z,_) :=
+    atom_fresh (fv_nom u `union` fv_nom t `union` {{x}}) in
+    n_sub (subst_rec_fun (swap y z t1) u x) z (subst_rec_fun t2 u x) 
+end.
+Proof.
+ - intros. simpl. rewrite swap_size_eq. auto.
+ - intros. simpl. lia.
+ - intros. simpl. lia.
+ - intros. simpl. lia.
+ - intros. simpl. lia.
+ - intros. simpl. rewrite swap_size_eq. lia.
+Defined.
+(* begin hide *)
+Definition m_subst (u : n_sexp) (x:atom) (t:n_sexp) :=
+  subst_rec_fun t u x.
+Notation "[ x := u ] t" := (m_subst u x t) (at level 60).
+
+Lemma m_subst_var_eq : forall u x,
+    [x := u](n_var x) = u.
+Proof.
+  intros u x. unfold m_subst. rewrite subst_rec_fun_equation. rewrite eq_dec_refl. reflexivity.
+Qed.
+
+Lemma m_subst_var_neq : forall u x y, x <> y ->
+    [y := u](n_var x) = n_var x.
+Proof.
+  intros u x y H. unfold m_subst. rewrite subst_rec_fun_equation. destruct (y == x) eqn:Hxy.
+  - subst. contradiction.
+  - reflexivity.
+Qed.
+
+Lemma m_subst_app: forall t1 t2 u x, [x := u](n_app t1 t2) = n_app ([x := u]t1) ([x := u]t2).
+Proof.
+  intros t1 t2 u x. unfold m_subst. rewrite subst_rec_fun_equation. reflexivity.
+Qed.
+(* end hide *)
+
+(** The standard proof strategy for the non trivial properties is induction on the structure of the terms. Nevertheless, the builtin induction principle automatically generated for the inductive definition [n_sexp] is not strong enough due to swappings. In fact, in general, the induction hypothesis in the abstraction case, for instance, refer to the body of the abstraction, while the goal involves a swap acting on the body of the abstraction. In order to circunvet this problem, we use an induction principle based on the size of terms: *)
+
+Lemma n_sexp_induction:
+ forall P : n_sexp -> Prop,
+ (forall x, P (n_var x)) ->
+ (forall t1 z, (forall t2 x y, size t2 = size t1 -> P (swap x y t2)) -> P (n_abs z t1)) ->
+ (forall t1 t2, P t1 -> P t2 -> P (n_app t1 t2)) ->
+ (forall t1 t3 z, P t3 -> (forall t2 x y, size t2 = size t1 -> P (swap x y t2)) -> P (n_sub t1 z t3)) -> 
+ (forall t, P t).
+Proof.
+  intros P Hvar Habs Happ Hsub t.
+  remember (size t) as n.
+  generalize dependent t.
+  induction n using strong_induction.
+  intro t; case t.
+  - intros x Hsize.
+    apply Hvar.
+  - intros x t' Hsize.
+    apply Habs.
+    intros t'' x1 x2 Hsize'.
+    apply H with (size t'').
+    + rewrite Hsize'.
+      rewrite Hsize.
+      simpl.
+      apply Nat.lt_succ_diag_r.
+    + symmetry.
+      apply swap_size_eq.
+  - intros. apply Happ.
+    + apply H with ((size t1)).
+      ++ simpl in Heqn. rewrite Heqn.
+         apply le_lt_n_Sm.
+         apply le_plus_l.
+      ++ reflexivity.
+    + apply H with ((size t2)).
+      ++ simpl in Heqn. rewrite Heqn.
+          apply le_lt_n_Sm.
+         apply le_plus_r.
+      ++ reflexivity.
+  - intros. apply Hsub.
+    + apply H with ((size t2)).
+      ++ simpl in Heqn. rewrite Heqn.
+          apply le_lt_n_Sm.
+         apply le_plus_r.
+      ++ reflexivity.
+    + intros. apply H with ((size (swap x0 y t0))).
+      ++ rewrite swap_size_eq. rewrite H0.
+         simpl in Heqn. rewrite Heqn.
+         apply le_lt_n_Sm.
+         apply le_plus_l.
+      ++ reflexivity.
+Qed. 
+
+(* begin hide *)
 Lemma aeq_trans: forall t1 t2 t3, t1 =a t2 -> t2 =a t3 -> t1 =a t3.
 Proof.
   induction t1 using n_sexp_induction.
@@ -1561,110 +1691,9 @@ Proof.
   - unfold Symmetric. apply aeq_sym.
   - unfold Transitive. apply aeq_trans.
 Qed.
-
-Lemma aeq_same_abs: forall x t1 t2, n_abs x t1 =a n_abs x t2 -> t1 =a t2.
-Proof.
-  intros. inversion H.
-  - assumption.
-  - rewrite swap_id in H6; assumption.
-Qed.
-
-Lemma aeq_diff_abs: forall x y t1 t2, (n_abs x t1) =a (n_abs y t2) -> t1 =a (swap x y t2).
-Proof.
-  intros. inversion H; subst.
-  - rewrite swap_id; assumption.
-  - rewrite swap_symmetric; assumption.
-Qed.
-
-Lemma aeq_same_sub: forall x t1 t1' t2 t2', (n_sub t1 x t2) =a (n_sub t1' x t2') -> t1 =a t1' /\ t2 =a t2'.
-Proof.
-  intros. inversion H; subst.
-  - split; assumption.
-  - split.
-    + rewrite swap_id in H9; assumption.
-    + assumption.
-Qed.
-
-Lemma aeq_diff_sub: forall x y t1 t1' t2 t2', (n_sub t1 x t2) =a (n_sub t1' y t2') -> t1 =a (swap x y t1') /\ t2 =a t2'.
-Proof.
-  intros. inversion H; subst.
-  - split.
-    + rewrite swap_id; assumption.
-    + assumption.
-  - split.
-    + rewrite swap_symmetric; assumption.
-    + assumption.
-Qed.
-
-Lemma aeq_sub: forall t1 t2 x y, y `notin` fv_nom t1 -> (n_sub (swap x y t1) y t2) =a (n_sub t1 x t2).
-Proof.
-  intros. case (x == y); intros; subst.
-  - rewrite swap_id; apply aeq_refl.
-  - apply aeq_sub_diff.
-    -- apply aeq_refl.
-    -- apply aux_not_equal; assumption.
-    -- assumption.
-    -- apply aeq_refl.
-Qed.
 (* end hide *)
 
-(** ** The metasubstitution operation of the $\lambda$-calculus *)
-
-(** The main operation of the $\lambda$-calculus is the $\beta$-reduction that express how to evaluate a function applied to a given argument:
-
-$(\lambda_x.t)\ u \to_\beta t\msub{x}{u}$
-
-In a less formal context, the concept of $\beta$-reduction means that the result of evaluating the function $(\lambda_x.t)$ with argument $u$ is obtained by replacing all free ocurrences of the variable $x$ by $u$ in $t$. This operation is in the meta level because it is outside the grammar of the $\lambda$-calculus, and that's why it is called metasubstitution.
-
-We define the metasubstitution as a recursive function as follows: *)
-
-(* begin hide *)
-Require Import Recdef.
-(* end hide *)
-Function subst_rec_fun (t:n_sexp) (u :n_sexp) (x:atom) {measure size t} : n_sexp :=
-  match t with
-  | n_var y => if (x == y) then u else t
-  | n_abs y t1 => if (x == y) then t else let (z,_) :=
-    atom_fresh (fv_nom u `union` fv_nom t `union` {{x}}) in n_abs z (subst_rec_fun (swap y z t1) u x)
-  | n_app t1 t2 => n_app (subst_rec_fun t1 u x) (subst_rec_fun t2 u x)
-  | n_sub t1 y t2 => if (x == y) then n_sub t1 y (subst_rec_fun t2 u x) else let (z,_) :=
-    atom_fresh (fv_nom u `union` fv_nom t `union` {{x}}) in
-    n_sub (subst_rec_fun (swap y z t1) u x) z (subst_rec_fun t2 u x) 
-end.
-Proof.
- - intros. simpl. rewrite swap_size_eq. auto.
- - intros. simpl. lia.
- - intros. simpl. lia.
- - intros. simpl. lia.
- - intros. simpl. lia.
- - intros. simpl. rewrite swap_size_eq. lia.
-Defined.
-
-(** Note that this function is not structurally recursive due to the swaps in the recursive calls. A structurally recursive version of the function [subst_rec_fun] can be found in the file [nominal.v] of the [Metalib] library%\footnote{\url{https://github.com/plclub/metalib}}%, but it uses the size of the term in which the substitution will be performed as an extra argument that decreases with each recursive call. We write [[x:=u]t] instead of [subst_rec_fun t u x] in the Coq code to represent $t\msub{x}{u}$. *)
-(* begin hide *)
-Definition m_subst (u : n_sexp) (x:atom) (t:n_sexp) :=
-  subst_rec_fun t u x.
-Notation "[ x := u ] t" := (m_subst u x t) (at level 60).
-
-Lemma m_subst_var_eq : forall u x,
-    [x := u](n_var x) = u.
-Proof.
-  intros u x. unfold m_subst. rewrite subst_rec_fun_equation. rewrite eq_dec_refl. reflexivity.
-Qed.
-
-Lemma m_subst_var_neq : forall u x y, x <> y ->
-    [y := u](n_var x) = n_var x.
-Proof.
-  intros u x y H. unfold m_subst. rewrite subst_rec_fun_equation. destruct (y == x) eqn:Hxy.
-  - subst. contradiction.
-  - reflexivity.
-Qed.
-
-Lemma m_subst_app: forall t1 t2 u x, [x := u](n_app t1 t2) = n_app ([x := u]t1) ([x := u]t2).
-Proof.
-  intros t1 t2 u x. unfold m_subst. rewrite subst_rec_fun_equation. reflexivity.
-Qed.
-(* end hide *)
+(** The following lemma states that if $x \notin fv(t)$ then $t\msub{x}{u} =_\alpha t$. In informal proofs the conclusion of this lemma is usually stated as a syntactic equality, %{\i.e.}% $t\msub{x}{u} = t$ instead of the $\alpha$-equivalence, but due to the changes of the names of the bound variables when the metasubstitution is propagated inside an abstraction or inside an explicit substitution, syntactic equality does not hold here. *)
 
 Lemma m_subst_notin: forall t u x, x `notin` fv_nom t -> [x := u]t =a t.
 Proof.
@@ -1723,6 +1752,12 @@ Proof.
                     ***** symmetry in H0. contradiction.
                     ***** assumption.
 Qed.
+(** The proof is done by induction on the size of the term [t] using the [n_sexp_induction] principle. The interesting case is when $t = \lambda_y.t_1$ with $x \neq y$. So according to [subst_rec_fun], the variable $y$ will be renamed to a new name, say $z$, such that $z \notin fv(\lambda_y.t_1) \cup fv(u) \cup \{x\}$ and we have to prove that $\lambda_z.(\swap{z}{y}{t_1})\msub{x}{u} =_\alpha \lambda_y.t_1$. Since  $z \notin fv(\lambda_y.t_1) = fv(t_1)\backslash \{y\}$, there are two cases:
+ %\begin{enumerate}
+   \item If $z = y$ then we are done by the induction hypothesis because the swap does nothing.
+\item If $z \neq y$ then, by the rule $\mbox{\it aeq}\_\mbox{\it abs}\_\mbox{\it diff}$, we have to prove that $(\swap{z}{y}{t_1})\msub{x}{u} =_\alpha \swap{z}{y}{t_1}$ which holds by the induction hypothesis.
+  \end{enumerate}%
+ The explcit substitution case is also interesting. (* aqui *)*)
 
 Lemma fv_nom_remove: forall t u x y, y `notin` fv_nom u -> y `notin` remove x (fv_nom t) ->  y `notin` fv_nom ([x := u] t).
 Proof. 
