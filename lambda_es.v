@@ -153,7 +153,7 @@ Qed.
 
 (** * Introduction *)
 
-(** TBD  In this work, we present a formalization of an extension of the substitution lemma%\cite{barendregtLambdaCalculusIts1984}% with an explicit substitution operator in the Coq proof assistant%\cite{teamCoqProofAssistant2021}%. The substitution lemma is an important result concerning the composition of the substitution operation, and is usually presented as follows: if $x$ does not occur in the set of free variables of the term $v$ then $t\msub{x}{u}\msub{y}{v} =_\alpha t\msub{y}{v}\msub{x}{u\msub{y}{v}}$. This is a well known result already formalized several times in the context of the $\lambda$-calculus %\cite{berghoferHeadtoHeadComparisonBruijn2007}%.
+(* TBD  In this work, we present a formalization of an extension of the substitution lemma%\cite{barendregtLambdaCalculusIts1984}% with an explicit substitution operator in the Coq proof assistant%\cite{teamCoqProofAssistant2021}%. The substitution lemma is an important result concerning the composition of the substitution operation, and is usually presented as follows: if $x$ does not occur in the set of free variables of the term $v$ then $t\msub{x}{u}\msub{y}{v} =_\alpha t\msub{y}{v}\msub{x}{u\msub{y}{v}}$. This is a well known result already formalized several times in the context of the $\lambda$-calculus %\cite{berghoferHeadtoHeadComparisonBruijn2007}%.
 
 In the context of the $\lambda$-calculus with explicit substitutions its formalization is not straightforward because, in addition to the metasubstitution operation, there is the explicit substitution operator. Our formalization is done in a nominal setting that uses the MetaLib package of Coq, but no particular explicit substitution calculi is taken into account because the expected behaviour between the metasubstitution operation with the explicit substitutition constructor is the same regardless the calculus.
 
@@ -181,13 +181,10 @@ x, & \mbox{ if } z = y; \\
 z, & \mbox{ otherwise. } \\
 \end{array}\right.$
 
-\noindent and the corresponding Coq definition:
-
- *)
+%\noindent% and the corresponding Coq definition: *)
 
 Definition swap_var (x:atom) (y:atom) (z:atom) :=
   if (z == x) then y else if (z == y) then x else z.
-
 
 (* begin hide *)
 Lemma swap_var_id: forall x y, (swap_var x x y = y).
@@ -229,7 +226,7 @@ $\swap{x}{y}{t} := \left\{ \begin{array}{ll}
 \lambda_{\vswap{x}{y}{z}}. \swap{x}{y}{t_1}, & \mbox{ if } t = \lambda_z.t_1; \\
 \swap{x}{y}{t_1}\ \swap{x}{y}{t_2}, & \mbox{ if } t = t_1\ t_2;\\
 \esub{\swap{x}{y}{t_1}}{\vswap{x}{y}{z}}{\swap{x}{y}{t_2}}, & \mbox{ if } t = \esub{t_1}{z}{t_2}.
-\end{array}\right.$%\vspace{.5cm}%
+\end{array}\right.$ %\vspace{.5cm}%
 
 The corresponding Coq definition is given by the following recursive function: *)
 
@@ -460,8 +457,7 @@ Proof.
 Qed.
 
 Lemma remove_fv_swap: forall x y t, x `notin` fv_nom t -> remove x (fv_nom (swap y x t)) [=] remove y (fv_nom t).
-Proof.
-  (** %\noindent {\bf Proof.}% The proof is by induction on the structure of [t].%\newline% *)
+Proof. (** %\noindent {\bf Proof.}% The proof is by induction on the structure of [t].%\newline% *)
   intros x y t. induction t.
   (** %\noindent%$\bullet$ The first case is when [t] is a variable, say [x0]. By hypothesis [x0 <> x], and we need to show that [remove x (fv_nom (swap y x x0)) [=] remove y (fv_nom x0)]. There are two cases to consider: *)
   - intro Hfv. simpl in *. apply notin_singleton_1 in Hfv. unfold swap_var. case (x0 == y).
@@ -537,9 +533,7 @@ Qed.
 \inferrule*[Right={({\rm\it aeq\_sub\_diff})}]{t_2 =_\alpha t_2' \and x \neq y \and x \notin fv(t_1') \and t_1 =_\alpha \swap{y}{x}{t_1'}}{\esub{t_1}{x}{t_2} =_\alpha \esub{t_1'}{y}{t_2'}} 
 \end{mathpar}%
 
-Each of these rules correspond to a constructor in the [aeq] inductive definition below:
-
- *)
+Each of these rules correspond to a constructor in the [aeq] inductive definition below: *)
 
 Inductive aeq : n_sexp -> n_sexp -> Prop :=
 | aeq_var : forall x, aeq (n_var x) (n_var x)
@@ -552,11 +546,12 @@ Inductive aeq : n_sexp -> n_sexp -> Prop :=
 Hint Constructors aeq.
 (* end hide *)
 
-(** In what follows, we use a infix notation for $\alpha$-equivalence in the Coq code: we write [t =a u] instead of [aeq t u].
- *)
+(** In what follows, we use a infix notation for $\alpha$-equivalence in the Coq code: we write [t =a u] instead of [aeq t u]. *)
+
 (* begin hide *)
 Notation "t =a u" := (aeq t u) (at level 60).
 (* end hide *)
+
 (** The above notion defines an equivalence relation over the set [n_sexp] of nominal expressions with explicit substitutions, %{\it i.e.}% the [aeq] relation is reflexive, symmetric and transitive. *)
 (* begin hide *)
 Example aeq1 : forall x y, x <> y -> (n_abs x (n_var x)) =a (n_abs y (n_var y)).
@@ -571,6 +566,7 @@ Proof.
   intros. inversion H; subst. reflexivity.
 Qed.
 (* end hide *)
+
 (** Informally, two terms are $\alpha$-equivalent if they differ only by the names of the bound variables. Therefore, $\alpha$-equivalent terms have the same size, and the same set of free variables: *)
 
 Lemma aeq_size: forall t1 t2, t1 =a t2 -> size t1 = size t2.
@@ -1095,6 +1091,7 @@ Proof.
        rewrite swap_involutive. assumption.
 Qed.
 (* end hide *)
+
 (** The key point of the nominal approach is that the swap operation is stable under $\alpha$-equivalence in the sense that, $t_1 =_\alpha t_2$ if, and only if $\swap{x}{y}{t_1} =_\alpha \swap{x}{y}{t_2}$. Note that this is not true for renaming substitutions: in fact, $\lambda_x.z =_\alpha \lambda_y.z$, but $(\lambda_x.z)\msub{z}{x} = \lambda_x.x \neq_\alpha \lambda_y.x (\lambda_y.z)\msub{z}{x}$, assuming that $x \neq y$. This stability result is formalized as follows: *)
 
 Corollary aeq_swap: forall t1 t2 x y, t1 =a t2 <-> (swap x y t1) =a (swap x y t2).
@@ -1278,8 +1275,7 @@ Proof.
 Qed.
 (* end hide *)
 
-(** There are several interesting auxiliary properties that need to be proved before achieving the substitution lemma. In what follows, we refer only to the tricky or challenging ones, but the interested reader can have a detailed look in the source files. Note that, swaps are introduced in proofs by the rules $({\rm\it aeq\_abs\_diff})$ and $({\rm\it aeq\_sub\_diff})$. As we will see, the proof steps involving these rules are trick because a naïve strategy can easily result in a proofless branch. so that one can establish the $\alpha$-equivalence between two abstractions or two explicit substitutions with different binders. The following proposition states when two swaps with a common name collapse, and it is used in the transitivity proof of [aeq]:
- *)
+(** There are several interesting auxiliary properties that need to be proved before achieving the substitution lemma. In what follows, we refer only to the tricky or challenging ones, but the interested reader can have a detailed look in the source files. Note that, swaps are introduced in proofs by the rules $({\rm\it aeq\_abs\_diff})$ and $({\rm\it aeq\_sub\_diff})$. As we will see, the proof steps involving these rules are trick because a naïve strategy can easily result in a proofless branch. so that one can establish the $\alpha$-equivalence between two abstractions or two explicit substitutions with different binders. The following proposition states when two swaps with a common name collapse, and it is used in the transitivity proof of [aeq]: *)
 
 Lemma aeq_swap_swap: forall t x y z, z `notin` fv_nom t -> x `notin` fv_nom t -> (swap z x (swap x y t)) =a (swap z y t).
 Proof.
@@ -1300,41 +1296,39 @@ Qed.
 (** ** The metasubstitution operation of the $\lambda$-calculus *)
 
 (** The main operation of the $\lambda$-calculus is the $\beta$-reduction that express how to evaluate a function applied to a given argument:
-
-$(\lambda_x.t)\ u \to_\beta t\msub{x}{u}$
-
+%\begin{tcolorbox}
+ $(\lambda_x.t)\ u \to_{\beta} \metasub{t}{x}{u}$
+\end{tcolorbox}%
 In a less formal context, the concept of $\beta$-reduction means that the result of evaluating the function $(\lambda_x.t)$ with argument $u$ is obtained by substituting $u$ for the free ocurrences of the variable $x$ in $t$. Moreover, it is a capture free substitution in the sense that no free variable becomes bound after the substitution. This operation is in the meta level because it is outside the grammar of the $\lambda$-calculus, and that's why it is called metasubstitution. As a metaoperation, its definition usually comes with a degree of informality. For instance, Barendregt%\cite{barendregtLambdaCalculusIts1984}% defines it as follows:
 
-$t\msub{x}{u} = \left\{
+$\metasub{t}{x}{u} = \left\{
  \begin{array}{ll}
   u, & \mbox{ if } t = x; \\
   y, & \mbox{ if } t = y \mbox{ and } x \neq y; \\
-  t_1\msub{x}{u}\ t_2\msub{x}{u}, & \mbox{ if } t = (t_1\ t_2)\msub{x}{u}; \\
-  \lambda_y.(t_1\msub{x}{u}), & \mbox{ if } t = \lambda_y.t_1.
- \end{array}\right.$%\vspace{.5cm}%
+  \metasub{t_1}{x}{u}\ \metasub{t_2}{x}{u}, & \mbox{ if } t = \metasub{(t_1\ t_2)}{x}{u}; \\
+  \lambda_y.(\metasub{t_1}{x}{u}), & \mbox{ if } t = \lambda_y.t_1.
+ \end{array}\right.$ %\vspace{.5cm}%
 
 %\noindent% where it is assumed the so called "Barendregt's variable convention": if $t_1, t_2, \ldots, t_n$ occur in a certain mathematical context (e.g. definition, proof), then in these terms all bound variables are chosen to be different from the free variables.
 
 This means that we are assumming that both $x \neq y$ and $y\notin fv(u)$ in the case $t = \lambda_y.t_1$. This approach is very convenient in informal proofs because it avoids having to rename bound variables. In order to formalize the capture free substitution of the $\lambda$-calculus, %{\it i.e.}% the metasubstitution, a renaming is performed whenever it is propagated inside a binder. In our case, there are two binders: the abstraction and the explicit substitution. 
 
 %\begin{definition}
-
 Let $t$ and $u$ be terms, and $x$ a variable. The result of substituting $u$ for the free ocurrences of $x$ in $t$, written $t\msub{x}{u}$ is defined as follows:
 
-$t\msub{x}{u} = \left\{
+$\metasub{t}{x}{u} = \left\{
  \begin{array}{ll}
   u, & \mbox{ if } t = x; \\
   y, & \mbox{ if } t = y \mbox{ and } x \neq y; \\
-  t_1\msub{x}{u}\ t_2\msub{x}{u}, & \mbox{ if } t = (t_1\ t_2)\msub{x}{u}; \\
+  \metasub{t_1}{x}{u}\ \metasub{t_2}{x}{u}, & \mbox{ if } t = \metasub{(t_1\ t_2)}{x}{u}; \\
   \lambda_x.t_1, & \mbox{ if } t = \lambda_x.t_1; \\
-  \lambda_z.((\swap{y}{z}{t_1})\msub{x}{u}), & \mbox{ if } t = \lambda_y.t_1, x \neq y \mbox{ and } z\notin fv(\lambda_y.t_1)\cup fv(u) \cup \{x\}; \\
-  \esub{t_1}{x}{t_2\msub{x}{u}}, & \mbox{ if } t = \esub{t_1}{x}{t_2}; \\
-  \esub{(\swap{y}{z}{t_1})\msub{x}{u}}{z}{t_2\msub{x}{u}}, & \mbox{ if } t = \esub{t_1}{y}{t_2}, x \neq y \mbox{ and } z\notin fv(\esub{t_1}{y}{t_2})\cup fv(u) \cup \{x\}; \\
+  \lambda_z.(\metasub{(\swap{y}{z}{t_1})}{x}{u}), & \mbox{ if } t = \lambda_y.t_1, x \neq y \mbox{ and } z\notin fv(\lambda_y.t_1)\cup fv(u) \cup \{x\}; \\
+  \esub{t_1}{x}{\metasub{t_2}{x}{u}}, & \mbox{ if } t = \esub{t_1}{x}{t_2}; \\
+  \esub{\metasub{(\swap{y}{z}{t_1})}{x}{u}}{z}{\metasub{t_2}{x}{u}}, & \mbox{ if } t = \esub{t_1}{y}{t_2}, x \neq y \mbox{ and } z\notin fv(\esub{t_1}{y}{t_2})\cup fv(u) \cup \{x\}.
  \end{array}\right.$
-
 \end{definition}%
 
-Note that this function is not structurally recursive due to the swaps in the recursive calls. A structurally recursive version of the function [subst_rec_fun] can be found in the file [nominal.v] of the [Metalib] library%\footnote{\url{https://github.com/plclub/metalib}}%, but it uses the size of the term in which the substitution will be performed as an extra argument that decreases with each recursive call. We write [[x:=u]t] instead of [subst_rec_fun t u x] in the Coq code to represent $t\msub{x}{u}$. The corresponding Coq code is as follows: *)
+Note that this function is not structurally recursive due to the swaps in the recursive calls. A structurally recursive version of the function [subst_rec_fun] can be found in the file [nominal.v] of the [Metalib] library%\footnote{\url{https://github.com/plclub/metalib}}%, but it uses the size of the term in which the substitution will be performed as an extra argument that decreases with each recursive call. We write [[x:=u]t] instead of [subst_rec_fun t u x] in the Coq code to represent $\metasub{t}{x}{u}$. The corresponding Coq code is as follows: *)
 
 (* begin hide *)
 Require Import Recdef.
@@ -1694,7 +1688,7 @@ Proof.
 Qed.
 (* end hide *)
 
-(** The following lemma states that if $x \notin fv(t)$ then $t\msub{x}{u} =_\alpha t$. In informal proofs the conclusion of this lemma is usually stated as a syntactic equality, %{\i.e.}% $t\msub{x}{u} = t$ instead of the $\alpha$-equivalence, but due to the changes of the names of the bound variables when the metasubstitution is propagated inside an abstraction or inside an explicit substitution, syntactic equality does not hold here. *)
+(** The following lemma states that if $x \notin fv(t)$ then $\metasub{t}{x}{u} =_\alpha t$. In informal proofs the conclusion of this lemma is usually stated as a syntactic equality, %{\i.e.}% $\metasub{t}{x}{u} = t$ instead of the $\alpha$-equivalence, but due to the changes of the names of the bound variables when the metasubstitution is propagated inside an abstraction or inside an explicit substitution, syntactic equality does not hold here. *)
 
 Lemma m_subst_notin: forall t u x, x `notin` fv_nom t -> [x := u]t =a t.
 Proof.
@@ -1760,6 +1754,7 @@ Therefore, according to the function [subst_rec_fun], the variable $y$ will be r
 \item $z \neq y$: In this case, $x \notin fv(t)$ and we can apply the rule $\mbox{\it aeq}\_\mbox{\it abs}\_\mbox{\it diff}$. The new goal is $(\swap{z}{y}{t_1})\msub{x}{u} =_\alpha \swap{z}{y}{t_1}$ which holds by the induction hypothesis, since $|\swap{z}{y}{t_1}| = |t_1|$ and $x \notin fv(\swap{z}{y}{t_1})$ because $x \neq z$, $x \neq y$ and $x \notin fv(t)$.
   \end{enumerate}%
  The explicit substitution case is also interesting, but it follows a similar strategy used in the abstraction case for $t_1$. For $t_2$ the result follows from the induction hypothesis. $\hfill\Box$ *)
+
 (* begin hide *)
 Lemma fv_nom_remove: forall t u x y, y `notin` fv_nom u -> y `notin` remove x (fv_nom t) ->  y `notin` fv_nom ([x := u] t).
 Proof. 
@@ -1842,22 +1837,56 @@ Proof.
 Qed.
 (* end hide *)
 
-(** We will now prove some stability results for the metasubstitution w.r.t. $\alpha$-equivalence. More precisely, we will prove that if $t =_\alpha t'$ and $u =_\alpha u'$ then $\metasub{t}{x}{u} =_\alpha \metasub{t'}{x}{u'}$, where $x$ is any variable and $t, t', u$ and $u'$ are any [n_sexp] terms. This proof is split in two steps: firstly, we prove that if $u =_\alpha u'$ then $\metasub{t}{x}{u} =_\alpha \metasub{t}{x}{u'}, \forall x, t, u, u'$; secondly, we prove that if $t =_\alpha t'$ then $\metasub{t}{x}{u} =_\alpha \metasub{t'}{x}{u}, \forall x, t, t', u$. These two steps are then combined through the transitivity of the $\alpha$-equivalence relation. Nevertheless, this task were not straighforward. Let's follow the steps of our first trial. *)
+(** We will now prove some stability results for the metasubstitution w.r.t. $\alpha$-equivalence. More precisely, we will prove that if $t =_\alpha t'$ and $u =_\alpha u'$ then $\metasub{t}{x}{u} =_\alpha \metasub{t'}{x}{u'}$, where $x$ is any variable and $t, t', u$ and $u'$ are any [n_sexp] terms. This proof is split in two steps: firstly, we prove that if $u =_\alpha u'$ then $\metasub{t}{x}{u} =_\alpha \metasub{t}{x}{u'}, \forall x, t, u, u'$; secondly, we prove that if $t =_\alpha t'$ then $\metasub{t}{x}{u} =_\alpha \metasub{t'}{x}{u}, \forall x, t, t', u$. These two steps are then combined through the transitivity of the $\alpha$-equivalence relation. Nevertheless, this task were not straighforward. Let's follow the steps of our first trial.*)
 
 Lemma aeq_m_subst_in_trial: forall t u u' x, u =a u' -> ([x := u] t) =a ([x := u'] t).
 Proof.
-  induction t using n_sexp_induction.
-  (** %\noindent{\bf Proof.}% The proof is done by induction on the size of the term [t].*)
+  induction t using n_sexp_induction. (** %\noindent{\bf Proof.}% The proof is done by induction on the size of the term [t].*)
   - intros u u' x' Haeq. unfold m_subst. repeat rewrite subst_rec_fun_equation. destruct (x' == x).
     + assumption.
     + apply aeq_refl.
   - intros u u' x Haeq. unfold m_subst in *. repeat rewrite subst_rec_fun_equation. destruct (x == z). (** The interesting case is when [t] is an abstraction, %{\it i.e.}% $t = \lambda_y.t_1$. We need to prove that $\metasub{(\lambda_y.t_1)}{x}{u} =_\alpha \metasub{(\lambda_y.t_1)}{x}{u'}$.*)      
     + apply aeq_refl. (** If $x = y$ then the result is trivial.*)
     + destruct (atom_fresh (union (fv_nom u) (union (fv_nom (n_abs z t)) (singleton x)))). destruct (atom_fresh (union (fv_nom u') (union (fv_nom (n_abs z t)) (singleton x)))). case (x0 == x1). (** Suppose $x \neq y$. The metasubstitution will be propagated inside the abstraction on each side of the $\alpha$-equation, after generating a new name for each side. The new goal is then $\lambda_{x_0}.\metasub{(\swap{y}{x_0}{t_1})}{x}{u} =_\alpha \lambda_{x_1}.\metasub{(\swap{y}{x_1}{t_1})}{x}{u'}$, where $x_0 \notin fv(\lambda_y.t_1) \cup fv(u) \cup \{x\}$ and $x_1 \notin fv(\lambda_y.t_1) \cup fv(u') \cup \{x\}$. The variables $x_0$ and $x_1$ are either the same or different.*)
-      * intro Heq. subst. apply aeq_abs_same. (* aqui *) (** In the former case the result is trivial because $u =_\alpha u'$. *)
-      *
+      * intro Heq. subst. apply aeq_abs_same. apply H. (** In the former case the result is trivial because $u =_\alpha u'$. *)
+        ** reflexivity.
+        ** assumption.
+      * intro Hneq. apply aeq_abs_diff. (** In the latter case, $x_0 \neq x_1$ and we need to prove that $\metasub{(\swap{y}{x_0}{t_1})}{x}{u} =_\alpha \swap{x_0}{x_1}{(\metasub{(\swap{y}{x_1}{t_1})}{x}{u'})}$.*)
+        ** assumption.
+        ** admit.
+        ** Abort. (** Therefore, we need to propagate the swap over the metasubstitution before been able to apply the induction hypothesis. The propagation of the swap over the metasubstitution is stated by the following lemma:
 
-      
+%\begin{lemma} Let $t,u$ be terms, and $x,y,z$ variables. Then
+ $\swap{y}{z}{(\metasub{t}{x}{u})} =_\alpha \metasub{(\swap{y}{z}{t})}{\vswap{y}{z}{x}}{\swap{y}{z}{u}}$.
+\end{lemma}%
+
+%\noindent% whose corresponding Coq version is given by: %\newline% *)
+
+Lemma swap_m_subst: forall t u x y z, swap y z ([x := u]t) =a ([(swap_var y z x) := (swap y z u)] (swap y z t)).
+Proof.
+  induction t using n_sexp_induction. (** %\noindent{\bf Proof.}% The proof is by induction on the size of the term [t].*)
+  - intros u x' y z. unfold m_subst. rewrite subst_rec_fun_equation. destruct (x' == x) eqn:H.
+    + subst. simpl. rewrite subst_rec_fun_equation. rewrite eq_dec_refl. apply aeq_refl.
+    + simpl. apply aeq_sym. rewrite subst_rec_fun_equation. clear H. apply (swap_neq y z) in n. destruct (swap_var y z x' == swap_var y z x).
+      * contradiction.
+      * apply aeq_refl.
+  - intros u x y z'. unfold m_subst. rewrite subst_rec_fun_equation. destruct (x == z) eqn:Hxz. (** The interesting case is the abstraction, where we need to prove that $\swap{y}{z}{(\metasub{(\lambda_w.t_1)}{x}{u})} =_\alpha \metasub{(\swap{y}{z}{\lambda_w.t_1})}{\vswap{y}{z}{x}}{\swap{y}{z}{u}}$. On the left hand side, we can propagate the metasubstitution over the abstraction in the case that $x \neq w$ (the other is straighforward) and the new goal after the propagation of the swap over the abstraction is $\lambda_{\vswap{y}{z}{w'}}.\swap{y}{z}{(\metasub{\swap{w}{w'}{t_1}}{x}{u})} =_\alpha \metasub{(\lambda_{\vswap{y}{z}{w}}.\swap{y}{z}{t_1})}{\vswap{y}{z}{x}}{\swap{y}{z}{u}}$, where $w' \notin fv(\lambda_w.t_1) \cup fv(u) \cup \{x\}$.*)
+    + subst. simpl. rewrite subst_rec_fun_equation. rewrite eq_dec_refl. apply aeq_refl.
+    + destruct (atom_fresh (union (fv_nom u) (union (fv_nom (n_abs z t)) (singleton x)))). simpl. clear Hxz. pose proof n as Hxz. apply (swap_neq y z') in n. apply aeq_sym. rewrite subst_rec_fun_equation. destruct (swap_var y z' x == swap_var y z' z).
+      * contradiction.
+      * destruct (atom_fresh
+       (union (fv_nom (swap y z' u))
+          (union (fv_nom (n_abs (swap_var y z' z) (swap y z' t))) (singleton (swap_var y z' x))))). case (x1 == (swap_var y z' x0)). (** Now we can propagate the metasubstitution over the abstraction in the right hand side term. Since $x\neq w$, we get $\vswap{y}{z}{x} \neq \vswap{y}{z}{w}$ and a renaming is necessary. After the renaming to a new name, say $w''$, such that $w'' \notin fv(\lambda_{\vswap{y}{z}{w}}.\swap{y}{z}{t_1}) \cup fv(\swap{y}{z}{u}) \cup \{\vswap{y}{z}{x}\}$, we get the following goal $\lambda_{\vswap{y}{z}{w'}}.\swap{y}{z}{(\metasub{\swap{w}{w'}{t_1}}{x}{u})} =_\alpha \lambda_{w''}.\metasub{(\swap{w''}{\vswap{y}{z}{w}}{(\swap{y}{z}{t_1})})}{\vswap{y}{z}{x}}{\swap{y}{z}{u}}$. We consider two cases: either $w'' = \vswap{y}{z}{w'}$ or $w'' \neq \vswap{y}{z}{w'}$.*)
+        ** intro Heq. subst. apply aeq_abs_same. unfold m_subst in *. apply aeq_sym. rewrite <- swap_equivariance. apply H. reflexivity. (** In the former case, we can apply the rule $\mbox{\it aeq}\_\mbox{\it abs}\_\mbox{\it same}$ and we get $\swap{y}{z}{(\metasub{(\swap{w}{w'}{t_1})}{x}{u})} =_\alpha \metasub{(\swap{w''}{\vswap{y}{z}{w}}{(\swap{y}{z}{t_1})})}{\vswap{y}{z}{x}}{\swap{y}{z}{u}}$, which can be prove by the induction hypothesis.*)
+        ** intro Hneq. apply aeq_abs_diff.
+           *** assumption.
+           *** admit.
+           *** (* aqui *)apply aeq_sym. unfold m_subst in H. apply aeq_trans with (swap (swap_var y z' x0) x1 (subst_rec_fun (swap y z' (swap z x0 t)) (swap y z' u) (swap_var y z' x))).
+               **** apply aeq_swap. rewrite H.
+                    ***** apply aeq_refl. (** When $w'' \neq \vswap{y}{z}{w'}$, the application of the rule $\mbox{\it aeq}\_\mbox{\it abs}\_\mbox{\it diff}$ generates the goal  *)
+                  
+
+
 Axiom Eq_implies_equality: forall s s': atoms, s [=] s' -> s = s'.
 
 Lemma aeq_m_subst_in: forall t u u' x, u =a u' -> ([x := u] t) =a ([x := u'] t).
