@@ -162,6 +162,7 @@ In the context of the $\lambda$-calculus with explicit substitutions its formali
 - repository
 - constructive logic
 - contributions
+- challenges
 *)
 
 (** * A syntactic extension of the $\lambda$-calculus *)
@@ -502,7 +503,7 @@ Proof.
     + unfold swap_var. case (x0 == y); intros; subst.
       unfold swap_var in H1. rewrite eq_dec_refl in H1. rewrite double_remove in *. apply IHt2 in Hfv. case (x == y); intros; subst.
       * repeat rewrite swap_id in *. rewrite double_remove. reflexivity.
-      * rewrite double_remove. apply IHt1. Search remove. apply diff_remove_2 in Hfv'.
+      * rewrite double_remove. apply IHt1. apply diff_remove_2 in Hfv'.
         ** assumption.
         ** assumption.
       * destruct (x0 == x).
@@ -511,7 +512,7 @@ Proof.
            {
            rewrite remove_symmetric. reflexivity.
            }
-           rewrite Hr. clear Hr. apply AtomSetProperties.Equal_remove. apply IHt1. Search remove. apply diff_remove_2 in Hfv'.
+           rewrite Hr. clear Hr. apply AtomSetProperties.Equal_remove. apply IHt1. apply diff_remove_2 in Hfv'.
             *** assumption.
             *** auto.
     + apply IHt2. apply Hfv.
@@ -1745,24 +1746,21 @@ Proof.
            *** assumption.
         ** apply H.
            *** reflexivity.
-           *** apply fv_nom_remove_swap.
-               **** repeat apply notin_union_2 in n. apply notin_singleton_1 in n. assumption.
-               **** assumption.
-               **** apply notin_union_1 in Hfv. apply notin_remove_1 in Hfv. destruct Hfv.
-                    ***** symmetry in H0. contradiction.
-                    ***** assumption.
+           *** apply notin_union_1 in Hfv. apply notin_remove_1 in Hfv. destruct Hfv. 
+               **** symmetry in H0. contradiction. 
+               **** repeat apply notin_union_2 in n. apply notin_singleton_1 in n. apply fv_nom_remove_swap; assumption.
 Qed.
-(** The proof is done by induction on the size of the term [t] using the [n_sexp_induction] principle. One interesting case is when $t = \lambda_y.t_1$ with $x \neq y$, where we have to prove that $(\lambda_y.t_1)\msub{x}{u} =_\alpha \lambda_y.t_1$. The induction hypothesis express the fact that every term with the same size as the body of the abstraction $t_1$ satisfies the property to be proven:
+(** %\noindent{\bf Proof.}% The proof is done by induction on the size of the term [t] using the [n_sexp_induction] principle. One interesting case is when $t = \lambda_y.t_1$ and $x \neq y$. In this case, we have to prove that $(\lambda_y.t_1)\msub{x}{u} =_\alpha \lambda_y.t_1$. The induction hypothesis express the fact that every term with the same size as the body of the abstraction $t_1$ satisfies the property to be proven:
 
 $\forall t'\ x\ y, |t'| = |t_1| \to \forall u\ x', x' \notin fv(\swap{x}{y}{t'}) \to (\swap{x}{y}{t'})\msub{x'}{u} =_\alpha \swap{x}{y}{t'}$.
 
 Therefore, according to the function [subst_rec_fun], the variable $y$ will be renamed to a new name, say $z$, such that $z \notin fv(\lambda_y.t_1) \cup fv(u) \cup \{x\}$, and we have to prove that $\lambda_z.(\swap{z}{y}{t_1})\msub{x}{u} =_\alpha \lambda_y.t_1$. Since $z \notin fv(\lambda_y.t_1) = fv(t_1)\backslash \{y\}$, there are two cases:
  %\begin{enumerate}
    \item $z = y$: In this case, we have to prove that $\lambda_z.(\swap{z}{z}{t_1})\msub{x}{u} =_\alpha \lambda_z.t_1$. By the rule $\mbox{\it aeq}\_\mbox{\it abs}\_\mbox{\it same}$ we get $(\swap{z}{z}{t_1})\msub{x}{u} =_\alpha t_1$, but in order to apply the induction hypothesis the body of the metasubstitution and the term in the right hand side need to be the same and both need to be a swap. For this reason, we use the transitivity of $\alpha$-equivalence with $\swap{z}{z}{t_1}$ as intermediate term. The first subcase is proved by the induction hypothesis, and the second one is proved by the reflexivity of $\alpha$-equivalence.
-\item $z \neq y$: In this case, we apply the rule $\mbox{\it aeq}\_\mbox{\it abs}\_\mbox{\it diff}$, and the new goal is $(\swap{z}{y}{t_1})\msub{x}{u} =_\alpha \swap{z}{y}{t_1}$ which holds by the induction hypothesis, since $|\swap{z}{y}{t_1}| = |t_1|$ and $x \notin fv(\swap{z}{y}{t_1})$ because $x \neq z$, $x \neq y$ and $x \notin fv(t)$.
+\item $z \neq y$: In this case, $x \notin fv(t)$ and we can apply the rule $\mbox{\it aeq}\_\mbox{\it abs}\_\mbox{\it diff}$. The new goal is $(\swap{z}{y}{t_1})\msub{x}{u} =_\alpha \swap{z}{y}{t_1}$ which holds by the induction hypothesis, since $|\swap{z}{y}{t_1}| = |t_1|$ and $x \notin fv(\swap{z}{y}{t_1})$ because $x \neq z$, $x \neq y$ and $x \notin fv(t)$.
   \end{enumerate}%
- The explicit substitution case is also interesting. (* aqui *) *)
-
+ The explicit substitution case is also interesting, but it follows a similar strategy used in the abstraction case for $t_1$. For $t_2$ the result follows from the induction hypothesis. $\hfill\Box$ *)
+(* begin hide *)
 Lemma fv_nom_remove: forall t u x y, y `notin` fv_nom u -> y `notin` remove x (fv_nom t) ->  y `notin` fv_nom ([x := u] t).
 Proof. 
   intros t u x y H0 H1. unfold m_subst. functional induction (subst_rec_fun t u x).
@@ -1842,7 +1840,24 @@ Proof.
         ** assumption.
         ** apply notin_union_2 in H. apply notin_remove_2. assumption.
 Qed.
+(* end hide *)
 
+(** We will now prove some stability results for the metasubstitution w.r.t. $\alpha$-equivalence. More precisely, we will prove that if $t =_\alpha t'$ and $u =_\alpha u'$ then $\metasub{t}{x}{u} =_\alpha \metasub{t'}{x}{u'}$, where $x$ is any variable and $t, t', u$ and $u'$ are any [n_sexp] terms. This proof is split in two steps: firstly, we prove that if $u =_\alpha u'$ then $\metasub{t}{x}{u} =_\alpha \metasub{t}{x}{u'}, \forall x, t, u, u'$; secondly, we prove that if $t =_\alpha t'$ then $\metasub{t}{x}{u} =_\alpha \metasub{t'}{x}{u}, \forall x, t, t', u$. These two steps are then combined through the transitivity of the $\alpha$-equivalence relation. Nevertheless, this task were not straighforward. Let's follow the steps of our first trial. *)
+
+Lemma aeq_m_subst_in_trial: forall t u u' x, u =a u' -> ([x := u] t) =a ([x := u'] t).
+Proof.
+  induction t using n_sexp_induction.
+  (** %\noindent{\bf Proof.}% The proof is done by induction on the size of the term [t].*)
+  - intros u u' x' Haeq. unfold m_subst. repeat rewrite subst_rec_fun_equation. destruct (x' == x).
+    + assumption.
+    + apply aeq_refl.
+  - intros u u' x Haeq. unfold m_subst in *. repeat rewrite subst_rec_fun_equation. destruct (x == z). (** The interesting case is when [t] is an abstraction, %{\it i.e.}% $t = \lambda_y.t_1$. We need to prove that $\metasub{(\lambda_y.t_1)}{x}{u} =_\alpha \metasub{(\lambda_y.t_1)}{x}{u'}$.*)      
+    + apply aeq_refl. (** If $x = y$ then the result is trivial.*)
+    + destruct (atom_fresh (union (fv_nom u) (union (fv_nom (n_abs z t)) (singleton x)))). destruct (atom_fresh (union (fv_nom u') (union (fv_nom (n_abs z t)) (singleton x)))). case (x0 == x1). (** Suppose $x \neq y$. The metasubstitution will be propagated inside the abstraction on each side of the $\alpha$-equation, after generating a new name for each side. The new goal is then $\lambda_{x_0}.\metasub{(\swap{y}{x_0}{t_1})}{x}{u} =_\alpha \lambda_{x_1}.\metasub{(\swap{y}{x_1}{t_1})}{x}{u'}$, where $x_0 \notin fv(\lambda_y.t_1) \cup fv(u) \cup \{x\}$ and $x_1 \notin fv(\lambda_y.t_1) \cup fv(u') \cup \{x\}$. The variables $x_0$ and $x_1$ are either the same or different.*)
+      * intro Heq. subst. apply aeq_abs_same. (* aqui *) (** In the former case the result is trivial because $u =_\alpha u'$. *)
+      *
+
+      
 Axiom Eq_implies_equality: forall s s': atoms, s [=] s' -> s = s'.
 
 Lemma aeq_m_subst_in: forall t u u' x, u =a u' -> ([x := u] t) =a ([x := u'] t).
