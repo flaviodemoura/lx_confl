@@ -1729,7 +1729,7 @@ Proof.
       * apply aeq_refl.
       * apply notin_union_2 in Hfv. apply IHt1. assumption.
     + case (x0 == z).
-      * intro Heq. subst.  apply aeq_sub_same.
+      * intro Heq. subst. apply aeq_sub_same.
         ** apply aeq_trans with (swap z z t1). apply H.
            *** reflexivity.
            *** rewrite swap_id. apply notin_union_1 in Hfv. apply notin_remove_1 in Hfv. destruct Hfv.
@@ -1752,12 +1752,16 @@ Proof.
                     ***** symmetry in H0. contradiction.
                     ***** assumption.
 Qed.
-(** The proof is done by induction on the size of the term [t] using the [n_sexp_induction] principle. The interesting case is when $t = \lambda_y.t_1$ with $x \neq y$. So according to [subst_rec_fun], the variable $y$ will be renamed to a new name, say $z$, such that $z \notin fv(\lambda_y.t_1) \cup fv(u) \cup \{x\}$ and we have to prove that $\lambda_z.(\swap{z}{y}{t_1})\msub{x}{u} =_\alpha \lambda_y.t_1$. Since  $z \notin fv(\lambda_y.t_1) = fv(t_1)\backslash \{y\}$, there are two cases:
+(** The proof is done by induction on the size of the term [t] using the [n_sexp_induction] principle. One interesting case is when $t = \lambda_y.t_1$ with $x \neq y$, where we have to prove that $(\lambda_y.t_1)\msub{x}{u} =_\alpha \lambda_y.t_1$. The induction hypothesis express the fact that every term with the same size as the body of the abstraction $t_1$ satisfies the property to be proven:
+
+$\forall t'\ x\ y, |t'| = |t_1| \to \forall u\ x', x' \notin fv(\swap{x}{y}{t'}) \to (\swap{x}{y}{t'})\msub{x'}{u} =_\alpha \swap{x}{y}{t'}$.
+
+Therefore, according to the function [subst_rec_fun], the variable $y$ will be renamed to a new name, say $z$, such that $z \notin fv(\lambda_y.t_1) \cup fv(u) \cup \{x\}$, and we have to prove that $\lambda_z.(\swap{z}{y}{t_1})\msub{x}{u} =_\alpha \lambda_y.t_1$. Since $z \notin fv(\lambda_y.t_1) = fv(t_1)\backslash \{y\}$, there are two cases:
  %\begin{enumerate}
-   \item If $z = y$ then we are done by the induction hypothesis because the swap does nothing.
-\item If $z \neq y$ then, by the rule $\mbox{\it aeq}\_\mbox{\it abs}\_\mbox{\it diff}$, we have to prove that $(\swap{z}{y}{t_1})\msub{x}{u} =_\alpha \swap{z}{y}{t_1}$ which holds by the induction hypothesis.
+   \item $z = y$: In this case, we have to prove that $\lambda_z.(\swap{z}{z}{t_1})\msub{x}{u} =_\alpha \lambda_z.t_1$. By the rule $\mbox{\it aeq}\_\mbox{\it abs}\_\mbox{\it same}$ we get $(\swap{z}{z}{t_1})\msub{x}{u} =_\alpha t_1$, but in order to apply the induction hypothesis the body of the metasubstitution and the term in the right hand side need to be the same and both need to be a swap. For this reason, we use the transitivity of $\alpha$-equivalence with $\swap{z}{z}{t_1}$ as intermediate term. The first subcase is proved by the induction hypothesis, and the second one is proved by the reflexivity of $\alpha$-equivalence.
+\item $z \neq y$: In this case, we apply the rule $\mbox{\it aeq}\_\mbox{\it abs}\_\mbox{\it diff}$, and the new goal is $(\swap{z}{y}{t_1})\msub{x}{u} =_\alpha \swap{z}{y}{t_1}$ which holds by the induction hypothesis, since $|\swap{z}{y}{t_1}| = |t_1|$ and $x \notin fv(\swap{z}{y}{t_1})$ because $x \neq z$, $x \neq y$ and $x \notin fv(t)$.
   \end{enumerate}%
- The explcit substitution case is also interesting. (* aqui *)*)
+ The explicit substitution case is also interesting. (* aqui *) *)
 
 Lemma fv_nom_remove: forall t u x y, y `notin` fv_nom u -> y `notin` remove x (fv_nom t) ->  y `notin` fv_nom ([x := u] t).
 Proof. 
