@@ -16,14 +16,8 @@
 \usepackage{xcolor}
 \usepackage[color]{coqdoc}
 \usepackage{mathpartir}
-\usepackage{minibox}
-\usepackage{tabto,calc}
-\usepackage[most]{tcolorbox}
 
-\newtheorem{theorem}{Theorem}[section]
-\newtheorem{corollary}{Corollary}[theorem]
-\newtheorem{lemma}[theorem]{Lemma}
-\newtheorem{definition}[theorem]{Definition}
+\newtheorem{defn}{Definition}
 
 \newcommand{\vswap}[3]{(\!\!(#1\ #2)\!\!) #3}
 \newcommand{\swap}[3]{(#1\ #2) #3}
@@ -31,23 +25,17 @@
 \newcommand{\esub}[3]{#1 [ #2 / #3 ]}
 \newcommand{\metasub}[3]{#1 \{ #2 / #3 \}}
 
-
-\newtcolorbox{coqpbox}{colback=green!5!white,colframe=green!75!black}
-\newtcolorbox{coqtbox}{colback=blue!5!white,colframe=blue!75!black}
-\newtcolorbox{exbox}{colback=yellow!5!white,colframe=yellow!75!black}
-\newtcolorbox{excbox}{colback=magenta!5!white,colframe=blue!75!black}
-
 \title{A formalized extension of the substitution lemma in Coq}
 \author{Maria J. D. Lima
   \institute{Departamento de Ciência da Computação \\
     Universidade de Brasília, Brasília, Brazil}
-  \email{majuhdl@gmail.com} \and
+  \email{majuhdl@gmail.com}
+  \and
   Flávio L. C. de Moura
   \institute{Departamento de Ciência da Computação \\
     Universidade de Brasília, Brasília, Brazil}
-  \email{flaviomoura@unb.br}
-}
-\def\titlerunning{A formalized extension of the substitution lemma}
+  \email{flaviomoura@unb.br}}
+\def\titlerunning{A formalized substitution lemma}
 \def\authorrunning{Maria J. D. Lima \and Flávio L. C. de Moura}
 \begin{document}
 \maketitle
