@@ -1876,22 +1876,22 @@ Proof.
       * contradiction.
       * destruct (atom_fresh
        (union (fv_nom (swap y z' u))
-          (union (fv_nom (n_abs (swap_var y z' z) (swap y z' t))) (singleton (swap_var y z' x))))). case (x1 == (swap_var y z' x0)). (** Now we can propagate the metasubstitution over the abstraction in the right hand side term. Since $x\neq w$, we get $\vswap{y}{z}{x} \neq \vswap{y}{z}{w}$ and a renaming is necessary. After the renaming to a new name, say $w''$, such that $w'' \notin fv(\lambda_{\vswap{y}{z}{w}}.\swap{y}{z}{t_1}) \cup fv(\swap{y}{z}{u}) \cup \{\vswap{y}{z}{x}\}$, we get the following goal $\lambda_{\vswap{y}{z}{w'}}.\swap{y}{z}{(\metasub{\swap{w}{w'}{t_1}}{x}{u})} =_\alpha \lambda_{w''}.\metasub{(\swap{w''}{\vswap{y}{z}{w}}{(\swap{y}{z}{t_1})})}{\vswap{y}{z}{x}}{\swap{y}{z}{u}}$. We consider two cases: either $w'' = \vswap{y}{z}{w'}$ or $w'' \neq \vswap{y}{z}{w'}$.*)
-        ** intro Heq. subst. apply aeq_abs_same. unfold m_subst in *. apply aeq_sym. rewrite <- swap_equivariance. apply H. reflexivity. (** In the former case, we can apply the rule $\mbox{\it aeq}\_\mbox{\it abs}\_\mbox{\it same}$ and we get $\swap{y}{z}{(\metasub{(\swap{w}{w'}{t_1})}{x}{u})} =_\alpha \metasub{(\swap{w''}{\vswap{y}{z}{w}}{(\swap{y}{z}{t_1})})}{\vswap{y}{z}{x}}{\swap{y}{z}{u}}$, which can be prove by the induction hypothesis.*)
+          (union (fv_nom (n_abs (swap_var y z' z) (swap y z' t))) (singleton (swap_var y z' x))))). case (x1 == (swap_var y z' x0)). (** Now we propagate the metasubstitution over the abstraction in the right hand side term. Since $x\neq w$, we get $\vswap{y}{z}{x} \neq \vswap{y}{z}{w}$ and a renaming is necessary. After the renaming to a new name, say $w''$, such that $w'' \notin fv(\lambda_{\vswap{y}{z}{w}}.\swap{y}{z}{t_1}) \cup fv(\swap{y}{z}{u}) \cup \{\vswap{y}{z}{x}\}$, we get the following goal $\lambda_{\vswap{y}{z}{w'}}.\swap{y}{z}{(\metasub{\swap{w}{w'}{t_1}}{x}{u})} =_\alpha \lambda_{w''}.\metasub{(\swap{w''}{\vswap{y}{z}{w}}{(\swap{y}{z}{t_1})})}{\vswap{y}{z}{x}}{\swap{y}{z}{u}}$. We consider two cases: either $w'' = \vswap{y}{z}{w'}$ or $w'' \neq \vswap{y}{z}{w'}$.*) 
+        ** intro Heq. subst. apply aeq_abs_same. unfold m_subst in *. apply aeq_sym. rewrite <- swap_equivariance. apply H. reflexivity. 
         ** intro Hneq. apply aeq_abs_diff.
            *** assumption.
            *** admit.
-           *** (* aqui *)apply aeq_sym. unfold m_subst in H. apply aeq_trans with (swap (swap_var y z' x0) x1 (subst_rec_fun (swap y z' (swap z x0 t)) (swap y z' u) (swap_var y z' x))).
+           *** apply aeq_sym. unfold m_subst in H. apply aeq_trans with (swap (swap_var y z' x0) x1 (subst_rec_fun (swap y z' (swap z x0 t)) (swap y z' u) (swap_var y z' x))). (** In the former case, we can apply the rule $\mbox{\it aeq}\_\mbox{\it abs}\_\mbox{\it same}$ and we get $\swap{y}{z}{(\metasub{(\swap{w}{w'}{t_1})}{x}{u})} =_\alpha \metasub{(\swap{w''}{\vswap{y}{z}{w}}{(\swap{y}{z}{t_1})})}{\vswap{y}{z}{x}}{\swap{y}{z}{u}}$ that can be proved by the induction hypothesis.*)
                **** apply aeq_swap. rewrite H.
-                    ***** apply aeq_refl. (** When $w'' \neq \vswap{y}{z}{w'}$, the application of the rule $\mbox{\it aeq}\_\mbox{\it abs}\_\mbox{\it diff}$ generates the goal  *)
+                    ***** apply aeq_refl. Abort. (** When $w'' \neq \vswap{y}{z}{w'}$, the application of the rule $\mbox{\it aeq}\_\mbox{\it abs}\_\mbox{\it diff}$ generates the goal $\swap{w''}{\vswap{y}{z}{w'}}{\swap{y}{z}{(\metasub{\swap{w}{w'}{t_1}}{x}{u})}} =_\alpha \metasub{(\swap{w''}{\vswap{y}{z}{w}}{(\swap{y}{z}{t_1})})}{\vswap{y}{z}{x}}{\swap{y}{z}{u}}$. We can use the induction hypothesis to propagate the swap inside the metasubstitution, and then we get an $\alpha$-equality with metasubstitution as main operation on both sides, and whose correspondent components are $\alpha$-equivalent. In a more abstract way, we have to prove an $\alpha$-equality of the form $\metasub{t}{x}{u} =_\alpha \metasub{t'}{x}{u'}$, where $t =_\alpha t'$ and $u =_\alpha u'$. The problem is that we cannot rewrite $\alpha$-equalities inside metasubstitution unless we prove some special lemmas stating the compatibilities between them using the [Equations] library or something similar. Alternatively, if we decide to analise the metasubtitution componentwise, %{\it i.e.}% as stated in a lemma similar to [aeq_m_subst_in_trial], we get a circular proof problem because both [aeq_m_subst_in_trial] and [swap_m_subst] depend on each other to be proved. We will present a solution that do not use any additional library, but it adds the following axiom to the formalization:*)
                   
-
-
 Axiom Eq_implies_equality: forall s s': atoms, s [=] s' -> s = s'.
+
+(** This axiom transform a set equality into a syntactic equality. This will allow us to rewrite sets of atoms in a more flexible way. To show how it works, we will start proving the lemma [aeq_m_subst_in] without the need of the lemma [swap_m_subst]:*)
 
 Lemma aeq_m_subst_in: forall t u u' x, u =a u' -> ([x := u] t) =a ([x := u'] t).
 Proof.
-  induction t using n_sexp_induction.
+  induction t using n_sexp_induction. (** As before, the proof is by induction on the size of the term [t].*) (* aqui *)
   - intros u u' x' Haeq. pose proof Haeq as Hfv. apply aeq_fv_nom in Hfv. apply Eq_implies_equality in Hfv. unfold m_subst in *. repeat rewrite subst_rec_fun_equation. destruct (x' == x).
     + assumption.
     + reflexivity.
