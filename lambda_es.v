@@ -317,7 +317,9 @@ Lemma shuffle_swap' : forall w y n z,
 Proof.
   induction n; intros; simpl; unfold swap_var; default_simp.
 Qed.
+(* end hide *)
 
+(** Equivariance is an important property of swap:*)
 Lemma swap_var_equivariance : forall v x y z w,
     swap_var x y (swap_var z w v) =
     swap_var (swap_var x y z) (swap_var x y w) (swap_var x y v).
@@ -348,7 +350,7 @@ Proof.
   - intros. simpl. rewrite IHt1. rewrite IHt2. unfold swap_var.
     default_simp.    
 Qed.
-
+(* begin hide *)
 Lemma fv_nom_swap : forall z y t,
   z `notin` fv_nom t ->
   y `notin` fv_nom (swap y z t).
@@ -1306,7 +1308,8 @@ $\metasub{t}{x}{u} = \left\{
 %\noindent% where it is assumed the so called "Barendregt's variable convention": if $t_1, t_2, \ldots, t_n$ occur in a certain mathematical context (e.g. definition, proof), then in these terms all bound variables are chosen to be different from the free variables. This means that we are assumming that both $x \neq y$ and $y\notin fv(u)$ in the case $t = \lambda_y.t_1$. This approach is very convenient in informal proofs because it avoids having to rename bound variables. In order to formalize the capture free substitution of the $\lambda$-calculus, %{\it i.e.}% the metasubstitution, a renaming is performed whenever it is propagated inside a binder. In our case, there are two binders: the abstraction and the explicit substitution. 
 
 Let $t$ and $u$ be terms, and $x$ a variable. The result of substituting $u$ for the free ocurrences of $x$ in $t$, written $t\msub{x}{u}$ is defined as follows:%\newline%
-$\metasub{t}{x}{u} = \left\{
+%\begin{equation}\label{msubst}
+\metasub{t}{x}{u} = \left\{
  \begin{array}{ll}
   u, & \mbox{ if } t = x; \\
   y, & \mbox{ if } t = y \mbox{ and } x \neq y; \\
@@ -1315,7 +1318,8 @@ $\metasub{t}{x}{u} = \left\{
   \lambda_z.(\metasub{(\swap{y}{z}{t_1})}{x}{u}), & \mbox{ if } t = \lambda_y.t_1, x \neq y \mbox{ and } z\notin fv(\lambda_y.t_1)\cup fv(u) \cup \{x\}; \\
   \esub{t_1}{x}{\metasub{t_2}{x}{u}}, & \mbox{ if } t = \esub{t_1}{x}{t_2}; \\
   \esub{\metasub{(\swap{y}{z}{t_1})}{x}{u}}{z}{\metasub{t_2}{x}{u}}, & \mbox{ if } t = \esub{t_1}{y}{t_2}, x \neq y \mbox{ and } z\notin fv(\esub{t_1}{y}{t_2})\cup fv(u) \cup \{x\}.
- \end{array}\right.$
+ \end{array}\right.
+\end{equation}%
 
 Note that this function is not structurally recursive due to the swaps in the recursive calls. A structurally recursive version of the function [subst_rec_fun] can be found in the file [nominal.v] of the [Metalib] library%\footnote{\url{https://github.com/plclub/metalib}}%, but it uses the size of the term in which the substitution will be performed as an extra argument that decreases with each recursive call. We write [[x:=u]t] instead of [subst_rec_fun t u x] in the Coq code to represent $\metasub{t}{x}{u}$. The corresponding Coq code is as follows: *)
 
@@ -1965,7 +1969,7 @@ Proof.
   - intros t u x Haeq. inversion Haeq; subst. clear Haeq. unfold m_subst in *. rewrite subst_rec_fun_equation. apply aeq_sym. rewrite subst_rec_fun_equation. apply aeq_app.
     + apply aeq_sym. apply IHt2. assumption.
     + apply aeq_sym. apply IHt1. assumption.
-  - intros t u x Haeq. inversion Haeq; subst.
+  - intros t u x Haeq. inversion Haeq; subst. (** The explicit substitution operation is also interesting, but the proof strategy is similar to the one used in the abstraction case. $\hfill\Box$*)
     + unfold m_subst in *. rewrite subst_rec_fun_equation. apply aeq_sym. rewrite subst_rec_fun_equation. apply aeq_fv_nom in Haeq. apply Eq_implies_equality in Haeq. rewrite Haeq. destruct (atom_fresh (union (fv_nom u) (union (fv_nom (n_sub t1' t2 t2')) (singleton x)))). simpl in *. destruct (x == t2).
       * apply aeq_sub_same.
         ** apply aeq_sym. assumption.
@@ -2028,7 +2032,9 @@ Proof.
                     ****** assumption.
            *** apply aeq_sym. apply IHt1. assumption.
 Qed.
-          
+
+(** As a corollary, one can join the lemmas [aeq_m_subst_in] and [aeq_m_subst_out] as follows:*)
+
 Corollary aeq_m_subst_eq: forall t t' u u' x, t =a t' -> u =a u' -> ([x := u] t) =a ([x := u'] t').
 Proof.
   intros t t' u u' x H1 H2. apply aeq_trans with ([x:=u]t').
@@ -2036,34 +2042,32 @@ Proof.
   - apply aeq_m_subst_in. assumption.
 Qed.
 
-(** The following lemma states that a swap can be propagated inside the metasubstitution resulting in an $\alpha$-equivalent term. *)
+(** Now, we show how to propagated a swap inside metasubstitutions using the decomposition of the metasubstitution provided by the corollary [aeq_m_subst_eq].%\newline% *)
 
 Lemma swap_subst_rec_fun: forall x y z t u, swap x y (subst_rec_fun t u z) =a subst_rec_fun (swap x y t) (swap x y u) (swap_var x y z).
 Proof.
-
-  (** Firstly, we compare [x] and [y] which gives a trivial case when they are the same. *)
+  (** %\noindent{\bf Proof.}% Firstly, we compare [x] and [y], since the case [x = y] is trivial.*)
   intros x y z t u. destruct (x == y). 
   - subst. repeat rewrite swap_id. rewrite swap_var_id. apply aeq_refl.
-    (** In this way, we can assume in the rest of the proof that [x] and [y] are different from each other. The proof proceeds by induction on the size of the term [t]. The tricky case is the abstraction and substitution cases. *)
-  - generalize dependent u. generalize dependent z. generalize dependent y. generalize dependent x.
-    induction t using n_sexp_induction.
-    
-    + intros x' y Hneq z u. rewrite subst_rec_fun_equation. destruct (z == x).
+    (** The proof proceeds by induction on the size of the term [t], assuming that [x <> y]. The tricky cases are the abstraction and explicit substitution.*)
+  - generalize dependent u. generalize dependent z. generalize dependent y. generalize dependent x. induction t as  [y | t1 y | t1 t2 | t1 y t2] using n_sexp_induction.    
+    + intros x' y' Hneq z u. rewrite subst_rec_fun_equation. destruct (z == y).
       * subst. simpl swap at 2. rewrite subst_rec_fun_equation. rewrite eq_dec_refl. apply aeq_refl.
-      * pose proof swap_neq as Hswap. specialize (Hswap x' y z x). apply Hswap in n; clear Hswap.
-        simpl swap at 2. rewrite subst_rec_fun_equation. destruct (swap_var x' y z == swap_var x' y x).
+      * pose proof n as Hswap. apply (swap_neq x' y') in n. simpl swap at 2. rewrite subst_rec_fun_equation. destruct (swap_var x' y' z == swap_var x' y' y).
         ** contradiction.
         ** simpl swap. apply aeq_refl.
-    + intros x y Hneq z' u. rewrite subst_rec_fun_equation. case (z' == z).
-      * intro Heq. subst. simpl. rewrite subst_rec_fun_equation. rewrite eq_dec_refl. apply aeq_refl.
-      * intro Hneq'. simpl in *. rewrite subst_rec_fun_equation. destruct (swap_var x y z' == swap_var x y z).
-        ** apply (swap_neq x y) in Hneq'. contradiction.
-        ** simpl. destruct (atom_fresh (union (fv_nom u) (union (remove z (fv_nom t)) (singleton z')))). destruct (atom_fresh (union (fv_nom (swap x y u)) (union (remove (swap_var x y z) (fv_nom (swap x y t))) (singleton (swap_var x y z'))))). simpl. apply aeq_trans with (n_abs (swap_var x y x0) (subst_rec_fun (swap x y (swap z x0 t)) (swap x y u) (swap_var x y z'))).
-           *** apply aeq_abs_same. apply H. 
-               **** reflexivity.
-               **** assumption.
-           *** case (x1 == swap_var x y x0). 
-               **** intro Heq. subst. apply aeq_abs_same. apply aeq_m_subst_out. rewrite swap_equivariance. apply aeq_refl.
+    + intros x y' Hneq z u. simpl. case (y == z). (** In the abstraction case, %{\it i.e.}% when $t = \lambda_{y'}.t_1$ then we must prove that [swap x y ([z := u](n_abs y' t1)) =a [(swap_var x y z) := (swap x y u)](swap x y (n_abs y' t1))], and the induction hypothesis states that a swap can be propagated inside a metasubstitution whose body is a term with the same size as [t1]. Firstly, we compare the variables [y'] and [z] to check whether we should propagate the metasubstitution inside the abstraction of the LHS. *)
+      * intro Heq. subst. repeat rewrite subst_rec_fun_equation. repeat rewrite eq_dec_refl. simpl. apply aeq_refl. (** When [y' = z] the metasubstitution is erased according to the definition %(\ref{msubst})% on both sides of the $\alpha$-equation and we are done.*)
+      * intro Hneq'. repeat rewrite subst_rec_fun_equation. destruct (z == y). (** When [y' <> z] then the metasubstitutions on both sides of the $\alpha$-equation need to be propagated inside the corresponding abstractions. In order to do so, a new name need to be created. Note that in this case, it is not possible to create a unique name for both sides because the name of the LHS cannot belong to the set $fv(\lambda_y'.t_1) \cup fv(u) \cup \{z\}$, while the name of the RHS cannot belong to the set $fv(\swap{x}{y}{\lambda_y'.t_1}) \cup fv(\swap{x}{y}{u}) \cup \{\vswap{x}{y}{z}\}$.*)
+        ** symmetry in e. contradiction.
+        ** destruct (swap_var x y' z == swap_var x y' y).
+           *** apply (swap_neq x y') in n. contradiction.
+           *** simpl. destruct (atom_fresh (union (fv_nom u) (union (remove y (fv_nom t1)) (singleton z)))). destruct (atom_fresh (union (fv_nom (swap x y' u)) (union (remove (swap_var x y' y) (fv_nom (swap x y' t1))) (singleton (swap_var x y' z))))). simpl. case (x1 == swap_var x y' x0). (** Let [x0] be a new name that is not in the set $fv(\lambda_y'.t_1) \cup fv(u) \cup \{z\}$, and [x1] a new name that is not in the set $fv(\swap{x}{y}{\lambda_y'.t_1}) \cup fv(\swap{x}{y}{u}) \cup \{\vswap{x}{y}{z}\}$. After renaming and propagating the metasubstitutions inside the abstractions, the current goal is [n_abs (swap_var x y x0) (swap x y ([z := u](swap y' x0 t1))) =a n_abs x1 ([(swap_var x y z) := (swap x y u)](swap (swap_var x y y') x1 (swap x y t1)))]. We proceed by comparing [x1] with [(swap_var x y x0)].*)
+               **** intro Heq. subst. apply aeq_abs_same. rewrite H. rewrite <- swap_equivariance. apply aeq_refl. (** If [x1 = (swap_var x y x0)] then we use the induction hypothesis to propagate the swap inside the metasubstitution in the LHS and the current goal is [[(swap_var x y z) := (swap x y u)](swap x y (swap y' x0 t1)) =a
+  [(swap_var x y z) := (swap x y u)](swap (swap_var x y y') (swap_var x y x0) (swap x y t1))] that is proved by the swap equivariance lemma [swap_equivariance].*)
+               ***** reflexivity.
+               ***** assumption.
+               **** intro Heq''. subst. apply aeq_abs_same. apply aeq_m_subst_out. rewrite swap_equivariance. apply aeq_refl.
                **** intro Hneq''. rewrite (swap_equivariance _ x y z x0). apply aeq_abs_diff. 
                     ***** apply aux_not_equal. assumption.
                     ***** apply fv_nom_remove.
