@@ -1951,8 +1951,7 @@ Proof.
                **** apply m_subst_notin. simpl. apply notin_remove_2. assumption.
                **** apply aeq_abs_diff; assumption. (** When [y0 = x] then the metasubstitution has no effect on the abstraction of the RHS. On the LHS the metasubstitution is propagated since [y <> x] but, as in the previous case, it has no effect in [t1] because [y0] does not occur free in [t1].*)
            *** apply aux_not_equal. assumption.
-        ** intro Hneq'. (** Now we have to prove that [[x := u](n_abs y t1) =a [x := u](n_abs y0 t2)], when [y <> x], [y0 <> x] and [n_abs y t1 =a n_abs y0 t2].*) (* aqui *) 
- Since the set of free variables of [n_abs y t1] is equal to the set of free variables of [n_abs y0 t2], we can as in the previous case generate only one new name that fulfill the condition to propagate the metasubstitution on both sides of the $\alpha$-equation. *)
+        ** intro Hneq'. repeat rewrite subst_rec_fun_equation. simpl. rewrite Hfv. destruct (atom_fresh (union (fv_nom u) (union (remove y0 (fv_nom t2)) (singleton x)))). (** Now we have to prove that [[x := u](n_abs y t1) =a [x := u](n_abs y0 t2)], when [y <> x], [y0 <> x] and [n_abs y t1 =a n_abs y0 t2]. Since the set of free variables of [n_abs y t1] is equal to the set of free variables of [n_abs y0 t2], we can as in the previous case generate only one new name that fulfill the condition to propagate the metasubstitution on both sides of the $\alpha$-equation. *)
       * subst. destruct (y0 == y). (** Call [x0] this new name. Therefore, we need to prove  *)
         ** symmetry in e. contradiction.
         ** rewrite <- Haeq. pose proof n as Hnotin. repeat apply notin_union_2 in n. apply notin_singleton_1 in n. case (y == x0).
