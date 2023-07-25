@@ -1946,7 +1946,12 @@ Proof.
                     ******* rewrite (swap_symmetric _ y0 x0). rewrite swap_involutive. apply aeq_refl.
            *** apply aeq_abs_same. apply aeq_sym. apply m_subst_notin. repeat apply notin_union_2 in n0. apply notin_singleton_1 in n0. apply fv_nom_remove_swap; assumption. 
       * intro Hneq. case (y0 == x). (** If [y <> x] then the metasubstitution can be propagated over the abstraction of the LHS, and similarly we compare [x] with [y0] to see what happens in the RHS. *)
-        ** intro Heq. (* aqui *) subst. (** When [y0 = x] then the metasubstitution has no effect on the abstraction of the RHS. On thr LHS *) (** When the binders have different names, the goal is [([x := u] (n_abs y t1)) =a ([x := u](n_abs y0 t2))], where [y <> y0] and [n_abs y t1 =a n_abs y0 t2] by hipothesis. Therefore, in order to propagate the metasubstitution [[x := u]] over both abstractions, we need first to compare [x] with both [y] and [y0].*) 
+        ** intro Heq. apply aeq_sym in Haeq. apply aeq_abs_notin in Haeq.
+           *** symmetry in Heq. subst. apply aeq_sym. rewrite subst_rec_fun_equation. rewrite eq_dec_refl. apply aeq_sym. apply aeq_trans with (n_abs y t1).
+               **** apply m_subst_notin. simpl. apply notin_remove_2. assumption.
+               **** apply aeq_abs_diff; assumption. (** When [y0 = x] then the metasubstitution has no effect on the abstraction of the RHS. On the LHS the metasubstitution is propagated since [y <> x] but, as in the previous case, it has no effect in [t1] because [y0] does not occur free in [t1].*)
+           *** apply aux_not_equal. assumption.
+        ** intro Hneq'. (** Now we have to prove that [[x := u](n_abs y t1) =a [x := u](n_abs y0 t2)], when [y <> x], [y0 <> x] and [n_abs y t1 =a n_abs y0 t2].*) (* aqui *) 
  Since the set of free variables of [n_abs y t1] is equal to the set of free variables of [n_abs y0 t2], we can as in the previous case generate only one new name that fulfill the condition to propagate the metasubstitution on both sides of the $\alpha$-equation. *)
       * subst. destruct (y0 == y). (** Call [x0] this new name. Therefore, we need to prove  *)
         ** symmetry in e. contradiction.
