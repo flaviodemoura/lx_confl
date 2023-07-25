@@ -163,6 +163,8 @@ In the context of the $\lambda$-calculus with explicit substitutions its formali
 - constructive logic
 - contributions
 - challenges
+- body of abstraction and (meta)substitution
+- the comments can be found along with the corresponding proof steps
 *)
 
 (** * A syntactic extension of the $\lambda$-calculus *)
@@ -2049,8 +2051,8 @@ Proof.
   (** %\noindent{\bf Proof.}% Firstly, we compare [x] and [y], since the case [x = y] is trivial.*)
   intros x y z t u. destruct (x == y). 
   - subst. repeat rewrite swap_id. rewrite swap_var_id. apply aeq_refl.
-    (** The proof proceeds by induction on the size of the term [t], assuming that [x <> y]. The tricky cases are the abstraction and explicit substitution.*)
-  - generalize dependent u. generalize dependent z. generalize dependent y. generalize dependent x. induction t as  [y | t1 y | t1 t2 | t1 y t2] using n_sexp_induction.    
+    (** The proof proceeds by induction on the size of the term [t], assuming that [x <> y]. The tricky cases are the abstraction and explicit substitution. *)
+  - generalize dependent u. generalize dependent z. generalize dependent y. generalize dependent x. induction t as  [y | t1 y | t1 t2 | t1 t2 y] using n_sexp_induction.    
     + intros x' y' Hneq z u. rewrite subst_rec_fun_equation. destruct (z == y).
       * subst. simpl swap at 2. rewrite subst_rec_fun_equation. rewrite eq_dec_refl. apply aeq_refl.
       * pose proof n as Hswap. apply (swap_neq x' y') in n. simpl swap at 2. rewrite subst_rec_fun_equation. destruct (swap_var x' y' z == swap_var x' y' y).
@@ -2112,12 +2114,39 @@ Proof.
     + intros x y H z u. rewrite subst_rec_fun_equation. simpl. apply aeq_sym. rewrite subst_rec_fun_equation. apply aeq_sym. apply aeq_app.
       * apply IHt2. assumption.
       * apply IHt1. assumption.
-    + intros x y Hneq z' u. simpl. rewrite subst_rec_fun_equation. destruct (z' == z).
-      * subst. simpl. apply aeq_sym. rewrite subst_rec_fun_equation. rewrite eq_dec_refl. apply aeq_sub_same.
+    + intros x y' Hneq z u. simpl. case (y == z). (** The case of the explicit substitution follows a similar strategy of the abstraction. The initial goal is to prove that [swap x y ([z := u](n_sub t1 y' t2)) =a [(swap_var x y z) := (swap x y u)](swap x y (n_sub t1 y' t2))] and we start comparing the variables [y'] and [z].*)
+      * intro Heq. subst. rewrite subst_rec_fun_equation. apply aeq_sym. rewrite subst_rec_fun_equation. repeat rewrite eq_dec_refl. simpl. apply aeq_sub_same. (** When [y' = z], the metasubstitution has no effect on the body of the metasubstitution but it can still be propagated to the term [t2]. Therefore, this case is proved using the induction hypothesis over [t2]. *)
         ** apply aeq_refl.
         ** apply aeq_sym. apply IHt1. assumption.
-      * destruct (atom_fresh (union (fv_nom u) (union (fv_nom (n_sub t1 z t2)) (singleton z')))). simpl in *. apply aeq_sym. rewrite subst_rec_fun_equation. destruct (swap_var x y z' == swap_var x y z).
-        ** apply (swap_neq x y) in n. contradiction.
+      * intro Hneq'. rewrite subst_rec_fun_equation. apply aeq_sym. rewrite subst_rec_fun_equation. destruct (z == y).
+        ** symmetry in e. contradiction.
+        ** destruct (swap_var x y' z == swap_var x y' y).
+           *** apply (swap_neq x y') in n. contradiction.
+           *** destruct (atom_fresh (union (fv_nom u) (union (fv_nom (n_sub t1 y t2)) (singleton z)))). destruct (atom_fresh (union (fv_nom (swap x y' u)) (union (fv_nom (n_sub (swap x y' t1) (swap_var x y' y) (swap x y' t2))) (singleton (swap_var x y' z))))). simpl in *. apply aeq_sym. case (x1 == swap_var x y' x0). (** When [y' <> z], then the metasubstitutions are propagated on both sides of the $\alpha$-equation. Analogously to the abstraction case, one new name for each propagation is necessary. Let [x0] be a new name not in the set $fv(\esub{t1}{y'}{t2})\cup fv(u) \cup \{z\}$, and [x1], a new name not in the set $fv(\esub{\swap{x}{y}{t1}}{\vswap{x}{y}{y'}}{\swap{x}{y}{t2}})\cup fv(\swap{x}{y}{u}) \cup \{\vswap{x}{y}{z}\}$. After the propagation step, we have the goal [n_sub (swap x y ([z := u](swap y' x0 t1))) (swap_var x y x0) (swap x y ([z := u]t2)) =a
+  n_sub ([(swap_var x y z) := (swap x y u)](swap (swap_var x y y') x1 (swap x y t1))) x1
+    ([(swap_var x y z) := (swap x y u)](swap x y t2))]. We proceed by comparing [x1] and [(swap x y x0)].*)
+               **** intro Heq. subst. apply aeq_sub_same. (** If [x1 = swap_var x y x0] then after an application of the rule [aeq_sub_same], each component of the explicit substitution is proved by the induction hypothesis.*)
+                    ***** rewrite <- swap_equivariance. apply H.
+                    ****** reflexivity.
+                    ****** assumption.
+                    ***** apply IHt1. assumption.
+               **** intro Hneq''. apply aeq_sub_diff.
+                    ***** apply IHt1. assumption. (** If [x1 <> swap_var x y x0] then we apply the rule [aeq_sub_diff] to decompose the explicit substitution in its components. The second component is straightforward  by the induction hypothesis.*)
+                    ***** apply aux_not_equal. assumption.
+                    ***** apply fv_nom_remove.
+                    ****** apply notin_fv_nom_equivariance. apply notin_union_1 in n1. assumption.
+                    ****** apply notin_remove_2. case (y == x0).
+                    ******* intro Heq. subst. apply fv_nom_swap. apply notin_union_2 in n2. apply notin_union_1 in n2. apply notin_union_1 in n2. apply notin_remove_1 in n2. destruct n2.
+                    ******** symmetry in H0. contradiction.
+                    ******** assumption.
+                    ******* intro Hneq'''. apply fv_nom_remove_swap.
+                    ******** apply aux_not_equal. assumption.
+                    ******** apply (swap_neq x y') in Hneq'''. apply aux_not_equal. assumption.
+                    ******** apply notin_fv_nom_equivariance. apply notin_union_2 in n1. apply notin_union_1 in n1. apply notin_union_1 in n1. apply notin_remove_1 in n1. destruct n1.
+                    ********* contradiction.
+                    ********* assumption.
+                    ***** rewrite H. (** The first component follows the strategy used in the abstraction case. The current goal, obtained after the application of the rule [aeq_sub_diff] is [swap x y ([z := u](swap y' x0 t1)) =a
+  swap x1 (swap_var x y x0) ([(swap_var x y z) := (swap x y u)](swap (swap_var x y y') x1 (swap x y t1)))]. The induction hypothesis is used twice to propagate the swap both on the LHS and RHS of the $\alpha$-equality. (* aqui*) *)
         ** destruct (atom_fresh (union (fv_nom (swap x y u)) (union (fv_nom (n_sub (swap x y t1) (swap_var x y z) (swap x y t2))) (singleton (swap_var x y z'))))). case (x1 == (swap_var x y x0)).
            *** intro Heq. subst. apply aeq_sub_same.
                **** apply aeq_sym. rewrite <- swap_equivariance. apply H.
@@ -2180,7 +2209,6 @@ Proof.
 Qed.
 
 (* begin hide *)
-
 Lemma m_subst_abs: forall t1 u x y, [x := u](n_abs y t1)  =a
        if (x == y) then (n_abs y t1)
        else let (z,_) := atom_fresh (fv_nom u `union` fv_nom (n_abs y t1) `union` {{x}}) in n_abs z (subst_rec_fun (swap y z t1) u x).
@@ -2245,7 +2273,6 @@ Proof.
 Qed.
 
 (* begin hide *)
-
 Lemma m_subst_sub: forall t1 t2 u x y, [x := u](n_sub t1 y t2)  =a
        if (x == y) then (n_sub t1 y ([x := u]t2))
        else let (z,_) := atom_fresh (fv_nom u `union` fv_nom (n_sub t1 y t2) `union` {{x}}) in
@@ -2257,7 +2284,6 @@ Proof.
     + simpl. contradiction.
     + simpl. destruct (atom_fresh (union (fv_nom u) (union (fv_nom (n_sub t1 y t2)) (singleton x)))). apply aeq_refl.
 Qed.
-
 (* end hide *)
 
 (** The following lemmas state, respectively, what hapens when the variable in the meta-substitution is equal or different from the one in the explicit substitution. When it is equal, the meta-substitution is irrelevant on [t1], but it is applied to [e2]. When they are different, we take a new variable that does not occur freely in the substituted term in the meta-substitution nor in the substitution and is not the variable in the meta-substitution, and the explicit substitution of this new variable using the meta-substitution of the swap of the former variable in the meta-substitution in [e11] and the application of the original meta_substitution in [e12] is alpha-equivalent to the original meta-substitution of the explicit substitution. **)
@@ -2313,10 +2339,7 @@ Qed.
  
 (** * The substitution lemma for the metasubstitution *)
 
-(**
-   In the pure $\lambda$-calculus, the substitution lemma is probably the first non trivial property. In our framework, we have defined two different substitution operation, namely, the metasubstitution denoted by [[x:=u]t] and the explicit substitution that has [n_sub] as a constructor. In what follows, we present the main steps of our proof of the substitution lemma for the metasubstitution operation: 
- *)
-
+(** In the pure $\lambda$-calculus, the substitution lemma is probably the first non trivial property. In our framework, we have defined two different substitution operation, namely, the metasubstitution denoted by [[x:=u]t] and the explicit substitution that has [n_sub] as a constructor. In what follows, we present the main steps of our proof of the substitution lemma for the metasubstitution operation: *)
 
 Lemma m_subst_lemma: forall e1 e2 x e3 y, x <> y -> x `notin` (fv_nom e3) -> ([y := e3]([x := e2]e1)) =a ([x := ([y := e3]e2)]([y := e3]e1)).
 Proof.
