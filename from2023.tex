@@ -10,12 +10,9 @@
   \usepackage{breakurl}           % Not needed if you use pdflatex only.
 \fi
 
-\usepackage[utf8]{inputenc}
-\usepackage{babel}
-\usepackage{amsmath,amsfonts}
-\usepackage{xcolor}
 \usepackage[color]{coqdoc}
 \usepackage{mathpartir}
+\usepackage{tcolorbox}
 
 \newtheorem{defn}{Definition}
 
@@ -35,13 +32,13 @@
   \institute{Departamento de Ciência da Computação \\
     Universidade de Brasília, Brasília, Brazil}
   \email{flaviomoura@unb.br}}
-\def\titlerunning{A formalized substitution lemma}
-\def\authorrunning{Maria J. D. Lima \and Flávio L. C. de Moura}
+\def\titlerunning{A formalized substitution lemma with explicit substitutions}
+\def\authorrunning{M. J. D. Lima \& F. L. C. de Moura}
 \begin{document}
 \maketitle
 
 \begin{abstract}
-  The substitution lemma is a renowned theorem within the realm of $\lambda$-calculus theory and concerns the interactional behavior of the metasubstitution operation. In this work, we augment the $\lambda$-calculus's grammar with an uninterpreted explicit substitution operation. Our primary contribution lies in verifying that, despite these modifications, the substitution lemma continues to remain valid. This confirmation was achieved using the Coq proof assistant. Our formalization methodology employs a nominal approach, which provides a remarkably direct implementation of the $\alpha$-equivalence concept. Despite this simplicity, the strategy involved in variable renaming within the proofs presents a substantial challenge, ensuring a comprehensive exploration of the implications of our extension to the grammar of the $\lambda$-calculus.
+  The substitution lemma is a renowned theorem within the realm of $\lambda$-calculus theory and concerns the interactional behaviour of the metasubstitution operation. In this work, we augment the $\lambda$-calculus's grammar with an uninterpreted explicit substitution operation, which allows the use of our framework for different calculi with explicit substitutions. Our primary contribution lies in verifying that, despite these modifications, the substitution lemma continues to remain valid. This confirmation was achieved using the Coq proof assistant. Our formalization methodology employs a nominal approach, which provides a remarkably direct implementation of the $\alpha$-equivalence concept. Despite this simplicity, the strategy involved in variable renaming within the proofs presents a substantial challenge, ensuring a comprehensive exploration of the implications of our extension to the grammar of the $\lambda$-calculus.
 \end{abstract}
 
 

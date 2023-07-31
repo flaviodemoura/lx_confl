@@ -20,37 +20,11 @@ Proof.
     apply lt_le_trans with m; assumption.
 Qed.
 
-(* não utilizado
-Lemma in_or_notin: forall x s, x `in` s \/ x `notin` s.
-Proof.
-  intros. pose proof notin_diff_1. specialize (H x s s).
-  rewrite AtomSetProperties.diff_subset_equal in H.
-  - apply or_comm. apply H.
-    apply notin_empty_1.
-  - reflexivity.
-Qed. 
-
-Lemma remove_singleton_neq: forall x y,
-    x <> y -> remove y (singleton x) [=] singleton x.
-Proof.
-  intros. 
-  pose proof notin_singleton_2. specialize (H0 x y).
-  apply H0 in H.
-  apply AtomSetProperties.remove_equal in H. assumption.
-Qed. *)
-
 Lemma diff_remove_2: forall x y s,
   x <> y -> x `notin` remove y s -> x `notin` s.
 Proof.
   intros. default_simp.
 Qed. 
-
-(* não utilizado
-Lemma diff_equal: forall s s' t,
-    s [=] s' -> AtomSetImpl.diff s t [=] AtomSetImpl.diff s' t.
-Proof.
-intros. rewrite H. reflexivity.
-Qed. *)
 
 Lemma aux_not_equal : forall (x:atom) (y:atom),
     x <> y -> y <> x.
@@ -61,17 +35,6 @@ Proof.
   }
   contradiction.
 Qed.
-
-(* não utilizado 
-Lemma Sn_le_Sm__n_le_m : forall n m,
-  S n <= S m -> n <= m.
-Proof.
-  intros n m H. inversion H.
-  - apply le_n.
-  - apply (le_trans n (S n) m).
-    -- apply le_S. reflexivity.
-    -- assumption.
-Qed. *)
 
 Lemma remove_singleton_empty: forall x,
     remove x (singleton x) [=] empty.
@@ -153,19 +116,24 @@ Qed.
 
 (** * Introduction *)
 
-(* TBD  In this work, we present a formalization of an extension of the substitution lemma%\cite{barendregtLambdaCalculusIts1984}% with an explicit substitution operator in the Coq proof assistant%\cite{teamCoqProofAssistant2021}%. The substitution lemma is an important result concerning the composition of the substitution operation, and is usually presented as follows: if $x$ does not occur in the set of free variables of the term $v$ then $t\msub{x}{u}\msub{y}{v} =_\alpha t\msub{y}{v}\msub{x}{u\msub{y}{v}}$. This is a well known result already formalized several times in the context of the $\lambda$-calculus %\cite{berghoferHeadtoHeadComparisonBruijn2007}%.
+(** In this work, we present a formalization of the substitution lemma%\cite{barendregtLambdaCalculusIts1984}% in a general framework that extends the $\lambda$-calculus with an explicit substitution operator. The formalization is done in the Coq proof assistant%\cite{teamCoqProofAssistant2021}% and the source code is available at: %\vspace{0.25cm}%
 
-In the context of the $\lambda$-calculus with explicit substitutions its formalization is not straightforward because, in addition to the metasubstitution operation, there is the explicit substitution operator. Our formalization is done in a nominal setting that uses the MetaLib package of Coq, but no particular explicit substitution calculi is taken into account because the expected behaviour between the metasubstitution operation with the explicit substitutition constructor is the same regardless the calculus.
+ %\url{https://github.com/flaviodemoura/lx_confl/tree/m_subst_lemma} \vspace{0.25cm}%
 
-- This paper is written from a Coq script file.
-- include %\cite{berghoferHeadtoHeadComparisonBruijn2007}%
-- repository
-- constructive logic
-- contributions
-- challenges
-- body of abstraction and (meta)substitution
-- the comments can be found along with the corresponding proof steps
-*)
+The substitution lemma is an important result concerning the composition of the substitution operation, and is usually presented as follows in the context of the $\lambda$-calculus:
+
+%\begin{tcolorbox}
+ Let $t,u$ and $v$ be $\lambda$-terms. If $x\notin FV(v)$ ({\it i.e.} $x$ does not occur in the set of free variables of the term $v$) then $\metasub{\metasub{t}{x}{u}}{y}{v} =_\alpha \metasub{\metasub{t}{y}{v}}{x}{\metasub{u}{y}{v}}$.
+\end{tcolorbox}%
+
+This is a well known result already formalized in the context of the $\lambda$-calculus %\cite{berghoferHeadtoHeadComparisonBruijn2007}%. Nevertheless, in the context of $\lambda$-calculi with explicit substitutions its formalization is not straightforward due to the interaction between the metasubstitution and the explicit substitution operator. Our formalization is done in a nominal setting that uses the MetaLib%\footnote{\url{https://github.com/plclub/metalib}}% package of Coq, but no particular explicit substitution calculi is taken into account because the expected behaviour between the metasubstitution operation with the explicit substitutition constructor is the same regardless the calculus. The contributions of this work are twofold:
+
+%\begin{enumerate}
+\item The formalization is modular in the sense that no particular calculi with explicit substitutions is taken into account. Therefore, we believe that this formalization could be seen as a generic framework for proving properties of these calculi that uses the substitution lemma in the nominal setting\cite{kesnerPerpetualityFullSafe2008,nakazawaCompositionalConfluenceProofs2016,nakazawaPropertyShufflingCalculus2023};
+\item A solution to a circularity problem in the proofs is given. It adds an axiom to the formalization that replaces the set equality by the syntactic equality. In this way, we are allowed to replace/rewrite sets of (free) variables by another sets of (free) variables in arbitrary contexts.
+\end{enumerate}%
+
+This document is built directly from a Coq script using the CoqDoc%\footnote{\url{https://coq.inria.fr/refman/using/tools/coqdoc.html}}% tool. In the following section, we present the general framework and the basics of the nominal approach. In Section 3, we present our definition of metasubstitution and some of its properties. In Section 4, we present the main theorem, %{\it i.e.}% the substitution lemma, and we conclude in Section 5.*)
 
 (** * A syntactic extension of the $\lambda$-calculus *)
 
@@ -1297,7 +1265,7 @@ Proof.
            + assumption.
 Qed.
 
-(** ** The metasubstitution operation of the $\lambda$-calculus *)
+(** * The metasubstitution operation of the $\lambda$-calculus *)
 
 (** The main operation of the $\lambda$-calculus is the $\beta$-reduction that express how to evaluate a function applied to a given argument: $(\lambda_x.t)\ u \to_{\beta} \metasub{t}{x}{u}$. In a less formal context, the concept of $\beta$-reduction means that the result of evaluating the function $(\lambda_x.t)$ with argument $u$ is obtained by substituting $u$ for the free ocurrences of the variable $x$ in $t$. Moreover, it is a capture free substitution in the sense that no free variable becomes bound after the substitution. This operation is in the meta level because it is outside the grammar of the $\lambda$-calculus, and that's why it is called metasubstitution. As a metaoperation, its definition usually comes with a degree of informality. For instance, Barendregt%\cite{barendregtLambdaCalculusIts1984}% defines it as follows: %\vspace{.5cm}%
 $\metasub{t}{x}{u} = \left\{
@@ -2146,66 +2114,33 @@ Proof.
                     ********* contradiction.
                     ********* assumption.
                     ***** rewrite H. (** The first component follows the strategy used in the abstraction case. The current goal, obtained after the application of the rule [aeq_sub_diff] is [swap x y ([z := u](swap y' x0 t1)) =a
-  swap x1 (swap_var x y x0) ([(swap_var x y z) := (swap x y u)](swap (swap_var x y y') x1 (swap x y t1)))]. The induction hypothesis is used twice to propagate the swap both on the LHS and RHS of the $\alpha$-equality. (* aqui*) *)
-        ** destruct (atom_fresh (union (fv_nom (swap x y u)) (union (fv_nom (n_sub (swap x y t1) (swap_var x y z) (swap x y t2))) (singleton (swap_var x y z'))))). case (x1 == (swap_var x y x0)).
-           *** intro Heq. subst. apply aeq_sub_same.
-               **** apply aeq_sym. rewrite <- swap_equivariance. apply H.
-                    ***** reflexivity.
-                    ***** assumption.
-               **** apply aeq_sym. apply IHt1. assumption.
-           *** intro Hneq'. simpl in *. apply aeq_trans with (n_sub (subst_rec_fun (swap x y (swap z x0 t1)) (swap x y u) (swap_var x y z')) (swap_var x y x0) (subst_rec_fun (swap x y t2) (swap x y u) (swap_var x y z'))). 
-               **** apply aeq_sub_diff.
-               ***** apply aeq_refl.
-               ***** assumption.
-               ***** pose proof n2 as Hx1. apply notin_union_2 in n2. apply notin_union_1 in n2. apply notin_union_1 in n2. apply notin_remove_1 in n2. destruct n2.
-               ****** apply fv_nom_remove.
-               ******* apply notin_union_1 in Hx1. assumption.
-               ******* apply notin_remove_2. rewrite swap_equivariance. subst. pose proof n0 as Hx0. apply notin_union_2 in n0. apply notin_union_1 in n0. apply notin_union_1 in n0. apply notin_remove_1 in n0. destruct n0.
-               ******** subst. contradiction.
-               ******** apply fv_nom_swap. apply notin_fv_nom_equivariance. assumption.
-               ****** apply fv_nom_remove.
-               ******* apply notin_union_1 in Hx1. assumption.
-               ******* apply notin_remove_2. rewrite swap_equivariance. apply notin_union_2 in Hx1. apply notin_union_1 in Hx1. apply notin_union_1 in Hx1. apply notin_remove_1 in Hx1. case (swap_var x y z == x1).
-               ******** intro Heq. subst. apply fv_nom_swap. apply notin_union_2 in n0. apply notin_union_1 in n0. apply notin_union_1 in n0. apply notin_remove_1 in n0. destruct n0.
-               ********* subst. contradiction.
-               ********* apply notin_fv_nom_equivariance. assumption.
-               ******** intro Hneq''. destruct Hx1.
-               ********* contradiction.
-               ********* apply fv_nom_remove_swap.
-               ********** assumption.
-               ********** apply aux_not_equal. assumption.
-               ********** assumption.
-               ***** rewrite H.
-               ****** replace (swap_var (swap_var x y x0) x1 (swap_var x y z')) with (swap_var x y z').
-               ******* apply aeq_m_subst_eq.
-               ******** rewrite (swap_equivariance _ x y z x0). apply aeq_sym. rewrite swap_symmetric. rewrite (swap_symmetric _ (swap_var x y z) (swap_var x y x0)). rewrite (swap_symmetric _ (swap_var x y z) x1). pose proof n0 as Hx0. pose proof n2 as Hx1. apply notin_union_2 in n2. apply notin_union_1 in n2. apply notin_union_1 in n2. apply notin_remove_1 in n2. destruct n2.
-               ********* subst. rewrite swap_id. apply notin_union_2 in n0. apply notin_union_1 in n0. apply notin_union_1 in n0. apply notin_remove_1 in n0. case (z == x0).
-               ********** intro Heq. subst. repeat rewrite swap_id. apply aeq_refl.
-               ********** intro Hneq''. rewrite (swap_symmetric _ (swap_var x y z) (swap_var x y x0)). rewrite swap_involutive. apply aeq_refl.
-               ********* apply notin_union_2 in n0. apply notin_union_1 in n0. apply notin_union_1 in n0. apply notin_remove_1 in n0. case (z == x0).
-               ********** intro Heq. subst. rewrite swap_id. apply aeq_refl.
-               ********** intro Hneq''. destruct n0.
-               *********** contradiction.
-               *********** apply aeq_swap_swap.
-               ************ assumption.
-               ************ apply notin_union_2 in Hx0. apply notin_union_1 in Hx0. apply notin_union_1 in Hx0. apply notin_remove_1 in Hx0. destruct Hx0.
-               ************* contradiction.
-               ************* apply notin_fv_nom_equivariance. assumption.
-               ******** symmetry. apply swap_reduction.
-               ********* apply notin_fv_nom_equivariance. apply notin_union_1 in n0. assumption.
-               ********* apply notin_union_1 in n2. assumption.
-               ******* symmetry. unfold swap_var at 1. destruct (swap_var x y z' == swap_var x y x0).
-               ******** repeat apply notin_union_2 in n0. apply notin_singleton_1 in n0. apply (swap_neq x y) in n0. contradiction.
-               ******** destruct (swap_var x y z' == x1).
-               ********* repeat apply notin_union_2 in n2. apply notin_singleton_1 in n2. contradiction.
-               ********* reflexivity.
-               ****** apply swap_size_eq.
-               ****** apply aux_not_equal. assumption.
-               **** apply aeq_sub_same.
-                    ***** apply aeq_sym. apply H.
+  swap x1 (swap_var x y x0) ([(swap_var x y z) := (swap x y u)](swap (swap_var x y y') x1 (swap x y t1)))]. The induction hypothesis is used twice to propagate the swap on both the LHS and RHS of the $\alpha$-equality. This swap has no effect on the variable of the metasubstitution, therefore we can apply lemma [aeq_m_subst_eq] and each generated case is proved by routine manipulation of swaps. $\hfill\Box$*)
+                    ****** apply aeq_sym. rewrite H.
+                    ******* replace (swap_var x1 (swap_var x y' x0) (swap_var x y' z)) with (swap_var x y' z).
+                    ******** apply aeq_m_subst_eq.
+                    ********* rewrite (swap_symmetric _ x1 (swap_var x y' x0)). rewrite (swap_symmetric _ (swap_var x y' y) x1). case (x0 == y). 
+                    *********** intro Heq. subst. rewrite (swap_symmetric _ (swap_var x y' y) x1). rewrite swap_involutive. rewrite swap_id. apply aeq_refl.
+                    *********** intro Hneq'''. rewrite (swap_symmetric _ y x0). rewrite (swap_equivariance _ x y' x0 y). case (x1 == swap_var x y' y). 
+                    ************ intro Heq. subst. rewrite swap_id. apply aeq_refl.
+                    ************ intro Hneq''''. apply aeq_swap_swap.
+                    ************** apply notin_fv_nom_equivariance. apply notin_union_2 in n1. apply notin_union_1 in n1. apply notin_union_1 in n1. apply notin_remove_1 in n1. destruct n1.
+                    *************** symmetry in H0. contradiction.
+                    *************** assumption.
+                    ************** apply notin_union_2 in n2. apply notin_union_1 in n2. apply notin_union_1 in n2. apply notin_remove_1 in n2. destruct n2.
+                    *************** symmetry in H0. contradiction.
+                    *************** assumption.
+                    ********* apply swap_reduction.
+                    ********** apply notin_union_1 in n2. assumption.
+                    ********** apply notin_union_1 in n1. apply notin_fv_nom_equivariance. assumption.
+                    ******** symmetry. unfold swap_var at 1. destruct (swap_var x y' z ==  x1).
+                    ********* repeat apply notin_union_2 in n2. apply notin_singleton_1 in n2. contradiction.
+                    ********* destruct (swap_var x y' z == swap_var x y' x0).
+                    ********** repeat apply notin_union_2 in n1. apply notin_singleton_1 in n1. apply (swap_neq x y') in n1. contradiction.
+                    ********** reflexivity.
+                    ******* apply swap_size_eq.
+                    ******* assumption.
                     ****** reflexivity.
                     ****** assumption.
-                    ***** apply aeq_sym. apply IHt1. assumption.
 Qed.
 
 (* begin hide *)
@@ -2221,8 +2156,7 @@ Proof.
 Qed.
 (* end hide *)
 
-(** The following lemmas state, respectively, what hapens when the variable in the meta-substitution is equal or different from the one in the abstraction. When it is equal, the meta-substitution is irrelevant. When they are different, we take a new variable that does not occur freely in the substituted term in the meta-substitution nor in the abstraction and is not the variable in the meta-substitution, and the abstraction of this new variable using the meta-substitution of the swap of the former variable in the meta-substitution is alpha-equivalent to the original meta-substitution of the abstraction. **)
-(** The proofs were made using the definition of the meta-substitution, each case being respectively each one in the definition.**)
+(** The following lemmas state, respectively, what hapens when the variable in the meta-substitution is equal or different from the one in the abstraction. When it is equal, the meta-substitution is irrelevant. When they are different, we take a new variable that does not occur freely in the substituted term in the meta-substitution nor in the abstraction and is not the variable in the meta-substitution, and the abstraction of this new variable using the meta-substitution of the swap of the former variable in the meta-substitution is alpha-equivalent to the original meta-substitution of the abstraction. The proofs were straightforward from the definition of the meta-substitution, each case being respectively each one in the definition. %\newline%*)
 Lemma m_subst_abs_eq : forall u x t, [x := u](n_abs x t) = n_abs x t.
 Proof.
   intros u x t. unfold m_subst. rewrite subst_rec_fun_equation. rewrite eq_dec_refl. reflexivity.
@@ -2286,8 +2220,7 @@ Proof.
 Qed.
 (* end hide *)
 
-(** The following lemmas state, respectively, what hapens when the variable in the meta-substitution is equal or different from the one in the explicit substitution. When it is equal, the meta-substitution is irrelevant on [t1], but it is applied to [e2]. When they are different, we take a new variable that does not occur freely in the substituted term in the meta-substitution nor in the substitution and is not the variable in the meta-substitution, and the explicit substitution of this new variable using the meta-substitution of the swap of the former variable in the meta-substitution in [e11] and the application of the original meta_substitution in [e12] is alpha-equivalent to the original meta-substitution of the explicit substitution. **)
-(** The proofs were made using the definition of the meta-substitution, each case being respectively each one in the definition.**)
+(** The following lemmas are the equivalent version of the two previous lemmas for the case of the explicit substitution. They state, respectively, what hapens when the variable in the meta-substitution is equal or different from the one in the explicit substitution. When it is equal, the meta-substitution is irrelevant on [t1], but it is applied to [e2]. When they are different, we take a new variable that does not occur freely in the substituted term in the meta-substitution nor in the substitution and is not the variable in the meta-substitution, and the explicit substitution of this new variable using the meta-substitution of the swap of the former variable in the meta-substitution in [e11] and the application of the original meta_substitution in [e12] is alpha-equivalent to the original meta-substitution of the explicit substitution. The proofs are straighforward from the definition of the meta-substitution, each case being respectively each one in the definition. %\newline%*)
 
 Lemma m_subst_sub_eq : forall u x t1 t2, [x := u](n_sub t1 x t2) = n_sub t1 x ([x := u] t2).
 Proof.
@@ -2343,76 +2276,8 @@ Qed.
 
 Lemma m_subst_lemma: forall e1 e2 x e3 y, x <> y -> x `notin` (fv_nom e3) -> ([y := e3]([x := e2]e1)) =a ([x := ([y := e3]e2)]([y := e3]e1)).
 Proof.
-
-(* Due to permutation propagation, a stronger induction hypothesis is needed.
-  (** We proceed by functional induction on the structure of function [subst_rec_fun], i.e. the definition of the meta-substitution. The induction splits the proof in seven cases: two cases concern variables, the next two concern abstractions, the next case concerns the application and the last two concern the explicit substitution.  *) 
-  intros e1 e2 x. functional induction (subst_rec_fun e1 e2 x).
-  (** *)
-  (**The first case is about the variable. It considers that there are two variables, $x$ and $y$ and they differ from one another. *)
-  - intros e3 y XY H. rewrite m_subst_var_eq. rewrite m_subst_var_neq.
-  (** *)
-  (**When we rewrite the lemmas concerning equality and negation on variables substitution, we have two cases.*)
-  (** *)
-  (**If we only have these two variables, we can use the equality lemma to find that both sides of the proof are equal and finish it using reflexivity and in the second case assumptions are used to finish the proof.*)
-    + rewrite m_subst_var_eq. apply aeq_refl.
-    + assumption.
-  (** *)
-  (**The second case is also about variables. In it, we consider a third variable, $z$, meaning that each variable is different from the other. In the former case, we had that $x = y$.*)
-  - intros e3 z XY H. rewrite m_subst_var_neq.
-  (** *)
-  (**To unfold the cases in this proof, we need to destruct one variable as another. We chose to do $x == z$.*)
-    + destruct (y == z) eqn:Hyz.
-  (** *)
-  (**This splits the proof in two cases.*)
-  (** *)
-  (**In the first case, we have that $x = z$. To expand this case, we use the lemma $m_subst_notin$ as an auxiliary lemma. It is added as an hypothesis, using the specialization tactics to match the last case in that hypothesis to the proof we want.*)
-  (** *)
-(*   (**The rest of the caases are finished  using the varible substitution's negation of equality, the varible substitution's equality or the standard library lemmas.*)  *)
-    * subst. rewrite m_subst_var_eq. pose proof m_subst_notin as H'. specialize (H' e3 ([z := e3] u) x). apply aeq_sym. apply H'; assumption.
-      * rewrite m_subst_var_neq.
-        ** rewrite m_subst_var_neq.
-           *** apply aeq_refl.
-           *** auto.
-        ** auto.
-    + auto. 
-  - intros e3 z XY H. rewrite m_subst_abs_eq.
-    pose proof m_subst_notin as H'. specialize (H' ([z := e3] n_abs x t1) ([z := e3] u) x). 
-    apply aeq_sym. apply H'. apply fv_nom_remove.
-    + assumption.
-    + apply diff_remove.
-      * assumption.
-      * simpl. apply notin_remove_3. reflexivity.
-  - intros e3 y' XY H. destruct (y == y').
-    + subst. rewrite m_subst_abs_eq. rewrite m_subst_notin_m_subst.
-      * apply aeq_refl.
-      * simpl. apply notin_remove_3. reflexivity.
-    + rewrite m_subst_abs_neq.
-      unfold m_subst in *. specialize (IHn e3 y'). admit. 
-(*
-      pose proof m_subst_abs_neq. specialize (H u x y t1). destruct (atom_fresh (union (fv_nom u) (union (fv_nom (n_abs y t1)) (singleton x)))). clear e0. assert (Hxy := _x). apply H in _x. rewrite _x. clear H.
-      * destruct (x0 == y').
-        ** pose proof m_subst_abs_neq. specialize (H e3 y' y t1). destruct (atom_fresh (union (fv_nom e3) (union (fv_nom (n_abs y t1)) (singleton y')))). rewrite H.
-           ***
-           ***
-          subst. rewrite m_subst_abs_eq.
-        **
-      * *)
-  (** *)
-  (**The case of application is solved by using the auxiliary lemmas on application. First, it is rewritten so that the substitution is made inside the aplication, instead of on it. The same lemma is applied multiple times to make sure nothing can be replaced anymore. This leads to a case that can be solved using the standard library lemmas.*)
-  - intros e3 z XY IH. rewrite m_subst_app. rewrite m_subst_app. rewrite m_subst_app.  rewrite m_subst_app. auto.
-  - intros e3 z XY IH.  admit.
-  - admit.  *)
-
-
-(*  induction e1 using n_sexp_size_induction. *) 
-
-  (** We procced by case analisys on the structure of [e1]. The cases in between square brackets below mean that in the first case, [e1] is a variable named [z], in the second case [e1] is an abstraction of the form $\lambda$[z.e11], in the third case [e1] is an application of the form ([e11] [e12]), and finally in the fourth case [e1] is an explicit substitution of the form [e11] $\langle$ [z] := [e12] $\rangle$. *)
-  
-  induction e1 using n_sexp_induction.
-
-  (** The variable case was proved using the auxiliary lemmas on the equality and inequality of the meta-substitution applied to variables. It was also necessary to compare the variable in the meta-substitution and the variable one in each case of this proof.**)
-
-  - (* variable case: *) intros e2 x' e3 y Hneq Hfv. case (x == x').
+  induction e1 using n_sexp_induction. (** %\noindent{\bf Proof.}% The proof is by induction on the size of the term [e1]. *)
+- intros e2 x' e3 y Hneq Hfv. case (x == x').
     + intro Heq. subst. rewrite m_subst_var_eq. case (x' == y).
       * intro Heq. subst. contradiction.
       * intro Hneq'. rewrite m_subst_var_neq.
@@ -2433,18 +2298,13 @@ Proof.
                **** assumption.
            *** assumption.
         ** assumption.
-
-      (** In the abstraction case, we used a similar approach, comparing the variable in the meta substitution and the one in the abstraction. When usion the using the auxiliary lemmas on the equality and inequality of the meta-substitution applied to abstractions, it was necessary to create new variables in each use of the inequality. This is due to the atempt of removing the abstraction from inside the meta-substitution.**)
-
-  - intros e2 x e3 y Hxy Hfv. case (z == x).
-    + intro Heq. subst. rewrite m_subst_abs_eq. assert (Haeq : ([x := [y := e3] e2] ([y := e3] n_abs x e1)) =a ([y := e3] n_abs x e1)).
-      * apply m_subst_notin. apply fv_nom_remove.
-        ** assumption.
-        ** apply notin_remove_2. simpl. apply notin_remove_3. reflexivity.
-      * apply aeq_sym. auto.
-    + intro Hneq. destruct (y == z).
+  - intros e2 x e3 y Hxy Hfv. case (z == x). (** The interesting cases are the abstraction and the explicit substitution. In the abstraction case, the initial goal is [([y := e3] ([x := e2] n_abs z e1)) =a ([x := [y := e3] e2] ([y := e3] n_abs z e1))], assuming that [x <> y] and [x `notin` fv_nom e3]. We start comparing [z] with [x] aiming to apply the definition of the metasubstitution on the LHS of the goal.*)
+    + intro Heq. subst. rewrite m_subst_abs_eq. apply aeq_sym. apply m_subst_notin. apply fv_nom_remove. (** When [z = x], the subterm [[x := e2](n_abs x e1)] reduces to [(n_abs x e1)] and then the LHS reduces to [([y := e3] n_abs x e1)]. The RHS reduces to the same term because [x] does not occur free neither in [(n_abs x e1)] nor in [e3].*)
+        * assumption.
+        * apply notin_remove_2. simpl. apply notin_remove_3. reflexivity.
+    + intro Hneq. destruct (y == z). (* When [z <> x], then we compare [y] with [z].*)
       * subst. rewrite m_subst_abs_eq. pose proof m_subst_abs_neq as Habs. pick fresh w for (union (fv_nom e3) (union (fv_nom e2) (union (fv_nom (n_abs z e1)) (singleton x)))). specialize (Habs e1 e2 x z w).
-        apply aeq_trans with ([z := e3] n_abs w ([x := e2] swap z w e1)). apply aeq_m_subst_out.
+        apply aeq_trans with ([z := e3] n_abs w ([x := e2] swap z w e1)). apply aeq_m_subst_out. (** When [y = z] then the subterm [([y := e3] n_abs z e1)] reduces to [(n_abs z e1)]. On the LHS, we propagate the internal metasubstitution over the abstraction taking a fresh name for the binder. The external metasubstitution cannot be propagated inside the abstraction because they have the same binder. The resulting terms are $\alpha$-equivalent, and although the strategy is similar to the one used in the lemmas [aeq_m_subst_in], [aeq_m_subst_out] and [swap_subst_rec_fun] the proof requires much more steps.*)
         ** apply Habs.
            *** assumption.
            *** apply notin_union_2 in Fr. assumption.
@@ -2664,17 +2524,11 @@ Proof.
                ***** apply notin_union.
                ****** apply notin_union_2 in Fr. apply notin_union_2 in Fr. apply notin_union_1 in Fr. assumption.
                ****** repeat apply notin_union_2 in Fr. assumption.  
-
-    (** The case of the application is quite simple to solve. It consisted of applying the auxiliary lemma of removing the application from inside the meta-substitution. **)
-
   - intros e2 x e3 y Hneq Hfv. repeat rewrite m_subst_app. pose proof aeq_app as H. specialize (H ([y := e3] ([x := e2] e1_1)) ([y := e3] ([x := e2] e1_2)) ([x := [y := e3] e2] ([y := e3] e1_1)) ([x := [y := e3] e2] ([y := e3] e1_2))). rewrite H. 
     + apply aeq_refl.
     + apply IHe1_1; assumption.
     + apply IHe1_2; assumption.
-
-      (** In the explicit substitution case, we used the same approach used in the abstraction for the left side and the same as the application for the right side of the substitution. It consisted of comparing the variable in the meta substitution and the one in the substitution. We used the auxiliary lemmas on the equality and inequality of the meta-substitution applied to explicit substitutions and it was necessary to create new variables in each use of the inequality. This is due to the atempt of removing the explicit substitution from inside the meta-substitution. When tis removal was made, the proof consisted in proving a similar case for the abstraction in the left side of the explicit substitution and the one similar to the application was used for the right part of it.**)
-
-  - intros e2 x e3 y Hneq Hfv. case (z == x).
+  - intros e2 x e3 y Hneq Hfv. case (z == x). (** In the explicit substitution case, we used the same approach used in the abstraction for the left side and the same as the application for the right side of the substitution. It consisted of comparing the variable in the meta substitution and the one in the substitution. We used the auxiliary lemmas on the equality and inequality of the meta-substitution applied to explicit substitutions and it was necessary to create new variables in each use of the inequality. This is due to the atempt of removing the explicit substitution from inside the meta-substitution. When tis removal was made, the proof consisted in proving a similar case for the abstraction in the left side of the explicit substitution and the one similar to the application was used for the right part of it.$\hfill\Box$*)
     + intro Heq. subst. rewrite m_subst_sub_eq. assert (Haeq: ([y := e3] n_sub e1_1 x ([x := e2] e1_2)) =a ([x := [y := e3] e2] ([y := e3] n_sub e1_1 x e1_2))).
       * pose proof m_subst_sub_neq as Hsubneq. pick fresh w for (union (fv_nom (n_sub e1_1 x e1_2)) (union (fv_nom e2) (union (fv_nom e3) (union (singleton x) (singleton y))))).
         specialize (Hsubneq e1_1 ([x := e2] e1_2) e3 y x w). pose proof Hneq as H'. apply not_eq_sym in H'. apply Hsubneq in H'. rewrite H'.
@@ -3029,3 +2883,11 @@ Proof.
                ****** apply notin_union_2 in Fr. apply notin_union_2 in Fr. apply notin_union_1 in Fr. assumption.
                ****** repeat apply notin_union_2 in Fr. assumption.  
  Qed.
+
+(** * Conclusion and Future work*)
+
+(** In this work, we presented a formalization of the substitution lemma in a framework that extends the $\lambda$-calculus with an explicit substitution operator. Calculi with explicit substitutions are important frameworks to study properties of the $\lambda$-calculus and have been extensively studied in the last decades%\cite{abadiExplicitSubstitutions1991,accattoliAbstractFactorizationTheorem2012,ayala-rinconComparingCalculiExplicit2002,ayala-rinconComparingImplementingCalculi2005,bonelliPerpetualityNamedLambda2001,fujitaChurchRosserTheoremCompositional2016}%. 
+ 
+The formalization is modular in the sense that the explicit substitution operator is generic and could be instantiated with any calculi with  explicit substitutions in a nominal setting. The main contribution of this work, besides the formalization itself, is the solution to a circular proof problem. Several auxiliary (minor) results were not included in this document, but they are numerous and can be found in the source file of the formalization that is available in a GitHub repository from the following url %\url{https://github.com/flaviodemoura/lx_confl/tree/m_subst_lemma}%.
+
+As future work, we plan to integrate this formalization with another one related to the Z property %\cite{fmm2021}% to prove properties of calculi with explicit substitutions such as confluence%\cite{nakazawaCompositionalConfluenceProofs2016,nakazawaCallbyvalue2017,kesnerPerpetualityFullSafe2008}%. *)
