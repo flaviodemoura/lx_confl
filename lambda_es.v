@@ -137,13 +137,24 @@ This document is built directly from a Coq script using the CoqDoc%\footnote{\ur
 
 (** * A syntactic extension of the $\lambda$-calculus *)
 
-(** In this section, we present the framework of the formalization, which is based on a nominal approach%\cite{gabbayNewApproachAbstract1999}% where variables use names. This approach contrasts with the use of  De Bruijn indexes detailed in De Bruijn's landmark paper on $\lambda$-calculus notation%\cite{bruijnLambdaCalculusNotation1972}%. In the nominal setting, variables are represented by atoms that are structureless entities with a decidable equality: 
+(** In this section, we present the framework of the formalization, which is based on a nominal approach%\cite{gabbayNewApproachAbstract1999}% where variables use names. In the nominal setting, variables are represented by atoms that are structureless entities with a decidable equality: 
 
 <<
 Parameter eq_dec : forall x y : atom, {x = y} + {x <> y}.
 >>
 
-Variable renaming is done via name-swapping defined as follows:
+%\noindent% therefore different names mean different atoms and different variables. The nominal approach is close to the usual paper and pencil notation used in $\lambda$-calculus lectures, whose grammar of terms is given by:
+
+%\begin{equation}\label{lambda:grammar}
+ t ::= x \mid \lambda_x.t \mid t\ t
+\end{equation}%
+
+%\noindent% and its main rule, named $\beta$-reduction, is given by:
+
+%\begin{equation}\label{lambda:beta}
+ (\lambda_x.t)\ u \to_{\beta} \metasub{t}{x}{u}
+\end{equation}%
+%\noindent% where $\metasub{t}{x}{u}$ represents the term obtained from $t$ after replacing all its free occurrences of the variable $x$ by $u$ in a way that renaming of bound variable is done in order to avoid variable capture. In other words, $\metasub{t}{x}{u}$ is a metanotation for a capture free substitution. For instance, the $\lambda$-term $(\lambda_x\lambda_y.x\ y)\ y$ has both bound and free occurrences of the variable $y$. In order to $\beta$-reduce it one has to replace (or substitute) the free variable $y$ for all free occurrences of the variable $x$ in the term $(\lambda_y.x\ y)$. But a straight substitution will capture the free variable $y$, %{\it i.e.}% this means that the free occurrence of $y$ before the $\beta$-reduction will become bound after the $\beta$-reduction step. A renaming of bound variables is done to avoid such capture, so in this example, one can take an $\alpha$-equivalent%\footnote{A formal definition of this notion will be given later in this section.}% term, say $(\lambda_z.x\ z)$, and perform the $\beta$-step correctly as $(\lambda_x\lambda_y.x\ y)\ y \to_{\beta} \lambda_z.y\ z$. The renaming of variables in the nominal setting is done via a name-swapping, which is formally defined as follows:
 
 $\vswap{x}{y}{z} := \left\{ \begin{array}{ll}
 y, & \mbox{ if } z = x; \\
@@ -151,10 +162,19 @@ x, & \mbox{ if } z = y; \\
 z, & \mbox{ otherwise. } \\
 \end{array}\right.$
 
-%\noindent% and the corresponding Coq definition: *)
+This notion can be extended to $\lambda$-terms in a straightfoward way:
 
-Definition swap_var (x:atom) (y:atom) (z:atom) :=
-  if (z == x) then y else if (z == y) then x else z.
+$\swap{x}{y}{t} := \left\{ \begin{array}{ll}
+\vswap{x}{y}{z}, & \mbox{ if } t = z; \\
+\lambda_{\vswap{x}{y}{z}}.\swap{x}{y}{t_1}, & \mbox{ if } t = \lambda_z.t_1; \\
+\swap{x}{y}{t_1}\ \swap{x}{y}{t_2}, & \mbox{ if } t = t_1\ t_2\\
+\end{array}\right.$
+
+In the previous example, one could apply a swap to avoid the variable capture in the following way: $(\lambda_x\lambda_y.x\ y)\ y \to_{\beta} \metasub{\swap{x}{z}{(\lambda_y.x\ y)}}{x}{y} = \lambda_z.y\ z$. Could we have used a variable substitution instead of a swapping in the previous example? Sure! We could have done the reduction as $(\lambda_x\lambda_y.x\ y)\ y \to_{\beta} \metasub{\metasub{(\lambda_y.x\ y)}}{x}{y}{x}{z} = \lambda_z.y\ z$, but as we will see soon, variable substitution is not stable under $\alpha$-equivalence, and this stability property is necessary to work modulo $\alpha$-equivalence.
+
+In what follows, we will interleave metanotation with the corresponding Coq notation because this strategy will be better for explaining the proof steps of the forthcoming lemmas. So the swapping of variables, named [swap_var], is defined as follows: *)
+
+Definition swap_var (x:atom) (y:atom) (z:atom) := if (z == x) then y else if (z == y) then x else z.
 
 (* begin hide *)
 Lemma swap_var_id: forall x y, (swap_var x x y = y).
