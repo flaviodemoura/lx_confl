@@ -1,0 +1,1703 @@
+This is pdfTeX, Version 3.141592653-2.6-1.40.22 (TeX Live 2022/dev/Debian) (preloaded format=pdflatex 2023.7.20)  1 AUG 2023 16:35
+entering extended mode
+ restricted \write18 enabled.
+ %&-line parsing enabled.
+**report-subst.tex
+(./report-subst.tex
+LaTeX2e <2021-11-15> patch level 1
+L3 programming layer <2022-01-21> (./eptcs.cls
+Document Class: eptcs 2022/05/20 v1.7
+(/usr/share/texlive/texmf-dist/tex/latex/base/article.cls
+Document Class: article 2021/10/04 v1.4n Standard LaTeX document class
+(/usr/share/texlive/texmf-dist/tex/latex/base/size11.clo
+File: size11.clo 2021/10/04 v1.4n Standard LaTeX file (size option)
+)
+\c@part=\count185
+\c@section=\count186
+\c@subsection=\count187
+\c@subsubsection=\count188
+\c@paragraph=\count189
+\c@subparagraph=\count190
+\c@figure=\count191
+\c@table=\count192
+\abovecaptionskip=\skip47
+\belowcaptionskip=\skip48
+\bibindent=\dimen138
+)
+(/usr/share/texlive/texmf-dist/tex/latex/hyperref/hyperref.sty
+Package: hyperref 2021-06-07 v7.00m Hypertext links for LaTeX
+
+(/usr/share/texlive/texmf-dist/tex/generic/ltxcmds/ltxcmds.sty
+Package: ltxcmds 2020-05-10 v1.25 LaTeX kernel commands for general use (HO)
+)
+(/usr/share/texlive/texmf-dist/tex/generic/iftex/iftex.sty
+Package: iftex 2020/03/06 v1.0d TeX engine tests
+)
+(/usr/share/texlive/texmf-dist/tex/generic/pdftexcmds/pdftexcmds.sty
+Package: pdftexcmds 2020-06-27 v0.33 Utility functions of pdfTeX for LuaTeX (HO
+)
+
+(/usr/share/texlive/texmf-dist/tex/generic/infwarerr/infwarerr.sty
+Package: infwarerr 2019/12/03 v1.5 Providing info/warning/error messages (HO)
+)
+Package pdftexcmds Info: \pdf@primitive is available.
+Package pdftexcmds Info: \pdf@ifprimitive is available.
+Package pdftexcmds Info: \pdfdraftmode found.
+)
+(/usr/share/texlive/texmf-dist/tex/latex/graphics/keyval.sty
+Package: keyval 2014/10/28 v1.15 key=value parser (DPC)
+\KV@toks@=\toks16
+)
+(/usr/share/texlive/texmf-dist/tex/generic/kvsetkeys/kvsetkeys.sty
+Package: kvsetkeys 2019/12/15 v1.18 Key value parser (HO)
+)
+(/usr/share/texlive/texmf-dist/tex/generic/kvdefinekeys/kvdefinekeys.sty
+Package: kvdefinekeys 2019-12-19 v1.6 Define keys (HO)
+)
+(/usr/share/texlive/texmf-dist/tex/generic/pdfescape/pdfescape.sty
+Package: pdfescape 2019/12/09 v1.15 Implements pdfTeX's escape features (HO)
+)
+(/usr/share/texlive/texmf-dist/tex/latex/hycolor/hycolor.sty
+Package: hycolor 2020-01-27 v1.10 Color options for hyperref/bookmark (HO)
+)
+(/usr/share/texlive/texmf-dist/tex/latex/letltxmacro/letltxmacro.sty
+Package: letltxmacro 2019/12/03 v1.6 Let assignment for LaTeX macros (HO)
+)
+(/usr/share/texlive/texmf-dist/tex/latex/auxhook/auxhook.sty
+Package: auxhook 2019-12-17 v1.6 Hooks for auxiliary files (HO)
+)
+(/usr/share/texlive/texmf-dist/tex/latex/kvoptions/kvoptions.sty
+Package: kvoptions 2020-10-07 v3.14 Key value format for package options (HO)
+)
+\@linkdim=\dimen139
+\Hy@linkcounter=\count193
+\Hy@pagecounter=\count194
+
+(/usr/share/texlive/texmf-dist/tex/latex/hyperref/pd1enc.def
+File: pd1enc.def 2021-06-07 v7.00m Hyperref: PDFDocEncoding definition (HO)
+Now handling font encoding PD1 ...
+... no UTF-8 mapping file for font encoding PD1
+)
+(/usr/share/texlive/texmf-dist/tex/latex/hyperref/hyperref-langpatches.def
+File: hyperref-langpatches.def 2021-06-07 v7.00m Hyperref: patches for babel la
+nguages
+)
+(/usr/share/texlive/texmf-dist/tex/generic/intcalc/intcalc.sty
+Package: intcalc 2019/12/15 v1.3 Expandable calculations with integers (HO)
+)
+(/usr/share/texlive/texmf-dist/tex/generic/etexcmds/etexcmds.sty
+Package: etexcmds 2019/12/15 v1.7 Avoid name clashes with e-TeX commands (HO)
+)
+\Hy@SavedSpaceFactor=\count195
+
+(/usr/share/texlive/texmf-dist/tex/latex/hyperref/puenc.def
+File: puenc.def 2021-06-07 v7.00m Hyperref: PDF Unicode definition (HO)
+Now handling font encoding PU ...
+... no UTF-8 mapping file for font encoding PU
+)
+Package hyperref Info: Hyper figures OFF on input line 4192.
+Package hyperref Info: Link nesting OFF on input line 4197.
+Package hyperref Info: Hyper index ON on input line 4200.
+Package hyperref Info: Plain pages OFF on input line 4207.
+Package hyperref Info: Backreferencing OFF on input line 4212.
+Package hyperref Info: Implicit mode ON; LaTeX internals redefined.
+Package hyperref Info: Bookmarks ON on input line 4445.
+\c@Hy@tempcnt=\count196
+
+(/usr/share/texlive/texmf-dist/tex/latex/url/url.sty
+\Urlmuskip=\muskip16
+Package: url 2013/09/16  ver 3.4  Verb mode for urls, etc.
+)
+LaTeX Info: Redefining \url on input line 4804.
+\XeTeXLinkMargin=\dimen140
+
+(/usr/share/texlive/texmf-dist/tex/generic/bitset/bitset.sty
+Package: bitset 2019/12/09 v1.3 Handle bit-vector datatype (HO)
+
+(/usr/share/texlive/texmf-dist/tex/generic/bigintcalc/bigintcalc.sty
+Package: bigintcalc 2019/12/15 v1.5 Expandable calculations on big integers (HO
+)
+))
+\Fld@menulength=\count197
+\Field@Width=\dimen141
+\Fld@charsize=\dimen142
+Package hyperref Info: Hyper figures OFF on input line 6076.
+Package hyperref Info: Link nesting OFF on input line 6081.
+Package hyperref Info: Hyper index ON on input line 6084.
+Package hyperref Info: backreferencing OFF on input line 6091.
+Package hyperref Info: Link coloring OFF on input line 6096.
+Package hyperref Info: Link coloring with OCG OFF on input line 6101.
+Package hyperref Info: PDF/A mode OFF on input line 6106.
+LaTeX Info: Redefining \ref on input line 6146.
+LaTeX Info: Redefining \pageref on input line 6150.
+
+(/usr/share/texlive/texmf-dist/tex/latex/base/atbegshi-ltx.sty
+Package: atbegshi-ltx 2021/01/10 v1.0c Emulation of the original atbegshi
+package with kernel methods
+)
+\Hy@abspage=\count198
+\c@Item=\count199
+\c@Hfootnote=\count266
+)
+Package hyperref Info: Driver (autodetected): hpdftex.
+
+(/usr/share/texlive/texmf-dist/tex/latex/hyperref/hpdftex.def
+File: hpdftex.def 2021-06-07 v7.00m Hyperref driver for pdfTeX
+
+(/usr/share/texlive/texmf-dist/tex/latex/base/atveryend-ltx.sty
+Package: atveryend-ltx 2020/08/19 v1.0a Emulation of the original atveryend pac
+kage
+with kernel methods
+)
+\Fld@listcount=\count267
+\c@bookmark@seq@number=\count268
+
+(/usr/share/texlive/texmf-dist/tex/latex/rerunfilecheck/rerunfilecheck.sty
+Package: rerunfilecheck 2019/12/05 v1.9 Rerun checks for auxiliary files (HO)
+
+(/usr/share/texlive/texmf-dist/tex/generic/uniquecounter/uniquecounter.sty
+Package: uniquecounter 2019/12/15 v1.4 Provide unlimited unique counter (HO)
+)
+Package uniquecounter Info: New unique counter `rerunfilecheck' on input line 2
+86.
+)
+\Hy@SectionHShift=\skip49
+)
+(/usr/share/texlive/texmf-dist/tex/latex/psnfss/mathptmx.sty
+Package: mathptmx 2020/03/25 PSNFSS-v9.3 Times w/ Math, improved (SPQR, WaS) 
+LaTeX Font Info:    Redeclaring symbol font `operators' on input line 28.
+LaTeX Font Info:    Overwriting symbol font `operators' in version `normal'
+(Font)                  OT1/cmr/m/n --> OT1/ztmcm/m/n on input line 28.
+LaTeX Font Info:    Overwriting symbol font `operators' in version `bold'
+(Font)                  OT1/cmr/bx/n --> OT1/ztmcm/m/n on input line 28.
+LaTeX Font Info:    Redeclaring symbol font `letters' on input line 29.
+LaTeX Font Info:    Overwriting symbol font `letters' in version `normal'
+(Font)                  OML/cmm/m/it --> OML/ztmcm/m/it on input line 29.
+LaTeX Font Info:    Overwriting symbol font `letters' in version `bold'
+(Font)                  OML/cmm/b/it --> OML/ztmcm/m/it on input line 29.
+LaTeX Font Info:    Redeclaring symbol font `symbols' on input line 30.
+LaTeX Font Info:    Overwriting symbol font `symbols' in version `normal'
+(Font)                  OMS/cmsy/m/n --> OMS/ztmcm/m/n on input line 30.
+LaTeX Font Info:    Overwriting symbol font `symbols' in version `bold'
+(Font)                  OMS/cmsy/b/n --> OMS/ztmcm/m/n on input line 30.
+LaTeX Font Info:    Redeclaring symbol font `largesymbols' on input line 31.
+LaTeX Font Info:    Overwriting symbol font `largesymbols' in version `normal'
+(Font)                  OMX/cmex/m/n --> OMX/ztmcm/m/n on input line 31.
+LaTeX Font Info:    Overwriting symbol font `largesymbols' in version `bold'
+(Font)                  OMX/cmex/m/n --> OMX/ztmcm/m/n on input line 31.
+\symbold=\mathgroup4
+\symitalic=\mathgroup5
+LaTeX Font Info:    Redeclaring math alphabet \mathbf on input line 34.
+LaTeX Font Info:    Overwriting math alphabet `\mathbf' in version `normal'
+(Font)                  OT1/cmr/bx/n --> OT1/ptm/bx/n on input line 34.
+LaTeX Font Info:    Overwriting math alphabet `\mathbf' in version `bold'
+(Font)                  OT1/cmr/bx/n --> OT1/ptm/bx/n on input line 34.
+LaTeX Font Info:    Redeclaring math alphabet \mathit on input line 35.
+LaTeX Font Info:    Overwriting math alphabet `\mathit' in version `normal'
+(Font)                  OT1/cmr/m/it --> OT1/ptm/m/it on input line 35.
+LaTeX Font Info:    Overwriting math alphabet `\mathit' in version `bold'
+(Font)                  OT1/cmr/bx/it --> OT1/ptm/m/it on input line 35.
+LaTeX Info: Redefining \hbar on input line 50.
+)
+\c@firstpage=\count269
+)
+(/usr/share/texlive/texmf-dist/tex/latex/underscore/underscore.sty
+Package: underscore 2006/09/13
+LaTeX Info: Redefining \_ on input line 42.
+)
+(/usr/share/texlive/texmf-dist/tex/latex/base/fontenc.sty
+Package: fontenc 2021/04/29 v2.0v Standard LaTeX package
+LaTeX Font Info:    Trying to load font information for T1+ptm on input line 11
+2.
+
+(/usr/share/texlive/texmf-dist/tex/latex/psnfss/t1ptm.fd
+File: t1ptm.fd 2001/06/04 font definitions for T1/ptm.
+))
+(/usr/share/texlive/texmf-dist/tex/latex/base/inputenc.sty
+Package: inputenc 2021/02/14 v1.3d Input encoding file
+\inpenc@prehook=\toks17
+\inpenc@posthook=\toks18
+)
+(/usr/share/texlive/texmf-dist/tex/generic/babel/babel.sty
+Package: babel 2022/01/26 3.70 The Babel package
+\babel@savecnt=\count270
+\U@D=\dimen143
+\l@unhyphenated=\language7
+
+(/usr/share/texlive/texmf-dist/tex/generic/babel/txtbabel.def)
+\bbl@readstream=\read2
+\bbl@dirlevel=\count271
+Package babel Info: You haven't specified a language. I'll use 'nil'
+(babel)             as the main language. Reported on input line 4299.
+
+(/usr/share/texlive/texmf-dist/tex/generic/babel/nil.ldf
+Language: nil 2022/01/26 3.70 Nil language
+\l@nil=\language8
+))
+(/usr/share/texlive/texmf-dist/tex/latex/amsmath/amsmath.sty
+Package: amsmath 2021/10/15 v2.17l AMS math features
+\@mathmargin=\skip50
+
+For additional information on amsmath, use the `?' option.
+(/usr/share/texlive/texmf-dist/tex/latex/amsmath/amstext.sty
+Package: amstext 2021/08/26 v2.01 AMS text
+
+(/usr/share/texlive/texmf-dist/tex/latex/amsmath/amsgen.sty
+File: amsgen.sty 1999/11/30 v2.0 generic functions
+\@emptytoks=\toks19
+\ex@=\dimen144
+))
+(/usr/share/texlive/texmf-dist/tex/latex/amsmath/amsbsy.sty
+Package: amsbsy 1999/11/29 v1.2d Bold Symbols
+\pmbraise@=\dimen145
+)
+(/usr/share/texlive/texmf-dist/tex/latex/amsmath/amsopn.sty
+Package: amsopn 2021/08/26 v2.02 operator names
+)
+\inf@bad=\count272
+LaTeX Info: Redefining \frac on input line 234.
+\uproot@=\count273
+\leftroot@=\count274
+LaTeX Info: Redefining \overline on input line 399.
+\classnum@=\count275
+\DOTSCASE@=\count276
+LaTeX Info: Redefining \ldots on input line 496.
+LaTeX Info: Redefining \dots on input line 499.
+LaTeX Info: Redefining \cdots on input line 620.
+\Mathstrutbox@=\box50
+\strutbox@=\box51
+\big@size=\dimen146
+LaTeX Font Info:    Redeclaring font encoding OML on input line 743.
+LaTeX Font Info:    Redeclaring font encoding OMS on input line 744.
+\macc@depth=\count277
+\c@MaxMatrixCols=\count278
+\dotsspace@=\muskip17
+\c@parentequation=\count279
+\dspbrk@lvl=\count280
+\tag@help=\toks20
+\row@=\count281
+\column@=\count282
+\maxfields@=\count283
+\andhelp@=\toks21
+\eqnshift@=\dimen147
+\alignsep@=\dimen148
+\tagshift@=\dimen149
+\tagwidth@=\dimen150
+\totwidth@=\dimen151
+\lineht@=\dimen152
+\@envbody=\toks22
+\multlinegap=\skip51
+\multlinetaggap=\skip52
+\mathdisplay@stack=\toks23
+LaTeX Info: Redefining \[ on input line 2938.
+LaTeX Info: Redefining \] on input line 2939.
+)
+(/usr/share/texlive/texmf-dist/tex/latex/amsfonts/amsfonts.sty
+Package: amsfonts 2013/01/14 v3.01 Basic AMSFonts support
+\symAMSa=\mathgroup6
+\symAMSb=\mathgroup7
+LaTeX Font Info:    Overwriting math alphabet `\mathfrak' in version `bold'
+(Font)                  U/euf/m/n --> U/euf/b/n on input line 106.
+)
+(/usr/share/texlive/texmf-dist/tex/latex/xcolor/xcolor.sty
+Package: xcolor 2021/10/31 v2.13 LaTeX color extensions (UK)
+
+(/usr/share/texlive/texmf-dist/tex/latex/graphics-cfg/color.cfg
+File: color.cfg 2016/01/02 v1.6 sample color configuration
+)
+Package xcolor Info: Driver file: pdftex.def on input line 227.
+
+(/usr/share/texlive/texmf-dist/tex/latex/graphics-def/pdftex.def
+File: pdftex.def 2020/10/05 v1.2a Graphics/color driver for pdftex
+)
+Package xcolor Info: Model `cmy' substituted by `cmy0' on input line 1352.
+Package xcolor Info: Model `hsb' substituted by `rgb' on input line 1356.
+Package xcolor Info: Model `RGB' extended on input line 1368.
+Package xcolor Info: Model `HTML' substituted by `rgb' on input line 1370.
+Package xcolor Info: Model `Hsb' substituted by `hsb' on input line 1371.
+Package xcolor Info: Model `tHsb' substituted by `hsb' on input line 1372.
+Package xcolor Info: Model `HSB' substituted by `hsb' on input line 1373.
+Package xcolor Info: Model `Gray' substituted by `gray' on input line 1374.
+Package xcolor Info: Model `wave' substituted by `hsb' on input line 1375.
+)
+(./coqdoc.sty
+Package: coqdoc 2002/02/11
+\coqdocbaseindent=\skip53
+ (/usr/share/texlive/texmf-dist/tex/generic/iftex/ifpdf.sty
+Package: ifpdf 2019/10/25 v3.4 ifpdf legacy package. Use iftex instead.
+)
+Package hyperref Info: Option `raiselinks' set `true' on input line 114.
+Package hyperref Info: Option `colorlinks' set `true' on input line 114.
+
+(/usr/share/texlive/texmf-dist/tex/latex/tools/xr.sty
+Package: xr 2020-05-10 v5.06 eXternal References (DPC)
+))
+(/usr/share/texlive/texmf-dist/tex/latex/mathpartir/mathpartir.sty
+Package: mathpartir 2016/02/24 version 1.3.2 Math Paragraph for Typesetting Inf
+erence Rules
+\mpr@andskip=\skip54
+\mpr@lista=\toks24
+\mpr@listb=\toks25
+\mpr@hlist=\box52
+\mpr@vlist=\box53
+\mpr@right=\box54
+)
+(/usr/share/texlive/texmf-dist/tex/latex/minibox/minibox.sty
+(/usr/share/texlive/texmf-dist/tex/latex/l3kernel/expl3.sty
+Package: expl3 2022-01-21 L3 programming layer (loader) 
+
+(/usr/share/texlive/texmf-dist/tex/latex/l3backend/l3backend-pdftex.def
+File: l3backend-pdftex.def 2022-01-12 L3 backend support: PDF output (pdfTeX)
+\l__color_backend_stack_int=\count284
+\l__pdf_internal_box=\box55
+))
+Package: minibox 2013/06/21 v0.2a Another type of box.
+\l_minibox_rule_dim=\dimen153
+\l_minibox_pad_dim=\dimen154
+)
+(/usr/share/texlive/texmf-dist/tex/latex/tabto-ltx/tabto.sty
+Package: tabto 2018/12/28  v 1.4  Another tabbing mechanism
+\CurrentLineWidth=\dimen155
+\TabPrevPos=\dimen156
+)
+(/usr/share/texlive/texmf-dist/tex/latex/tools/calc.sty
+Package: calc 2017/05/25 v4.3 Infix arithmetic (KKT,FJ)
+\calc@Acount=\count285
+\calc@Bcount=\count286
+\calc@Adimen=\dimen157
+\calc@Bdimen=\dimen158
+\calc@Askip=\skip55
+\calc@Bskip=\skip56
+LaTeX Info: Redefining \setlength on input line 80.
+LaTeX Info: Redefining \addtolength on input line 81.
+\calc@Ccount=\count287
+\calc@Cskip=\skip57
+) (./report-subst.aux)
+\openout1 = `report-subst.aux'.
+
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 35.
+LaTeX Font Info:    ... okay on input line 35.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 35.
+LaTeX Font Info:    ... okay on input line 35.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 35.
+LaTeX Font Info:    ... okay on input line 35.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 35.
+LaTeX Font Info:    ... okay on input line 35.
+LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 35.
+LaTeX Font Info:    ... okay on input line 35.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 35.
+LaTeX Font Info:    ... okay on input line 35.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 35.
+LaTeX Font Info:    ... okay on input line 35.
+LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 35.
+LaTeX Font Info:    ... okay on input line 35.
+LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 35.
+LaTeX Font Info:    ... okay on input line 35.
+Package hyperref Info: Link coloring ON on input line 35.
+
+(/usr/share/texlive/texmf-dist/tex/latex/hyperref/nameref.sty
+Package: nameref 2021-04-02 v2.47 Cross-referencing by name of section
+
+(/usr/share/texlive/texmf-dist/tex/latex/refcount/refcount.sty
+Package: refcount 2019/12/15 v3.6 Data extraction from label references (HO)
+)
+(/usr/share/texlive/texmf-dist/tex/generic/gettitlestring/gettitlestring.sty
+Package: gettitlestring 2019/12/15 v1.6 Cleanup title references (HO)
+)
+\c@section@level=\count288
+)
+LaTeX Info: Redefining \ref on input line 35.
+LaTeX Info: Redefining \pageref on input line 35.
+LaTeX Info: Redefining \nameref on input line 35.
+
+(./report-subst.out) (./report-subst.out)
+\@outlinefile=\write3
+\openout3 = `report-subst.out'.
+
+
+(/usr/share/texlive/texmf-dist/tex/context/base/mkii/supp-pdf.mkii
+[Loading MPS to PDF converter (version 2006.09.02).]
+\scratchcounter=\count289
+\scratchdimen=\dimen159
+\scratchbox=\box56
+\nofMPsegments=\count290
+\nofMParguments=\count291
+\everyMPshowfont=\toks26
+\MPscratchCnt=\count292
+\MPscratchDim=\dimen160
+\MPnumerator=\count293
+\makeMPintoPDFobject=\count294
+\everyMPtoPDFconversion=\toks27
+)
+LaTeX Font Info:    Trying to load font information for OT1+ztmcm on input line
+ 37.
+ (/usr/share/texlive/texmf-dist/tex/latex/psnfss/ot1ztmcm.fd
+File: ot1ztmcm.fd 2000/01/03 Fontinst v1.801 font definitions for OT1/ztmcm.
+)
+LaTeX Font Info:    Trying to load font information for OML+ztmcm on input line
+ 37.
+
+(/usr/share/texlive/texmf-dist/tex/latex/psnfss/omlztmcm.fd
+File: omlztmcm.fd 2000/01/03 Fontinst v1.801 font definitions for OML/ztmcm.
+)
+LaTeX Font Info:    Trying to load font information for OMS+ztmcm on input line
+ 37.
+
+(/usr/share/texlive/texmf-dist/tex/latex/psnfss/omsztmcm.fd
+File: omsztmcm.fd 2000/01/03 Fontinst v1.801 font definitions for OMS/ztmcm.
+)
+LaTeX Font Info:    Trying to load font information for OMX+ztmcm on input line
+ 37.
+
+(/usr/share/texlive/texmf-dist/tex/latex/psnfss/omxztmcm.fd
+File: omxztmcm.fd 2000/01/03 Fontinst v1.801 font definitions for OMX/ztmcm.
+)
+LaTeX Font Info:    Trying to load font information for OT1+ptm on input line 3
+7.
+
+(/usr/share/texlive/texmf-dist/tex/latex/psnfss/ot1ptm.fd
+File: ot1ptm.fd 2001/06/04 font definitions for OT1/ptm.
+)
+LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <9> not available
+(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 37.
+LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <7> not available
+(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 37.
+LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <5> not available
+(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 37.
+LaTeX Font Info:    Trying to load font information for TS1+ptm on input line 3
+7.
+
+(/usr/share/texlive/texmf-dist/tex/latex/psnfss/ts1ptm.fd
+File: ts1ptm.fd 2001/06/04 font definitions for TS1/ptm.
+)
+LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <12> not available
+(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 37.
+LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <8> not available
+(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 37.
+LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <6> not available
+(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 37.
+LaTeX Font Info:    Trying to load font information for T1+cmtt on input line 3
+7.
+
+(/usr/share/texlive/texmf-dist/tex/latex/base/t1cmtt.fd
+File: t1cmtt.fd 2019/12/16 v2.5j Standard LaTeX font definitions
+) (./lambda_es.tex
+
+LaTeX Warning: Citation `barendregtLambdaCalculusIts1984' on page 1 undefined o
+n input line 8.
+
+LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <10.95> not available
+(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 8.
+
+LaTeX Warning: Citation `teamCoqProofAssistant2021' on page 1 undefined on inpu
+t line 8.
+
+
+Overfull \hbox (5.19247pt too wide) in paragraph at lines 14--15
+[]\T1/ptm/m/n/10.95 The substitution lemma is an important result concerning th
+e composition of the substitution operation,
+ []
+
+
+! LaTeX Error: Environment tcolorbox undefined.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.17 \begin{tcolorbox}
+                      
+? 
+! Undefined control sequence.
+<recently read> \metasub 
+                         
+l.18 ... variables of the term $v$) then $\metasub
+                                                  {\metasub{t}{x}{u}}{y}{v} ...
+
+? 
+! Undefined control sequence.
+l.18 ...s of the term $v$) then $\metasub{\metasub
+                                                  {t}{x}{u}}{y}{v} =_\alpha ...
+
+? 
+! Undefined control sequence.
+l.18 ...\metasub{t}{x}{u}}{y}{v} =_\alpha \metasub
+                                                  {\metasub{t}{y}{v}}{x}{\me...
+
+? 
+! Undefined control sequence.
+l.18 ...t}{x}{u}}{y}{v} =_\alpha \metasub{\metasub
+                                                  {t}{y}{v}}{x}{\metasub{u}{...
+
+? 
+! Undefined control sequence.
+l.18 ...ha \metasub{\metasub{t}{y}{v}}{x}{\metasub
+                                                  {u}{y}{v}}$.
+? 
+
+! LaTeX Error: \begin{document} ended by \end{tcolorbox}.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.19 \end{tcolorbox}
+                    
+? 
+
+LaTeX Warning: Citation `berghoferHeadtoHeadComparisonBruijn2007' on page 1 und
+efined on input line 22.
+
+
+LaTeX Warning: Citation `kesnerPerpetualityFullSafe2008' on page 1 undefined on
+ input line 26.
+
+
+LaTeX Warning: Citation `nakazawaCompositionalConfluenceProofs2016' on page 1 u
+ndefined on input line 26.
+
+
+LaTeX Warning: Citation `nakazawaPropertyShufflingCalculus2023' on page 1 undef
+ined on input line 26.
+
+LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <14.4> not available
+(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 33.
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `math shift' on input line 33.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `\lambda' on input line 33.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `math shift' on input line 33.
+
+
+LaTeX Warning: Citation `gabbayNewApproachAbstract1999' on page 1 undefined on 
+input line 37.
+
+
+Overfull \hbox (3.57666pt too wide) in paragraph at lines 37--38
+\T1/ptm/m/n/10.95 where variables use names. In the nominal setting, variables 
+are represented by atoms that are structureless
+ []
+
+[1
+
+{/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map}]
+! Undefined control sequence.
+l.57  (\lambda_x.t)\ u \to_{\beta} \metasub
+                                           {t}{x}{u}
+? 
+! Undefined control sequence.
+<recently read> \metasub 
+                         
+l.59 \noindent where $\metasub
+                              {t}{x}{u}$ represents the term obtained from $...
+
+? 
+! Undefined control sequence.
+<recently read> \metasub 
+                         
+l.59 ...ariable capture. In other words, $\metasub
+                                                  {t}{x}{u}$ is a metanotati...
+
+? 
+! Undefined control sequence.
+<recently read> \vswap 
+                       
+l.62 $\vswap
+            {x}{y}{z} := \left\{ \begin{array}{ll}
+? 
+! Undefined control sequence.
+<recently read> \swap 
+                      
+l.72 $\swap
+           {x}{y}{t} := \left\{ \begin{array}{ll}
+? 
+! Undefined control sequence.
+l.73 \vswap
+           {x}{y}{z}, & \mbox{ if } t = z; \\
+? 
+! Undefined control sequence.
+l.74 \lambda_{\vswap
+                    {x}{y}{z}}.\swap{x}{y}{t_1}, & \mbox{ if } t = \lambda_z...
+
+? 
+! Undefined control sequence.
+l.74 \lambda_{\vswap{x}{y}{z}}.\swap
+                                    {x}{y}{t_1}, & \mbox{ if } t = \lambda_z...
+
+? 
+! Undefined control sequence.
+<recently read> \swap 
+                      
+l.75 \swap
+          {x}{y}{t_1}\ \swap{x}{y}{t_2}, & \mbox{ if } t = t_1\ t_2\\
+? 
+! Undefined control sequence.
+l.75 \swap{x}{y}{t_1}\ \swap
+                            {x}{y}{t_2}, & \mbox{ if } t = t_1\ t_2\\
+? 
+! Undefined control sequence.
+l.79 ...a_x\lambda_y.x\ y)\ y \to_{\beta} \metasub
+                                                  {\swap{x}{z}{(\lambda_y.x\...
+
+? 
+! Undefined control sequence.
+l.79 ...mbda_y.x\ y)\ y \to_{\beta} \metasub{\swap
+                                                  {x}{z}{(\lambda_y.x\ y)}}{...
+
+? 
+! Undefined control sequence.
+l.79 ...a_x\lambda_y.x\ y)\ y \to_{\beta} \metasub
+                                                  {\metasub{(\lambda_y.x\ y)...
+
+? 
+! Undefined control sequence.
+l.79 ...a_y.x\ y)\ y \to_{\beta} \metasub{\metasub
+                                                  {(\lambda_y.x\ y)}}{x}{y}{...
+
+? 
+LaTeX Font Info:    Trying to load font information for T1+cmss on input line 9
+4.
+(/usr/share/texlive/texmf-dist/tex/latex/base/t1cmss.fd
+File: t1cmss.fd 2019/12/16 v2.5j Standard LaTeX font definitions
+) [2]
+
+LaTeX Warning: Citation `kesnerTheoryExplicitSubstitutions2009' on page 3 undef
+ined on input line 105.
+
+! Undefined control sequence.
+<recently read> \swap 
+                      
+l.139 ...f a permutation on a term, written $\swap
+                                                  {x}{y}{t}$, is inductively...
+
+? 
+! Undefined control sequence.
+<recently read> \swap 
+                      
+l.142 $\swap
+            {x}{y}{t} := \left\{ \begin{array}{ll}
+? 
+! Undefined control sequence.
+l.143 \vswap
+            {x}{y}{v}, & \mbox{ if } t \mbox{ is the variable } v; \\
+? 
+! Undefined control sequence.
+l.144 \lambda_{\vswap
+                     {x}{y}{z}}. \swap{x}{y}{t_1}, & \mbox{ if } t = \lambda...
+
+? 
+! Undefined control sequence.
+l.144 \lambda_{\vswap{x}{y}{z}}. \swap
+                                      {x}{y}{t_1}, & \mbox{ if } t = \lambda...
+
+? 
+! Undefined control sequence.
+<recently read> \swap 
+                      
+l.145 \swap
+           {x}{y}{t_1}\ \swap{x}{y}{t_2}, & \mbox{ if } t = t_1\ t_2;\\
+? 
+! Undefined control sequence.
+l.145 \swap{x}{y}{t_1}\ \swap
+                             {x}{y}{t_2}, & \mbox{ if } t = t_1\ t_2;\\
+? 
+! Undefined control sequence.
+<recently read> \esub 
+                      
+l.146 \esub
+           {\swap{x}{y}{t_1}}{\vswap{x}{y}{z}}{\swap{x}{y}{t_2}}, & \mbox{ i...
+
+? 
+! Undefined control sequence.
+l.146 \esub{\swap
+                 {x}{y}{t_1}}{\vswap{x}{y}{z}}{\swap{x}{y}{t_2}}, & \mbox{ i...
+
+? 
+! Undefined control sequence.
+l.146 \esub{\swap{x}{y}{t_1}}{\vswap
+                                    {x}{y}{z}}{\swap{x}{y}{t_2}}, & \mbox{ i...
+
+? 
+! Undefined control sequence.
+l.146 ...{\swap{x}{y}{t_1}}{\vswap{x}{y}{z}}{\swap
+                                                  {x}{y}{t_2}}, & \mbox{ if ...
+
+? 
+! Undefined control sequence.
+l.146 ...swap{x}{y}{t_2}}, & \mbox{ if } t = \esub
+                                                  {t_1}{z}{t_2}.
+? 
+
+Overfull \hbox (4.33624pt too wide) in paragraph at lines 170--173
+[]\T1/ptm/m/n/10.95 The []\T1/ptm/m/it/10.95 swap[] \T1/ptm/m/n/10.95 function 
+preserves the size of terms, as stated by the following lemma:  []\T1/cmtt/m/n/
+10.95 Lemma[] [][][]\T1/ptm/m/n/10.95 swap[]size[]eq[]
+ []
+
+[3]
+! Undefined control sequence.
+<argument> ...tin fv(t_2) \and t_1 =_\alpha \swap 
+                                                  {y}{x}{t_2}
+l.201 ...2}}{\lambda_x.t_1 =_\alpha \lambda_y.t_2}
+                                                  
+? 
+! Undefined control sequence.
+<argument> \esub 
+                 {t_1}{x}{t_2} =_\alpha \esub {t_1'}{x}{t_2'}
+l.206 ...1}{x}{t_2} =_\alpha \esub{t_1'}{x}{t_2'}}
+                                                  
+? 
+! Undefined control sequence.
+<argument> {t_1}{x}{t_2} =_\alpha \esub 
+                                        {t_1'}{x}{t_2'}
+l.206 ...1}{x}{t_2} =_\alpha \esub{t_1'}{x}{t_2'}}
+                                                  
+? 
+! Undefined control sequence.
+<argument> ...in fv(t_1') \and t_1 =_\alpha \swap 
+                                                  {y}{x}{t_1'}
+l.211 ...1}{x}{t_2} =_\alpha \esub{t_1'}{y}{t_2'}}
+                                                  
+? 
+! Undefined control sequence.
+<argument> \esub 
+                 {t_1}{x}{t_2} =_\alpha \esub {t_1'}{y}{t_2'}
+l.211 ...1}{x}{t_2} =_\alpha \esub{t_1'}{y}{t_2'}}
+                                                  
+? 
+! Undefined control sequence.
+<argument> {t_1}{x}{t_2} =_\alpha \esub 
+                                        {t_1'}{y}{t_2'}
+l.211 ...1}{x}{t_2} =_\alpha \esub{t_1'}{y}{t_2'}}
+                                                  
+? 
+! Undefined control sequence.
+<recently read> \swap 
+                      
+l.252 ...$t_1 =_\alpha t_2$ if, and only if $\swap
+                                                  {x}{y}{t_1} =_\alpha \swap...
+
+? 
+! Undefined control sequence.
+l.252 ... only if $\swap{x}{y}{t_1} =_\alpha \swap
+                                                  {x}{y}{t_2}$. Note that th...
+
+? 
+! Undefined control sequence.
+l.252 ...pha \lambda_y.z$, but $(\lambda_x.z)\msub
+                                                  {z}{x} = \lambda_x.x \neq_...
+
+? 
+! Undefined control sequence.
+l.252 ...neq_\alpha \lambda_y.x (\lambda_y.z)\msub
+                                                  {z}{x}$, assuming that $x ...
+
+? 
+[4]
+Overfull \hbox (10.09853pt too wide) in paragraph at lines 260--262
+[]\T1/ptm/m/n/10.95 There are several interesting auxiliary properties that nee
+d to be proved before achieving the substitution
+ []
+
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `math shift' on input line 267.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `\lambda' on input line 267.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `math shift' on input line 267.
+
+! Undefined control sequence.
+l.271 ...t: $(\lambda_x.t)\ u \to_{\beta} \metasub
+                                                  {t}{x}{u}$. In a less form...
+
+? 
+
+LaTeX Warning: Citation `barendregtLambdaCalculusIts1984' on page 5 undefined o
+n input line 271.
+
+! Undefined control sequence.
+<recently read> \metasub 
+                         
+l.272 $\metasub
+               {t}{x}{u} = \left\{
+? 
+! Undefined control sequence.
+<recently read> \metasub 
+                         
+l.276   \metasub
+                {t_1}{x}{u}\ \metasub{t_2}{x}{u}, & \mbox{ if } t = \metasub...
+
+? 
+! Undefined control sequence.
+l.276   \metasub{t_1}{x}{u}\ \metasub
+                                     {t_2}{x}{u}, & \mbox{ if } t = \metasub...
+
+? 
+! Undefined control sequence.
+l.276 ...ub{t_2}{x}{u}, & \mbox{ if } t = \metasub
+                                                  {(t_1\ t_2)}{x}{u}; \\
+? 
+! Undefined control sequence.
+l.277   \lambda_y.(\metasub
+                           {t_1}{x}{u}), & \mbox{ if } t = \lambda_y.t_1.
+? 
+! Undefined control sequence.
+l.282 ...ocurrences of $x$ in $t$, written $t\msub
+                                                  {x}{u}$ is defined as foll...
+
+? 
+
+Underfull \hbox (badness 10000) in paragraph at lines 282--283
+
+ []
+
+! Undefined control sequence.
+l.284 \metasub
+              {t}{x}{u} = \left\{
+? 
+! Undefined control sequence.
+<recently read> \metasub 
+                         
+l.288   \metasub
+                {t_1}{x}{u}\ \metasub{t_2}{x}{u}, & \mbox{ if } t = \metasub...
+
+? 
+! Undefined control sequence.
+l.288   \metasub{t_1}{x}{u}\ \metasub
+                                     {t_2}{x}{u}, & \mbox{ if } t = \metasub...
+
+? 
+! Undefined control sequence.
+l.288 ...ub{t_2}{x}{u}, & \mbox{ if } t = \metasub
+                                                  {(t_1\ t_2)}{x}{u}; \\
+? 
+! Undefined control sequence.
+l.290   \lambda_z.(\metasub
+                           {(\swap{y}{z}{t_1})}{x}{u}), & \mbox{ if } t = \l...
+
+? 
+! Undefined control sequence.
+l.290   \lambda_z.(\metasub{(\swap
+                                  {y}{z}{t_1})}{x}{u}), & \mbox{ if } t = \l...
+
+? 
+! Undefined control sequence.
+<recently read> \esub 
+                      
+l.291   \esub
+             {t_1}{x}{\metasub{t_2}{x}{u}}, & \mbox{ if } t = \esub{t_1}{x}{...
+
+? 
+! Undefined control sequence.
+l.291   \esub{t_1}{x}{\metasub
+                              {t_2}{x}{u}}, & \mbox{ if } t = \esub{t_1}{x}{...
+
+? 
+! Undefined control sequence.
+l.291 ...asub{t_2}{x}{u}}, & \mbox{ if } t = \esub
+                                                  {t_1}{x}{t_2}; \\
+? 
+! Undefined control sequence.
+<recently read> \esub 
+                      
+l.292   \esub
+             {\metasub{(\swap{y}{z}{t_1})}{x}{u}}{z}{\metasub{t_2}{x}{u}}, &...
+
+? 
+! Undefined control sequence.
+l.292   \esub{\metasub
+                      {(\swap{y}{z}{t_1})}{x}{u}}{z}{\metasub{t_2}{x}{u}}, &...
+
+? 
+! Undefined control sequence.
+l.292   \esub{\metasub{(\swap
+                             {y}{z}{t_1})}{x}{u}}{z}{\metasub{t_2}{x}{u}}, &...
+
+? 
+! Undefined control sequence.
+l.292 ...ub{(\swap{y}{z}{t_1})}{x}{u}}{z}{\metasub
+                                                  {t_2}{x}{u}}, & \mbox{ if ...
+
+? 
+! Undefined control sequence.
+l.292 ...asub{t_2}{x}{u}}, & \mbox{ if } t = \esub
+                                                  {t_1}{y}{t_2}, x \neq y \m...
+
+? 
+! Undefined control sequence.
+l.292 ...}, x \neq y \mbox{ and } z\notin fv(\esub
+                                                  {t_1}{y}{t_2})\cup fv(u) \...
+
+? 
+! Undefined control sequence.
+<recently read> \metasub 
+                         
+l.297 ...x} in the Coq code to represent $\metasub
+                                                  {t}{x}{u}$. The correspond...
+
+? 
+[5]
+! Undefined control sequence.
+<recently read> \metasub 
+                         
+l.342 ...s that if $x \notin fv(t)$ then $\metasub
+                                                  {t}{x}{u} =_\alpha t$. In ...
+
+? 
+! Undefined control sequence.
+<recently read> \metasub 
+                         
+l.342 ...s a syntactic equality, {\i.e.} $\metasub
+                                                  {t}{x}{u} = t$ instead of ...
+
+? 
+! Undefined control sequence.
+l.348 ... have to prove that $(\lambda_y.t_1)\msub
+                                                  {x}{u} =_\alpha \lambda_y....
+
+? 
+! Undefined control sequence.
+l.351 ..._1| \to \forall u\ x', x' \notin fv(\swap
+                                                  {x}{y}{t'}) \to (\swap{x}{...
+
+? 
+! Undefined control sequence.
+l.351 ... x' \notin fv(\swap{x}{y}{t'}) \to (\swap
+                                                  {x}{y}{t'})\msub{x'}{u} =_...
+
+? 
+! Undefined control sequence.
+l.351 ...wap{x}{y}{t'}) \to (\swap{x}{y}{t'})\msub
+                                                  {x'}{u} =_\alpha \swap{x}{...
+
+? 
+! Undefined control sequence.
+l.351 ...wap{x}{y}{t'})\msub{x'}{u} =_\alpha \swap
+                                                  {x}{y}{t'}$.
+? 
+! Undefined control sequence.
+l.354 ...d we have to prove that $\lambda_z.(\swap
+                                                  {z}{y}{t_1})\msub{x}{u} =_...
+
+? 
+! Undefined control sequence.
+l.354 ...e that $\lambda_z.(\swap{z}{y}{t_1})\msub
+                                                  {x}{u} =_\alpha \lambda_y....
+
+? 
+! Undefined control sequence.
+l.356 ..., we have to prove that $\lambda_z.(\swap
+                                                  {z}{z}{t_1})\msub{x}{u} =_...
+
+? 
+! Undefined control sequence.
+l.356 ...e that $\lambda_z.(\swap{z}{z}{t_1})\msub
+                                                  {x}{u} =_\alpha \lambda_z....
+
+? 
+! Undefined control sequence.
+l.356 ...\it abs}\_\mbox{\it same}$ we get $(\swap
+                                                  {z}{z}{t_1})\msub{x}{u} =_...
+
+? 
+! Undefined control sequence.
+l.356 ...it same}$ we get $(\swap{z}{z}{t_1})\msub
+                                                  {x}{u} =_\alpha t_1$, but ...
+
+? 
+! Undefined control sequence.
+<recently read> \swap 
+                      
+l.356 ...ivity of $\alpha$-equivalence with $\swap
+                                                  {z}{z}{t_1}$ as intermedia...
+
+? 
+[6]
+! Undefined control sequence.
+l.357 ...\mbox{\it diff}$. The new goal is $(\swap
+                                                  {z}{y}{t_1})\msub{x}{u} =_...
+
+? 
+! Undefined control sequence.
+l.357 ... The new goal is $(\swap{z}{y}{t_1})\msub
+                                                  {x}{u} =_\alpha \swap{z}{y...
+
+? 
+! Undefined control sequence.
+l.357 ...wap{z}{y}{t_1})\msub{x}{u} =_\alpha \swap
+                                                  {z}{y}{t_1}$ which holds b...
+
+? 
+! Undefined control sequence.
+l.357 ...y the induction hypothesis, since $|\swap
+                                                  {z}{y}{t_1}| = |t_1|$ and ...
+
+? 
+! Undefined control sequence.
+l.357 ...{y}{t_1}| = |t_1|$ and $x \notin fv(\swap
+                                                  {z}{y}{t_1})$ because $x \...
+
+? 
+! Undefined control sequence.
+<recently read> \metasub 
+                         
+l.364 ...ha t'$ and $u =_\alpha u'$ then $\metasub
+                                                  {t}{x}{u} =_\alpha \metasu...
+
+? 
+! Undefined control sequence.
+l.364 ...then $\metasub{t}{x}{u} =_\alpha \metasub
+                                                  {t'}{x}{u'}$, where $x$ is...
+
+? 
+! Undefined control sequence.
+<recently read> \metasub 
+                         
+l.364 ...ve that if $u =_\alpha u'$ then $\metasub
+                                                  {t}{x}{u} =_\alpha \metasu...
+
+? 
+! Undefined control sequence.
+l.364 ...then $\metasub{t}{x}{u} =_\alpha \metasub
+                                                  {t}{x}{u'}, \forall x, t, ...
+
+? 
+! Undefined control sequence.
+<recently read> \metasub 
+                         
+l.364 ...ve that if $t =_\alpha t'$ then $\metasub
+                                                  {t}{x}{u} =_\alpha \metasu...
+
+? 
+! Undefined control sequence.
+l.364 ...then $\metasub{t}{x}{u} =_\alpha \metasub
+                                                  {t'}{x}{u}, \forall x, t, ...
+
+? 
+! Undefined control sequence.
+<recently read> \metasub 
+                         
+l.373 ...a_y.t_1$. We need to prove that $\metasub
+                                                  {(\lambda_y.t_1)}{x}{u} =_...
+
+? 
+! Undefined control sequence.
+l.373 ...{(\lambda_y.t_1)}{x}{u} =_\alpha \metasub
+                                                  {(\lambda_y.t_1)}{x}{u'}$.
+? 
+! Undefined control sequence.
+l.379 ... new goal is then $\lambda_{x_0}.\metasub
+                                                  {(\swap{y}{x_0}{t_1})}{x}{...
+
+? 
+! Undefined control sequence.
+l.379 ...al is then $\lambda_{x_0}.\metasub{(\swap
+                                                  {y}{x_0}{t_1})}{x}{u} =_\a...
+
+? 
+! Undefined control sequence.
+l.379 ...})}{x}{u} =_\alpha \lambda_{x_1}.\metasub
+                                                  {(\swap{y}{x_1}{t_1})}{x}{...
+
+? 
+! Undefined control sequence.
+l.379 ...u} =_\alpha \lambda_{x_1}.\metasub{(\swap
+                                                  {y}{x_1}{t_1})}{x}{u'}$, w...
+
+? 
+! Undefined control sequence.
+<recently read> \metasub 
+                         
+l.385 ... x_1$ and we need to prove that $\metasub
+                                                  {(\swap{y}{x_0}{t_1})}{x}{...
+
+? 
+! Undefined control sequence.
+l.385 ...nd we need to prove that $\metasub{(\swap
+                                                  {y}{x_0}{t_1})}{x}{u} =_\a...
+
+? 
+! Undefined control sequence.
+l.385 ...\swap{y}{x_0}{t_1})}{x}{u} =_\alpha \swap
+                                                  {x_0}{x_1}{(\metasub{(\swa...
+
+? 
+! Undefined control sequence.
+l.385 ...{x}{u} =_\alpha \swap{x_0}{x_1}{(\metasub
+                                                  {(\swap{y}{x_1}{t_1})}{x}{...
+
+? 
+! Undefined control sequence.
+l.385 ...=_\alpha \swap{x_0}{x_1}{(\metasub{(\swap
+                                                  {y}{x_1}{t_1})}{x}{u'})}$.
+? 
+
+! LaTeX Error: Environment lemma undefined.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.391 \begin{lemma}
+                    Let $t,u$ be terms, and $x,y,z$ variables. Then
+? 
+! Undefined control sequence.
+<recently read> \swap 
+                      
+l.392  $\swap
+             {y}{z}{(\metasub{t}{x}{u})} =_\alpha \metasub{(\swap{y}{z}{t})}...
+
+? 
+! Undefined control sequence.
+l.392  $\swap{y}{z}{(\metasub
+                             {t}{x}{u})} =_\alpha \metasub{(\swap{y}{z}{t})}...
+
+? 
+! Undefined control sequence.
+l.392 ...z}{(\metasub{t}{x}{u})} =_\alpha \metasub
+                                                  {(\swap{y}{z}{t})}{\vswap{...
+
+? 
+! Undefined control sequence.
+l.392 ...tasub{t}{x}{u})} =_\alpha \metasub{(\swap
+                                                  {y}{z}{t})}{\vswap{y}{z}{x...
+
+? 
+! Undefined control sequence.
+l.392 ..._\alpha \metasub{(\swap{y}{z}{t})}{\vswap
+                                                  {y}{z}{x}}{\swap{y}{z}{u}}$.
+? 
+! Undefined control sequence.
+l.392 ...{(\swap{y}{z}{t})}{\vswap{y}{z}{x}}{\swap
+                                                  {y}{z}{u}}$.
+? 
+
+! LaTeX Error: \begin{document} ended by \end{lemma}.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.393 \end{lemma}
+                 
+? 
+! Undefined control sequence.
+<recently read> \swap 
+                      
+l.404 ...ction, where we need to prove that $\swap
+                                                  {y}{z}{(\metasub{(\lambda_...
+
+? 
+! Undefined control sequence.
+l.404 ...need to prove that $\swap{y}{z}{(\metasub
+                                                  {(\lambda_w.t_1)}{x}{u})} ...
+
+? 
+! Undefined control sequence.
+l.404 ...\lambda_w.t_1)}{x}{u})} =_\alpha \metasub
+                                                  {(\swap{y}{z}{\lambda_w.t_...
+
+? 
+! Undefined control sequence.
+l.404 ..._w.t_1)}{x}{u})} =_\alpha \metasub{(\swap
+                                                  {y}{z}{\lambda_w.t_1})}{\v...
+
+? 
+! Undefined control sequence.
+l.404 ...asub{(\swap{y}{z}{\lambda_w.t_1})}{\vswap
+                                                  {y}{z}{x}}{\swap{y}{z}{u}}...
+
+? 
+! Undefined control sequence.
+l.404 ...}{\lambda_w.t_1})}{\vswap{y}{z}{x}}{\swap
+                                                  {y}{z}{u}}$. On the left h...
+
+? 
+! Undefined control sequence.
+l.404 ... over the abstraction is $\lambda_{\vswap
+                                                  {y}{z}{w'}}.\swap{y}{z}{(\...
+
+? 
+! Undefined control sequence.
+l.404 ...tion is $\lambda_{\vswap{y}{z}{w'}}.\swap
+                                                  {y}{z}{(\metasub{\swap{w}{...
+
+? 
+! Undefined control sequence.
+l.404 ..._{\vswap{y}{z}{w'}}.\swap{y}{z}{(\metasub
+                                                  {\swap{w}{w'}{t_1}}{x}{u})...
+
+? 
+! Undefined control sequence.
+l.404 ...ap{y}{z}{w'}}.\swap{y}{z}{(\metasub{\swap
+                                                  {w}{w'}{t_1}}{x}{u})} =_\a...
+
+? 
+! Undefined control sequence.
+l.404 ...ap{w}{w'}{t_1}}{x}{u})} =_\alpha \metasub
+                                                  {(\lambda_{\vswap{y}{z}{w}...
+
+? 
+! Undefined control sequence.
+l.404 ...}{u})} =_\alpha \metasub{(\lambda_{\vswap
+                                                  {y}{z}{w}}.\swap{y}{z}{t_1...
+
+? 
+! Undefined control sequence.
+l.404 ...\metasub{(\lambda_{\vswap{y}{z}{w}}.\swap
+                                                  {y}{z}{t_1})}{\vswap{y}{z}...
+
+? 
+! Undefined control sequence.
+l.404 ...vswap{y}{z}{w}}.\swap{y}{z}{t_1})}{\vswap
+                                                  {y}{z}{x}}{\swap{y}{z}{u}}...
+
+? 
+! Undefined control sequence.
+l.404 ...\swap{y}{z}{t_1})}{\vswap{y}{z}{x}}{\swap
+                                                  {y}{z}{u}}$, where $w' \no...
+
+? 
+! Undefined control sequence.
+<recently read> \vswap 
+                       
+l.407 ...ide term. Since $x\neq w$, we get $\vswap
+                                                  {y}{z}{x} \neq \vswap{y}{z...
+
+? 
+! Undefined control sequence.
+l.407 ...q w$, we get $\vswap{y}{z}{x} \neq \vswap
+                                                  {y}{z}{w}$ and a renaming ...
+
+? 
+! Undefined control sequence.
+l.407 ... such that $w'' \notin fv(\lambda_{\vswap
+                                                  {y}{z}{w}}.\swap{y}{z}{t_1...
+
+? 
+! Undefined control sequence.
+l.407 ...\notin fv(\lambda_{\vswap{y}{z}{w}}.\swap
+                                                  {y}{z}{t_1}) \cup fv(\swap...
+
+? 
+! Undefined control sequence.
+l.407 ...y}{z}{w}}.\swap{y}{z}{t_1}) \cup fv(\swap
+                                                  {y}{z}{u}) \cup \{\vswap{y...
+
+? 
+! Undefined control sequence.
+l.407 ...1}) \cup fv(\swap{y}{z}{u}) \cup \{\vswap
+                                                  {y}{z}{x}\}$, we get the f...
+
+? 
+! Undefined control sequence.
+l.407 ...e get the following goal $\lambda_{\vswap
+                                                  {y}{z}{w'}}.\swap{y}{z}{(\...
+
+? 
+! Undefined control sequence.
+l.407 ...ng goal $\lambda_{\vswap{y}{z}{w'}}.\swap
+                                                  {y}{z}{(\metasub{\swap{w}{...
+
+? 
+! Undefined control sequence.
+l.407 ..._{\vswap{y}{z}{w'}}.\swap{y}{z}{(\metasub
+                                                  {\swap{w}{w'}{t_1}}{x}{u})...
+
+? 
+! Undefined control sequence.
+l.407 ...ap{y}{z}{w'}}.\swap{y}{z}{(\metasub{\swap
+                                                  {w}{w'}{t_1}}{x}{u})} =_\a...
+
+? 
+! Undefined control sequence.
+l.407 ...}{x}{u})} =_\alpha \lambda_{w''}.\metasub
+                                                  {(\swap{w''}{\vswap{y}{z}{...
+
+? 
+! Undefined control sequence.
+l.407 ...)} =_\alpha \lambda_{w''}.\metasub{(\swap
+                                                  {w''}{\vswap{y}{z}{w}}{(\s...
+
+? 
+! Undefined control sequence.
+l.407 ...\lambda_{w''}.\metasub{(\swap{w''}{\vswap
+                                                  {y}{z}{w}}{(\swap{y}{z}{t_...
+
+? 
+! Undefined control sequence.
+l.407 ...tasub{(\swap{w''}{\vswap{y}{z}{w}}{(\swap
+                                                  {y}{z}{t_1})})}{\vswap{y}{...
+
+? 
+! Undefined control sequence.
+l.407 ...ap{y}{z}{w}}{(\swap{y}{z}{t_1})})}{\vswap
+                                                  {y}{z}{x}}{\swap{y}{z}{u}}...
+
+? 
+! Undefined control sequence.
+l.407 ...wap{y}{z}{t_1})})}{\vswap{y}{z}{x}}{\swap
+                                                  {y}{z}{u}}$. We consider t...
+
+? 
+! Undefined control sequence.
+l.407 ... consider two cases: either $w'' = \vswap
+                                                  {y}{z}{w'}$ or $w'' \neq \...
+
+? 
+! Undefined control sequence.
+l.407 ...' = \vswap{y}{z}{w'}$ or $w'' \neq \vswap
+                                                  {y}{z}{w'}$.
+? 
+! Undefined control sequence.
+<recently read> \swap 
+                      
+l.410 ... abs}\_\mbox{\it same}$ and we get $\swap
+                                                  {y}{z}{(\metasub{(\swap{w}...
+
+? 
+! Undefined control sequence.
+l.410 ... same}$ and we get $\swap{y}{z}{(\metasub
+                                                  {(\swap{w}{w'}{t_1})}{x}{u...
+
+? 
+! Undefined control sequence.
+l.410 ... and we get $\swap{y}{z}{(\metasub{(\swap
+                                                  {w}{w'}{t_1})}{x}{u})} =_\...
+
+? 
+! Undefined control sequence.
+l.410 ...p{w}{w'}{t_1})}{x}{u})} =_\alpha \metasub
+                                                  {(\swap{w''}{\vswap{y}{z}{...
+
+? 
+! Undefined control sequence.
+l.410 ...}{t_1})}{x}{u})} =_\alpha \metasub{(\swap
+                                                  {w''}{\vswap{y}{z}{w}}{(\s...
+
+? 
+! Undefined control sequence.
+l.410 ...u})} =_\alpha \metasub{(\swap{w''}{\vswap
+                                                  {y}{z}{w}}{(\swap{y}{z}{t_...
+
+? 
+! Undefined control sequence.
+l.410 ...tasub{(\swap{w''}{\vswap{y}{z}{w}}{(\swap
+                                                  {y}{z}{t_1})})}{\vswap{y}{...
+
+? 
+! Undefined control sequence.
+l.410 ...ap{y}{z}{w}}{(\swap{y}{z}{t_1})})}{\vswap
+                                                  {y}{z}{x}}{\swap{y}{z}{u}}...
+
+? 
+! Undefined control sequence.
+l.410 ...wap{y}{z}{t_1})})}{\vswap{y}{z}{x}}{\swap
+                                                  {y}{z}{u}}$ that can be pr...
+
+? 
+! Undefined control sequence.
+l.413 When $w'' \neq \vswap
+                           {y}{z}{w'}$, the application of the rule $\mbox{\...
+
+? 
+! Undefined control sequence.
+<recently read> \swap 
+                      
+l.413 ...mbox{\it diff}$ generates the goal $\swap
+                                                  {w''}{\vswap{y}{z}{w'}}{\s...
+
+? 
+! Undefined control sequence.
+l.413 ...f}$ generates the goal $\swap{w''}{\vswap
+                                                  {y}{z}{w'}}{\swap{y}{z}{(\...
+
+? 
+! Undefined control sequence.
+l.413 ... goal $\swap{w''}{\vswap{y}{z}{w'}}{\swap
+                                                  {y}{z}{(\metasub{\swap{w}{...
+
+? 
+! Undefined control sequence.
+l.413 ...}{\vswap{y}{z}{w'}}{\swap{y}{z}{(\metasub
+                                                  {\swap{w}{w'}{t_1}}{x}{u})...
+
+? 
+! Undefined control sequence.
+l.413 ...ap{y}{z}{w'}}{\swap{y}{z}{(\metasub{\swap
+                                                  {w}{w'}{t_1}}{x}{u})}} =_\...
+
+? 
+! Undefined control sequence.
+l.413 ...p{w}{w'}{t_1}}{x}{u})}} =_\alpha \metasub
+                                                  {(\swap{w''}{\vswap{y}{z}{...
+
+? 
+! Undefined control sequence.
+l.413 ...}{t_1}}{x}{u})}} =_\alpha \metasub{(\swap
+                                                  {w''}{\vswap{y}{z}{w}}{(\s...
+
+? 
+! Undefined control sequence.
+l.413 ...})}} =_\alpha \metasub{(\swap{w''}{\vswap
+                                                  {y}{z}{w}}{(\swap{y}{z}{t_...
+
+? 
+! Undefined control sequence.
+l.413 ...tasub{(\swap{w''}{\vswap{y}{z}{w}}{(\swap
+                                                  {y}{z}{t_1})})}{\vswap{y}{...
+
+? 
+! Undefined control sequence.
+l.413 ...ap{y}{z}{w}}{(\swap{y}{z}{t_1})})}{\vswap
+                                                  {y}{z}{x}}{\swap{y}{z}{u}}...
+
+? 
+! Undefined control sequence.
+l.413 ...wap{y}{z}{t_1})})}{\vswap{y}{z}{x}}{\swap
+                                                  {y}{z}{u}}$. We can use th...
+
+? 
+! Undefined control sequence.
+<recently read> \metasub 
+                         
+l.413 ...n $\alpha$-equality of the form $\metasub
+                                                  {t}{x}{u} =_\alpha \metasu...
+
+? 
+! Undefined control sequence.
+l.413 ...form $\metasub{t}{x}{u} =_\alpha \metasub
+                                                  {t'}{x}{u'}$, where $t =_\...
+
+? 
+[7]
+Underfull \hbox (badness 10000) in paragraph at lines 426--437
+
+ []
+
+[8]
+Underfull \hbox (badness 10000) in paragraph at lines 483--485
+
+ []
+
+
+LaTeX Warning: Reference `msubst' on page 9 undefined on input line 498.
+
+! Undefined control sequence.
+l.501 ...he RHS cannot belong to the set $fv(\swap
+                                                  {x}{y}{\lambda_y'.t_1}) \c...
+
+? 
+! Undefined control sequence.
+l.501 ...swap{x}{y}{\lambda_y'.t_1}) \cup fv(\swap
+                                                  {x}{y}{u}) \cup \{\vswap{x...
+
+? 
+! Undefined control sequence.
+l.501 ...1}) \cup fv(\swap{x}{y}{u}) \cup \{\vswap
+                                                  {x}{y}{z}\}$.
+? 
+! Undefined control sequence.
+l.504 ...new name that is not in the set $fv(\swap
+                                                  {x}{y}{\lambda_y'.t_1}) \c...
+
+? 
+! Undefined control sequence.
+l.504 ...swap{x}{y}{\lambda_y'.t_1}) \cup fv(\swap
+                                                  {x}{y}{u}) \cup \{\vswap{x...
+
+? 
+! Undefined control sequence.
+l.504 ...1}) \cup fv(\swap{x}{y}{u}) \cup \{\vswap
+                                                  {x}{y}{z}\}$. After renami...
+
+? 
+! Undefined control sequence.
+l.527 ...0} be a new name not in the set $fv(\esub
+                                                  {t1}{y'}{t2})\cup fv(u) \c...
+
+? 
+! Undefined control sequence.
+l.527 ...{x1}, a new name not in the set $fv(\esub
+                                                  {\swap{x}{y}{t1}}{\vswap{x...
+
+? 
+! Undefined control sequence.
+l.527 ...a new name not in the set $fv(\esub{\swap
+                                                  {x}{y}{t1}}{\vswap{x}{y}{y...
+
+? 
+! Undefined control sequence.
+l.527 ...the set $fv(\esub{\swap{x}{y}{t1}}{\vswap
+                                                  {x}{y}{y'}}{\swap{x}{y}{t2...
+
+? 
+! Undefined control sequence.
+l.527 ...{\swap{x}{y}{t1}}{\vswap{x}{y}{y'}}{\swap
+                                                  {x}{y}{t2}})\cup fv(\swap{...
+
+? 
+! Undefined control sequence.
+l.527 ...x}{y}{y'}}{\swap{x}{y}{t2}})\cup fv(\swap
+                                                  {x}{y}{u}) \cup \{\vswap{x...
+
+? 
+! Undefined control sequence.
+l.527 ...2}})\cup fv(\swap{x}{y}{u}) \cup \{\vswap
+                                                  {x}{y}{z}\}$. After the pr...
+
+? 
+[9]
+Underfull \hbox (badness 10000) in paragraph at lines 554--556
+
+ []
+
+[10]
+Underfull \vbox (badness 1158) has occurred while \output is active []
+
+ [11]
+
+LaTeX Warning: Citation `abadiExplicitSubstitutions1991' on page 12 undefined o
+n input line 606.
+
+
+LaTeX Warning: Citation `accattoliAbstractFactorizationTheorem2012' on page 12 
+undefined on input line 606.
+
+
+LaTeX Warning: Citation `ayala-rinconComparingCalculiExplicit2002' on page 12 u
+ndefined on input line 606.
+
+
+LaTeX Warning: Citation `ayala-rinconComparingImplementingCalculi2005' on page 
+12 undefined on input line 606.
+
+
+LaTeX Warning: Citation `bonelliPerpetualityNamedLambda2001' on page 12 undefin
+ed on input line 606.
+
+
+LaTeX Warning: Citation `fujitaChurchRosserTheoremCompositional2016' on page 12
+ undefined on input line 606.
+
+
+LaTeX Warning: Citation `fmm2021' on page 12 undefined on input line 612.
+
+
+LaTeX Warning: Citation `nakazawaCompositionalConfluenceProofs2016' on page 12 
+undefined on input line 612.
+
+
+LaTeX Warning: Citation `nakazawaCallbyvalue2017' on page 12 undefined on input
+ line 612.
+
+
+LaTeX Warning: Citation `kesnerPerpetualityFullSafe2008' on page 12 undefined o
+n input line 612.
+
+)
+No file report-subst.bbl.
+[12]
+\pages=\write4
+\openout4 = `report-subst.pag'.
+
+ (./report-subst.aux)
+
+LaTeX Warning: There were undefined references.
+
+
+LaTeX Warning: Label(s) may have changed. Rerun to get cross-references right.
+
+
+Package rerunfilecheck Warning: File `report-subst.out' has changed.
+(rerunfilecheck)                Rerun to get outlines right
+(rerunfilecheck)                or use package `bookmark'.
+
+Package rerunfilecheck Info: Checksums for `report-subst.out':
+(rerunfilecheck)             Before: AB218831923B38535DB771EC503DABF1;849
+(rerunfilecheck)             After:  77E2194D43CDB3C066BEDFA4C6F05F80;1119.
+ ) 
+Here is how much of TeX's memory you used:
+ 11512 strings out of 480171
+ 181176 string characters out of 5894489
+ 505225 words of memory out of 5000000
+ 28858 multiletter control sequences out of 15000+600000
+ 546035 words of font info for 147 fonts, out of 8000000 for 9000
+ 59 hyphenation exceptions out of 8191
+ 75i,19n,77p,3231b,432s stack positions out of 5000i,500n,10000p,200000b,80000s
+pdfTeX warning (dest): name{coq:lambda\040es.subst\040rec\040fun} has been re
+ferenced but does not exist, replaced by a fixed one
+
+pdfTeX warning (dest): name{coq:lambda\040es.:::'['\040x\040':='\040x\040']'\04
+0x} has been referenced but does not exist, replaced by a fixed one
+
+pdfTeX warning (dest): name{coq:lambda\040es.z:205} has been referenced but doe
+s not exist, replaced by a fixed one
+
+pdfTeX warning (dest): name{coq:lambda\040es.subst\040rec\040fun:202} has been 
+referenced but does not exist, replaced by a fixed one
+
+pdfTeX warning (dest): name{coq:lambda\040es.z:204} has been referenced but doe
+s not exist, replaced by a fixed one
+
+pdfTeX warning (dest): name{coq:lambda\040es.u:200} has been referenced but doe
+s not exist, replaced by a fixed one
+
+pdfTeX warning (dest): name{coq:lambda\040es.x:201} has been referenced but doe
+s not exist, replaced by a fixed one
+
+pdfTeX warning (dest): name{coq:lambda\040es.t:199} has been referenced but doe
+s not exist, replaced by a fixed one
+
+pdfTeX warning (dest): name{coq:lambda\040es.:::x\040'=a'\040x} has been refere
+nced but does not exist, replaced by a fixed one
+
+pdfTeX warning (dest): name{coq:lambda\040es.aeq:119} has been referenced but d
+oes not exist, replaced by a fixed one
+
+pdfTeX warning (dest): name{coq:lambda\040es.swap:51} has been referenced but d
+oes not exist, replaced by a fixed one
+
+pdfTeX warning (dest): name{coq:lambda\040es.fv\040nom:46} has been referenced 
+but does not exist, replaced by a fixed one
+
+pdfTeX warning (dest): name{coq:lambda\040es.size:43} has been referenced but d
+oes not exist, replaced by a fixed one
+
+pdfTeX warning (dest): name{coq:lambda\040es.n\040sexp:32} has been referenced 
+but does not exist, replaced by a fixed one
+
+pdfTeX warning (dest): name{subsection.2.1} has been referenced but does not ex
+ist, replaced by a fixed one
+
+ </home/maria/.texlive2021/texmf-var/fonts/pk/ljfour/jknappen/ec/ecss1095.600pk
+>{/usr/share/texlive/texmf-dist/fonts/enc/dvips/base/8r.enc} </home/maria/.texl
+ive2021/texmf-var/fonts/pk/ljfour/jknappen/ec/ectt1095.600pk> </home/maria/.tex
+live2021/texmf-var/fonts/pk/ljfour/jknappen/ec/ectt0900.600pk></usr/share/texli
+ve/texmf-dist/fonts/type1/public/amsfonts/cm/cmex10.pfb></usr/share/texlive/tex
+mf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb></usr/share/texlive/texmf-dis
+t/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/share/texlive/texmf-dist/fonts
+/type1/public/amsfonts/cm/cmsy10.pfb></usr/share/texlive/texmf-dist/fonts/type1
+/public/amsfonts/symbols/msam10.pfb></usr/share/texlive/texmf-dist/fonts/type1/
+urw/symbol/usyr.pfb></usr/share/texlive/texmf-dist/fonts/type1/urw/times/utmb8a
+.pfb></usr/share/texlive/texmf-dist/fonts/type1/urw/times/utmr8a.pfb></usr/shar
+e/texlive/texmf-dist/fonts/type1/urw/times/utmr8a.pfb></usr/share/texlive/texmf
+-dist/fonts/type1/urw/times/utmri8a.pfb>
+Output written on report-subst.pdf (12 pages, 224094 bytes).
+PDF statistics:
+ 1454 PDF objects out of 1728 (max. 8388607)
+ 1317 compressed objects within 14 object streams
+ 398 named destinations out of 1000 (max. 500000)
+ 33 words of extra memory for PDF output out of 10000 (max. 10000000)
+
