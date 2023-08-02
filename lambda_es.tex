@@ -88,7 +88,7 @@ In what follows, we will adopt a mixed-notation approach, intertwining metanotat
 \coqdockw{Definition} \coqdef{lambda es.vswap}{vswap}{\coqdocdefinition{vswap}} (\coqdef{lambda es.x:27}{x}{\coqdocbinder{x}}:\coqdocabbreviation{atom}) (\coqdef{lambda es.y:28}{y}{\coqdocbinder{y}}:\coqdocabbreviation{atom}) (\coqdef{lambda es.z:29}{z}{\coqdocbinder{z}}:\coqdocabbreviation{atom}) := \coqdockw{if} (\coqref{lambda es.z:29}{\coqdocvariable{z}} \coqdocnotation{==} \coqref{lambda es.x:27}{\coqdocvariable{x}}) \coqdockw{then} \coqref{lambda es.y:28}{\coqdocvariable{y}} \coqdockw{else} \coqdockw{if} (\coqref{lambda es.z:29}{\coqdocvariable{z}} \coqdocnotation{==} \coqref{lambda es.y:28}{\coqdocvariable{y}}) \coqdockw{then} \coqref{lambda es.x:27}{\coqdocvariable{x}} \coqdockw{else} \coqref{lambda es.z:29}{\coqdocvariable{z}}.\coqdoceol
 \coqdocemptyline
 \end{coqdoccode}
-A short example to acquaint ourselves with the Coq notation, let us show how we will write the proofs:
+\noindent therefore, the swap $\vswap{x}{y}{z}$ is written in Coq as \coqdocvar{vswap} \coqdocvar{x} \coqdocvar{y} \coqdocvar{z}. A short example to acquaint ourselves with the Coq notation, let us show how we will write the proofs:
 \begin{coqdoccode}
 \coqdocemptyline
 \coqdocnoindent
@@ -131,7 +131,7 @@ The following inductive definition corresponds to the grammar (\ref{es:grammar})
 \coqdockw{Notation} \coqdef{lambda es.:::'[' x ':=' x ']' x}{"}{"}[ x := u ] t" := (\coqref{lambda es.n sub}{\coqdocconstructor{n\_sub}} \coqdocvar{t} \coqdocvar{x} \coqdocvar{u}) (\coqdoctac{at} \coqdockw{level} 60).\coqdoceol
 \coqdocemptyline
 \end{coqdoccode}
-\noindent where \coqdocvar{n\_var} is the constructor for variables, \coqdocvar{n\_abs} for abstractions, \coqdocvar{n\_app} for applications and \coqdocvar{n\_sub} for the explicit substitution. The \coqdocvar{size} and the set \coqdocvar{fv\_nom} of the free variables of a term are defined as usual: 
+The \coqdocvar{size} and the set \coqdocvar{fv\_nom} of the free variables of a term are defined as usual: 
 \begin{coqdoccode}
 \coqdocemptyline
 \coqdocnoindent
@@ -208,13 +208,21 @@ The \coqdocvar{swap} function is involutive, which is also proved done by struct
 \begin{coqdoccode}
 \coqdocemptyline
 \coqdocnoindent
-\coqdockw{Lemma} \coqdef{lambda es.swap involutive}{swap\_involutive}{\coqdoclemma{swap\_involutive}} : \coqdockw{\ensuremath{\forall}} \coqdef{lambda es.t:74}{t}{\coqdocbinder{t}} \coqdef{lambda es.x:75}{x}{\coqdocbinder{x}} \coqdef{lambda es.y:76}{y}{\coqdocbinder{y}},\coqdoceol
+\coqdockw{Lemma} \coqdef{lambda es.swap involutive}{swap\_involutive}{\coqdoclemma{swap\_involutive}} : \coqdockw{\ensuremath{\forall}} \coqdef{lambda es.t:74}{t}{\coqdocbinder{t}} \coqdef{lambda es.x:75}{x}{\coqdocbinder{x}} \coqdef{lambda es.y:76}{y}{\coqdocbinder{y}}, \coqref{lambda es.swap}{\coqdocdefinition{swap}} \coqref{lambda es.x:75}{\coqdocvariable{x}} \coqref{lambda es.y:76}{\coqdocvariable{y}} (\coqref{lambda es.swap}{\coqdocdefinition{swap}} \coqref{lambda es.x:75}{\coqdocvariable{x}} \coqref{lambda es.y:76}{\coqdocvariable{y}} \coqref{lambda es.t:74}{\coqdocvariable{t}}) \coqexternalref{::type scope:x '=' x}{http://coq.inria.fr/distrib/V8.16.1/stdlib//Coq.Init.Logic}{\coqdocnotation{=}} \coqref{lambda es.t:74}{\coqdocvariable{t}}.\coqdoceol
+\coqdocemptyline
+\end{coqdoccode}
+The shuffle property given by the following lemma is also proved by structural induction on the structure of \coqdocvar{t}:
+\begin{coqdoccode}
+\coqdocnoindent
+\coqdockw{Lemma} \coqdef{lambda es.shuffle swap}{shuffle\_swap}{\coqdoclemma{shuffle\_swap}} : \coqdockw{\ensuremath{\forall}} \coqdef{lambda es.w:77}{w}{\coqdocbinder{w}} \coqdef{lambda es.y:78}{y}{\coqdocbinder{y}} \coqdef{lambda es.z:79}{z}{\coqdocbinder{z}} \coqdef{lambda es.t:80}{t}{\coqdocbinder{t}},\coqdoceol
 \coqdocindent{2.00em}
-\coqref{lambda es.swap}{\coqdocdefinition{swap}} \coqref{lambda es.x:75}{\coqdocvariable{x}} \coqref{lambda es.y:76}{\coqdocvariable{y}} (\coqref{lambda es.swap}{\coqdocdefinition{swap}} \coqref{lambda es.x:75}{\coqdocvariable{x}} \coqref{lambda es.y:76}{\coqdocvariable{y}} \coqref{lambda es.t:74}{\coqdocvariable{t}}) \coqexternalref{::type scope:x '=' x}{http://coq.inria.fr/distrib/V8.16.1/stdlib//Coq.Init.Logic}{\coqdocnotation{=}} \coqref{lambda es.t:74}{\coqdocvariable{t}}.\coqdoceol
+\coqref{lambda es.w:77}{\coqdocvariable{w}} \coqexternalref{::type scope:x '<>' x}{http://coq.inria.fr/distrib/V8.16.1/stdlib//Coq.Init.Logic}{\coqdocnotation{\ensuremath{\not=}}} \coqref{lambda es.z:79}{\coqdocvariable{z}} \coqexternalref{::type scope:x '->' x}{http://coq.inria.fr/distrib/V8.16.1/stdlib//Coq.Init.Logic}{\coqdocnotation{\ensuremath{\rightarrow}}} \coqref{lambda es.y:78}{\coqdocvariable{y}} \coqexternalref{::type scope:x '<>' x}{http://coq.inria.fr/distrib/V8.16.1/stdlib//Coq.Init.Logic}{\coqdocnotation{\ensuremath{\not=}}} \coqref{lambda es.z:79}{\coqdocvariable{z}} \coqexternalref{::type scope:x '->' x}{http://coq.inria.fr/distrib/V8.16.1/stdlib//Coq.Init.Logic}{\coqdocnotation{\ensuremath{\rightarrow}}}\coqdoceol
+\coqdocindent{2.00em}
+\coqexternalref{::type scope:x '=' x}{http://coq.inria.fr/distrib/V8.16.1/stdlib//Coq.Init.Logic}{\coqdocnotation{(}}\coqref{lambda es.swap}{\coqdocdefinition{swap}} \coqref{lambda es.w:77}{\coqdocvariable{w}} \coqref{lambda es.y:78}{\coqdocvariable{y}} (\coqref{lambda es.swap}{\coqdocdefinition{swap}} \coqref{lambda es.y:78}{\coqdocvariable{y}} \coqref{lambda es.z:79}{\coqdocvariable{z}} \coqref{lambda es.t:80}{\coqdocvariable{t}})\coqexternalref{::type scope:x '=' x}{http://coq.inria.fr/distrib/V8.16.1/stdlib//Coq.Init.Logic}{\coqdocnotation{)}} \coqexternalref{::type scope:x '=' x}{http://coq.inria.fr/distrib/V8.16.1/stdlib//Coq.Init.Logic}{\coqdocnotation{=}} \coqexternalref{::type scope:x '=' x}{http://coq.inria.fr/distrib/V8.16.1/stdlib//Coq.Init.Logic}{\coqdocnotation{(}}\coqref{lambda es.swap}{\coqdocdefinition{swap}} \coqref{lambda es.w:77}{\coqdocvariable{w}} \coqref{lambda es.z:79}{\coqdocvariable{z}} (\coqref{lambda es.swap}{\coqdocdefinition{swap}} \coqref{lambda es.w:77}{\coqdocvariable{w}} \coqref{lambda es.y:78}{\coqdocvariable{y}} \coqref{lambda es.t:80}{\coqdocvariable{t}})\coqexternalref{::type scope:x '=' x}{http://coq.inria.fr/distrib/V8.16.1/stdlib//Coq.Init.Logic}{\coqdocnotation{)}}.\coqdoceol
 \coqdocemptyline
 \coqdocemptyline
 \end{coqdoccode}
-Equivariance is an important property of the \coqdocvar{swap} function. It states that a swap can uniformly be propagated over the structure of a term:
+Equivariance is another important property of the \coqdocvar{swap} function. It states that a swap can uniformly be propagated over the structure of a term:
 \begin{coqdoccode}
 \coqdocemptyline
 \coqdocnoindent
@@ -224,11 +232,90 @@ Equivariance is an important property of the \coqdocvar{swap} function. It state
 \coqdockw{Lemma} \coqdef{lambda es.swap equivariance}{swap\_equivariance}{\coqdoclemma{swap\_equivariance}} : \coqdockw{\ensuremath{\forall}} \coqdef{lambda es.t:90}{t}{\coqdocbinder{t}} \coqdef{lambda es.x:91}{x}{\coqdocbinder{x}} \coqdef{lambda es.y:92}{y}{\coqdocbinder{y}} \coqdef{lambda es.z:93}{z}{\coqdocbinder{z}} \coqdef{lambda es.w:94}{w}{\coqdocbinder{w}}, \coqref{lambda es.swap}{\coqdocdefinition{swap}} \coqref{lambda es.x:91}{\coqdocvariable{x}} \coqref{lambda es.y:92}{\coqdocvariable{y}} (\coqref{lambda es.swap}{\coqdocdefinition{swap}} \coqref{lambda es.z:93}{\coqdocvariable{z}} \coqref{lambda es.w:94}{\coqdocvariable{w}} \coqref{lambda es.t:90}{\coqdocvariable{t}}) \coqexternalref{::type scope:x '=' x}{http://coq.inria.fr/distrib/V8.16.1/stdlib//Coq.Init.Logic}{\coqdocnotation{=}} \coqref{lambda es.swap}{\coqdocdefinition{swap}} (\coqref{lambda es.vswap}{\coqdocdefinition{vswap}} \coqref{lambda es.x:91}{\coqdocvariable{x}} \coqref{lambda es.y:92}{\coqdocvariable{y}} \coqref{lambda es.z:93}{\coqdocvariable{z}}) (\coqref{lambda es.vswap}{\coqdocdefinition{vswap}} \coqref{lambda es.x:91}{\coqdocvariable{x}} \coqref{lambda es.y:92}{\coqdocvariable{y}} \coqref{lambda es.w:94}{\coqdocvariable{w}}) (\coqref{lambda es.swap}{\coqdocdefinition{swap}} \coqref{lambda es.x:91}{\coqdocvariable{x}} \coqref{lambda es.y:92}{\coqdocvariable{y}} \coqref{lambda es.t:90}{\coqdocvariable{t}}).\coqdoceol
 \coqdocemptyline
 \end{coqdoccode}
+If a variable, say \coqdocvar{z}, is not in the set of free variables of a term \coqdocvar{t} and one swaps \coqdocvar{z} with another variable, say \coqdocvar{y}, then \coqdocvar{y} is not in the set of free variables of the term \coqdocvar{t}. This is the content of the following lemma that can easily be proved using induction on the structure of the term \coqdocvar{t}:
+\begin{coqdoccode}
+\coqdocnoindent
+\coqdockw{Lemma} \coqdef{lambda es.fv nom swap}{fv\_nom\_swap}{\coqdoclemma{fv\_nom\_swap}} : \coqdockw{\ensuremath{\forall}} \coqdef{lambda es.z:95}{z}{\coqdocbinder{z}} \coqdef{lambda es.y:96}{y}{\coqdocbinder{y}} \coqdef{lambda es.t:97}{t}{\coqdocbinder{t}}, \coqref{lambda es.z:95}{\coqdocvariable{z}} \coqdocnotation{`}\coqdocnotation{notin}\coqdocnotation{`} \coqref{lambda es.fv nom}{\coqdocdefinition{fv\_nom}} \coqref{lambda es.t:97}{\coqdocvariable{t}} \coqexternalref{::type scope:x '->' x}{http://coq.inria.fr/distrib/V8.16.1/stdlib//Coq.Init.Logic}{\coqdocnotation{\ensuremath{\rightarrow}}} \coqref{lambda es.y:96}{\coqdocvariable{y}} \coqdocnotation{`}\coqdocnotation{notin}\coqdocnotation{`} \coqref{lambda es.fv nom}{\coqdocdefinition{fv\_nom}} (\coqref{lambda es.swap}{\coqdocdefinition{swap}} \coqref{lambda es.y:96}{\coqdocvariable{y}} \coqref{lambda es.z:95}{\coqdocvariable{z}} \coqref{lambda es.t:97}{\coqdocvariable{t}}).\coqdoceol
+\coqdocemptyline
+\coqdocemptyline
+\end{coqdoccode}
+The standard proof strategy for the non trivial properties is induction on the structure of the terms. Nevertheless, the builtin induction principle automatically generated for the inductive definition \coqdocvar{n\_sexp} is not strong enough due to swappings. In fact, in general, the induction hypothesis in the abstraction case, for instance, refer to the body of the abstraction, while the goal involves a swap acting on the body of the abstraction. In order to circunvet this problem, we use an induction principle based on the size of terms: 
+\begin{coqdoccode}
+\coqdocemptyline
+\coqdocnoindent
+\coqdockw{Lemma} \coqdef{lambda es.n sexp induction}{n\_sexp\_induction}{\coqdoclemma{n\_sexp\_induction}}:\coqdoceol
+\coqdocindent{0.50em}
+\coqdockw{\ensuremath{\forall}} \coqdef{lambda es.P:109}{P}{\coqdocbinder{P}} : \coqref{lambda es.n sexp}{\coqdocinductive{n\_sexp}} \coqexternalref{::type scope:x '->' x}{http://coq.inria.fr/distrib/V8.16.1/stdlib//Coq.Init.Logic}{\coqdocnotation{\ensuremath{\rightarrow}}} \coqdockw{Prop},\coqdoceol
+\coqdocindent{0.50em}
+\coqexternalref{::type scope:x '->' x}{http://coq.inria.fr/distrib/V8.16.1/stdlib//Coq.Init.Logic}{\coqdocnotation{(}}\coqdockw{\ensuremath{\forall}} \coqdef{lambda es.x:110}{x}{\coqdocbinder{x}}, \coqref{lambda es.P:109}{\coqdocvariable{P}} (\coqref{lambda es.n var}{\coqdocconstructor{n\_var}} \coqref{lambda es.x:110}{\coqdocvariable{x}})\coqexternalref{::type scope:x '->' x}{http://coq.inria.fr/distrib/V8.16.1/stdlib//Coq.Init.Logic}{\coqdocnotation{)}} \coqexternalref{::type scope:x '->' x}{http://coq.inria.fr/distrib/V8.16.1/stdlib//Coq.Init.Logic}{\coqdocnotation{\ensuremath{\rightarrow}}}\coqdoceol
+\coqdocindent{0.50em}
+\coqexternalref{::type scope:x '->' x}{http://coq.inria.fr/distrib/V8.16.1/stdlib//Coq.Init.Logic}{\coqdocnotation{(}}\coqdockw{\ensuremath{\forall}} \coqdef{lambda es.t1:111}{t1}{\coqdocbinder{t1}} \coqdef{lambda es.z:112}{z}{\coqdocbinder{z}}, \coqexternalref{::type scope:x '->' x}{http://coq.inria.fr/distrib/V8.16.1/stdlib//Coq.Init.Logic}{\coqdocnotation{(}}\coqdockw{\ensuremath{\forall}} \coqdef{lambda es.t2:113}{t2}{\coqdocbinder{t2}} \coqdef{lambda es.x:114}{x}{\coqdocbinder{x}} \coqdef{lambda es.y:115}{y}{\coqdocbinder{y}}, \coqref{lambda es.size}{\coqdocdefinition{size}} \coqref{lambda es.t2:113}{\coqdocvariable{t2}} \coqexternalref{::type scope:x '=' x}{http://coq.inria.fr/distrib/V8.16.1/stdlib//Coq.Init.Logic}{\coqdocnotation{=}} \coqref{lambda es.size}{\coqdocdefinition{size}} \coqref{lambda es.t1:111}{\coqdocvariable{t1}} \coqexternalref{::type scope:x '->' x}{http://coq.inria.fr/distrib/V8.16.1/stdlib//Coq.Init.Logic}{\coqdocnotation{\ensuremath{\rightarrow}}} \coqref{lambda es.P:109}{\coqdocvariable{P}} (\coqref{lambda es.swap}{\coqdocdefinition{swap}} \coqref{lambda es.x:114}{\coqdocvariable{x}} \coqref{lambda es.y:115}{\coqdocvariable{y}} \coqref{lambda es.t2:113}{\coqdocvariable{t2}})\coqexternalref{::type scope:x '->' x}{http://coq.inria.fr/distrib/V8.16.1/stdlib//Coq.Init.Logic}{\coqdocnotation{)}} \coqexternalref{::type scope:x '->' x}{http://coq.inria.fr/distrib/V8.16.1/stdlib//Coq.Init.Logic}{\coqdocnotation{\ensuremath{\rightarrow}}} \coqref{lambda es.P:109}{\coqdocvariable{P}} (\coqref{lambda es.n abs}{\coqdocconstructor{n\_abs}} \coqref{lambda es.z:112}{\coqdocvariable{z}} \coqref{lambda es.t1:111}{\coqdocvariable{t1}})\coqexternalref{::type scope:x '->' x}{http://coq.inria.fr/distrib/V8.16.1/stdlib//Coq.Init.Logic}{\coqdocnotation{)}} \coqexternalref{::type scope:x '->' x}{http://coq.inria.fr/distrib/V8.16.1/stdlib//Coq.Init.Logic}{\coqdocnotation{\ensuremath{\rightarrow}}}\coqdoceol
+\coqdocindent{0.50em}
+\coqexternalref{::type scope:x '->' x}{http://coq.inria.fr/distrib/V8.16.1/stdlib//Coq.Init.Logic}{\coqdocnotation{(}}\coqdockw{\ensuremath{\forall}} \coqdef{lambda es.t1:116}{t1}{\coqdocbinder{t1}} \coqdef{lambda es.t2:117}{t2}{\coqdocbinder{t2}}, \coqref{lambda es.P:109}{\coqdocvariable{P}} \coqref{lambda es.t1:116}{\coqdocvariable{t1}} \coqexternalref{::type scope:x '->' x}{http://coq.inria.fr/distrib/V8.16.1/stdlib//Coq.Init.Logic}{\coqdocnotation{\ensuremath{\rightarrow}}} \coqref{lambda es.P:109}{\coqdocvariable{P}} \coqref{lambda es.t2:117}{\coqdocvariable{t2}} \coqexternalref{::type scope:x '->' x}{http://coq.inria.fr/distrib/V8.16.1/stdlib//Coq.Init.Logic}{\coqdocnotation{\ensuremath{\rightarrow}}} \coqref{lambda es.P:109}{\coqdocvariable{P}} (\coqref{lambda es.n app}{\coqdocconstructor{n\_app}} \coqref{lambda es.t1:116}{\coqdocvariable{t1}} \coqref{lambda es.t2:117}{\coqdocvariable{t2}})\coqexternalref{::type scope:x '->' x}{http://coq.inria.fr/distrib/V8.16.1/stdlib//Coq.Init.Logic}{\coqdocnotation{)}} \coqexternalref{::type scope:x '->' x}{http://coq.inria.fr/distrib/V8.16.1/stdlib//Coq.Init.Logic}{\coqdocnotation{\ensuremath{\rightarrow}}}\coqdoceol
+\coqdocindent{0.50em}
+\coqexternalref{::type scope:x '->' x}{http://coq.inria.fr/distrib/V8.16.1/stdlib//Coq.Init.Logic}{\coqdocnotation{(}}\coqdockw{\ensuremath{\forall}} \coqdef{lambda es.t1:118}{t1}{\coqdocbinder{t1}} \coqdef{lambda es.t3:119}{t3}{\coqdocbinder{t3}} \coqdef{lambda es.z:120}{z}{\coqdocbinder{z}}, \coqref{lambda es.P:109}{\coqdocvariable{P}} \coqref{lambda es.t3:119}{\coqdocvariable{t3}} \coqexternalref{::type scope:x '->' x}{http://coq.inria.fr/distrib/V8.16.1/stdlib//Coq.Init.Logic}{\coqdocnotation{\ensuremath{\rightarrow}}} \coqexternalref{::type scope:x '->' x}{http://coq.inria.fr/distrib/V8.16.1/stdlib//Coq.Init.Logic}{\coqdocnotation{(}}\coqdockw{\ensuremath{\forall}} \coqdef{lambda es.t2:121}{t2}{\coqdocbinder{t2}} \coqdef{lambda es.x:122}{x}{\coqdocbinder{x}} \coqdef{lambda es.y:123}{y}{\coqdocbinder{y}}, \coqref{lambda es.size}{\coqdocdefinition{size}} \coqref{lambda es.t2:121}{\coqdocvariable{t2}} \coqexternalref{::type scope:x '=' x}{http://coq.inria.fr/distrib/V8.16.1/stdlib//Coq.Init.Logic}{\coqdocnotation{=}} \coqref{lambda es.size}{\coqdocdefinition{size}} \coqref{lambda es.t1:118}{\coqdocvariable{t1}} \coqexternalref{::type scope:x '->' x}{http://coq.inria.fr/distrib/V8.16.1/stdlib//Coq.Init.Logic}{\coqdocnotation{\ensuremath{\rightarrow}}} \coqref{lambda es.P:109}{\coqdocvariable{P}} (\coqref{lambda es.swap}{\coqdocdefinition{swap}} \coqref{lambda es.x:122}{\coqdocvariable{x}} \coqref{lambda es.y:123}{\coqdocvariable{y}} \coqref{lambda es.t2:121}{\coqdocvariable{t2}})\coqexternalref{::type scope:x '->' x}{http://coq.inria.fr/distrib/V8.16.1/stdlib//Coq.Init.Logic}{\coqdocnotation{)}} \coqexternalref{::type scope:x '->' x}{http://coq.inria.fr/distrib/V8.16.1/stdlib//Coq.Init.Logic}{\coqdocnotation{\ensuremath{\rightarrow}}} \coqref{lambda es.P:109}{\coqdocvariable{P}} (\coqref{lambda es.n sub}{\coqdocconstructor{n\_sub}} \coqref{lambda es.t1:118}{\coqdocvariable{t1}} \coqref{lambda es.z:120}{\coqdocvariable{z}} \coqref{lambda es.t3:119}{\coqdocvariable{t3}})\coqexternalref{::type scope:x '->' x}{http://coq.inria.fr/distrib/V8.16.1/stdlib//Coq.Init.Logic}{\coqdocnotation{)}} \coqexternalref{::type scope:x '->' x}{http://coq.inria.fr/distrib/V8.16.1/stdlib//Coq.Init.Logic}{\coqdocnotation{\ensuremath{\rightarrow}}} \coqdoceol
+\coqdocindent{0.50em}
+\coqexternalref{::type scope:x '->' x}{http://coq.inria.fr/distrib/V8.16.1/stdlib//Coq.Init.Logic}{\coqdocnotation{(}}\coqdockw{\ensuremath{\forall}} \coqdef{lambda es.t:124}{t}{\coqdocbinder{t}}, \coqref{lambda es.P:109}{\coqdocvariable{P}} \coqref{lambda es.t:124}{\coqdocvariable{t}}\coqexternalref{::type scope:x '->' x}{http://coq.inria.fr/distrib/V8.16.1/stdlib//Coq.Init.Logic}{\coqdocnotation{)}}.\coqdoceol
+\coqdocemptyline
+\end{coqdoccode}
+We will use this induction principle to prove that if a certain variable, say \coqdocvar{x'}, is not in the set of free variables of a term \coqdocvar{t} then the variable obtained after applying any swap to \coqdocvar{x'} also is not in the set of free variables of the term obtained from \coqdocvar{t} after applying the same swap to \coqdocvar{t}: 
+\begin{coqdoccode}
+\coqdocnoindent
+\coqdockw{Lemma} \coqdef{lambda es.notin fv nom equivariance}{notin\_fv\_nom\_equivariance}{\coqdoclemma{notin\_fv\_nom\_equivariance}} : \coqdockw{\ensuremath{\forall}} \coqdef{lambda es.t:125}{t}{\coqdocbinder{t}} \coqdef{lambda es.x':126}{x'}{\coqdocbinder{x'}} \coqdef{lambda es.x:127}{x}{\coqdocbinder{x}} \coqdef{lambda es.y:128}{y}{\coqdocbinder{y}}, \coqref{lambda es.x':126}{\coqdocvariable{x'}} \coqdocnotation{`}\coqdocnotation{notin}\coqdocnotation{`} \coqref{lambda es.fv nom}{\coqdocdefinition{fv\_nom}} \coqref{lambda es.t:125}{\coqdocvariable{t}} \coqexternalref{::type scope:x '->' x}{http://coq.inria.fr/distrib/V8.16.1/stdlib//Coq.Init.Logic}{\coqdocnotation{\ensuremath{\rightarrow}}} \coqref{lambda es.vswap}{\coqdocdefinition{vswap}} \coqref{lambda es.x:127}{\coqdocvariable{x}} \coqref{lambda es.y:128}{\coqdocvariable{y}} \coqref{lambda es.x':126}{\coqdocvariable{x'}}  \coqdocnotation{`}\coqdocnotation{notin}\coqdocnotation{`} \coqref{lambda es.fv nom}{\coqdocdefinition{fv\_nom}} (\coqref{lambda es.swap}{\coqdocdefinition{swap}} \coqref{lambda es.x:127}{\coqdocvariable{x}} \coqref{lambda es.y:128}{\coqdocvariable{y}} \coqref{lambda es.t:125}{\coqdocvariable{t}}).\coqdoceol
+\end{coqdoccode}
+\noindent{\bf Proof.} The proof is by induction on the size of the term \coqdocvar{t}.
+\begin{coqdoccode}
+\end{coqdoccode}
+If \coqdocvar{t} is a variable, say \coqdocvar{z}, then we have that \coqdocvar{x'} \ensuremath{\not=} \coqdocvar{z} by hypothesis, and we conclude by lemma \coqdocvar{swap\_neq}.
+\begin{coqdoccode}
+\end{coqdoccode}
+If \coqdocvar{t} = \coqdocvar{n\_abs} \coqdocvar{z} \coqdocvar{t1} then we have that $x' \notin fv(t1) \backslash \{z\}$ by hypothesis. This means that either \coqdocvar{x'} = \coqdocvar{z} or \coqdocvar{x'} is not in $fv(t1)$, {\it i.e.} \coqdocvar{fv\_nom} \coqdocvar{t1} in the Coq language.
+\begin{coqdoccode}
+\end{coqdoccode}
+If \coqdocvar{x'} = \coqdocvar{z} then we have to prove that a certain element is not in a set where it was removed, and we are done. 
+\begin{coqdoccode}
+\end{coqdoccode}
+If \coqdocvar{x'} \ensuremath{\not=} \coqdocvar{x} then we compare \coqdocvar{x'} with \coqdocvar{y}. If they are equal then we are in the same situation of the previous case, and hence we conclude with an application of the lemma \coqdocvar{fv\_nom\_swap}. 
+\begin{coqdoccode}
+\end{coqdoccode}
+If both \coqdocvar{x} and \coqdocvar{y} are different from \coqdocvar{x'} then $\vswap{x}{y}{x'} = x'$ and hence, we have to prove that if \coqdocvar{x'} is not in the set of free variables of \coqdocvar{t} then \coqdocvar{x'} is not in the set of free variables of \coqdocvar{swap} \coqdocvar{x} \coqdocvar{y} \coqdocvar{t}. This is done by induction on the structure of \coqdocvar{t}. 
+\begin{coqdoccode}
+\end{coqdoccode}
+If \coqdocvar{t} is a variable, say \coqdocvar{z}, then \coqdocvar{x'} \ensuremath{\not=} \coqdocvar{z} because \coqdocvar{x'} does not occur in the set of free variables of \coqdocvar{t} by hypothesis. Therefore, \coqdocvar{fv\_nom} (\coqdocvar{swap} \coqdocvar{x} \coqdocvar{y} (\coqdocvar{n\_var} \coqdocvar{z})) is equal to one of these variables, and we conclude because all of them are different from \coqdocvar{x'}. 
+\begin{coqdoccode}
+\end{coqdoccode}
+If \coqdocvar{t} is an abstraction, say \coqdocvar{n\_abs} \coqdocvar{z} \coqdocvar{t1}, then  
+\begin{coqdoccode}
+\coqdocemptyline
+\coqdocnoindent
+\coqdockw{Lemma} \coqdocvar{swap\_remove\_reduction}: \coqdockw{\ensuremath{\forall}} \coqdocvar{x} \coqdocvar{y} \coqdocvar{t},\coqdoceol
+\coqdocindent{2.00em}
+\coqdocvar{remove} \coqdocvar{x} (\coqdocvar{remove} \coqdocvar{y} (\coqdocvar{fv\_nom} (\coqdocvar{swap} \coqdocvar{y} \coqdocvar{x} \coqdocvar{t}))) [=] \coqdocvar{remove} \coqdocvar{x} (\coqdocvar{remove} \coqdocvar{y} (\coqdocvar{fv\_nom} \coqdocvar{t})).\coqdoceol
+\coqdocemptyline
+\coqdocnoindent
+\coqdockw{Lemma} \coqdocvar{remove\_fv\_swap}: \coqdockw{\ensuremath{\forall}} \coqdocvar{x} \coqdocvar{y} \coqdocvar{t}, \coqdocvar{x} `\coqdocvar{notin}` \coqdocvar{fv\_nom} \coqdocvar{t} \ensuremath{\rightarrow} \coqdocvar{remove} \coqdocvar{x} (\coqdocvar{fv\_nom} (\coqdocvar{swap} \coqdocvar{y} \coqdocvar{x} \coqdocvar{t})) [=] \coqdocvar{remove} \coqdocvar{y} (\coqdocvar{fv\_nom} \coqdocvar{t}).\coqdoceol
+ \end{coqdoccode}
+\noindent {\bf Proof.} The proof is by induction on the structure of \coqdocvar{t}.\newline 
+\begin{coqdoccode}
+\end{coqdoccode}
+\noindent$\bullet$ The first case is when \coqdocvar{t} is a variable, say \coqdocvar{x0}. By hypothesis \coqdocvar{x0} \ensuremath{\not=} \coqdocvar{x}, and we need to show that \coqdocvar{remove} \coqdocvar{x} (\coqdocvar{fv\_nom} (\coqdocvar{swap} \coqdocvar{y} \coqdocvar{x} \coqdocvar{x0})) [=] \coqdocvar{remove} \coqdocvar{y} (\coqdocvar{fv\_nom} \coqdocvar{x0}). There are two cases to consider: 
+\begin{coqdoccode}
+\end{coqdoccode}
+If \coqdocvar{x0} = \coqdocvar{y} then both sides of the equality are the empty set, and we are done. 
+\begin{coqdoccode}
+\end{coqdoccode}
+If \coqdocvar{x0} \ensuremath{\not=} \coqdocvar{y} then we are also done because both sets are equal to the singleton containing \coqdocvar{x0}.\newline 
+\begin{coqdoccode}
+\end{coqdoccode}
+\noindent $\bullet$ If \coqdocvar{t} is an abstraction, say \coqdocvar{n\_abs} \coqdocvar{x0} \coqdocvar{t} then 
+\begin{coqdoccode}
+\coqdocemptyline
+\end{coqdoccode}
 \subsection{$\alpha$-equivalence}
 
 
 
- The notion of $\alpha$-equivalence is defined in the usual way by the following rules:
+ As usual in the standard presentations of the $\lambda$-calculus, we work with terms modulo $\alpha$-equivalence. This means that $\lambda$-terms are identified up to the name of bound variables. For instance, all the terms $\lambda_x.x$, $\lambda_y.y$ and $\lambda_z.z$ are seen as the same term which corresponds to the identity function. Formally, the notion of $\alpha$-equivalence is defined by the following inference rules:
 
 
 \begin{mathpar}
@@ -255,40 +342,36 @@ Each of these rules correspond to a constructor in the \coqdocvar{aeq} inductive
 \begin{coqdoccode}
 \coqdocemptyline
 \coqdocnoindent
-\coqdockw{Inductive} \coqdef{lambda es.aeq}{aeq}{\coqdocinductive{aeq}} : \coqref{lambda es.n sexp}{\coqdocinductive{n\_sexp}} \coqexternalref{::type scope:x '->' x}{http://coq.inria.fr/distrib/V8.16.1/stdlib//Coq.Init.Logic}{\coqdocnotation{\ensuremath{\rightarrow}}} \coqref{lambda es.n sexp}{\coqdocinductive{n\_sexp}} \coqexternalref{::type scope:x '->' x}{http://coq.inria.fr/distrib/V8.16.1/stdlib//Coq.Init.Logic}{\coqdocnotation{\ensuremath{\rightarrow}}} \coqdockw{Prop} :=\coqdoceol
+\coqdockw{Inductive} \coqdocvar{aeq} : \coqdocvar{n\_sexp} \ensuremath{\rightarrow} \coqdocvar{n\_sexp} \ensuremath{\rightarrow} \coqdockw{Prop} :=\coqdoceol
 \coqdocnoindent
-\ensuremath{|} \coqdef{lambda es.aeq var}{aeq\_var}{\coqdocconstructor{aeq\_var}} : \coqdockw{\ensuremath{\forall}} \coqdef{lambda es.x:121}{x}{\coqdocbinder{x}}, \coqref{lambda es.aeq:119}{\coqdocinductive{aeq}} (\coqref{lambda es.n var}{\coqdocconstructor{n\_var}} \coqref{lambda es.x:121}{\coqdocvariable{x}}) (\coqref{lambda es.n var}{\coqdocconstructor{n\_var}} \coqref{lambda es.x:121}{\coqdocvariable{x}})\coqdoceol
+\ensuremath{|} \coqdocvar{aeq\_var} : \coqdockw{\ensuremath{\forall}} \coqdocvar{x}, \coqdocvar{aeq} (\coqdocvar{n\_var} \coqdocvar{x}) (\coqdocvar{n\_var} \coqdocvar{x})\coqdoceol
 \coqdocnoindent
-\ensuremath{|} \coqdef{lambda es.aeq abs same}{aeq\_abs\_same}{\coqdocconstructor{aeq\_abs\_same}} : \coqdockw{\ensuremath{\forall}} \coqdef{lambda es.x:122}{x}{\coqdocbinder{x}} \coqdef{lambda es.t1:123}{t1}{\coqdocbinder{t1}} \coqdef{lambda es.t2:124}{t2}{\coqdocbinder{t2}}, \coqref{lambda es.aeq:119}{\coqdocinductive{aeq}} \coqref{lambda es.t1:123}{\coqdocvariable{t1}} \coqref{lambda es.t2:124}{\coqdocvariable{t2}} \coqexternalref{::type scope:x '->' x}{http://coq.inria.fr/distrib/V8.16.1/stdlib//Coq.Init.Logic}{\coqdocnotation{\ensuremath{\rightarrow}}} \coqref{lambda es.aeq:119}{\coqdocinductive{aeq}} (\coqref{lambda es.n abs}{\coqdocconstructor{n\_abs}} \coqref{lambda es.x:122}{\coqdocvariable{x}} \coqref{lambda es.t1:123}{\coqdocvariable{t1}})(\coqref{lambda es.n abs}{\coqdocconstructor{n\_abs}} \coqref{lambda es.x:122}{\coqdocvariable{x}} \coqref{lambda es.t2:124}{\coqdocvariable{t2}})\coqdoceol
+\ensuremath{|} \coqdocvar{aeq\_abs\_same} : \coqdockw{\ensuremath{\forall}} \coqdocvar{x} \coqdocvar{t1} \coqdocvar{t2}, \coqdocvar{aeq} \coqdocvar{t1} \coqdocvar{t2} \ensuremath{\rightarrow} \coqdocvar{aeq} (\coqdocvar{n\_abs} \coqdocvar{x} \coqdocvar{t1})(\coqdocvar{n\_abs} \coqdocvar{x} \coqdocvar{t2})\coqdoceol
 \coqdocnoindent
-\ensuremath{|} \coqdef{lambda es.aeq abs diff}{aeq\_abs\_diff}{\coqdocconstructor{aeq\_abs\_diff}} : \coqdockw{\ensuremath{\forall}} \coqdef{lambda es.x:125}{x}{\coqdocbinder{x}} \coqdef{lambda es.y:126}{y}{\coqdocbinder{y}} \coqdef{lambda es.t1:127}{t1}{\coqdocbinder{t1}} \coqdef{lambda es.t2:128}{t2}{\coqdocbinder{t2}}, \coqref{lambda es.x:125}{\coqdocvariable{x}} \coqexternalref{::type scope:x '<>' x}{http://coq.inria.fr/distrib/V8.16.1/stdlib//Coq.Init.Logic}{\coqdocnotation{\ensuremath{\not=}}} \coqref{lambda es.y:126}{\coqdocvariable{y}} \coqexternalref{::type scope:x '->' x}{http://coq.inria.fr/distrib/V8.16.1/stdlib//Coq.Init.Logic}{\coqdocnotation{\ensuremath{\rightarrow}}} \coqref{lambda es.x:125}{\coqdocvariable{x}} \coqdocnotation{`}\coqdocnotation{notin}\coqdocnotation{`} \coqref{lambda es.fv nom}{\coqdocdefinition{fv\_nom}} \coqref{lambda es.t2:128}{\coqdocvariable{t2}} \coqexternalref{::type scope:x '->' x}{http://coq.inria.fr/distrib/V8.16.1/stdlib//Coq.Init.Logic}{\coqdocnotation{\ensuremath{\rightarrow}}} \coqref{lambda es.aeq:119}{\coqdocinductive{aeq}} \coqref{lambda es.t1:127}{\coqdocvariable{t1}} (\coqref{lambda es.swap}{\coqdocdefinition{swap}} \coqref{lambda es.y:126}{\coqdocvariable{y}} \coqref{lambda es.x:125}{\coqdocvariable{x}} \coqref{lambda es.t2:128}{\coqdocvariable{t2}}) \coqexternalref{::type scope:x '->' x}{http://coq.inria.fr/distrib/V8.16.1/stdlib//Coq.Init.Logic}{\coqdocnotation{\ensuremath{\rightarrow}}} \coqref{lambda es.aeq:119}{\coqdocinductive{aeq}} (\coqref{lambda es.n abs}{\coqdocconstructor{n\_abs}} \coqref{lambda es.x:125}{\coqdocvariable{x}} \coqref{lambda es.t1:127}{\coqdocvariable{t1}}) (\coqref{lambda es.n abs}{\coqdocconstructor{n\_abs}} \coqref{lambda es.y:126}{\coqdocvariable{y}} \coqref{lambda es.t2:128}{\coqdocvariable{t2}})\coqdoceol
+\ensuremath{|} \coqdocvar{aeq\_abs\_diff} : \coqdockw{\ensuremath{\forall}} \coqdocvar{x} \coqdocvar{y} \coqdocvar{t1} \coqdocvar{t2}, \coqdocvar{x} \ensuremath{\not=} \coqdocvar{y} \ensuremath{\rightarrow} \coqdocvar{x} `\coqdocvar{notin}` \coqdocvar{fv\_nom} \coqdocvar{t2} \ensuremath{\rightarrow} \coqdocvar{aeq} \coqdocvar{t1} (\coqdocvar{swap} \coqdocvar{y} \coqdocvar{x} \coqdocvar{t2}) \ensuremath{\rightarrow} \coqdocvar{aeq} (\coqdocvar{n\_abs} \coqdocvar{x} \coqdocvar{t1}) (\coqdocvar{n\_abs} \coqdocvar{y} \coqdocvar{t2})\coqdoceol
 \coqdocnoindent
-\ensuremath{|} \coqdef{lambda es.aeq app}{aeq\_app}{\coqdocconstructor{aeq\_app}} : \coqdockw{\ensuremath{\forall}} \coqdef{lambda es.t1:129}{t1}{\coqdocbinder{t1}} \coqdef{lambda es.t2:130}{t2}{\coqdocbinder{t2}} \coqdef{lambda es.t1':131}{t1'}{\coqdocbinder{t1'}} \coqdef{lambda es.t2':132}{t2'}{\coqdocbinder{t2'}}, \coqref{lambda es.aeq:119}{\coqdocinductive{aeq}} \coqref{lambda es.t1:129}{\coqdocvariable{t1}} \coqref{lambda es.t1':131}{\coqdocvariable{t1'}} \coqexternalref{::type scope:x '->' x}{http://coq.inria.fr/distrib/V8.16.1/stdlib//Coq.Init.Logic}{\coqdocnotation{\ensuremath{\rightarrow}}} \coqref{lambda es.aeq:119}{\coqdocinductive{aeq}} \coqref{lambda es.t2:130}{\coqdocvariable{t2}} \coqref{lambda es.t2':132}{\coqdocvariable{t2'}} \coqexternalref{::type scope:x '->' x}{http://coq.inria.fr/distrib/V8.16.1/stdlib//Coq.Init.Logic}{\coqdocnotation{\ensuremath{\rightarrow}}} \coqref{lambda es.aeq:119}{\coqdocinductive{aeq}} (\coqref{lambda es.n app}{\coqdocconstructor{n\_app}} \coqref{lambda es.t1:129}{\coqdocvariable{t1}} \coqref{lambda es.t2:130}{\coqdocvariable{t2}}) (\coqref{lambda es.n app}{\coqdocconstructor{n\_app}} \coqref{lambda es.t1':131}{\coqdocvariable{t1'}} \coqref{lambda es.t2':132}{\coqdocvariable{t2'}})\coqdoceol
+\ensuremath{|} \coqdocvar{aeq\_app} : \coqdockw{\ensuremath{\forall}} \coqdocvar{t1} \coqdocvar{t2} \coqdocvar{t1'} \coqdocvar{t2'}, \coqdocvar{aeq} \coqdocvar{t1} \coqdocvar{t1'} \ensuremath{\rightarrow} \coqdocvar{aeq} \coqdocvar{t2} \coqdocvar{t2'} \ensuremath{\rightarrow} \coqdocvar{aeq} (\coqdocvar{n\_app} \coqdocvar{t1} \coqdocvar{t2}) (\coqdocvar{n\_app} \coqdocvar{t1'} \coqdocvar{t2'})\coqdoceol
 \coqdocnoindent
-\ensuremath{|} \coqdef{lambda es.aeq sub same}{aeq\_sub\_same}{\coqdocconstructor{aeq\_sub\_same}} : \coqdockw{\ensuremath{\forall}} \coqdef{lambda es.t1:133}{t1}{\coqdocbinder{t1}} \coqdef{lambda es.t2:134}{t2}{\coqdocbinder{t2}} \coqdef{lambda es.t1':135}{t1'}{\coqdocbinder{t1'}} \coqdef{lambda es.t2':136}{t2'}{\coqdocbinder{t2'}} \coqdef{lambda es.x:137}{x}{\coqdocbinder{x}}, \coqref{lambda es.aeq:119}{\coqdocinductive{aeq}} \coqref{lambda es.t1:133}{\coqdocvariable{t1}} \coqref{lambda es.t1':135}{\coqdocvariable{t1'}} \coqexternalref{::type scope:x '->' x}{http://coq.inria.fr/distrib/V8.16.1/stdlib//Coq.Init.Logic}{\coqdocnotation{\ensuremath{\rightarrow}}} \coqref{lambda es.aeq:119}{\coqdocinductive{aeq}} \coqref{lambda es.t2:134}{\coqdocvariable{t2}} \coqref{lambda es.t2':136}{\coqdocvariable{t2'}} \coqexternalref{::type scope:x '->' x}{http://coq.inria.fr/distrib/V8.16.1/stdlib//Coq.Init.Logic}{\coqdocnotation{\ensuremath{\rightarrow}}} \coqref{lambda es.aeq:119}{\coqdocinductive{aeq}} (\coqref{lambda es.n sub}{\coqdocconstructor{n\_sub}} \coqref{lambda es.t1:133}{\coqdocvariable{t1}} \coqref{lambda es.x:137}{\coqdocvariable{x}} \coqref{lambda es.t2:134}{\coqdocvariable{t2}}) (\coqref{lambda es.n sub}{\coqdocconstructor{n\_sub}} \coqref{lambda es.t1':135}{\coqdocvariable{t1'}} \coqref{lambda es.x:137}{\coqdocvariable{x}} \coqref{lambda es.t2':136}{\coqdocvariable{t2'}})\coqdoceol
+\ensuremath{|} \coqdocvar{aeq\_sub\_same} : \coqdockw{\ensuremath{\forall}} \coqdocvar{t1} \coqdocvar{t2} \coqdocvar{t1'} \coqdocvar{t2'} \coqdocvar{x}, \coqdocvar{aeq} \coqdocvar{t1} \coqdocvar{t1'} \ensuremath{\rightarrow} \coqdocvar{aeq} \coqdocvar{t2} \coqdocvar{t2'} \ensuremath{\rightarrow} \coqdocvar{aeq} ([\coqdocvar{x} := \coqdocvar{t2}] \coqdocvar{t1}) ([\coqdocvar{x} := \coqdocvar{t2'}] \coqdocvar{t1'})\coqdoceol
 \coqdocnoindent
-\ensuremath{|} \coqdef{lambda es.aeq sub diff}{aeq\_sub\_diff}{\coqdocconstructor{aeq\_sub\_diff}} : \coqdockw{\ensuremath{\forall}} \coqdef{lambda es.t1:138}{t1}{\coqdocbinder{t1}} \coqdef{lambda es.t2:139}{t2}{\coqdocbinder{t2}} \coqdef{lambda es.t1':140}{t1'}{\coqdocbinder{t1'}} \coqdef{lambda es.t2':141}{t2'}{\coqdocbinder{t2'}} \coqdef{lambda es.x:142}{x}{\coqdocbinder{x}} \coqdef{lambda es.y:143}{y}{\coqdocbinder{y}}, \coqref{lambda es.aeq:119}{\coqdocinductive{aeq}} \coqref{lambda es.t2:139}{\coqdocvariable{t2}} \coqref{lambda es.t2':141}{\coqdocvariable{t2'}} \coqexternalref{::type scope:x '->' x}{http://coq.inria.fr/distrib/V8.16.1/stdlib//Coq.Init.Logic}{\coqdocnotation{\ensuremath{\rightarrow}}} \coqref{lambda es.x:142}{\coqdocvariable{x}} \coqexternalref{::type scope:x '<>' x}{http://coq.inria.fr/distrib/V8.16.1/stdlib//Coq.Init.Logic}{\coqdocnotation{\ensuremath{\not=}}} \coqref{lambda es.y:143}{\coqdocvariable{y}} \coqexternalref{::type scope:x '->' x}{http://coq.inria.fr/distrib/V8.16.1/stdlib//Coq.Init.Logic}{\coqdocnotation{\ensuremath{\rightarrow}}} \coqref{lambda es.x:142}{\coqdocvariable{x}} \coqdocnotation{`}\coqdocnotation{notin}\coqdocnotation{`} \coqref{lambda es.fv nom}{\coqdocdefinition{fv\_nom}} \coqref{lambda es.t1':140}{\coqdocvariable{t1'}} \coqexternalref{::type scope:x '->' x}{http://coq.inria.fr/distrib/V8.16.1/stdlib//Coq.Init.Logic}{\coqdocnotation{\ensuremath{\rightarrow}}} \coqref{lambda es.aeq:119}{\coqdocinductive{aeq}} \coqref{lambda es.t1:138}{\coqdocvariable{t1}} (\coqref{lambda es.swap}{\coqdocdefinition{swap}} \coqref{lambda es.y:143}{\coqdocvariable{y}} \coqref{lambda es.x:142}{\coqdocvariable{x}} \coqref{lambda es.t1':140}{\coqdocvariable{t1'}}) \coqexternalref{::type scope:x '->' x}{http://coq.inria.fr/distrib/V8.16.1/stdlib//Coq.Init.Logic}{\coqdocnotation{\ensuremath{\rightarrow}}} \coqref{lambda es.aeq:119}{\coqdocinductive{aeq}} (\coqref{lambda es.n sub}{\coqdocconstructor{n\_sub}} \coqref{lambda es.t1:138}{\coqdocvariable{t1}} \coqref{lambda es.x:142}{\coqdocvariable{x}} \coqref{lambda es.t2:139}{\coqdocvariable{t2}}) (\coqref{lambda es.n sub}{\coqdocconstructor{n\_sub}} \coqref{lambda es.t1':140}{\coqdocvariable{t1'}} \coqref{lambda es.y:143}{\coqdocvariable{y}} \coqref{lambda es.t2':141}{\coqdocvariable{t2'}}).\coqdoceol
+\ensuremath{|} \coqdocvar{aeq\_sub\_diff} : \coqdockw{\ensuremath{\forall}} \coqdocvar{t1} \coqdocvar{t2} \coqdocvar{t1'} \coqdocvar{t2'} \coqdocvar{x} \coqdocvar{y}, \coqdocvar{aeq} \coqdocvar{t2} \coqdocvar{t2'} \ensuremath{\rightarrow} \coqdocvar{x} \ensuremath{\not=} \coqdocvar{y} \ensuremath{\rightarrow} \coqdocvar{x} `\coqdocvar{notin}` \coqdocvar{fv\_nom} \coqdocvar{t1'} \ensuremath{\rightarrow} \coqdocvar{aeq} \coqdocvar{t1} (\coqdocvar{swap} \coqdocvar{y} \coqdocvar{x} \coqdocvar{t1'}) \ensuremath{\rightarrow} \coqdocvar{aeq} ([\coqdocvar{x} := \coqdocvar{t2}] \coqdocvar{t1}) ([\coqdocvar{y} := \coqdocvar{t2'}] \coqdocvar{t1'}).\coqdoceol
+\coqdocnoindent
+\coqdockw{Notation} "t =a u" := (\coqdocvar{aeq} \coqdocvar{t} \coqdocvar{u}) (\coqdoctac{at} \coqdockw{level} 60).\coqdoceol
 \coqdocemptyline
 \end{coqdoccode}
-In what follows, we use a infix notation for $\alpha$-equivalence in the Coq code: we write \coqdocvar{t} =\coqdocvar{a} \coqdocvar{u} instead of \coqdocvar{aeq} \coqdocvar{t} \coqdocvar{u}. 
+In what follows, we use a infix notation for $\alpha$-equivalence in the Coq code. Therefore, we write \coqdocvar{t} =\coqdocvar{a} \coqdocvar{u} instead of \coqdocvar{aeq} \coqdocvar{t} \coqdocvar{u}. The above notion defines an equivalence relation over the set \coqdocvar{n\_sexp} of nominal expressions with explicit substitutions, {\it i.e.} the \coqdocvar{aeq} relation is reflexive, symmetric and transitive. 
 \begin{coqdoccode}
-\coqdocemptyline
-\coqdocemptyline
 \end{coqdoccode}
-The above notion defines an equivalence relation over the set \coqdocvar{n\_sexp} of nominal expressions with explicit substitutions, {\it i.e.} the \coqdocvar{aeq} relation is reflexive, symmetric and transitive. 
-\begin{coqdoccode}
-\coqdocemptyline
-\end{coqdoccode}
-Informally, two terms are $\alpha$-equivalent if they differ only by the names of the bound variables. Therefore, $\alpha$-equivalent terms have the same size, and the same set of free variables: 
+In addition, $\alpha$-equivalent terms have the same size, and the same set of free variables: 
 \begin{coqdoccode}
 \coqdocemptyline
 \coqdocnoindent
-\coqdockw{Lemma} \coqdef{lambda es.aeq size}{aeq\_size}{\coqdoclemma{aeq\_size}}: \coqdockw{\ensuremath{\forall}} \coqdef{lambda es.t1:148}{t1}{\coqdocbinder{t1}} \coqdef{lambda es.t2:149}{t2}{\coqdocbinder{t2}}, \coqref{lambda es.t1:148}{\coqdocvariable{t1}} \coqref{lambda es.:::x '=a' x}{\coqdocnotation{=}}\coqref{lambda es.:::x '=a' x}{\coqdocnotation{a}} \coqref{lambda es.t2:149}{\coqdocvariable{t2}} \coqexternalref{::type scope:x '->' x}{http://coq.inria.fr/distrib/V8.16.1/stdlib//Coq.Init.Logic}{\coqdocnotation{\ensuremath{\rightarrow}}} \coqref{lambda es.size}{\coqdocdefinition{size}} \coqref{lambda es.t1:148}{\coqdocvariable{t1}} \coqexternalref{::type scope:x '=' x}{http://coq.inria.fr/distrib/V8.16.1/stdlib//Coq.Init.Logic}{\coqdocnotation{=}} \coqref{lambda es.size}{\coqdocdefinition{size}} \coqref{lambda es.t2:149}{\coqdocvariable{t2}}.\coqdoceol
+\coqdockw{Lemma} \coqdocvar{aeq\_size}: \coqdockw{\ensuremath{\forall}} \coqdocvar{t1} \coqdocvar{t2}, \coqdocvar{t1} =\coqdocvar{a} \coqdocvar{t2} \ensuremath{\rightarrow} \coqdocvar{size} \coqdocvar{t1} = \coqdocvar{size} \coqdocvar{t2}.\coqdoceol
 \coqdocnoindent
-\coqdockw{Lemma} \coqdef{lambda es.aeq fv nom}{aeq\_fv\_nom}{\coqdoclemma{aeq\_fv\_nom}} : \coqdockw{\ensuremath{\forall}} \coqdef{lambda es.t1:150}{t1}{\coqdocbinder{t1}} \coqdef{lambda es.t2:151}{t2}{\coqdocbinder{t2}}, \coqref{lambda es.t1:150}{\coqdocvariable{t1}} \coqref{lambda es.:::x '=a' x}{\coqdocnotation{=}}\coqref{lambda es.:::x '=a' x}{\coqdocnotation{a}} \coqref{lambda es.t2:151}{\coqdocvariable{t2}} \coqexternalref{::type scope:x '->' x}{http://coq.inria.fr/distrib/V8.16.1/stdlib//Coq.Init.Logic}{\coqdocnotation{\ensuremath{\rightarrow}}} \coqref{lambda es.fv nom}{\coqdocdefinition{fv\_nom}} \coqref{lambda es.t1:150}{\coqdocvariable{t1}} \coqdocnotation{[=]} \coqref{lambda es.fv nom}{\coqdocdefinition{fv\_nom}} \coqref{lambda es.t2:151}{\coqdocvariable{t2}}.\coqdoceol
+\coqdockw{Lemma} \coqdocvar{aeq\_fv\_nom} : \coqdockw{\ensuremath{\forall}} \coqdocvar{t1} \coqdocvar{t2}, \coqdocvar{t1} =\coqdocvar{a} \coqdocvar{t2} \ensuremath{\rightarrow} \coqdocvar{fv\_nom} \coqdocvar{t1} [=] \coqdocvar{fv\_nom} \coqdocvar{t2}.\coqdoceol
 \coqdocemptyline
 \end{coqdoccode}
-The key point of the nominal approach is that the swap operation is stable under $\alpha$-equivalence in the sense that, $t_1 =_\alpha t_2$ if, and only if $\swap{x}{y}{t_1} =_\alpha \swap{x}{y}{t_2}$. Note that this is not true for renaming substitutions: in fact, $\lambda_x.z =_\alpha \lambda_y.z$, but $(\lambda_x.z)\msub{z}{x} = \lambda_x.x \neq_\alpha \lambda_y.x (\lambda_y.z)\msub{z}{x}$, assuming that $x \neq y$. This stability result is formalized as follows: 
+The key point of the nominal approach is that the swap operation is stable under $\alpha$-equivalence in the sense that, $t_1 =_\alpha t_2$ if, and only if $\swap{x}{y}{t_1} =_\alpha \swap{x}{y}{t_2}, \forall t_1, t_2, x, y$. Note that this is not true for renaming substitutions: in fact, $\lambda_x.z =_\alpha \lambda_y.z$, but $(\lambda_x.z)\msub{z}{x} = \lambda_x.x \neq_\alpha \lambda_y.x (\lambda_y.z)\msub{z}{x}$, assuming that $x \neq y$. This stability result is formalized as follows: 
 \begin{coqdoccode}
 \coqdocemptyline
 \coqdocnoindent
@@ -296,11 +379,23 @@ The key point of the nominal approach is that the swap operation is stable under
 \coqdocemptyline
 \coqdocemptyline
 \end{coqdoccode}
-There are several interesting auxiliary properties that need to be proved before achieving the substitution lemma. In what follows, we refer only to the tricky or challenging ones, but the interested reader can have a detailed look in the source files. Note that, swaps are introduced in proofs by the rules $\mbox{\it aeq}\_\mbox{\it abs}\_\mbox{\it diff}$ and $\mbox{\it aeq}\_\mbox{\it sub}\_\mbox{\it diff}$. As we will see, the proof steps involving these rules are trick because a naïve strategy can easily result in a proofless branch. so that one can establish the $\alpha$-equivalence between two abstractions or two explicit substitutions with different binders. The following proposition states when two swaps with a common name collapse, and it is used in the transitivity proof of \coqdocvar{aeq}: 
+There are several interesting auxiliary properties that need to be proved before achieving the substitution lemma. In what follows, we refer only to the tricky or challenging ones, but the interested reader can have a detailed look in the source files. Note that, swaps are introduced in proofs by the rules $\mbox{\it aeq}\_\mbox{\it abs}\_\mbox{\it diff}$ and $\mbox{\it aeq}\_\mbox{\it sub}\_\mbox{\it diff}$. As we will see, the proof steps involving these rules are trick because a naïve strategy can easily get blocked in a branch without proof. The following lemma states the conditions for two swaps to be merged: 
 \begin{coqdoccode}
 \coqdocemptyline
 \coqdocnoindent
 \coqdockw{Lemma} \coqdocvar{aeq\_swap\_swap}: \coqdockw{\ensuremath{\forall}} \coqdocvar{t} \coqdocvar{x} \coqdocvar{y} \coqdocvar{z}, \coqdocvar{z} `\coqdocvar{notin}` \coqdocvar{fv\_nom} \coqdocvar{t} \ensuremath{\rightarrow} \coqdocvar{x} `\coqdocvar{notin}` \coqdocvar{fv\_nom} \coqdocvar{t} \ensuremath{\rightarrow} (\coqdocvar{swap} \coqdocvar{z} \coqdocvar{x} (\coqdocvar{swap} \coqdocvar{x} \coqdocvar{y} \coqdocvar{t})) =\coqdocvar{a} (\coqdocvar{swap} \coqdocvar{z} \coqdocvar{y} \coqdocvar{t}).\coqdoceol
+\end{coqdoccode}
+\noindent{\bf Proof.} The proof is by case analysis on the variables \coqdocvar{x}, \coqdocvar{y} and \coqdocvar{z}. If \coqdocvar{x} = \coqdocvar{z} then  the external swap of the LHS is trivial, and the terms on both LHS and RHS are equal. 
+\begin{coqdoccode}
+\end{coqdoccode}
+When \coqdocvar{x} \ensuremath{\not=} \coqdocvar{z} then we compare \coqdocvar{y} and \coqdocvar{z}. If \coqdocvar{y} = \coqdocvar{z} then we can use the fact that swap is involutive and reduce the LHS to \coqdocvar{t}, and the RHS also reduces to \coqdocvar{t} since the swap is trivial. 
+\begin{coqdoccode}
+\end{coqdoccode}
+When \coqdocvar{y} \ensuremath{\not=} \coqdocvar{z} then we compare \coqdocvar{x} and \coqdocvar{y}. If \coqdocvar{x} = \coqdocvar{y} then the internal swap of the LHS is trivial and both sides are equal to \coqdocvar{swap} \coqdocvar{z} \coqdocvar{y} \coqdocvar{t}. 
+\begin{coqdoccode}
+\end{coqdoccode}
+Finally, if \coqdocvar{x} \ensuremath{\not=} \coqdocvar{y}, {\it i.e.} all \coqdocvar{x}, \coqdocvar{y} and \coqdocvar{z} are different from each other, then 
+\begin{coqdoccode}
 \coqdocemptyline
 \end{coqdoccode}
 \section{The metasubstitution operation of the $\lambda$-calculus}
@@ -356,26 +451,6 @@ Note that this function is not structurally recursive due to the swaps in the re
 \coqdocvar{n\_sub} (\coqdocvar{subst\_rec\_fun} (\coqdocvar{swap} \coqdocvar{y} \coqdocvar{z} \coqdocvar{t1}) \coqdocvar{u} \coqdocvar{x}) \coqdocvar{z} (\coqdocvar{subst\_rec\_fun} \coqdocvar{t2} \coqdocvar{u} \coqdocvar{x}) \coqdoceol
 \coqdocnoindent
 \coqdockw{end}.\coqdoceol
-\coqdocemptyline
-\end{coqdoccode}
-The standard proof strategy for the non trivial properties is induction on the structure of the terms. Nevertheless, the builtin induction principle automatically generated for the inductive definition \coqdocvar{n\_sexp} is not strong enough due to swappings. In fact, in general, the induction hypothesis in the abstraction case, for instance, refer to the body of the abstraction, while the goal involves a swap acting on the body of the abstraction. In order to circunvet this problem, we use an induction principle based on the size of terms: 
-\begin{coqdoccode}
-\coqdocemptyline
-\coqdocnoindent
-\coqdockw{Lemma} \coqdocvar{n\_sexp\_induction}:\coqdoceol
-\coqdocindent{0.50em}
-\coqdockw{\ensuremath{\forall}} \coqdocvar{P} : \coqdocvar{n\_sexp} \ensuremath{\rightarrow} \coqdockw{Prop},\coqdoceol
-\coqdocindent{0.50em}
-(\coqdockw{\ensuremath{\forall}} \coqdocvar{x}, \coqdocvar{P} (\coqdocvar{n\_var} \coqdocvar{x})) \ensuremath{\rightarrow}\coqdoceol
-\coqdocindent{0.50em}
-(\coqdockw{\ensuremath{\forall}} \coqdocvar{t1} \coqdocvar{z}, (\coqdockw{\ensuremath{\forall}} \coqdocvar{t2} \coqdocvar{x} \coqdocvar{y}, \coqdocvar{size} \coqdocvar{t2} = \coqdocvar{size} \coqdocvar{t1} \ensuremath{\rightarrow} \coqdocvar{P} (\coqdocvar{swap} \coqdocvar{x} \coqdocvar{y} \coqdocvar{t2})) \ensuremath{\rightarrow} \coqdocvar{P} (\coqdocvar{n\_abs} \coqdocvar{z} \coqdocvar{t1})) \ensuremath{\rightarrow}\coqdoceol
-\coqdocindent{0.50em}
-(\coqdockw{\ensuremath{\forall}} \coqdocvar{t1} \coqdocvar{t2}, \coqdocvar{P} \coqdocvar{t1} \ensuremath{\rightarrow} \coqdocvar{P} \coqdocvar{t2} \ensuremath{\rightarrow} \coqdocvar{P} (\coqdocvar{n\_app} \coqdocvar{t1} \coqdocvar{t2})) \ensuremath{\rightarrow}\coqdoceol
-\coqdocindent{0.50em}
-(\coqdockw{\ensuremath{\forall}} \coqdocvar{t1} \coqdocvar{t3} \coqdocvar{z}, \coqdocvar{P} \coqdocvar{t3} \ensuremath{\rightarrow} (\coqdockw{\ensuremath{\forall}} \coqdocvar{t2} \coqdocvar{x} \coqdocvar{y}, \coqdocvar{size} \coqdocvar{t2} = \coqdocvar{size} \coqdocvar{t1} \ensuremath{\rightarrow} \coqdocvar{P} (\coqdocvar{swap} \coqdocvar{x} \coqdocvar{y} \coqdocvar{t2})) \ensuremath{\rightarrow} \coqdocvar{P} (\coqdocvar{n\_sub} \coqdocvar{t1} \coqdocvar{z} \coqdocvar{t3})) \ensuremath{\rightarrow} \coqdoceol
-\coqdocindent{0.50em}
-(\coqdockw{\ensuremath{\forall}} \coqdocvar{t}, \coqdocvar{P} \coqdocvar{t}).\coqdoceol
-\coqdocemptyline
 \coqdocemptyline
 \end{coqdoccode}
 The following lemma states that if $x \notin fv(t)$ then $\metasub{t}{x}{u} =_\alpha t$. In informal proofs the conclusion of this lemma is usually stated as a syntactic equality, {\i.e.} $\metasub{t}{x}{u} = t$ instead of the $\alpha$-equivalence, but due to the changes of the names of the bound variables when the metasubstitution is propagated inside an abstraction or inside an explicit substitution, syntactic equality does not hold here. 
@@ -527,7 +602,7 @@ Now, we show how to propagated a swap inside metasubstitutions using the decompo
 \end{coqdoccode}
 \noindent{\bf Proof.} Firstly, we compare \coqdocvar{x} and \coqdocvar{y}, since the case \coqdocvar{x} = \coqdocvar{y} is trivial.
 \begin{coqdoccode}
-\end{coqdoccode}
+\coqdockw{Search} \coqdocvar{vswap}. \end{coqdoccode}
 The proof proceeds by induction on the size of the term \coqdocvar{t}, assuming that \coqdocvar{x} \ensuremath{\not=} \coqdocvar{y}. The tricky cases are the abstraction and explicit substitution. 
 \begin{coqdoccode}
 \end{coqdoccode}
@@ -634,6 +709,36 @@ In the last part of this case, we propagate the internal metasubstitution over t
 When \coqdocvar{w} == \coqdocvar{w'}, the proof if given by removing the abstractions from inside the metasubstitutions using the lemma \coqdocvar{m\_subst\_abs\_neq} and the new variable \coqdocvar{w'}. Then we remove them altogether using the lemma \coqdocvar{aeq\_abs\_same}, given that the variables in the abstractions are the same. The subterm \coqdocvar{swap} \coqdocvar{w'} \coqdocvar{w'} ([\coqdocvar{x} := \coqdocvar{e2}] \coqdocvar{swap} \coqdocvar{z} \coqdocvar{w'} \coqdocvar{e1}) gets simplified to ([\coqdocvar{x} := \coqdocvar{e2}] \coqdocvar{swap} \coqdocvar{z} \coqdocvar{w'} \coqdocvar{e1}), in the LHS. What remain is simmilar to what we have in our induction hypothesys, which is applied to our conclusion and the rest of the proof is solved trivially. The case in which \coqdocvar{w} \ensuremath{\not=} \coqdocvar{w'} is solved similarly.
 \begin{coqdoccode}
 \end{coqdoccode}
+In the case in which \coqdocvar{y} \ensuremath{\not=} \coqdocvar{z}, we start by adding and specializing the lemma \coqdocvar{m\_subst\_abs\_neq} to our htpothesis. Let \coqdocvar{w} be a new name that is not in the set $fv(\lambda_z'.e_1) \cup fv(e3) \cup fv(e2) \cup \{x\} \cup \{y\}$, we use this to apply the transitivity of the $\alpha$-equivalency using ([\coqdocvar{y} := \coqdocvar{e3}] \coqdocvar{n\_abs} \coqdocvar{w} ([\coqdocvar{x} := \coqdocvar{e2}] \coqdocvar{swap} \coqdocvar{z} \coqdocvar{w} \coqdocvar{e1})). 
+\begin{coqdoccode}
+\end{coqdoccode}
+In the first case, we have the $\alpha$-equivalency of the LHS and our new term, used in the transitivity. The use of \coqdocvar{aeq\_m\_subst\_out} is enought to turn this into a trivial proof since the result is the application of the lemma \coqdocvar{m\_subst\_abs\_neq}. 
+\begin{coqdoccode}
+\end{coqdoccode}
+The second case consists of removing the abstractions from the metasubstitutions to use the induction hypothesis on the remaining goal. We start on the RHS by removing the abstraction from inside the metasubstitution in the subterm ([\coqdocvar{y} := \coqdocvar{e3}] \coqdocvar{n\_abs} \coqdocvar{z} \coqdocvar{e1}). To do this we use the lemma \coqdocvar{m\_subst\_abs\_neq} and the transitivity of the $\alpha$-equivalency using as a middle term ([\coqdocvar{x} := [\coqdocvar{y} := \coqdocvar{e3}] \coqdocvar{e2}] \coqdocvar{n\_abs} \coqdocvar{w} ([\coqdocvar{y} := \coqdocvar{e3}] \coqdocvar{swap} \coqdocvar{z} \coqdocvar{w} \coqdocvar{e1})). 
+\begin{coqdoccode}
+\end{coqdoccode}
+As a first case, we have to prove that the LHS is $\alpha$-equivalent to the new middle term. Let \coqdocvar{w'} be a new name that is not in the set $fv(\lambda_y'.e_1) \cup fv(e3) \cup fv(e2) \cup \{x\} \cup \{y\} \cup \{w\}. Then, a comparison is made between [z] and [w']. $ 
+\begin{coqdoccode}
+\end{coqdoccode}
+For \coqdocvar{z} == \coqdocvar{w'}, we remove the abstractions from inside the metasubstitutions using the same strategy as previously, using the lemma \coqdocvar{m\_subst\_abs\_neq}. Then, we use the lemma \coqdocvar{aeq\_abs\_same} to eliminate the abstractions from each side of the $\alpha$-equivalency since given that if the variables are the same, the terms have to be $\alpha$-equivatent.
+\begin{coqdoccode}
+\end{coqdoccode}
+Then we use the lemma \coqdocvar{swap\_subst\_rec\_fun} to insert the swaps from outside of the inner metasubstitution to inside them. After that, the induction hypothesis is applied to the goal. Then, all we have are intermediate results that are proved trivially by applying previous lemmas on \coqdocvar{fv\_nom} and \coqdocvar{not\_eq}. 
+\begin{coqdoccode}
+\end{coqdoccode}
+For the second case in the transitivity of the $\alpha$- equivalency, we have the $\alpha$-equivalency of our new term ([\coqdocvar{y} := \coqdocvar{e3}] \coqdocvar{n\_abs} \coqdocvar{w} ([\coqdocvar{x} := \coqdocvar{e2}] \coqdocvar{swap} \coqdocvar{z} \coqdocvar{w} \coqdocvar{e1})) and the RHS of our initial $\alpha$-equivalency. First, we compare \coqdocvar{w} and \coqdocvar{z}. 
+\begin{coqdoccode}
+\end{coqdoccode}
+For \coqdocvar{w} == \coqdocvar{z}, first we apply \coqdocvar{m\_subst\_abs\_neq} propagate the internal metasubstitution over the abstraction taking the new names that have already been defined. Then we use the lemma \coqdocvar{aeq\_abs\_same} to remove the outter abstractions, since they have the same variable. 
+\begin{coqdoccode}
+\end{coqdoccode}
+Then we use the lemma \coqdocvar{swap\_subst\_rec\_fun} to insert the swaps from outside of the inner metasubstitution to inside them. After that, the transitivity of the $\alpha$-equivalency is applied to ([\coqdocvar{y} := \coqdocvar{e3}] [\coqdocvar{x} := \coqdocvar{e2}] (\coqdocvar{swap} \coqdocvar{w1} \coqdocvar{z} \coqdocvar{e1})). We ude the lemma \coqdocvar{aeq\_m\_subst\_out} to simplify the $\alpha$-equivalency to the terms inside the metasubstitutions. The remaining steps of the proof are done by unfolding and solving \coqdocvar{vswap} comparisons and applying \coqdocvar{aeq\_m\_subst\_eq} to simplify the terms. It was also necessary to use lemmas that regard \coqdocvar{fv\_nom} and \coqdocvar{not\_eq}, but the proofs were fairly trivial.
+\begin{coqdoccode}
+\end{coqdoccode}
+For the first case in the transivity we have the $\alpha$-equivalency of the LHS and the new term. 
+\begin{coqdoccode}
+\end{coqdoccode}
 In the explicit substitution case, we used the same approach used in the abstraction for the left side and the same as the application for the right side of the substitution. It consisted of comparing the variable in the meta substitution and the one in the substitution. We used the auxiliary lemmas on the equality and inequality of the meta-substitution applied to explicit substitutions and it was necessary to create new variables in each use of the inequality. This is due to the atempt of removing the explicit substitution from inside the meta-substitution. When tis removal was made, the proof consisted in proving a similar case for the abstraction in the left side of the explicit substitution and the one similar to the application was used for the right part of it.$\hfill\Box$
 \begin{coqdoccode}
 \coqdocemptyline
@@ -648,6 +753,5 @@ In the explicit substitution case, we used the same approach used in the abstrac
 The formalization is modular in the sense that the explicit substitution operator is generic and could be instantiated with any calculi with  explicit substitutions in a nominal setting. The main contribution of this work, besides the formalization itself, is the solution to a circular proof problem. Several auxiliary (minor) results were not included in this document, but they are numerous and can be found in the source file of the formalization that is available in a GitHub repository from the following url \url{https://github.com/flaviodemoura/lx_confl/tree/m_subst_lemma}.
 
 
-As future work, we plan to integrate this formalization with another one related to the Z property \cite{fmm2021} to prove properties of calculi with explicit substitutions such as confluence\cite{nakazawaCompositionalConfluenceProofs2016,nakazawaCallbyvalue2017,kesnerPerpetualityFullSafe2008}. 
-\begin{coqdoccode}
+As future work, we plan to integrate this formalization with another one related to the Z property \cite{fmm2021} to prove properties of calculi with explicit substitutions such as confluence\cite{nakazawaCompositionalConfluenceProofs2016,nakazawaCallbyvalue2017,kesnerPerpetualityFullSafe2008}. \begin{coqdoccode}
 \end{coqdoccode}
