@@ -435,31 +435,29 @@ Proof.
 Qed. 
 
 (** We will use this induction principle to prove that if a certain variable, say [x'], is not in the set of free variables of a term [t] then the variable obtained after applying any swap to [x'] also is not in the set of free variables of the term obtained from [t] after applying the same swap to [t]: *)  
+
 Lemma notin_fv_nom_equivariance : forall t x' x y, x' `notin` fv_nom t -> vswap x y x'  `notin` fv_nom (swap x y t).
 Proof.
-  induction t as [z | t1 z | t1 t2 | t1 z t2] using n_sexp_induction. (** %\noindent{\bf Proof.}% The proof is by induction on the size of the term [t].*)
+  induction t as [z | t1 z | t1 t2 | t1 t2 z ] using n_sexp_induction. (** %\noindent{\bf Proof.}% The proof is by induction on the size of the term [t].*)
   - intros x' x y Hfv. simpl in *. apply notin_singleton_1 in Hfv. apply notin_singleton. apply swap_neq. assumption. (** If [t] is a variable, say [z], then we have that [x' <> z] by hypothesis, and we conclude by lemma [swap_neq].*)
   - intros x' x y Hfv. simpl in *. apply notin_remove_1 in Hfv. destruct Hfv. (** If [t = n_abs z t1] then we have that $x' \notin fv(t1) \backslash \{z\}$ by hypothesis. This means that either [x' = z] or [x'] is not in $fv(t1)$, %{\it i.e.}% [fv_nom t1] in the Coq language.*)
-    + subst. apply notin_remove_3. reflexivity. (** If [x' = z] then we have to prove that a certain element is not in a set where it was removed, and we are done. *)
-    + apply notin_remove_2. specialize (H t1 x x). rewrite swap_id in H. apply H.
+    + subst. apply notin_remove_3. reflexivity. (** If [x' = z] then we have to prove that a certain element is not in a set where it was removed, and we are done by lemma [notin_remove_3]%\footnote{This is a lemma from Metalib library and it states that {\tt forall (x y : atom) (s : atoms), x = y -> y `notin` remove x s}.}%. *)
+    + apply notin_remove_2. specialize (H t1 x x). rewrite swap_id in H. apply H. (** Otherwise, [x'] is not in $fv(t1)$, and we conclude using the induction hypothesis.*)
       * reflexivity.
       * assumption.
-  - intros x' x y Hfv. simpl in *. apply notin_union.
+  - intros x' x y Hfv. simpl in *. apply notin_union. (** The application case is straightforward from the induction hypothesis.*)
     + apply IHt2. apply notin_union_1 in Hfv. assumption.
     + apply IHt1. apply notin_union_2 in Hfv. assumption. 
-  - case (x' == y). (** If [x' <> x] then we compare [x'] with [y]. If they are equal then we are in the same situation of the previous case, and hence we conclude with an application of the lemma [fv_nom_swap]. *)
-    + intro Heq. subst. apply fv_nom_swap. assumption.
-    + intro Hneq. induction t as [z | z t1 | t1 t2 | t1 z t2]. (** If both [x] and [y] are different from [x'] then $\vswap{x}{y}{x'} = x'$ and hence, we have to prove that if [x'] is not in the set of free variables of [t] then [x'] is not in the set of free variables of [swap x y t]. This is done by induction on the structure of [t]. *)
-      * simpl in *. apply notin_singleton_1 in Hfv. unfold vswap. default_simp. (** If [t] is a variable, say [z], then [x' <> z] because [x'] does not occur in the set of free variables of [t] by hypothesis. Therefore, [fv_nom (swap x y (n_var z))] is equal to one of these variables, and we conclude because all of them are different from [x']. *)
-      * simpl in *. case (x' == z). (** If [t] is an abstraction, say [n_abs z t1], then  *)
-        ** intro Heq. subst. apply notin_remove_1 in Hfv. simpl. unfold vswap. default_simp.
-           + simpl. unfold vswap. default_simp.
-           + simpl. default_simp.
-           + simpl. unfold vswap. default_simp.
-       --- assumption.
-       --- assumption.
-Qed. 
+  - intros x' x y Hfv. simpl in *. apply notin_union. (** The case of the explicit substitution, %{\it i.e.}% when [t = [z := t2]t1] then we have to prove that [vswap x y x' `notin` fv_nom (swap x y ([z := t2] t1))]. We then propagate the swap over the explicit substitution operator and, by the definition of [fv_nom], we have prove that both [vswap x y x' `notin` remove (vswap x y z) (fv_nom (swap x y t1))] and [vswap x y x' `notin` fv_nom (swap x y t2)].*)
+    + apply notin_union_1 in Hfv. apply notin_remove_1 in Hfv. destruct Hfv. (** In the former case, the hypothesis [x' `notin` remove z (fv_nom t1)] generates two cases, either [x' = z] or [x'] in not in $fv(t1)$, and we conclude with the same strategy of the abstraction case.*)
+      * subst. apply notin_remove_3. reflexivity.
+      * apply notin_remove_2. specialize (H t1 x x). rewrite swap_id in H. apply H.
+        ** reflexivity.
+        ** assumption.
+    + apply notin_union_2 in Hfv. apply IHt1; assumption. (** The later case is straightforward by the induction hypothesis. $\hfill\Box$*)
+Qed.
 
+(* begin hide *)
 Lemma swap_remove_reduction: forall x y t,
     remove x (remove y (fv_nom (swap y x t))) [=] remove x (remove y (fv_nom t)).
 Proof.
@@ -584,6 +582,7 @@ Qed.
 
 (** As usual in the standard presentations of the $\lambda$-calculus, we work with terms modulo $\alpha$-equivalence. This means that $\lambda$-terms are identified up to the name of bound variables. For instance, all the terms $\lambda_x.x$, $\lambda_y.y$ and $\lambda_z.z$ are seen as the same term which corresponds to the identity function. Formally, the notion of $\alpha$-equivalence is defined by the following inference rules:
 
+ 
 %\begin{mathpar}
  \inferrule*[Right={({\rm\it aeq\_var})}]{~}{x =_\alpha x} \and  \inferrule*[Right={({\rm\it aeq\_abs\_same})}]{t_1 =_\alpha t_2}{\lambda_x.t_1 =_\alpha \lambda_x.t_2} 
 \end{mathpar}%
@@ -600,7 +599,7 @@ Qed.
 \inferrule*[Right={({\rm\it aeq\_sub\_diff})}]{t_2 =_\alpha t_2' \and x \neq y \and x \notin fv(t_1') \and t_1 =_\alpha \swap{y}{x}{t_1'}}{\esub{t_1}{x}{t_2} =_\alpha \esub{t_1'}{y}{t_2'}} 
 \end{mathpar}%
 
-Each of these rules correspond to a constructor in the [aeq] inductive definition below: *)
+Each of these rules correspond to a constructor in the [aeq] inductive definition below:*)
 
 Inductive aeq : n_sexp -> n_sexp -> Prop :=
 | aeq_var : forall x, aeq (n_var x) (n_var x)
@@ -669,53 +668,46 @@ Proof.
        --- apply aeq_abs_same. assumption.
   - simpl. unfold  vswap. default_simp.
     -- apply aeq_abs_diff.
-       + assumption.
-       + apply fv_nom_swap with x y t2 in H0.
-         rewrite swap_symmetric. assumption.
-       + assert (swap x y t2 = swap y x t2).
+    + assumption.
+    + apply fv_nom_swap with x y t2 in H0.
+      rewrite swap_symmetric. assumption.
+    + assert (swap x y t2 = swap y x t2).
+      rewrite swap_symmetric; reflexivity.
+      rewrite H2. assumption.
+      -- apply aeq_abs_diff.
+    + apply aux_not_equal. assumption.
+    + apply fv_nom_swap with x y t2 in H0.
+      rewrite swap_symmetric. assumption.
+    + case (x == y); intros; subst.
+      ++ repeat rewrite swap_id. repeat rewrite swap_id in IHaeq.
+         assumption.
+      ++ assert (swap x y t2 = swap y x t2).
          rewrite swap_symmetric; reflexivity.
-         rewrite H2. assumption.
-    -- apply aeq_abs_diff.
-       + apply aux_not_equal. assumption.
-       + apply fv_nom_swap with x y t2 in H0.
-         rewrite swap_symmetric. assumption.
-       + case (x == y); intros; subst.
-         ++ repeat rewrite swap_id. repeat rewrite swap_id in IHaeq.
-            assumption.
-         ++ assert (swap x y t2 = swap y x t2).
-            rewrite swap_symmetric; reflexivity.
-            rewrite H2. pose proof shuffle_swap.
-            pose proof H3.
-            specialize (H3 y0 y t2 x).
-            rewrite H3.
-            +++ specialize (H4 x y0 t2 y).
-                assert (swap y0 x (swap y0 y t2) = swap x y0 (swap y0 y t2)). rewrite swap_symmetric; reflexivity.
-                rewrite H5.
-                rewrite H4.
-                * assert (swap y0 x t2 = swap x y0 t2).
-                  apply swap_symmetric; reflexivity.
-                  rewrite <- H6. assumption.
-                * assumption.
-                * assumption.
-            +++ assumption.       
-            +++ apply aux_not_equal. assumption.
-    -- apply aeq_abs_diff.
-       + apply aux_not_equal; assumption.
-       + apply fv_nom_swap with y x t2 in H0. assumption.
-       + assert (swap y x (swap x y t2) = swap x y (swap x y t2)).
-         rewrite swap_symmetric; reflexivity.
-         rewrite H2. assumption. 
-    -- apply aeq_abs_diff.
+         rewrite H2. pose proof shuffle_swap.
+         pose proof H3. specialize (H3 y0 y x t2). rewrite H3.
+         +++ specialize (H4 x y0 y t2).
+             assert (swap y0 x (swap y0 y t2) = swap x y0 (swap y0 y t2)). {rewrite swap_symmetric; reflexivity.}
+             rewrite H5. rewrite H4.
+      * assert (swap y0 x t2 = swap x y0 t2). {apply swap_symmetric; reflexivity.}
+        rewrite <- H6. assumption.
+      * assumption.
+      * assumption.
+        +++ assumption.       
+        +++ apply aux_not_equal. assumption.
+        -- apply aeq_abs_diff.
+    + apply aux_not_equal; assumption.
+    + apply fv_nom_swap with y x t2 in H0. assumption.
+    + assert (swap y x (swap x y t2) = swap x y (swap x y t2)).{rewrite swap_symmetric; reflexivity.}
+          rewrite H2. assumption. 
+                                                                -- apply aeq_abs_diff.
        + apply aux_not_equal; assumption.
        + apply fv_nom_swap. assumption.
        + rewrite shuffle_swap.
-         ++ assert (swap y0 y (swap y0 x t2) = swap y y0 (swap y0 x t2)). rewrite swap_symmetric; reflexivity.
-            rewrite H2.
-            rewrite shuffle_swap.
-            +++ assert (swap y x (swap y y0 t2) = swap x y (swap y y0 t2)). rewrite swap_symmetric; reflexivity.
-                assert ((swap y y0 t2) = (swap y0 y t2)). rewrite swap_symmetric; reflexivity.
-                rewrite H3; rewrite H4.
-                assumption.
+         ++ assert (swap y0 y (swap y0 x t2) = swap y y0 (swap y0 x t2)). {rewrite swap_symmetric; reflexivity.}
+            rewrite H2. rewrite shuffle_swap.
+            +++ assert (swap y x (swap y y0 t2) = swap x y (swap y y0 t2)). {rewrite swap_symmetric; reflexivity.}
+                assert ((swap y y0 t2) = (swap y0 y t2)). {rewrite swap_symmetric; reflexivity.}
+                rewrite H3; rewrite H4. assumption.
             +++ assumption.
             +++ assumption.
          ++ assumption.
@@ -724,15 +716,12 @@ Proof.
        + assumption.
        + apply fv_nom_remove_swap; assumption.
        + case (x == y); intros; subst.
-         ++ repeat rewrite swap_id; repeat rewrite swap_id in IHaeq.
-            assumption.
-         ++ assert (swap y x0 (swap x y t2) = swap x0 y (swap x y t2)).
-            rewrite swap_symmetric; reflexivity.
+         ++ repeat rewrite swap_id; repeat rewrite swap_id in IHaeq. assumption.
+         ++ assert (swap y x0 (swap x y t2) = swap x0 y (swap x y t2)). {rewrite swap_symmetric; reflexivity.}
             rewrite H2.
-            assert (swap x y t2 = swap y x t2).
-            rewrite swap_symmetric; reflexivity.
+            assert (swap x y t2 = swap y x t2). {rewrite swap_symmetric; reflexivity.}
             rewrite H3. rewrite shuffle_swap.
-            +++ assert (swap x0 x (swap x0 y t2) = swap x x0 (swap x0 y t2)). rewrite swap_symmetric; reflexivity.
+            +++ assert (swap x0 x (swap x0 y t2) = swap x x0 (swap x0 y t2)). {rewrite swap_symmetric; reflexivity.}
             rewrite H4. rewrite shuffle_swap.
                 * assumption.
                 * assumption.
@@ -742,16 +731,12 @@ Proof.
     -- apply aeq_abs_diff.
        + assumption.
        + apply fv_nom_remove_swap; assumption.
-       + assert (swap x x0 (swap x y t2) = swap x0 x (swap x y t2)).
-         rewrite swap_symmetric; reflexivity.
+       + assert (swap x x0 (swap x y t2) = swap x0 x (swap x y t2)). {rewrite swap_symmetric; reflexivity.}
          rewrite H2. rewrite shuffle_swap.
-         ++ assert (swap x0 y (swap x0 x t2) = swap y x0 (swap x0 x t2)).
-            rewrite swap_symmetric; reflexivity.
+         ++ assert (swap x0 y (swap x0 x t2) = swap y x0 (swap x0 x t2)). {rewrite swap_symmetric; reflexivity.}
             rewrite H3; rewrite shuffle_swap.
-            +++ assert (swap y x (swap y x0 t2) = swap x y (swap y x0 t2)).
-                rewrite swap_symmetric; reflexivity.
-                rewrite H4.
-                assumption.
+            +++ assert (swap y x (swap y x0 t2) = swap x y (swap y x0 t2)). {rewrite swap_symmetric; reflexivity.}
+                rewrite H4. assumption.
             +++ assumption.
             +++ assumption.
          ++ assumption.
@@ -762,16 +747,11 @@ Proof.
          ++ assumption.
          ++ assumption.
          ++ assumption.
-       + assert (swap x0 y0 (swap x y t2) = swap x y (swap x0 y0 t2)). {
-           rewrite swap_equivariance. unfold vswap. default_simp.
-         }
-         assert (swap y0 x0 t2 = swap x0 y0 t2).
-         rewrite swap_symmetric; reflexivity.
-         assert ((swap y0 x0 (swap x y t2)) = swap x0 y0 (swap x y t2)).
-         rewrite swap_symmetric; reflexivity.
-         rewrite H3 in IHaeq. rewrite H4.
-         rewrite H2. assumption.
-  - simpl. apply aeq_app.
+       + assert (swap x0 y0 (swap x y t2) = swap x y (swap x0 y0 t2)). {rewrite swap_equivariance. unfold vswap. default_simp.}
+         assert (swap y0 x0 t2 = swap x0 y0 t2). {rewrite swap_symmetric; reflexivity.}
+         assert ((swap y0 x0 (swap x y t2)) = swap x0 y0 (swap x y t2)). {rewrite swap_symmetric; reflexivity.}
+         rewrite H3 in IHaeq. rewrite H4. rewrite H2. assumption.
+                                                                - simpl. apply aeq_app.
     -- assumption.
     -- assumption.
   - simpl. apply aeq_sub_same.
@@ -783,8 +763,7 @@ Proof.
        --- assumption.
        --- apply fv_nom_swap with x y t1' in H1.
            rewrite swap_symmetric. assumption.
-       --- assert (swap y x t1' = swap x y t1').
-           rewrite swap_symmetric; reflexivity.
+       --- assert (swap y x t1' = swap x y t1'). {rewrite swap_symmetric; reflexivity.}
            rewrite <- H3. assumption.
     -- apply aeq_sub_diff.
        --- assumption.
@@ -793,13 +772,11 @@ Proof.
        --- case (x == y); intros; subst.
            + repeat rewrite swap_id.
              repeat rewrite swap_id in IHaeq2. assumption.
-           + assert (swap y x t1' = swap x y t1').
-             rewrite swap_symmetric; reflexivity.
+           + assert (swap y x t1' = swap x y t1'). {rewrite swap_symmetric; reflexivity.}
              rewrite <- H3. rewrite shuffle_swap.
-             ++ assert (swap y0 x (swap y0 y t1') = swap x y0 (swap y0 y t1')). rewrite swap_symmetric; reflexivity.
+             ++ assert (swap y0 x (swap y0 y t1') = swap x y0 (swap y0 y t1')). {rewrite swap_symmetric; reflexivity.}
                 rewrite H4. rewrite shuffle_swap.
-                +++ assert (swap x y0 t1' = swap y0 x t1').
-                    rewrite swap_symmetric; reflexivity.
+                +++ assert (swap x y0 t1' = swap y0 x t1'). {rewrite swap_symmetric; reflexivity.}
                     rewrite H5. assumption.
                 +++ assumption.
                 +++ assumption.
@@ -809,22 +786,18 @@ Proof.
        --- assumption.
        --- apply aux_not_equal; assumption.
        --- apply fv_nom_swap. assumption.
-       --- assert (swap y x (swap x y t1') = swap x y (swap x y t1')).
-           rewrite swap_symmetric; reflexivity.
-           rewrite H3. rewrite swap_involutive.
-           rewrite swap_involutive in IHaeq2. assumption.
+       --- assert (swap y x (swap x y t1') = swap x y (swap x y t1')). {rewrite swap_symmetric; reflexivity.}
+           rewrite H3. rewrite swap_involutive. rewrite swap_involutive in IHaeq2. assumption.
     -- apply aeq_sub_diff.
        --- assumption.
        --- apply aux_not_equal; assumption.
        --- apply fv_nom_swap. assumption.
        --- rewrite shuffle_swap.
-           + assert (swap y0 y (swap y0 x t1') = swap y y0 (swap y0 x t1')). rewrite swap_symmetric; reflexivity.
+           + assert (swap y0 y (swap y0 x t1') = swap y y0 (swap y0 x t1')). {rewrite swap_symmetric; reflexivity.}
              rewrite H3. rewrite shuffle_swap.
-             ++ assert (swap y x (swap y y0 t1') = swap x y(swap y y0 t1')).
-                rewrite swap_symmetric; reflexivity.
+             ++ assert (swap y x (swap y y0 t1') = swap x y(swap y y0 t1')). {rewrite swap_symmetric; reflexivity.}
                 rewrite H4.
-                assert (swap y0 y t1' = swap y y0 t1').
-                rewrite swap_symmetric; reflexivity.
+                assert (swap y0 y t1' = swap y y0 t1'). {rewrite swap_symmetric; reflexivity.}
                 rewrite <- H5. assumption.
              ++ assumption.
              ++ assumption.
@@ -841,13 +814,11 @@ Proof.
            + repeat rewrite swap_id.
              repeat rewrite swap_id in IHaeq2.
              assumption.
-           + assert (swap y x0 (swap x y t1') = swap x0 y (swap x y t1')).
-             rewrite swap_symmetric; reflexivity.
+           + assert (swap y x0 (swap x y t1') = swap x0 y (swap x y t1')). {rewrite swap_symmetric; reflexivity.}
              rewrite H3.
-             assert (swap x y t1' = swap y x t1').
-             rewrite swap_symmetric; reflexivity.
+             assert (swap x y t1' = swap y x t1'). {rewrite swap_symmetric; reflexivity.}
              rewrite H4. rewrite shuffle_swap.
-             ++ assert (swap x0 x (swap x0 y t1') = swap x x0 (swap x0 y t1')). rewrite swap_symmetric; reflexivity.
+             ++ assert (swap x0 x (swap x0 y t1') = swap x x0 (swap x0 y t1')). {rewrite swap_symmetric; reflexivity.}
                 rewrite H5. rewrite shuffle_swap.
                 * assumption.
                 * assumption.
@@ -861,14 +832,11 @@ Proof.
            + assumption.
            + assumption.
            + assumption.
-       --- assert (swap x x0 (swap x y t1') = swap x0 x (swap x y t1')).
-           rewrite swap_symmetric; reflexivity.
+       --- assert (swap x x0 (swap x y t1') = swap x0 x (swap x y t1')). {rewrite swap_symmetric; reflexivity.}
            rewrite H3. rewrite shuffle_swap.
-           + assert (swap x0 y (swap x0 x t1') = swap y x0 (swap x0 x t1')).
-             rewrite swap_symmetric; reflexivity.
+           + assert (swap x0 y (swap x0 x t1') = swap y x0 (swap x0 x t1')). {rewrite swap_symmetric; reflexivity.}
              rewrite H4; rewrite shuffle_swap.
-             ++ assert (swap y x (swap y x0 t1') = swap x y (swap y x0 t1')).
-                rewrite swap_symmetric; reflexivity.
+             ++ assert (swap y x (swap y x0 t1') = swap x y (swap y x0 t1')). {rewrite swap_symmetric; reflexivity.}
                 rewrite H5. assumption.
              ++ assumption.
              ++ assumption.
@@ -885,15 +853,10 @@ Proof.
            + repeat rewrite swap_id.
              repeat rewrite swap_id in IHaeq2.
              assumption.
-           + assert (swap x0 y0 (swap x y t1') = swap x y (swap x0 y0 t1')). {
-           rewrite swap_equivariance. unfold vswap. default_simp.
-         }
-         assert (swap y0 x0 t1' = swap x0 y0 t1').
-         rewrite swap_symmetric; reflexivity.
-         assert ((swap y0 x0 (swap x y t1')) = swap x0 y0 (swap x y t1')).
-         rewrite swap_symmetric; reflexivity.
-         rewrite H4 in IHaeq2. rewrite H5.
-         rewrite H3. assumption.
+           + assert (swap x0 y0 (swap x y t1') = swap x y (swap x0 y0 t1')). {rewrite swap_equivariance. unfold vswap. default_simp.}
+         assert (swap y0 x0 t1' = swap x0 y0 t1'). {rewrite swap_symmetric; reflexivity.}
+         assert ((swap y0 x0 (swap x y t1')) = swap x0 y0 (swap x y t1')). {rewrite swap_symmetric; reflexivity.}
+         rewrite H4 in IHaeq2. rewrite H5. rewrite H3. assumption.
 Qed.
 
 Lemma aeq_swap2: forall t1 t2 x y, (swap x y t1) =a (swap x y t2) -> t1 =a t2.
@@ -1172,9 +1135,11 @@ Proof.
     -- assumption.
     -- apply aeq_refl.
 Qed.
+(* end hide *)
 
-Lemma swap_reduction: forall t x y,
-    x `notin` fv_nom t -> y `notin` fv_nom t -> (swap x y t) =a  t.
+(** When both variables in a swap does not occur free in a term, it eventually rename bound variables only, %{\it i.e.}% the action of this swap results in a term that is $\alpha$-equivalent to the original term. This is the content of the followin lemma:*)
+
+Lemma swap_reduction: forall t x y, x `notin` fv_nom t -> y `notin` fv_nom t -> (swap x y t) =a  t.
 Proof.
   induction t.
   - intros x' y H1 H2.
@@ -1290,6 +1255,7 @@ Proof.
                **** apply swap_symmetric.
 Qed.
 
+(* begin hide *)
 Lemma aeq_same_abs: forall x t1 t2, n_abs x t1 =a n_abs x t2 -> t1 =a t2.
 Proof.
   intros. inversion H.
@@ -1336,23 +1302,19 @@ Proof.
 Qed.
 (* end hide *)
 
-(** There are several interesting auxiliary properties that need to be proved before achieving the substitution lemma. In what follows, we refer only to the tricky or challenging ones, but the interested reader can have a detailed look in the source files. Note that, swaps are introduced in proofs by the rules $\mbox{\it aeq}\_\mbox{\it abs}\_\mbox{\it diff}$ and $\mbox{\it aeq}\_\mbox{\it sub}\_\mbox{\it diff}$. As we will see, the proof steps involving these rules are trick because a naïve strategy can easily get blocked in a branch without proof. The following lemma states the conditions for two swaps to be merged: *)
+(** There are several other interesting auxiliary properties that need to be proved before achieving the substitution lemma. In what follows, we refer only to the tricky or challenging ones, but the interested reader can have a detailed look in the source files%\footnote{\url{https://github.com/flaviodemoura/lx_confl/tree/m_subst_lemma}}%. Note that, swaps are introduced in proofs by the rules $\mbox{\it aeq}\_\mbox{\it abs}\_\mbox{\it diff}$ and $\mbox{\it aeq}\_\mbox{\it sub}\_\mbox{\it diff}$. As we will see, the proof steps involving these rules are trick because a naïve strategy can easily get blocked in a branch without proof. We conclude this section, with a lemma that gives the conditions for two swaps with a common variable to be merged: *)
 
 Lemma aeq_swap_swap: forall t x y z, z `notin` fv_nom t -> x `notin` fv_nom t -> (swap z x (swap x y t)) =a (swap z y t).
 Proof.
-  intros. case (x == z); intros; subst. (** %\noindent{\bf Proof.}% The proof is by case analysis on the variables [x], [y] and [z]. If [x = z] then  the external swap of the LHS is trivial, and the terms on both LHS and RHS are equal. *)
-  - rewrite swap_id; apply aeq_refl.
-  - case (y == z); intros; subst. (** When [x <> z] then we compare [y] and [z]. If [y = z] then we can use the fact that swap is involutive and reduce the LHS to [t], and the RHS also reduces to [t] since the swap is trivial. *)
-    -- replace (swap x z t) with (swap z x t).
-       --- rewrite swap_involutive; rewrite swap_id. apply aeq_refl.
-       --- rewrite swap_symmetric; reflexivity.
-    -- case (x == y); intros; subst. (** When [y <> z] then we compare [x] and [y]. If [x = y] then the internal swap of the LHS is trivial and both sides are equal to [swap z y t]. *)
-       --- rewrite swap_id; apply aeq_refl.
-       --- rewrite shuffle_swap. (** Finally, if [x <> y], %{\it i.e.}% all [x], [y] and [z] are different from each other, then *)
-           + apply aeq_swap. apply swap_reduction; assumption.
-           + apply aux_not_equal; assumption.
-           + assumption.
-Qed.
+  intros t x y z Hfv Hfv'. case (z == y). (** %\noindent{\bf Proof.}% Initially, observe the similarity of the LHS of the $\alpha$-equation with the lemma [shuffle_swap]. In order to use it, we need to have that both [z <> y] and [x <> y]. *)
+  - intro Heq. subst. rewrite swap_id. rewrite (swap_symmetric _ y x). rewrite swap_involutive. apply aeq_refl. (** If [z = y] then the RHS reduces to [t] because the swap is trivial, and the LHS also reduces to [t] since swap is involutive.*)
+  - intro Hneq. case (x == y). (** When [z <> y] then we proceed by comparing [x] and [y].*)
+    + intro Heq. subst. rewrite swap_id. apply aeq_refl. (** If [x == y] then both sides of the $\alpha$-equation reduces to [swap z y t], and we are done. *)
+    + intro Hneq'. rewrite shuffle_swap. (** Finally, when [x <> y], we can apply the lemma [shuffle_swap] and use lemma [aeq_swap] to reduce the current goal to [swap z x t =a t], and we conclude by lemma [swap_reduction] since both [z] and [x] are not in the set of free variables of the term [t]. $\hfill\Box$*)
+      * apply aeq_swap. apply swap_reduction; assumption.
+      * assumption.
+      * assumption.
+Qed.  
 
 (** * The metasubstitution operation of the $\lambda$-calculus *)
 
