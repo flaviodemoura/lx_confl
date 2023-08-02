@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.22 (TeX Live 2022/dev/Debian) (preloaded format=pdflatex 2023.7.20)  1 AUG 2023 16:35
+This is pdfTeX, Version 3.141592653-2.6-1.40.22 (TeX Live 2022/dev/Debian) (preloaded format=pdflatex 2023.7.20)  1 AUG 2023 16:49
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -612,534 +612,608 @@ l.62 $\vswap
             {x}{y}{z} := \left\{ \begin{array}{ll}
 ? 
 ! Undefined control sequence.
-<recently read> \swap 
-                      
-l.72 $\swap
-           {x}{y}{t} := \left\{ \begin{array}{ll}
+l.73 \swap
+          {x}{y}{t} := \left\{ \begin{array}{ll}
 ? 
 ! Undefined control sequence.
-l.73 \vswap
+l.74 \vswap
            {x}{y}{z}, & \mbox{ if } t = z; \\
 ? 
 ! Undefined control sequence.
-l.74 \lambda_{\vswap
+l.75 \lambda_{\vswap
                     {x}{y}{z}}.\swap{x}{y}{t_1}, & \mbox{ if } t = \lambda_z...
 
 ? 
 ! Undefined control sequence.
-l.74 \lambda_{\vswap{x}{y}{z}}.\swap
+l.75 \lambda_{\vswap{x}{y}{z}}.\swap
                                     {x}{y}{t_1}, & \mbox{ if } t = \lambda_z...
 
 ? 
 ! Undefined control sequence.
 <recently read> \swap 
                       
-l.75 \swap
+l.76 \swap
           {x}{y}{t_1}\ \swap{x}{y}{t_2}, & \mbox{ if } t = t_1\ t_2\\
 ? 
 ! Undefined control sequence.
-l.75 \swap{x}{y}{t_1}\ \swap
+l.76 \swap{x}{y}{t_1}\ \swap
                             {x}{y}{t_2}, & \mbox{ if } t = t_1\ t_2\\
 ? 
 ! Undefined control sequence.
-l.79 ...a_x\lambda_y.x\ y)\ y \to_{\beta} \metasub
-                                                  {\swap{x}{z}{(\lambda_y.x\...
+l.81 ...a_x\lambda_y.x\ y)\ y \to_{\beta} \metasub
+                                                  {(\swap{y}{z}{(\lambda_y.x...
 
 ? 
 ! Undefined control sequence.
-l.79 ...mbda_y.x\ y)\ y \to_{\beta} \metasub{\swap
-                                                  {x}{z}{(\lambda_y.x\ y)}}{...
+l.81 ...bda_y.x\ y)\ y \to_{\beta} \metasub{(\swap
+                                                  {y}{z}{(\lambda_y.x\ y)})}...
 
 ? 
 ! Undefined control sequence.
-l.79 ...a_x\lambda_y.x\ y)\ y \to_{\beta} \metasub
-                                                  {\metasub{(\lambda_y.x\ y)...
+l.81 ...y}{z}{(\lambda_y.x\ y)})}{x}{y} = \metasub
+                                                  {(\lambda_z.x\ z)}{x}{y} =...
 
 ? 
 ! Undefined control sequence.
-l.79 ...a_y.x\ y)\ y \to_{\beta} \metasub{\metasub
-                                                  {(\lambda_y.x\ y)}}{x}{y}{...
+l.81 ...a_x\lambda_y.x\ y)\ y \to_{\beta} \metasub
+                                                  {(\metasub{(\lambda_y.x\ y...
 
 ? 
-LaTeX Font Info:    Trying to load font information for T1+cmss on input line 9
-4.
-(/usr/share/texlive/texmf-dist/tex/latex/base/t1cmss.fd
-File: t1cmss.fd 2019/12/16 v2.5j Standard LaTeX font definitions
-) [2]
+! Undefined control sequence.
+l.81 ..._y.x\ y)\ y \to_{\beta} \metasub{(\metasub
+                                                  {(\lambda_y.x\ y)}{y}{z})}...
+
+? 
+! Undefined control sequence.
+l.81 ...(\lambda_y.x\ y)}{y}{z})}{x}{y} = \metasub
+                                                  {(\lambda_z.x\ z)}{x}{y} =...
+
+? 
+
+Overfull \hbox (12.03668pt too wide) in paragraph at lines 84--86
+[]\T1/ptm/m/n/10.95 In what follows, we will adopt a mixed-notation approach, i
+ntertwining metanotation with the equivalent
+ []
+
+[2]
+! Undefined control sequence.
+l.109 ...= x \mid \lambda_x.t \mid t\ t \mid \esub
+                                                  {t}{x}{u}
+? 
+
+LaTeX Warning: Citation `melliesTypedLcalculiExplicit1995' on page 3 undefined 
+on input line 111.
+
+
+LaTeX Warning: Citation `guillaumeLambdaCalculusDoes2000' on page 3 undefined o
+n input line 111.
+
+
+LaTeX Warning: Citation `abadiExplicitSubstitutions1991' on page 3 undefined on
+ input line 114.
+
+
+LaTeX Warning: Citation `blooPreservationStrongNormalisation1995' on page 3 und
+efined on input line 114.
+
+
+LaTeX Warning: Citation `benaissaLambdaUpsilonCalculus1996' on page 3 undefined
+ on input line 114.
+
+
+LaTeX Warning: Citation `curienConfluencePropertiesWeak1996' on page 3 undefine
+d on input line 114.
+
+
+LaTeX Warning: Citation `munozConfluencePreservationStrong1996' on page 3 undef
+ined on input line 114.
+
+
+LaTeX Warning: Citation `kamareddineExtendingLambdaCalculusExplicit1997' on pag
+e 3 undefined on input line 114.
+
+
+LaTeX Warning: Citation `blooExplicitSubstitutionEdge1999' on page 3 undefined 
+on input line 114.
+
+
+LaTeX Warning: Citation `davidLambdacalculusExplicitWeakening2001' on page 3 un
+defined on input line 114.
+
 
 LaTeX Warning: Citation `kesnerTheoryExplicitSubstitutions2009' on page 3 undef
-ined on input line 105.
+ined on input line 114.
 
+
+LaTeX Warning: Reference `es:grammar' on page 3 undefined on input line 117.
+
+
+LaTeX Warning: Reference `es:grammar' on page 3 undefined on input line 117.
+
+LaTeX Font Info:    Trying to load font information for T1+cmss on input line 1
+21.
+(/usr/share/texlive/texmf-dist/tex/latex/base/t1cmss.fd
+File: t1cmss.fd 2019/12/16 v2.5j Standard LaTeX font definitions
+) [3]
 ! Undefined control sequence.
 <recently read> \swap 
                       
-l.139 ...f a permutation on a term, written $\swap
+l.168 ...f a permutation on a term, written $\swap
                                                   {x}{y}{t}$, is inductively...
 
 ? 
+
+LaTeX Warning: Reference `def:swap' on page 4 undefined on input line 168.
+
 ! Undefined control sequence.
 <recently read> \swap 
                       
-l.142 $\swap
+l.171 $\swap
             {x}{y}{t} := \left\{ \begin{array}{ll}
 ? 
 ! Undefined control sequence.
-l.143 \vswap
+l.172 \vswap
             {x}{y}{v}, & \mbox{ if } t \mbox{ is the variable } v; \\
 ? 
 ! Undefined control sequence.
-l.144 \lambda_{\vswap
+l.173 \lambda_{\vswap
                      {x}{y}{z}}. \swap{x}{y}{t_1}, & \mbox{ if } t = \lambda...
 
 ? 
 ! Undefined control sequence.
-l.144 \lambda_{\vswap{x}{y}{z}}. \swap
+l.173 \lambda_{\vswap{x}{y}{z}}. \swap
                                       {x}{y}{t_1}, & \mbox{ if } t = \lambda...
 
 ? 
 ! Undefined control sequence.
 <recently read> \swap 
                       
-l.145 \swap
+l.174 \swap
            {x}{y}{t_1}\ \swap{x}{y}{t_2}, & \mbox{ if } t = t_1\ t_2;\\
 ? 
 ! Undefined control sequence.
-l.145 \swap{x}{y}{t_1}\ \swap
+l.174 \swap{x}{y}{t_1}\ \swap
                              {x}{y}{t_2}, & \mbox{ if } t = t_1\ t_2;\\
 ? 
 ! Undefined control sequence.
 <recently read> \esub 
                       
-l.146 \esub
+l.175 \esub
            {\swap{x}{y}{t_1}}{\vswap{x}{y}{z}}{\swap{x}{y}{t_2}}, & \mbox{ i...
 
 ? 
 ! Undefined control sequence.
-l.146 \esub{\swap
+l.175 \esub{\swap
                  {x}{y}{t_1}}{\vswap{x}{y}{z}}{\swap{x}{y}{t_2}}, & \mbox{ i...
 
 ? 
 ! Undefined control sequence.
-l.146 \esub{\swap{x}{y}{t_1}}{\vswap
+l.175 \esub{\swap{x}{y}{t_1}}{\vswap
                                     {x}{y}{z}}{\swap{x}{y}{t_2}}, & \mbox{ i...
 
 ? 
 ! Undefined control sequence.
-l.146 ...{\swap{x}{y}{t_1}}{\vswap{x}{y}{z}}{\swap
+l.175 ...{\swap{x}{y}{t_1}}{\vswap{x}{y}{z}}{\swap
                                                   {x}{y}{t_2}}, & \mbox{ if ...
 
 ? 
 ! Undefined control sequence.
-l.146 ...swap{x}{y}{t_2}}, & \mbox{ if } t = \esub
+l.175 ...swap{x}{y}{t_2}}, & \mbox{ if } t = \esub
                                                   {t_1}{z}{t_2}.
 ? 
 
-Overfull \hbox (4.33624pt too wide) in paragraph at lines 170--173
-[]\T1/ptm/m/n/10.95 The []\T1/ptm/m/it/10.95 swap[] \T1/ptm/m/n/10.95 function 
-preserves the size of terms, as stated by the following lemma:  []\T1/cmtt/m/n/
-10.95 Lemma[] [][][]\T1/ptm/m/n/10.95 swap[]size[]eq[]
- []
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `math shift' on input line 227.
 
-[3]
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `\alpha' on input line 227.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `math shift' on input line 227.
+
+[4]
 ! Undefined control sequence.
 <argument> ...tin fv(t_2) \and t_1 =_\alpha \swap 
                                                   {y}{x}{t_2}
-l.201 ...2}}{\lambda_x.t_1 =_\alpha \lambda_y.t_2}
+l.240 ...2}}{\lambda_x.t_1 =_\alpha \lambda_y.t_2}
                                                   
 ? 
 ! Undefined control sequence.
 <argument> \esub 
                  {t_1}{x}{t_2} =_\alpha \esub {t_1'}{x}{t_2'}
-l.206 ...1}{x}{t_2} =_\alpha \esub{t_1'}{x}{t_2'}}
+l.245 ...1}{x}{t_2} =_\alpha \esub{t_1'}{x}{t_2'}}
                                                   
 ? 
 ! Undefined control sequence.
 <argument> {t_1}{x}{t_2} =_\alpha \esub 
                                         {t_1'}{x}{t_2'}
-l.206 ...1}{x}{t_2} =_\alpha \esub{t_1'}{x}{t_2'}}
+l.245 ...1}{x}{t_2} =_\alpha \esub{t_1'}{x}{t_2'}}
                                                   
 ? 
 ! Undefined control sequence.
 <argument> ...in fv(t_1') \and t_1 =_\alpha \swap 
                                                   {y}{x}{t_1'}
-l.211 ...1}{x}{t_2} =_\alpha \esub{t_1'}{y}{t_2'}}
+l.250 ...1}{x}{t_2} =_\alpha \esub{t_1'}{y}{t_2'}}
                                                   
 ? 
 ! Undefined control sequence.
 <argument> \esub 
                  {t_1}{x}{t_2} =_\alpha \esub {t_1'}{y}{t_2'}
-l.211 ...1}{x}{t_2} =_\alpha \esub{t_1'}{y}{t_2'}}
+l.250 ...1}{x}{t_2} =_\alpha \esub{t_1'}{y}{t_2'}}
                                                   
 ? 
 ! Undefined control sequence.
 <argument> {t_1}{x}{t_2} =_\alpha \esub 
                                         {t_1'}{y}{t_2'}
-l.211 ...1}{x}{t_2} =_\alpha \esub{t_1'}{y}{t_2'}}
+l.250 ...1}{x}{t_2} =_\alpha \esub{t_1'}{y}{t_2'}}
                                                   
 ? 
 ! Undefined control sequence.
 <recently read> \swap 
                       
-l.252 ...$t_1 =_\alpha t_2$ if, and only if $\swap
+l.291 ...$t_1 =_\alpha t_2$ if, and only if $\swap
                                                   {x}{y}{t_1} =_\alpha \swap...
 
 ? 
 ! Undefined control sequence.
-l.252 ... only if $\swap{x}{y}{t_1} =_\alpha \swap
+l.291 ... only if $\swap{x}{y}{t_1} =_\alpha \swap
                                                   {x}{y}{t_2}$. Note that th...
 
 ? 
 ! Undefined control sequence.
-l.252 ...pha \lambda_y.z$, but $(\lambda_x.z)\msub
+l.291 ...pha \lambda_y.z$, but $(\lambda_x.z)\msub
                                                   {z}{x} = \lambda_x.x \neq_...
 
 ? 
 ! Undefined control sequence.
-l.252 ...neq_\alpha \lambda_y.x (\lambda_y.z)\msub
+l.291 ...neq_\alpha \lambda_y.x (\lambda_y.z)\msub
                                                   {z}{x}$, assuming that $x ...
 
 ? 
-[4]
-Overfull \hbox (10.09853pt too wide) in paragraph at lines 260--262
+
+Overfull \hbox (10.09853pt too wide) in paragraph at lines 299--301
 []\T1/ptm/m/n/10.95 There are several interesting auxiliary properties that nee
 d to be proved before achieving the substitution
  []
 
+[5]
 
 Package hyperref Warning: Token not allowed in a PDF string (Unicode):
-(hyperref)                removing `math shift' on input line 267.
-
-
-Package hyperref Warning: Token not allowed in a PDF string (Unicode):
-(hyperref)                removing `\lambda' on input line 267.
+(hyperref)                removing `math shift' on input line 306.
 
 
 Package hyperref Warning: Token not allowed in a PDF string (Unicode):
-(hyperref)                removing `math shift' on input line 267.
+(hyperref)                removing `\lambda' on input line 306.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `math shift' on input line 306.
 
 ! Undefined control sequence.
-l.271 ...t: $(\lambda_x.t)\ u \to_{\beta} \metasub
+l.310 ...t: $(\lambda_x.t)\ u \to_{\beta} \metasub
                                                   {t}{x}{u}$. In a less form...
 
 ? 
 
-LaTeX Warning: Citation `barendregtLambdaCalculusIts1984' on page 5 undefined o
-n input line 271.
+LaTeX Warning: Citation `barendregtLambdaCalculusIts1984' on page 6 undefined o
+n input line 310.
 
 ! Undefined control sequence.
 <recently read> \metasub 
                          
-l.272 $\metasub
+l.311 $\metasub
                {t}{x}{u} = \left\{
 ? 
 ! Undefined control sequence.
 <recently read> \metasub 
                          
-l.276   \metasub
+l.315   \metasub
                 {t_1}{x}{u}\ \metasub{t_2}{x}{u}, & \mbox{ if } t = \metasub...
 
 ? 
 ! Undefined control sequence.
-l.276   \metasub{t_1}{x}{u}\ \metasub
+l.315   \metasub{t_1}{x}{u}\ \metasub
                                      {t_2}{x}{u}, & \mbox{ if } t = \metasub...
 
 ? 
 ! Undefined control sequence.
-l.276 ...ub{t_2}{x}{u}, & \mbox{ if } t = \metasub
+l.315 ...ub{t_2}{x}{u}, & \mbox{ if } t = \metasub
                                                   {(t_1\ t_2)}{x}{u}; \\
 ? 
 ! Undefined control sequence.
-l.277   \lambda_y.(\metasub
+l.316   \lambda_y.(\metasub
                            {t_1}{x}{u}), & \mbox{ if } t = \lambda_y.t_1.
 ? 
 ! Undefined control sequence.
-l.282 ...ocurrences of $x$ in $t$, written $t\msub
+l.321 ...ocurrences of $x$ in $t$, written $t\msub
                                                   {x}{u}$ is defined as foll...
 
 ? 
 
-Underfull \hbox (badness 10000) in paragraph at lines 282--283
+Underfull \hbox (badness 10000) in paragraph at lines 321--322
 
  []
 
 ! Undefined control sequence.
-l.284 \metasub
+l.323 \metasub
               {t}{x}{u} = \left\{
 ? 
 ! Undefined control sequence.
 <recently read> \metasub 
                          
-l.288   \metasub
+l.327   \metasub
                 {t_1}{x}{u}\ \metasub{t_2}{x}{u}, & \mbox{ if } t = \metasub...
 
 ? 
 ! Undefined control sequence.
-l.288   \metasub{t_1}{x}{u}\ \metasub
+l.327   \metasub{t_1}{x}{u}\ \metasub
                                      {t_2}{x}{u}, & \mbox{ if } t = \metasub...
 
 ? 
 ! Undefined control sequence.
-l.288 ...ub{t_2}{x}{u}, & \mbox{ if } t = \metasub
+l.327 ...ub{t_2}{x}{u}, & \mbox{ if } t = \metasub
                                                   {(t_1\ t_2)}{x}{u}; \\
 ? 
 ! Undefined control sequence.
-l.290   \lambda_z.(\metasub
+l.329   \lambda_z.(\metasub
                            {(\swap{y}{z}{t_1})}{x}{u}), & \mbox{ if } t = \l...
 
 ? 
 ! Undefined control sequence.
-l.290   \lambda_z.(\metasub{(\swap
+l.329   \lambda_z.(\metasub{(\swap
                                   {y}{z}{t_1})}{x}{u}), & \mbox{ if } t = \l...
 
 ? 
 ! Undefined control sequence.
 <recently read> \esub 
                       
-l.291   \esub
+l.330   \esub
              {t_1}{x}{\metasub{t_2}{x}{u}}, & \mbox{ if } t = \esub{t_1}{x}{...
 
 ? 
 ! Undefined control sequence.
-l.291   \esub{t_1}{x}{\metasub
+l.330   \esub{t_1}{x}{\metasub
                               {t_2}{x}{u}}, & \mbox{ if } t = \esub{t_1}{x}{...
 
 ? 
 ! Undefined control sequence.
-l.291 ...asub{t_2}{x}{u}}, & \mbox{ if } t = \esub
+l.330 ...asub{t_2}{x}{u}}, & \mbox{ if } t = \esub
                                                   {t_1}{x}{t_2}; \\
 ? 
 ! Undefined control sequence.
 <recently read> \esub 
                       
-l.292   \esub
+l.331   \esub
              {\metasub{(\swap{y}{z}{t_1})}{x}{u}}{z}{\metasub{t_2}{x}{u}}, &...
 
 ? 
 ! Undefined control sequence.
-l.292   \esub{\metasub
+l.331   \esub{\metasub
                       {(\swap{y}{z}{t_1})}{x}{u}}{z}{\metasub{t_2}{x}{u}}, &...
 
 ? 
 ! Undefined control sequence.
-l.292   \esub{\metasub{(\swap
+l.331   \esub{\metasub{(\swap
                              {y}{z}{t_1})}{x}{u}}{z}{\metasub{t_2}{x}{u}}, &...
 
 ? 
 ! Undefined control sequence.
-l.292 ...ub{(\swap{y}{z}{t_1})}{x}{u}}{z}{\metasub
+l.331 ...ub{(\swap{y}{z}{t_1})}{x}{u}}{z}{\metasub
                                                   {t_2}{x}{u}}, & \mbox{ if ...
 
 ? 
 ! Undefined control sequence.
-l.292 ...asub{t_2}{x}{u}}, & \mbox{ if } t = \esub
+l.331 ...asub{t_2}{x}{u}}, & \mbox{ if } t = \esub
                                                   {t_1}{y}{t_2}, x \neq y \m...
 
 ? 
 ! Undefined control sequence.
-l.292 ...}, x \neq y \mbox{ and } z\notin fv(\esub
+l.331 ...}, x \neq y \mbox{ and } z\notin fv(\esub
                                                   {t_1}{y}{t_2})\cup fv(u) \...
 
 ? 
 ! Undefined control sequence.
 <recently read> \metasub 
                          
-l.297 ...x} in the Coq code to represent $\metasub
+l.336 ...x} in the Coq code to represent $\metasub
                                                   {t}{x}{u}$. The correspond...
 
 ? 
-[5]
+[6]
 ! Undefined control sequence.
 <recently read> \metasub 
                          
-l.342 ...s that if $x \notin fv(t)$ then $\metasub
+l.381 ...s that if $x \notin fv(t)$ then $\metasub
                                                   {t}{x}{u} =_\alpha t$. In ...
 
 ? 
 ! Undefined control sequence.
 <recently read> \metasub 
                          
-l.342 ...s a syntactic equality, {\i.e.} $\metasub
+l.381 ...s a syntactic equality, {\i.e.} $\metasub
                                                   {t}{x}{u} = t$ instead of ...
 
 ? 
 ! Undefined control sequence.
-l.348 ... have to prove that $(\lambda_y.t_1)\msub
+l.387 ... have to prove that $(\lambda_y.t_1)\msub
                                                   {x}{u} =_\alpha \lambda_y....
 
 ? 
 ! Undefined control sequence.
-l.351 ..._1| \to \forall u\ x', x' \notin fv(\swap
+l.390 ..._1| \to \forall u\ x', x' \notin fv(\swap
                                                   {x}{y}{t'}) \to (\swap{x}{...
 
 ? 
 ! Undefined control sequence.
-l.351 ... x' \notin fv(\swap{x}{y}{t'}) \to (\swap
+l.390 ... x' \notin fv(\swap{x}{y}{t'}) \to (\swap
                                                   {x}{y}{t'})\msub{x'}{u} =_...
 
 ? 
 ! Undefined control sequence.
-l.351 ...wap{x}{y}{t'}) \to (\swap{x}{y}{t'})\msub
+l.390 ...wap{x}{y}{t'}) \to (\swap{x}{y}{t'})\msub
                                                   {x'}{u} =_\alpha \swap{x}{...
 
 ? 
 ! Undefined control sequence.
-l.351 ...wap{x}{y}{t'})\msub{x'}{u} =_\alpha \swap
+l.390 ...wap{x}{y}{t'})\msub{x'}{u} =_\alpha \swap
                                                   {x}{y}{t'}$.
 ? 
 ! Undefined control sequence.
-l.354 ...d we have to prove that $\lambda_z.(\swap
+l.393 ...d we have to prove that $\lambda_z.(\swap
                                                   {z}{y}{t_1})\msub{x}{u} =_...
 
 ? 
 ! Undefined control sequence.
-l.354 ...e that $\lambda_z.(\swap{z}{y}{t_1})\msub
+l.393 ...e that $\lambda_z.(\swap{z}{y}{t_1})\msub
                                                   {x}{u} =_\alpha \lambda_y....
 
 ? 
 ! Undefined control sequence.
-l.356 ..., we have to prove that $\lambda_z.(\swap
+l.395 ..., we have to prove that $\lambda_z.(\swap
                                                   {z}{z}{t_1})\msub{x}{u} =_...
 
 ? 
 ! Undefined control sequence.
-l.356 ...e that $\lambda_z.(\swap{z}{z}{t_1})\msub
+l.395 ...e that $\lambda_z.(\swap{z}{z}{t_1})\msub
                                                   {x}{u} =_\alpha \lambda_z....
 
 ? 
 ! Undefined control sequence.
-l.356 ...\it abs}\_\mbox{\it same}$ we get $(\swap
+l.395 ...\it abs}\_\mbox{\it same}$ we get $(\swap
                                                   {z}{z}{t_1})\msub{x}{u} =_...
 
 ? 
 ! Undefined control sequence.
-l.356 ...it same}$ we get $(\swap{z}{z}{t_1})\msub
+l.395 ...it same}$ we get $(\swap{z}{z}{t_1})\msub
                                                   {x}{u} =_\alpha t_1$, but ...
 
 ? 
 ! Undefined control sequence.
 <recently read> \swap 
                       
-l.356 ...ivity of $\alpha$-equivalence with $\swap
+l.395 ...ivity of $\alpha$-equivalence with $\swap
                                                   {z}{z}{t_1}$ as intermedia...
 
 ? 
-[6]
 ! Undefined control sequence.
-l.357 ...\mbox{\it diff}$. The new goal is $(\swap
+l.396 ...\mbox{\it diff}$. The new goal is $(\swap
                                                   {z}{y}{t_1})\msub{x}{u} =_...
 
 ? 
 ! Undefined control sequence.
-l.357 ... The new goal is $(\swap{z}{y}{t_1})\msub
+l.396 ... The new goal is $(\swap{z}{y}{t_1})\msub
                                                   {x}{u} =_\alpha \swap{z}{y...
 
 ? 
 ! Undefined control sequence.
-l.357 ...wap{z}{y}{t_1})\msub{x}{u} =_\alpha \swap
+l.396 ...wap{z}{y}{t_1})\msub{x}{u} =_\alpha \swap
                                                   {z}{y}{t_1}$ which holds b...
 
 ? 
 ! Undefined control sequence.
-l.357 ...y the induction hypothesis, since $|\swap
+l.396 ...y the induction hypothesis, since $|\swap
                                                   {z}{y}{t_1}| = |t_1|$ and ...
 
 ? 
 ! Undefined control sequence.
-l.357 ...{y}{t_1}| = |t_1|$ and $x \notin fv(\swap
+l.396 ...{y}{t_1}| = |t_1|$ and $x \notin fv(\swap
                                                   {z}{y}{t_1})$ because $x \...
 
 ? 
+[7]
 ! Undefined control sequence.
 <recently read> \metasub 
                          
-l.364 ...ha t'$ and $u =_\alpha u'$ then $\metasub
+l.403 ...ha t'$ and $u =_\alpha u'$ then $\metasub
                                                   {t}{x}{u} =_\alpha \metasu...
 
 ? 
 ! Undefined control sequence.
-l.364 ...then $\metasub{t}{x}{u} =_\alpha \metasub
+l.403 ...then $\metasub{t}{x}{u} =_\alpha \metasub
                                                   {t'}{x}{u'}$, where $x$ is...
 
 ? 
 ! Undefined control sequence.
 <recently read> \metasub 
                          
-l.364 ...ve that if $u =_\alpha u'$ then $\metasub
+l.403 ...ve that if $u =_\alpha u'$ then $\metasub
                                                   {t}{x}{u} =_\alpha \metasu...
 
 ? 
 ! Undefined control sequence.
-l.364 ...then $\metasub{t}{x}{u} =_\alpha \metasub
+l.403 ...then $\metasub{t}{x}{u} =_\alpha \metasub
                                                   {t}{x}{u'}, \forall x, t, ...
 
 ? 
 ! Undefined control sequence.
 <recently read> \metasub 
                          
-l.364 ...ve that if $t =_\alpha t'$ then $\metasub
+l.403 ...ve that if $t =_\alpha t'$ then $\metasub
                                                   {t}{x}{u} =_\alpha \metasu...
 
 ? 
 ! Undefined control sequence.
-l.364 ...then $\metasub{t}{x}{u} =_\alpha \metasub
+l.403 ...then $\metasub{t}{x}{u} =_\alpha \metasub
                                                   {t'}{x}{u}, \forall x, t, ...
 
 ? 
 ! Undefined control sequence.
 <recently read> \metasub 
                          
-l.373 ...a_y.t_1$. We need to prove that $\metasub
+l.412 ...a_y.t_1$. We need to prove that $\metasub
                                                   {(\lambda_y.t_1)}{x}{u} =_...
 
 ? 
 ! Undefined control sequence.
-l.373 ...{(\lambda_y.t_1)}{x}{u} =_\alpha \metasub
+l.412 ...{(\lambda_y.t_1)}{x}{u} =_\alpha \metasub
                                                   {(\lambda_y.t_1)}{x}{u'}$.
 ? 
 ! Undefined control sequence.
-l.379 ... new goal is then $\lambda_{x_0}.\metasub
+l.418 ... new goal is then $\lambda_{x_0}.\metasub
                                                   {(\swap{y}{x_0}{t_1})}{x}{...
 
 ? 
 ! Undefined control sequence.
-l.379 ...al is then $\lambda_{x_0}.\metasub{(\swap
+l.418 ...al is then $\lambda_{x_0}.\metasub{(\swap
                                                   {y}{x_0}{t_1})}{x}{u} =_\a...
 
 ? 
 ! Undefined control sequence.
-l.379 ...})}{x}{u} =_\alpha \lambda_{x_1}.\metasub
+l.418 ...})}{x}{u} =_\alpha \lambda_{x_1}.\metasub
                                                   {(\swap{y}{x_1}{t_1})}{x}{...
 
 ? 
 ! Undefined control sequence.
-l.379 ...u} =_\alpha \lambda_{x_1}.\metasub{(\swap
+l.418 ...u} =_\alpha \lambda_{x_1}.\metasub{(\swap
                                                   {y}{x_1}{t_1})}{x}{u'}$, w...
 
 ? 
 ! Undefined control sequence.
 <recently read> \metasub 
                          
-l.385 ... x_1$ and we need to prove that $\metasub
+l.424 ... x_1$ and we need to prove that $\metasub
                                                   {(\swap{y}{x_0}{t_1})}{x}{...
 
 ? 
 ! Undefined control sequence.
-l.385 ...nd we need to prove that $\metasub{(\swap
+l.424 ...nd we need to prove that $\metasub{(\swap
                                                   {y}{x_0}{t_1})}{x}{u} =_\a...
 
 ? 
 ! Undefined control sequence.
-l.385 ...\swap{y}{x_0}{t_1})}{x}{u} =_\alpha \swap
+l.424 ...\swap{y}{x_0}{t_1})}{x}{u} =_\alpha \swap
                                                   {x_0}{x_1}{(\metasub{(\swa...
 
 ? 
 ! Undefined control sequence.
-l.385 ...{x}{u} =_\alpha \swap{x_0}{x_1}{(\metasub
+l.424 ...{x}{u} =_\alpha \swap{x_0}{x_1}{(\metasub
                                                   {(\swap{y}{x_1}{t_1})}{x}{...
 
 ? 
 ! Undefined control sequence.
-l.385 ...=_\alpha \swap{x_0}{x_1}{(\metasub{(\swap
+l.424 ...=_\alpha \swap{x_0}{x_1}{(\metasub{(\swap
                                                   {y}{x_1}{t_1})}{x}{u'})}$.
 ? 
 
@@ -1149,37 +1223,37 @@ See the LaTeX manual or LaTeX Companion for explanation.
 Type  H <return>  for immediate help.
  ...                                              
                                                   
-l.391 \begin{lemma}
+l.430 \begin{lemma}
                     Let $t,u$ be terms, and $x,y,z$ variables. Then
 ? 
 ! Undefined control sequence.
 <recently read> \swap 
                       
-l.392  $\swap
+l.431  $\swap
              {y}{z}{(\metasub{t}{x}{u})} =_\alpha \metasub{(\swap{y}{z}{t})}...
 
 ? 
 ! Undefined control sequence.
-l.392  $\swap{y}{z}{(\metasub
+l.431  $\swap{y}{z}{(\metasub
                              {t}{x}{u})} =_\alpha \metasub{(\swap{y}{z}{t})}...
 
 ? 
 ! Undefined control sequence.
-l.392 ...z}{(\metasub{t}{x}{u})} =_\alpha \metasub
+l.431 ...z}{(\metasub{t}{x}{u})} =_\alpha \metasub
                                                   {(\swap{y}{z}{t})}{\vswap{...
 
 ? 
 ! Undefined control sequence.
-l.392 ...tasub{t}{x}{u})} =_\alpha \metasub{(\swap
+l.431 ...tasub{t}{x}{u})} =_\alpha \metasub{(\swap
                                                   {y}{z}{t})}{\vswap{y}{z}{x...
 
 ? 
 ! Undefined control sequence.
-l.392 ..._\alpha \metasub{(\swap{y}{z}{t})}{\vswap
+l.431 ..._\alpha \metasub{(\swap{y}{z}{t})}{\vswap
                                                   {y}{z}{x}}{\swap{y}{z}{u}}$.
 ? 
 ! Undefined control sequence.
-l.392 ...{(\swap{y}{z}{t})}{\vswap{y}{z}{x}}{\swap
+l.431 ...{(\swap{y}{z}{t})}{\vswap{y}{z}{x}}{\swap
                                                   {y}{z}{u}}$.
 ? 
 
@@ -1189,426 +1263,424 @@ See the LaTeX manual or LaTeX Companion for explanation.
 Type  H <return>  for immediate help.
  ...                                              
                                                   
-l.393 \end{lemma}
+l.432 \end{lemma}
                  
 ? 
 ! Undefined control sequence.
 <recently read> \swap 
                       
-l.404 ...ction, where we need to prove that $\swap
+l.443 ...ction, where we need to prove that $\swap
                                                   {y}{z}{(\metasub{(\lambda_...
 
 ? 
 ! Undefined control sequence.
-l.404 ...need to prove that $\swap{y}{z}{(\metasub
+l.443 ...need to prove that $\swap{y}{z}{(\metasub
                                                   {(\lambda_w.t_1)}{x}{u})} ...
 
 ? 
 ! Undefined control sequence.
-l.404 ...\lambda_w.t_1)}{x}{u})} =_\alpha \metasub
+l.443 ...\lambda_w.t_1)}{x}{u})} =_\alpha \metasub
                                                   {(\swap{y}{z}{\lambda_w.t_...
 
 ? 
 ! Undefined control sequence.
-l.404 ..._w.t_1)}{x}{u})} =_\alpha \metasub{(\swap
+l.443 ..._w.t_1)}{x}{u})} =_\alpha \metasub{(\swap
                                                   {y}{z}{\lambda_w.t_1})}{\v...
 
 ? 
 ! Undefined control sequence.
-l.404 ...asub{(\swap{y}{z}{\lambda_w.t_1})}{\vswap
+l.443 ...asub{(\swap{y}{z}{\lambda_w.t_1})}{\vswap
                                                   {y}{z}{x}}{\swap{y}{z}{u}}...
 
 ? 
 ! Undefined control sequence.
-l.404 ...}{\lambda_w.t_1})}{\vswap{y}{z}{x}}{\swap
+l.443 ...}{\lambda_w.t_1})}{\vswap{y}{z}{x}}{\swap
                                                   {y}{z}{u}}$. On the left h...
 
 ? 
 ! Undefined control sequence.
-l.404 ... over the abstraction is $\lambda_{\vswap
+l.443 ... over the abstraction is $\lambda_{\vswap
                                                   {y}{z}{w'}}.\swap{y}{z}{(\...
 
 ? 
 ! Undefined control sequence.
-l.404 ...tion is $\lambda_{\vswap{y}{z}{w'}}.\swap
+l.443 ...tion is $\lambda_{\vswap{y}{z}{w'}}.\swap
                                                   {y}{z}{(\metasub{\swap{w}{...
 
 ? 
 ! Undefined control sequence.
-l.404 ..._{\vswap{y}{z}{w'}}.\swap{y}{z}{(\metasub
+l.443 ..._{\vswap{y}{z}{w'}}.\swap{y}{z}{(\metasub
                                                   {\swap{w}{w'}{t_1}}{x}{u})...
 
 ? 
 ! Undefined control sequence.
-l.404 ...ap{y}{z}{w'}}.\swap{y}{z}{(\metasub{\swap
+l.443 ...ap{y}{z}{w'}}.\swap{y}{z}{(\metasub{\swap
                                                   {w}{w'}{t_1}}{x}{u})} =_\a...
 
 ? 
 ! Undefined control sequence.
-l.404 ...ap{w}{w'}{t_1}}{x}{u})} =_\alpha \metasub
+l.443 ...ap{w}{w'}{t_1}}{x}{u})} =_\alpha \metasub
                                                   {(\lambda_{\vswap{y}{z}{w}...
 
 ? 
 ! Undefined control sequence.
-l.404 ...}{u})} =_\alpha \metasub{(\lambda_{\vswap
+l.443 ...}{u})} =_\alpha \metasub{(\lambda_{\vswap
                                                   {y}{z}{w}}.\swap{y}{z}{t_1...
 
 ? 
 ! Undefined control sequence.
-l.404 ...\metasub{(\lambda_{\vswap{y}{z}{w}}.\swap
+l.443 ...\metasub{(\lambda_{\vswap{y}{z}{w}}.\swap
                                                   {y}{z}{t_1})}{\vswap{y}{z}...
 
 ? 
 ! Undefined control sequence.
-l.404 ...vswap{y}{z}{w}}.\swap{y}{z}{t_1})}{\vswap
+l.443 ...vswap{y}{z}{w}}.\swap{y}{z}{t_1})}{\vswap
                                                   {y}{z}{x}}{\swap{y}{z}{u}}...
 
 ? 
 ! Undefined control sequence.
-l.404 ...\swap{y}{z}{t_1})}{\vswap{y}{z}{x}}{\swap
+l.443 ...\swap{y}{z}{t_1})}{\vswap{y}{z}{x}}{\swap
                                                   {y}{z}{u}}$, where $w' \no...
 
 ? 
 ! Undefined control sequence.
 <recently read> \vswap 
                        
-l.407 ...ide term. Since $x\neq w$, we get $\vswap
+l.446 ...ide term. Since $x\neq w$, we get $\vswap
                                                   {y}{z}{x} \neq \vswap{y}{z...
 
 ? 
 ! Undefined control sequence.
-l.407 ...q w$, we get $\vswap{y}{z}{x} \neq \vswap
+l.446 ...q w$, we get $\vswap{y}{z}{x} \neq \vswap
                                                   {y}{z}{w}$ and a renaming ...
 
 ? 
 ! Undefined control sequence.
-l.407 ... such that $w'' \notin fv(\lambda_{\vswap
+l.446 ... such that $w'' \notin fv(\lambda_{\vswap
                                                   {y}{z}{w}}.\swap{y}{z}{t_1...
 
 ? 
 ! Undefined control sequence.
-l.407 ...\notin fv(\lambda_{\vswap{y}{z}{w}}.\swap
+l.446 ...\notin fv(\lambda_{\vswap{y}{z}{w}}.\swap
                                                   {y}{z}{t_1}) \cup fv(\swap...
 
 ? 
 ! Undefined control sequence.
-l.407 ...y}{z}{w}}.\swap{y}{z}{t_1}) \cup fv(\swap
+l.446 ...y}{z}{w}}.\swap{y}{z}{t_1}) \cup fv(\swap
                                                   {y}{z}{u}) \cup \{\vswap{y...
 
 ? 
 ! Undefined control sequence.
-l.407 ...1}) \cup fv(\swap{y}{z}{u}) \cup \{\vswap
+l.446 ...1}) \cup fv(\swap{y}{z}{u}) \cup \{\vswap
                                                   {y}{z}{x}\}$, we get the f...
 
 ? 
 ! Undefined control sequence.
-l.407 ...e get the following goal $\lambda_{\vswap
+l.446 ...e get the following goal $\lambda_{\vswap
                                                   {y}{z}{w'}}.\swap{y}{z}{(\...
 
 ? 
 ! Undefined control sequence.
-l.407 ...ng goal $\lambda_{\vswap{y}{z}{w'}}.\swap
+l.446 ...ng goal $\lambda_{\vswap{y}{z}{w'}}.\swap
                                                   {y}{z}{(\metasub{\swap{w}{...
 
 ? 
 ! Undefined control sequence.
-l.407 ..._{\vswap{y}{z}{w'}}.\swap{y}{z}{(\metasub
+l.446 ..._{\vswap{y}{z}{w'}}.\swap{y}{z}{(\metasub
                                                   {\swap{w}{w'}{t_1}}{x}{u})...
 
 ? 
 ! Undefined control sequence.
-l.407 ...ap{y}{z}{w'}}.\swap{y}{z}{(\metasub{\swap
+l.446 ...ap{y}{z}{w'}}.\swap{y}{z}{(\metasub{\swap
                                                   {w}{w'}{t_1}}{x}{u})} =_\a...
 
 ? 
 ! Undefined control sequence.
-l.407 ...}{x}{u})} =_\alpha \lambda_{w''}.\metasub
+l.446 ...}{x}{u})} =_\alpha \lambda_{w''}.\metasub
                                                   {(\swap{w''}{\vswap{y}{z}{...
 
 ? 
 ! Undefined control sequence.
-l.407 ...)} =_\alpha \lambda_{w''}.\metasub{(\swap
+l.446 ...)} =_\alpha \lambda_{w''}.\metasub{(\swap
                                                   {w''}{\vswap{y}{z}{w}}{(\s...
 
 ? 
 ! Undefined control sequence.
-l.407 ...\lambda_{w''}.\metasub{(\swap{w''}{\vswap
+l.446 ...\lambda_{w''}.\metasub{(\swap{w''}{\vswap
                                                   {y}{z}{w}}{(\swap{y}{z}{t_...
 
 ? 
 ! Undefined control sequence.
-l.407 ...tasub{(\swap{w''}{\vswap{y}{z}{w}}{(\swap
+l.446 ...tasub{(\swap{w''}{\vswap{y}{z}{w}}{(\swap
                                                   {y}{z}{t_1})})}{\vswap{y}{...
 
 ? 
 ! Undefined control sequence.
-l.407 ...ap{y}{z}{w}}{(\swap{y}{z}{t_1})})}{\vswap
+l.446 ...ap{y}{z}{w}}{(\swap{y}{z}{t_1})})}{\vswap
                                                   {y}{z}{x}}{\swap{y}{z}{u}}...
 
 ? 
 ! Undefined control sequence.
-l.407 ...wap{y}{z}{t_1})})}{\vswap{y}{z}{x}}{\swap
+l.446 ...wap{y}{z}{t_1})})}{\vswap{y}{z}{x}}{\swap
                                                   {y}{z}{u}}$. We consider t...
 
 ? 
 ! Undefined control sequence.
-l.407 ... consider two cases: either $w'' = \vswap
+l.446 ... consider two cases: either $w'' = \vswap
                                                   {y}{z}{w'}$ or $w'' \neq \...
 
 ? 
 ! Undefined control sequence.
-l.407 ...' = \vswap{y}{z}{w'}$ or $w'' \neq \vswap
+l.446 ...' = \vswap{y}{z}{w'}$ or $w'' \neq \vswap
                                                   {y}{z}{w'}$.
 ? 
 ! Undefined control sequence.
 <recently read> \swap 
                       
-l.410 ... abs}\_\mbox{\it same}$ and we get $\swap
+l.449 ... abs}\_\mbox{\it same}$ and we get $\swap
                                                   {y}{z}{(\metasub{(\swap{w}...
 
 ? 
 ! Undefined control sequence.
-l.410 ... same}$ and we get $\swap{y}{z}{(\metasub
+l.449 ... same}$ and we get $\swap{y}{z}{(\metasub
                                                   {(\swap{w}{w'}{t_1})}{x}{u...
 
 ? 
 ! Undefined control sequence.
-l.410 ... and we get $\swap{y}{z}{(\metasub{(\swap
+l.449 ... and we get $\swap{y}{z}{(\metasub{(\swap
                                                   {w}{w'}{t_1})}{x}{u})} =_\...
 
 ? 
 ! Undefined control sequence.
-l.410 ...p{w}{w'}{t_1})}{x}{u})} =_\alpha \metasub
+l.449 ...p{w}{w'}{t_1})}{x}{u})} =_\alpha \metasub
                                                   {(\swap{w''}{\vswap{y}{z}{...
 
 ? 
 ! Undefined control sequence.
-l.410 ...}{t_1})}{x}{u})} =_\alpha \metasub{(\swap
+l.449 ...}{t_1})}{x}{u})} =_\alpha \metasub{(\swap
                                                   {w''}{\vswap{y}{z}{w}}{(\s...
 
 ? 
 ! Undefined control sequence.
-l.410 ...u})} =_\alpha \metasub{(\swap{w''}{\vswap
+l.449 ...u})} =_\alpha \metasub{(\swap{w''}{\vswap
                                                   {y}{z}{w}}{(\swap{y}{z}{t_...
 
 ? 
 ! Undefined control sequence.
-l.410 ...tasub{(\swap{w''}{\vswap{y}{z}{w}}{(\swap
+l.449 ...tasub{(\swap{w''}{\vswap{y}{z}{w}}{(\swap
                                                   {y}{z}{t_1})})}{\vswap{y}{...
 
 ? 
 ! Undefined control sequence.
-l.410 ...ap{y}{z}{w}}{(\swap{y}{z}{t_1})})}{\vswap
+l.449 ...ap{y}{z}{w}}{(\swap{y}{z}{t_1})})}{\vswap
                                                   {y}{z}{x}}{\swap{y}{z}{u}}...
 
 ? 
 ! Undefined control sequence.
-l.410 ...wap{y}{z}{t_1})})}{\vswap{y}{z}{x}}{\swap
+l.449 ...wap{y}{z}{t_1})})}{\vswap{y}{z}{x}}{\swap
                                                   {y}{z}{u}}$ that can be pr...
 
 ? 
 ! Undefined control sequence.
-l.413 When $w'' \neq \vswap
+l.452 When $w'' \neq \vswap
                            {y}{z}{w'}$, the application of the rule $\mbox{\...
 
 ? 
 ! Undefined control sequence.
 <recently read> \swap 
                       
-l.413 ...mbox{\it diff}$ generates the goal $\swap
+l.452 ...mbox{\it diff}$ generates the goal $\swap
                                                   {w''}{\vswap{y}{z}{w'}}{\s...
 
 ? 
 ! Undefined control sequence.
-l.413 ...f}$ generates the goal $\swap{w''}{\vswap
+l.452 ...f}$ generates the goal $\swap{w''}{\vswap
                                                   {y}{z}{w'}}{\swap{y}{z}{(\...
 
 ? 
 ! Undefined control sequence.
-l.413 ... goal $\swap{w''}{\vswap{y}{z}{w'}}{\swap
+l.452 ... goal $\swap{w''}{\vswap{y}{z}{w'}}{\swap
                                                   {y}{z}{(\metasub{\swap{w}{...
 
 ? 
 ! Undefined control sequence.
-l.413 ...}{\vswap{y}{z}{w'}}{\swap{y}{z}{(\metasub
+l.452 ...}{\vswap{y}{z}{w'}}{\swap{y}{z}{(\metasub
                                                   {\swap{w}{w'}{t_1}}{x}{u})...
 
 ? 
 ! Undefined control sequence.
-l.413 ...ap{y}{z}{w'}}{\swap{y}{z}{(\metasub{\swap
+l.452 ...ap{y}{z}{w'}}{\swap{y}{z}{(\metasub{\swap
                                                   {w}{w'}{t_1}}{x}{u})}} =_\...
 
 ? 
 ! Undefined control sequence.
-l.413 ...p{w}{w'}{t_1}}{x}{u})}} =_\alpha \metasub
+l.452 ...p{w}{w'}{t_1}}{x}{u})}} =_\alpha \metasub
                                                   {(\swap{w''}{\vswap{y}{z}{...
 
 ? 
 ! Undefined control sequence.
-l.413 ...}{t_1}}{x}{u})}} =_\alpha \metasub{(\swap
+l.452 ...}{t_1}}{x}{u})}} =_\alpha \metasub{(\swap
                                                   {w''}{\vswap{y}{z}{w}}{(\s...
 
 ? 
 ! Undefined control sequence.
-l.413 ...})}} =_\alpha \metasub{(\swap{w''}{\vswap
+l.452 ...})}} =_\alpha \metasub{(\swap{w''}{\vswap
                                                   {y}{z}{w}}{(\swap{y}{z}{t_...
 
 ? 
 ! Undefined control sequence.
-l.413 ...tasub{(\swap{w''}{\vswap{y}{z}{w}}{(\swap
+l.452 ...tasub{(\swap{w''}{\vswap{y}{z}{w}}{(\swap
                                                   {y}{z}{t_1})})}{\vswap{y}{...
 
 ? 
 ! Undefined control sequence.
-l.413 ...ap{y}{z}{w}}{(\swap{y}{z}{t_1})})}{\vswap
+l.452 ...ap{y}{z}{w}}{(\swap{y}{z}{t_1})})}{\vswap
                                                   {y}{z}{x}}{\swap{y}{z}{u}}...
 
 ? 
 ! Undefined control sequence.
-l.413 ...wap{y}{z}{t_1})})}{\vswap{y}{z}{x}}{\swap
+l.452 ...wap{y}{z}{t_1})})}{\vswap{y}{z}{x}}{\swap
                                                   {y}{z}{u}}$. We can use th...
 
 ? 
 ! Undefined control sequence.
 <recently read> \metasub 
                          
-l.413 ...n $\alpha$-equality of the form $\metasub
+l.452 ...n $\alpha$-equality of the form $\metasub
                                                   {t}{x}{u} =_\alpha \metasu...
 
 ? 
 ! Undefined control sequence.
-l.413 ...form $\metasub{t}{x}{u} =_\alpha \metasub
+l.452 ...form $\metasub{t}{x}{u} =_\alpha \metasub
                                                   {t'}{x}{u'}$, where $t =_\...
 
 ? 
-[7]
-Underfull \hbox (badness 10000) in paragraph at lines 426--437
-
- []
-
 [8]
-Underfull \hbox (badness 10000) in paragraph at lines 483--485
+Underfull \hbox (badness 10000) in paragraph at lines 465--476
 
  []
 
+[9]
+Underfull \hbox (badness 10000) in paragraph at lines 522--524
 
-LaTeX Warning: Reference `msubst' on page 9 undefined on input line 498.
+ []
 
 ! Undefined control sequence.
-l.501 ...he RHS cannot belong to the set $fv(\swap
+l.540 ...he RHS cannot belong to the set $fv(\swap
                                                   {x}{y}{\lambda_y'.t_1}) \c...
 
 ? 
 ! Undefined control sequence.
-l.501 ...swap{x}{y}{\lambda_y'.t_1}) \cup fv(\swap
+l.540 ...swap{x}{y}{\lambda_y'.t_1}) \cup fv(\swap
                                                   {x}{y}{u}) \cup \{\vswap{x...
 
 ? 
 ! Undefined control sequence.
-l.501 ...1}) \cup fv(\swap{x}{y}{u}) \cup \{\vswap
+l.540 ...1}) \cup fv(\swap{x}{y}{u}) \cup \{\vswap
                                                   {x}{y}{z}\}$.
 ? 
 ! Undefined control sequence.
-l.504 ...new name that is not in the set $fv(\swap
+l.543 ...new name that is not in the set $fv(\swap
                                                   {x}{y}{\lambda_y'.t_1}) \c...
 
 ? 
 ! Undefined control sequence.
-l.504 ...swap{x}{y}{\lambda_y'.t_1}) \cup fv(\swap
+l.543 ...swap{x}{y}{\lambda_y'.t_1}) \cup fv(\swap
                                                   {x}{y}{u}) \cup \{\vswap{x...
 
 ? 
 ! Undefined control sequence.
-l.504 ...1}) \cup fv(\swap{x}{y}{u}) \cup \{\vswap
+l.543 ...1}) \cup fv(\swap{x}{y}{u}) \cup \{\vswap
                                                   {x}{y}{z}\}$. After renami...
 
 ? 
 ! Undefined control sequence.
-l.527 ...0} be a new name not in the set $fv(\esub
+l.566 ...0} be a new name not in the set $fv(\esub
                                                   {t1}{y'}{t2})\cup fv(u) \c...
 
 ? 
 ! Undefined control sequence.
-l.527 ...{x1}, a new name not in the set $fv(\esub
+l.566 ...{x1}, a new name not in the set $fv(\esub
                                                   {\swap{x}{y}{t1}}{\vswap{x...
 
 ? 
 ! Undefined control sequence.
-l.527 ...a new name not in the set $fv(\esub{\swap
+l.566 ...a new name not in the set $fv(\esub{\swap
                                                   {x}{y}{t1}}{\vswap{x}{y}{y...
 
 ? 
 ! Undefined control sequence.
-l.527 ...the set $fv(\esub{\swap{x}{y}{t1}}{\vswap
+l.566 ...the set $fv(\esub{\swap{x}{y}{t1}}{\vswap
                                                   {x}{y}{y'}}{\swap{x}{y}{t2...
 
 ? 
 ! Undefined control sequence.
-l.527 ...{\swap{x}{y}{t1}}{\vswap{x}{y}{y'}}{\swap
+l.566 ...{\swap{x}{y}{t1}}{\vswap{x}{y}{y'}}{\swap
                                                   {x}{y}{t2}})\cup fv(\swap{...
 
 ? 
 ! Undefined control sequence.
-l.527 ...x}{y}{y'}}{\swap{x}{y}{t2}})\cup fv(\swap
+l.566 ...x}{y}{y'}}{\swap{x}{y}{t2}})\cup fv(\swap
                                                   {x}{y}{u}) \cup \{\vswap{x...
 
 ? 
 ! Undefined control sequence.
-l.527 ...2}})\cup fv(\swap{x}{y}{u}) \cup \{\vswap
+l.566 ...2}})\cup fv(\swap{x}{y}{u}) \cup \{\vswap
                                                   {x}{y}{z}\}$. After the pr...
 
 ? 
-[9]
-Underfull \hbox (badness 10000) in paragraph at lines 554--556
+[10]
+Underfull \hbox (badness 10000) in paragraph at lines 593--595
 
  []
 
-[10]
-Underfull \vbox (badness 1158) has occurred while \output is active []
-
- [11]
+[11]
 
 LaTeX Warning: Citation `abadiExplicitSubstitutions1991' on page 12 undefined o
-n input line 606.
+n input line 645.
 
 
 LaTeX Warning: Citation `accattoliAbstractFactorizationTheorem2012' on page 12 
-undefined on input line 606.
+undefined on input line 645.
 
 
 LaTeX Warning: Citation `ayala-rinconComparingCalculiExplicit2002' on page 12 u
-ndefined on input line 606.
+ndefined on input line 645.
 
 
 LaTeX Warning: Citation `ayala-rinconComparingImplementingCalculi2005' on page 
-12 undefined on input line 606.
+12 undefined on input line 645.
 
 
 LaTeX Warning: Citation `bonelliPerpetualityNamedLambda2001' on page 12 undefin
-ed on input line 606.
+ed on input line 645.
 
 
 LaTeX Warning: Citation `fujitaChurchRosserTheoremCompositional2016' on page 12
- undefined on input line 606.
+ undefined on input line 645.
 
 
-LaTeX Warning: Citation `fmm2021' on page 12 undefined on input line 612.
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+ [12]
+
+LaTeX Warning: Citation `fmm2021' on page 13 undefined on input line 651.
 
 
-LaTeX Warning: Citation `nakazawaCompositionalConfluenceProofs2016' on page 12 
-undefined on input line 612.
+LaTeX Warning: Citation `nakazawaCompositionalConfluenceProofs2016' on page 13 
+undefined on input line 651.
 
 
-LaTeX Warning: Citation `nakazawaCallbyvalue2017' on page 12 undefined on input
- line 612.
+LaTeX Warning: Citation `nakazawaCallbyvalue2017' on page 13 undefined on input
+ line 651.
 
 
-LaTeX Warning: Citation `kesnerPerpetualityFullSafe2008' on page 12 undefined o
-n input line 612.
+LaTeX Warning: Citation `kesnerPerpetualityFullSafe2008' on page 13 undefined o
+n input line 651.
 
 )
 No file report-subst.bbl.
-[12]
+[13]
 \pages=\write4
 \openout4 = `report-subst.pag'.
 
@@ -1625,40 +1697,19 @@ Package rerunfilecheck Warning: File `report-subst.out' has changed.
 (rerunfilecheck)                or use package `bookmark'.
 
 Package rerunfilecheck Info: Checksums for `report-subst.out':
-(rerunfilecheck)             Before: AB218831923B38535DB771EC503DABF1;849
-(rerunfilecheck)             After:  77E2194D43CDB3C066BEDFA4C6F05F80;1119.
+(rerunfilecheck)             Before: 77E2194D43CDB3C066BEDFA4C6F05F80;1119
+(rerunfilecheck)             After:  2ABE44D8CB753287E4513481FF02CA42;1467.
  ) 
 Here is how much of TeX's memory you used:
- 11512 strings out of 480171
- 181176 string characters out of 5894489
- 505225 words of memory out of 5000000
- 28858 multiletter control sequences out of 15000+600000
- 546035 words of font info for 147 fonts, out of 8000000 for 9000
+ 11334 strings out of 480171
+ 177697 string characters out of 5894489
+ 495899 words of memory out of 5000000
+ 28862 multiletter control sequences out of 15000+600000
+ 550702 words of font info for 152 fonts, out of 8000000 for 9000
  59 hyphenation exceptions out of 8191
- 75i,19n,77p,3231b,432s stack positions out of 5000i,500n,10000p,200000b,80000s
-pdfTeX warning (dest): name{coq:lambda\040es.subst\040rec\040fun} has been re
-ferenced but does not exist, replaced by a fixed one
-
-pdfTeX warning (dest): name{coq:lambda\040es.:::'['\040x\040':='\040x\040']'\04
-0x} has been referenced but does not exist, replaced by a fixed one
-
-pdfTeX warning (dest): name{coq:lambda\040es.z:205} has been referenced but doe
-s not exist, replaced by a fixed one
-
-pdfTeX warning (dest): name{coq:lambda\040es.subst\040rec\040fun:202} has been 
-referenced but does not exist, replaced by a fixed one
-
-pdfTeX warning (dest): name{coq:lambda\040es.z:204} has been referenced but doe
-s not exist, replaced by a fixed one
-
-pdfTeX warning (dest): name{coq:lambda\040es.u:200} has been referenced but doe
-s not exist, replaced by a fixed one
-
-pdfTeX warning (dest): name{coq:lambda\040es.x:201} has been referenced but doe
-s not exist, replaced by a fixed one
-
-pdfTeX warning (dest): name{coq:lambda\040es.t:199} has been referenced but doe
-s not exist, replaced by a fixed one
+ 75i,19n,77p,2383b,432s stack positions out of 5000i,500n,10000p,200000b,80000s
+pdfTeX warning (dest): name{equation.3.3} has been referenced but does not ex
+ist, replaced by a fixed one
 
 pdfTeX warning (dest): name{coq:lambda\040es.:::x\040'=a'\040x} has been refere
 nced but does not exist, replaced by a fixed one
@@ -1678,9 +1729,6 @@ oes not exist, replaced by a fixed one
 pdfTeX warning (dest): name{coq:lambda\040es.n\040sexp:32} has been referenced 
 but does not exist, replaced by a fixed one
 
-pdfTeX warning (dest): name{subsection.2.1} has been referenced but does not ex
-ist, replaced by a fixed one
-
  </home/maria/.texlive2021/texmf-var/fonts/pk/ljfour/jknappen/ec/ecss1095.600pk
 >{/usr/share/texlive/texmf-dist/fonts/enc/dvips/base/8r.enc} </home/maria/.texl
 ive2021/texmf-var/fonts/pk/ljfour/jknappen/ec/ectt1095.600pk> </home/maria/.tex
@@ -1694,10 +1742,10 @@ urw/symbol/usyr.pfb></usr/share/texlive/texmf-dist/fonts/type1/urw/times/utmb8a
 .pfb></usr/share/texlive/texmf-dist/fonts/type1/urw/times/utmr8a.pfb></usr/shar
 e/texlive/texmf-dist/fonts/type1/urw/times/utmr8a.pfb></usr/share/texlive/texmf
 -dist/fonts/type1/urw/times/utmri8a.pfb>
-Output written on report-subst.pdf (12 pages, 224094 bytes).
+Output written on report-subst.pdf (13 pages, 206847 bytes).
 PDF statistics:
- 1454 PDF objects out of 1728 (max. 8388607)
- 1317 compressed objects within 14 object streams
- 398 named destinations out of 1000 (max. 500000)
- 33 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 760 PDF objects out of 1000 (max. 8388607)
+ 626 compressed objects within 7 object streams
+ 212 named destinations out of 1000 (max. 500000)
+ 41 words of extra memory for PDF output out of 10000 (max. 10000000)
 
