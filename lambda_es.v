@@ -447,8 +447,8 @@ Proof.
   - intros x' x y Hfv. simpl in *. apply notin_union.
     + apply IHt2. apply notin_union_1 in Hfv. assumption.
     + apply IHt1. apply notin_union_2 in Hfv. assumption. 
-  - case (x' == y). (** If [x' <> x] then we compare [x'] with [y]. If they are equal then we are in the same situation of the previous case, and hence we conclude with an application of the lemma [fv_nom_swap]. *)
-    + intro Heq. subst. apply fv_nom_swap. assumption.
+  - intros x' x y Hfv. case (x' == y). (** If [x' <> x] then we compare [x'] with [y]. If they are equal then we are in the same situation of the previous case, and hence we conclude with an application of the lemma [fv_nom_swap]. *)
+    + intro Heq. subst. Search vswap. apply fv_nom_swap. assumption.
     + intro Hneq. induction t as [z | z t1 | t1 t2 | t1 z t2]. (** If both [x] and [y] are different from [x'] then $\vswap{x}{y}{x'} = x'$ and hence, we have to prove that if [x'] is not in the set of free variables of [t] then [x'] is not in the set of free variables of [swap x y t]. This is done by induction on the structure of [t]. *)
       * simpl in *. apply notin_singleton_1 in Hfv. unfold vswap. default_simp. (** If [t] is a variable, say [z], then [x' <> z] because [x'] does not occur in the set of free variables of [t] by hypothesis. Therefore, [fv_nom (swap x y (n_var z))] is equal to one of these variables, and we conclude because all of them are different from [x']. *)
       * simpl in *. case (x' == z). (** If [t] is an abstraction, say [n_abs z t1], then  *)
@@ -1406,7 +1406,7 @@ Defined.
 (* begin hide *)
 Definition m_subst (u : n_sexp) (x:atom) (t:n_sexp) :=
   subst_rec_fun t u x.
-Notation "{ x := u } t" := (m_subst u x t) (at level 60).
+Notation "[ x := u ] t" := (m_subst u x t) (at level 60).
 
 Lemma m_subst_var_eq : forall u x,
     [x := u](n_var x) = u.
@@ -2377,7 +2377,7 @@ Proof.
                **** subst. pose proof m_subst_abs_neq as Habs''. specialize (Habs'' ([x := e2] swap w' w e1) e3 y w w'). rewrite Habs''. (** For [z == w'], we remove the abstractions from inside the metasubstitutions using the same strategy as previously, using the lemma [m_subst_abs_neq]. Then, we use the lemma [aeq_abs_same] to eliminate the abstraction since given that if the variables are the same, the therms have to be $\alpha$-equivatent.**)
                     ***** pose proof m_subst_abs_neq as Habs'''. specialize (Habs''' ([y := e3] swap w' w e1) ([y := e3] e2) x w w'). rewrite Habs'''.
                     ****** apply aeq_abs_same. unfold m_subst in *. pose proof swap_subst_rec_fun as Hsubst. specialize (Hsubst w w' x (swap w' w e1) e2). apply aeq_trans with (subst_rec_fun (subst_rec_fun (swap w' w e1) e2 x) e3 y).
-                    ******* pose proof aeq_m_subst_out as Hout. unfold m_subst in *. apply Hout. rewrite Hsubst. unfold swap_var. destruct (x == w).
+                    ******* pose proof aeq_m_subst_out as Hout. unfold m_subst in *. apply Hout. rewrite Hsubst. unfold vswap. destruct (x == w).
                     ******** subst. apply notin_union_2 in Fr. apply notin_union_2 in Fr. apply notin_union_2 in Fr. apply notin_union_1 in Fr. apply notin_singleton_1 in Fr. contradiction.
                     ******** destruct (x == w').
                     ********* subst. apply notin_union_2 in Fr0. apply notin_union_2 in Fr0. apply notin_union_2 in Fr0. apply notin_union_1 in Fr0. apply notin_singleton_1 in Fr0. contradiction.
@@ -2397,7 +2397,7 @@ Proof.
                     ********* reflexivity.
                     ********* assumption.
                     ********* assumption.
-                    ******** pose proof aeq_m_subst_out as Hout. unfold m_subst in *. apply Hout. rewrite Hsubst'. unfold swap_var. destruct (y == w).
+                    ******** pose proof aeq_m_subst_out as Hout. unfold m_subst in *. apply Hout. rewrite Hsubst'. unfold vswap. destruct (y == w).
                     ********* subst. repeat apply notin_union_2 in Fr. apply notin_singleton_1 in Fr. contradiction.
                     ********* destruct (y == w').
                     ********** subst. repeat apply notin_union_2 in Fr. apply notin_singleton_1 in Fr. contradiction.
@@ -2439,7 +2439,7 @@ Proof.
                     ****** rewrite Habs'''.
                     ******* apply aeq_abs_same. unfold m_subst in *. pose proof swap_subst_rec_fun as Hswap. specialize (Hswap z w' x (swap z z e1) e2). pose proof swap_subst_rec_fun as Hswap'. specialize (Hswap' z w' y (swap z z e1) e3).
                             apply aeq_trans with (subst_rec_fun (subst_rec_fun (swap w' z e1) e2 x) e3 y).
-                    ******** pose proof aeq_m_subst_out as Hout. unfold m_subst in *. apply Hout. rewrite Hswap. unfold swap_var. destruct (x == z).
+                    ******** pose proof aeq_m_subst_out as Hout. unfold m_subst in *. apply Hout. rewrite Hswap. unfold vswap. destruct (x == z).
                     ********* subst. contradiction.
                     ********* destruct (x == w'). 
                     ********** subst. apply notin_union_2 in Fr0. apply notin_union_2 in Fr0. apply notin_union_2 in Fr0. apply notin_union_1 in Fr0. apply notin_singleton_1 in Fr0. contradiction.
@@ -2454,7 +2454,7 @@ Proof.
                     ********** assumption.
                     ********** assumption.
                     ********* pose proof aeq_m_subst_eq as Heq. unfold m_subst in *. apply Heq.
-                    ********** rewrite Hswap'. unfold swap_var. destruct (y == z).
+                    ********** rewrite Hswap'. unfold vswap. destruct (y == z).
                     *********** subst. repeat apply notin_union_2 in Fr. apply notin_singleton_1 in Fr. contradiction.
                     *********** destruct (y == w').
                     ************ subst. repeat apply notin_union_2 in Fr0. apply notin_singleton_1 in Fr0. contradiction.
@@ -2489,7 +2489,7 @@ Proof.
                     ***** pose proof m_subst_abs_neq as Habs''. specialize (Habs'' ([x := e2] swap z w e1) e3 y w w'). rewrite Habs''.
                     ****** pose proof m_subst_abs_neq as Habs'''. specialize (Habs''' ([y := e3] swap z w e1) ([y := e3] e2) x w w'). rewrite Habs'''.
                     ******* apply aeq_abs_same. unfold m_subst. pose proof swap_subst_rec_fun as Hswap. specialize (Hswap w w' x (swap z w e1) e2). apply aeq_trans with (subst_rec_fun (subst_rec_fun (swap w' z e1) e2 x) e3 y).
-                    ******** pose proof aeq_m_subst_out as Hout. unfold m_subst in *. apply Hout. rewrite Hswap. unfold swap_var. destruct (x == w).
+                    ******** pose proof aeq_m_subst_out as Hout. unfold m_subst in *. apply Hout. rewrite Hswap. unfold vswap. destruct (x == w).
                     ********* subst. apply notin_union_2 in Fr. apply notin_union_2 in Fr. apply notin_union_2 in Fr. apply notin_union_1 in Fr. apply notin_singleton_1 in Fr. contradiction.
                     ********* destruct (x == w').
                     ********** subst. apply notin_union_2 in Fr0. apply notin_union_2 in Fr0. apply notin_union_2 in Fr0. apply notin_union_1 in Fr0. apply notin_singleton_1 in Fr0. contradiction.
@@ -2510,7 +2510,7 @@ Proof.
                     ********** assumption. 
                     ********** assumption.
                     ********* pose proof aeq_m_subst_eq as Hsubst. unfold m_subst in *. apply Hsubst. rewrite (swap_symmetric _ z w). rewrite Hswap'.
-                    ********** unfold swap_var. destruct (y == w).
+                    ********** unfold vswap. destruct (y == w).
                     *********** subst. repeat apply notin_union_2 in Fr. apply notin_singleton_1 in Fr. contradiction. 
                     *********** destruct (y == w'). 
                     ************ subst. repeat apply notin_union_2 in Fr0. apply notin_singleton_1 in Fr0. contradiction.
@@ -2594,10 +2594,10 @@ Proof.
                                                   ********** apply notin_union_2 in H1.  apply notin_union_2 in H1.  apply notin_union_2 in H1.  apply notin_union_1 in H1. apply notin_singleton_1 in H1. apply not_eq_sym. assumption.
                           ****** pose proof swap_subst_rec_fun as Hswap. specialize (Hswap w' w x (swap w w' ([y := e3] swap x w e1_1)) ([y := e3] e2)).
                                  rewrite Hswap. pose proof swap_involutive as Hswap'. specialize (Hswap' ([y := e3] swap x w e1_1) w' w). pose proof swap_symmetric as Hswap''. 
-                                 specialize (Hswap'' ([y := e3] swap x w e1_1) w' w). rewrite Hswap'' in Hswap'. rewrite Hswap'. unfold swap_var. destruct (x == w').
+                                 specialize (Hswap'' ([y := e3] swap x w e1_1) w' w). rewrite Hswap'' in Hswap'. rewrite Hswap'. unfold vswap. destruct (x == w').
                                  ******* subst. unfold m_subst. pose proof swap_subst_rec_fun as Hswap'''. specialize (Hswap''' w' w y e2 e3). 
-                                         apply aeq_trans with (subst_rec_fun (subst_rec_fun (swap w' w e1_1) e3 y) (subst_rec_fun (swap w' w e2) (swap w' w e3) (swap_var w' w y)) w).
-                                         unfold swap_var. destruct (y == w').
+                                         apply aeq_trans with (subst_rec_fun (subst_rec_fun (swap w' w e1_1) e3 y) (subst_rec_fun (swap w' w e2) (swap w' w e3) (vswap w' w y)) w).
+                                         unfold vswap. destruct (y == w').
                                          ******** subst. contradiction.
                                          ******** apply aeq_sym. apply m_subst_notin. pose proof fv_nom_remove as H1. unfold m_subst in H1. apply H1.
                                                   ********* apply notin_union_2 in Fr. apply notin_union_2 in Fr. apply notin_union_1 in Fr. assumption.
@@ -2702,7 +2702,7 @@ Proof.
                **** subst. pose proof m_subst_sub_neq as Hsub''. specialize (Hsub'' ([x := e2] swap w' w e1_1) ([x := e2] e1_2) e3 y w w'). rewrite Hsub''. 
                     ***** pose proof m_subst_sub_neq as Hsub'''. specialize (Hsub''' ([y := e3] swap w' w e1_1) ([y := e3] e1_2) ([y := e3] e2) x w w'). rewrite Hsub'''.
                     ****** apply aeq_sub_same. unfold m_subst in *. pose proof swap_subst_rec_fun as Hsubst. specialize (Hsubst w w' x (swap w' w e1_1) e2). apply aeq_trans with (subst_rec_fun (subst_rec_fun (swap w' w e1_1) e2 x) e3 y).
-                    ******* pose proof aeq_m_subst_out as Hout. unfold m_subst in *. apply Hout. rewrite Hsubst. unfold swap_var. destruct (x == w).
+                    ******* pose proof aeq_m_subst_out as Hout. unfold m_subst in *. apply Hout. rewrite Hsubst. unfold vswap. destruct (x == w).
                     ******** subst. apply notin_union_2 in Fr. apply notin_union_2 in Fr. apply notin_union_2 in Fr. apply notin_union_1 in Fr. apply notin_singleton_1 in Fr. contradiction.
                     ******** destruct (x == w').
                     ********* subst. apply notin_union_2 in Fr0. apply notin_union_2 in Fr0. apply notin_union_2 in Fr0. apply notin_union_1 in Fr0. apply notin_singleton_1 in Fr0. contradiction.
@@ -2722,7 +2722,7 @@ Proof.
                     ********* reflexivity.
                     ********* assumption.
                     ********* assumption.
-                    ******** pose proof aeq_m_subst_out as Hout. unfold m_subst in *. apply Hout. rewrite Hsubst'. unfold swap_var. destruct (y == w).
+                    ******** pose proof aeq_m_subst_out as Hout. unfold m_subst in *. apply Hout. rewrite Hsubst'. unfold vswap. destruct (y == w).
                     ********* subst. repeat apply notin_union_2 in Fr. apply notin_singleton_1 in Fr. contradiction.
                     ********* destruct (y == w').
                     ********** subst. repeat apply notin_union_2 in Fr. apply notin_singleton_1 in Fr. contradiction.
@@ -2775,7 +2775,7 @@ Proof.
                     ****** rewrite Hsub'''.
                     ******* apply aeq_sub_same. unfold m_subst in *. pose proof swap_subst_rec_fun as Hswap. specialize (Hswap z w' x (swap z z e1_1) e2). pose proof swap_subst_rec_fun as Hswap'. specialize (Hswap' z w' y (swap z z e1_1) e3).
                             apply aeq_trans with (subst_rec_fun (subst_rec_fun (swap w' z e1_1) e2 x) e3 y).
-                    ******** pose proof aeq_m_subst_out as Hout. unfold m_subst in *. apply Hout. rewrite Hswap. unfold swap_var. destruct (x == z).
+                    ******** pose proof aeq_m_subst_out as Hout. unfold m_subst in *. apply Hout. rewrite Hswap. unfold vswap. destruct (x == z).
                     ********* subst. contradiction.
                     ********* destruct (x == w'). 
                     ********** subst. apply notin_union_2 in Fr0. apply notin_union_2 in Fr0. apply notin_union_2 in Fr0. apply notin_union_1 in Fr0. apply notin_singleton_1 in Fr0. contradiction.
@@ -2790,7 +2790,7 @@ Proof.
                     ********** assumption.
                     ********** assumption.
                     ********* pose proof aeq_m_subst_eq as Heq. unfold m_subst in *. apply Heq.
-                    ********** rewrite Hswap'. unfold swap_var. destruct (y == z).
+                    ********** rewrite Hswap'. unfold vswap. destruct (y == z).
                     *********** subst. repeat apply notin_union_2 in Fr. apply notin_singleton_1 in Fr. contradiction.
                     *********** destruct (y == w').
                     ************ subst. repeat apply notin_union_2 in Fr0. apply notin_singleton_1 in Fr0. contradiction.
@@ -2836,7 +2836,7 @@ Proof.
                     ***** pose proof m_subst_sub_neq as Hsub''. specialize (Hsub'' ([x := e2] swap z w e1_1) ([x := e2] e1_2) e3 y w w'). rewrite Hsub''.
                     ****** pose proof m_subst_sub_neq as Hsub'''. specialize (Hsub''' ([y := e3] swap z w e1_1) ([y := e3] e1_2) ([y := e3] e2) x w w'). rewrite Hsub'''.
                     ******* apply aeq_sub_same. unfold m_subst. pose proof swap_subst_rec_fun as Hswap. specialize (Hswap w w' x (swap z w e1_1) e2). apply aeq_trans with (subst_rec_fun (subst_rec_fun (swap w' z e1_1) e2 x) e3 y).
-                    ******** pose proof aeq_m_subst_out as Hout. unfold m_subst in *. apply Hout. rewrite Hswap. unfold swap_var. destruct (x == w).
+                    ******** pose proof aeq_m_subst_out as Hout. unfold m_subst in *. apply Hout. rewrite Hswap. unfold vswap. destruct (x == w).
                     ********* subst. apply notin_union_2 in Fr. apply notin_union_2 in Fr. apply notin_union_2 in Fr. apply notin_union_1 in Fr. apply notin_singleton_1 in Fr. contradiction.
                     ********* destruct (x == w').
                     ********** subst. apply notin_union_2 in Fr0. apply notin_union_2 in Fr0. apply notin_union_2 in Fr0. apply notin_union_1 in Fr0. apply notin_singleton_1 in Fr0. contradiction.
@@ -2857,7 +2857,7 @@ Proof.
                     ********** assumption. 
                     ********** assumption.
                     ********* pose proof aeq_m_subst_eq as Hsubst. unfold m_subst in *. apply Hsubst. rewrite (swap_symmetric _ z w). rewrite Hswap'.
-                    ********** unfold swap_var. destruct (y == w).
+                    ********** unfold vswap. destruct (y == w).
                     *********** subst. repeat apply notin_union_2 in Fr. apply notin_singleton_1 in Fr. contradiction. 
                     *********** destruct (y == w'). 
                     ************ subst. repeat apply notin_union_2 in Fr0. apply notin_singleton_1 in Fr0. contradiction.

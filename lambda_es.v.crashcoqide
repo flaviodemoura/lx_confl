@@ -178,7 +178,7 @@ In what follows, we will adopt a mixed-notation approach, intertwining metanotat
 
 Definition vswap (x:atom) (y:atom) (z:atom) := if (z == x) then y else if (z == y) then x else z.
 
-(** A short example to acquaint ourselves with the Coq notation, let us show how we will write the proofs:*)
+(** %\noindent% therefore, the swap $\vswap{x}{y}{z}$ is written in Coq as [vswap x y z]. A short example to acquaint ourselves with the Coq notation, let us show how we will write the proofs:*)
 
 Lemma swap_var_id: forall x y, vswap x x y = y.
 Proof.
@@ -205,7 +205,7 @@ Inductive n_sexp : Set :=
  | n_sub (t1:n_sexp) (x:atom) (t2:n_sexp).
 Notation "[ x := u ] t" := (n_sub t x u) (at level 60).
 
-(** %\noindent% where [n_var] is the constructor for variables, [n_abs] for abstractions, [n_app] for applications and [n_sub] for the explicit substitution. The [size] and the set [fv_nom] of the free variables of a term are defined as usual: *)
+(** The [size] and the set [fv_nom] of the free variables of a term are defined as usual: *)
 
 Fixpoint size (t : n_sexp) : nat :=
   match t with
@@ -306,20 +306,20 @@ Qed.
 
 (** The [swap] function is involutive, which is also proved done by structural induction on the term [t]: *)
 
-Lemma swap_involutive : forall t x y,
-    swap x y (swap x y t) = t.
+Lemma swap_involutive : forall t x y, swap x y (swap x y t) = t.
 Proof.
  induction t; intros; simpl; unfold vswap; default_simp.
 Qed.
 
-(* begin hide *)
-Lemma shuffle_swap : forall w y n z,
+(** The shuffle property given by the following lemma is also proved by structural induction on the structure of [t]:*)
+Lemma shuffle_swap : forall w y z t,
     w <> z -> y <> z ->
-    (swap w y (swap y z n)) = (swap w z (swap w y n)).
+    (swap w y (swap y z t)) = (swap w z (swap w y t)).
 Proof.
-  induction n; intros; simpl; unfold vswap; default_simp.
+  induction t; intros; simpl; unfold vswap; default_simp.
 Qed.
 
+(* begin hide *)
 Lemma shuffle_swap' : forall w y n z,
     w <> z -> y <> z ->
     (swap w y (swap y z n)) = (swap z w (swap y w n)).
@@ -328,7 +328,7 @@ Proof.
 Qed.
 (* end hide *)
 
-(** Equivariance is an important property of the [swap] function. It states that a swap can uniformly be propagated over the structure of a term:*)
+(** Equivariance is another important property of the [swap] function. It states that a swap can uniformly be propagated over the structure of a term:*)
 
 Lemma vswap_equivariance : forall v x y z w, vswap x y (vswap z w v) = vswap (vswap x y z) (vswap x y w) (vswap x y v).
 Proof.
@@ -357,14 +357,14 @@ Proof.
   - intros. simpl. rewrite IHt1. rewrite IHt2. unfold vswap.
     default_simp.    
 Qed.
-(* begin hide *)
-Lemma fv_nom_swap : forall z y t,
-  z `notin` fv_nom t ->
-  y `notin` fv_nom (swap y z t).
+
+(** If a variable, say [z], is not in the set of free variables of a term [t] and one swaps [z] with another variable, say [y], then [y] is not in the set of free variables of the term [t]. This is the content of the following lemma that can easily be proved using induction on the structure of the term [t]:*)
+Lemma fv_nom_swap : forall z y t, z `notin` fv_nom t -> y `notin` fv_nom (swap y z t).
 Proof.
   induction t; intros; simpl; unfold vswap; default_simp.
 Qed.
 
+(* begin hide *)
 Lemma fv_nom_swap_2 : forall z y t,
   z `notin` fv_nom (swap y z t) -> y `notin` fv_nom t.
 Proof.
@@ -380,23 +380,79 @@ Lemma fv_nom_remove_swap: forall t x y y0, x <> y ->  x <> y0 -> x `notin` fv_no
   Proof.
     induction t; simpl in *; unfold vswap; default_simp.
 Qed.
+(* end hide *)
 
-Lemma notin_fv_nom_equivariance : forall x0 x y t ,
-  x0 `notin` fv_nom t ->
-  vswap x y x0  `notin` fv_nom (swap x y t).
+(** The standard proof strategy for the non trivial properties is induction on the structure of the terms. Nevertheless, the builtin induction principle automatically generated for the inductive definition [n_sexp] is not strong enough due to swappings. In fact, in general, the induction hypothesis in the abstraction case, for instance, refer to the body of the abstraction, while the goal involves a swap acting on the body of the abstraction. In order to circunvet this problem, we use an induction principle based on the size of terms: *)
+
+Lemma n_sexp_induction:
+ forall P : n_sexp -> Prop,
+ (forall x, P (n_var x)) ->
+ (forall t1 z, (forall t2 x y, size t2 = size t1 -> P (swap x y t2)) -> P (n_abs z t1)) ->
+ (forall t1 t2, P t1 -> P t2 -> P (n_app t1 t2)) ->
+ (forall t1 t3 z, P t3 -> (forall t2 x y, size t2 = size t1 -> P (swap x y t2)) -> P (n_sub t1 z t3)) -> 
+ (forall t, P t).
 Proof.
-  intros. unfold vswap. case (x0 == x).
-  - intros. simpl. rewrite swap_symmetric. apply fv_nom_swap.
-    rewrite <- e. assumption.
-  - intros. case (x0 == y).
-    -- intros. apply fv_nom_swap. rewrite <- e. assumption.
-    -- intros. apply aux_not_equal in n. apply aux_not_equal in n0.
-       assert ((x <> x0) -> (y <> x0)). {
-         intros. assumption.
-       }
-       eapply (shuffle_swap x y t) in H0.
-       --- induction t.
-           + simpl. unfold vswap. default_simp.
+  intros P Hvar Habs Happ Hsub t.
+  remember (size t) as n.
+  generalize dependent t.
+  induction n using strong_induction.
+  intro t; case t.
+  - intros x Hsize.
+    apply Hvar.
+  - intros x t' Hsize.
+    apply Habs.
+    intros t'' x1 x2 Hsize'.
+    apply H with (size t'').
+    + rewrite Hsize'.
+      rewrite Hsize.
+      simpl.
+      apply Nat.lt_succ_diag_r.
+    + symmetry.
+      apply swap_size_eq.
+  - intros. apply Happ.
+    + apply H with ((size t1)).
+      ++ simpl in Heqn. rewrite Heqn.
+         apply le_lt_n_Sm.
+         apply le_plus_l.
+      ++ reflexivity.
+    + apply H with ((size t2)).
+      ++ simpl in Heqn. rewrite Heqn.
+          apply le_lt_n_Sm.
+         apply le_plus_r.
+      ++ reflexivity.
+  - intros. apply Hsub.
+    + apply H with ((size t2)).
+      ++ simpl in Heqn. rewrite Heqn.
+          apply le_lt_n_Sm.
+         apply le_plus_r.
+      ++ reflexivity.
+    + intros. apply H with ((size (swap x0 y t0))).
+      ++ rewrite swap_size_eq. rewrite H0.
+         simpl in Heqn. rewrite Heqn.
+         apply le_lt_n_Sm.
+         apply le_plus_l.
+      ++ reflexivity.
+Qed. 
+
+(** We will use this induction principle to prove that if a certain variable, say [x'], is not in the set of free variables of a term [t] then the variable obtained after applying any swap to [x'] also is not in the set of free variables of the term obtained from [t] after applying the same swap to [t]: *)  
+Lemma notin_fv_nom_equivariance : forall t x' x y, x' `notin` fv_nom t -> vswap x y x'  `notin` fv_nom (swap x y t).
+Proof.
+  induction t as [z | t1 z | t1 t2 | t1 z t2] using n_sexp_induction. (** %\noindent{\bf Proof.}% The proof is by induction on the size of the term [t].*)
+  - intros x' x y Hfv. simpl in *. apply notin_singleton_1 in Hfv. apply notin_singleton. apply swap_neq. assumption. (** If [t] is a variable, say [z], then we have that [x' <> z] by hypothesis, and we conclude by lemma [swap_neq].*)
+  - intros x' x y Hfv. simpl in *. apply notin_remove_1 in Hfv. destruct Hfv. (** If [t = n_abs z t1] then we have that $x' \notin fv(t1) \backslash \{z\}$ by hypothesis. This means that either [x' = z] or [x'] is not in $fv(t1)$, %{\it i.e.}% [fv_nom t1] in the Coq language.*)
+    + subst. apply notin_remove_3. reflexivity. (** If [x' = z] then we have to prove that a certain element is not in a set where it was removed, and we are done. *)
+    + apply notin_remove_2. specialize (H t1 x x). rewrite swap_id in H. apply H.
+      * reflexivity.
+      * assumption.
+  - intros x' x y Hfv. simpl in *. apply notin_union.
+    + apply IHt2. apply notin_union_1 in Hfv. assumption.
+    + apply IHt1. apply notin_union_2 in Hfv. assumption. 
+  - case (x' == y). (** If [x' <> x] then we compare [x'] with [y]. If they are equal then we are in the same situation of the previous case, and hence we conclude with an application of the lemma [fv_nom_swap]. *)
+    + intro Heq. subst. apply fv_nom_swap. assumption.
+    + intro Hneq. induction t as [z | z t1 | t1 t2 | t1 z t2]. (** If both [x] and [y] are different from [x'] then $\vswap{x}{y}{x'} = x'$ and hence, we have to prove that if [x'] is not in the set of free variables of [t] then [x'] is not in the set of free variables of [swap x y t]. This is done by induction on the structure of [t]. *)
+      * simpl in *. apply notin_singleton_1 in Hfv. unfold vswap. default_simp. (** If [t] is a variable, say [z], then [x' <> z] because [x'] does not occur in the set of free variables of [t] by hypothesis. Therefore, [fv_nom (swap x y (n_var z))] is equal to one of these variables, and we conclude because all of them are different from [x']. *)
+      * simpl in *. case (x' == z). (** If [t] is an abstraction, say [n_abs z t1], then  *)
+        ** intro Heq. subst. apply notin_remove_1 in Hfv. simpl. unfold vswap. default_simp.
            + simpl. unfold vswap. default_simp.
            + simpl. default_simp.
            + simpl. unfold vswap. default_simp.
@@ -526,7 +582,7 @@ Qed.
 
 (** ** $\alpha$-equivalence *)
 
-(** The notion of $\alpha$-equivalence is defined in the usual way by the following rules:
+(** As usual in the standard presentations of the $\lambda$-calculus, we work with terms modulo $\alpha$-equivalence. This means that $\lambda$-terms are identified up to the name of bound variables. For instance, all the terms $\lambda_x.x$, $\lambda_y.y$ and $\lambda_z.z$ are seen as the same term which corresponds to the identity function. Formally, the notion of $\alpha$-equivalence is defined by the following inference rules:
 
 %\begin{mathpar}
  \inferrule*[Right={({\rm\it aeq\_var})}]{~}{x =_\alpha x} \and  \inferrule*[Right={({\rm\it aeq\_abs\_same})}]{t_1 =_\alpha t_2}{\lambda_x.t_1 =_\alpha \lambda_x.t_2} 
@@ -551,19 +607,14 @@ Inductive aeq : n_sexp -> n_sexp -> Prop :=
 | aeq_abs_same : forall x t1 t2, aeq t1 t2 -> aeq (n_abs x t1)(n_abs x t2)
 | aeq_abs_diff : forall x y t1 t2, x <> y -> x `notin` fv_nom t2 -> aeq t1 (swap y x t2) -> aeq (n_abs x t1) (n_abs y t2)
 | aeq_app : forall t1 t2 t1' t2', aeq t1 t1' -> aeq t2 t2' -> aeq (n_app t1 t2) (n_app t1' t2')
-| aeq_sub_same : forall t1 t2 t1' t2' x, aeq t1 t1' -> aeq t2 t2' -> aeq (n_sub t1 x t2) (n_sub t1' x t2')
-| aeq_sub_diff : forall t1 t2 t1' t2' x y, aeq t2 t2' -> x <> y -> x `notin` fv_nom t1' -> aeq t1 (swap y x t1') -> aeq (n_sub t1 x t2) (n_sub t1' y t2').
+| aeq_sub_same : forall t1 t2 t1' t2' x, aeq t1 t1' -> aeq t2 t2' -> aeq ([x := t2] t1) ([x := t2'] t1')
+| aeq_sub_diff : forall t1 t2 t1' t2' x y, aeq t2 t2' -> x <> y -> x `notin` fv_nom t1' -> aeq t1 (swap y x t1') -> aeq ([x := t2] t1) ([y := t2'] t1').
+Notation "t =a u" := (aeq t u) (at level 60).
 (* begin hide *)
 Hint Constructors aeq.
 (* end hide *)
 
-(** In what follows, we use a infix notation for $\alpha$-equivalence in the Coq code: we write [t =a u] instead of [aeq t u]. *)
-
-(* begin hide *)
-Notation "t =a u" := (aeq t u) (at level 60).
-(* end hide *)
-
-(** The above notion defines an equivalence relation over the set [n_sexp] of nominal expressions with explicit substitutions, %{\it i.e.}% the [aeq] relation is reflexive, symmetric and transitive. *)
+(** In what follows, we use a infix notation for $\alpha$-equivalence in the Coq code. Therefore, we write [t =a u] instead of [aeq t u]. The above notion defines an equivalence relation over the set [n_sexp] of nominal expressions with explicit substitutions, %{\it i.e.}% the [aeq] relation is reflexive, symmetric and transitive. *)
 (* begin hide *)
 Example aeq1 : forall x y, x <> y -> (n_abs x (n_var x)) =a (n_abs y (n_var y)).
 Proof.
@@ -577,8 +628,7 @@ Proof.
   intros. inversion H; subst. reflexivity.
 Qed.
 (* end hide *)
-
-(** Informally, two terms are $\alpha$-equivalent if they differ only by the names of the bound variables. Therefore, $\alpha$-equivalent terms have the same size, and the same set of free variables: *)
+(** In addition, $\alpha$-equivalent terms have the same size, and the same set of free variables: *)
 
 Lemma aeq_size: forall t1 t2, t1 =a t2 -> size t1 = size t2.
 Proof.
@@ -1103,7 +1153,7 @@ Proof.
 Qed.
 (* end hide *)
 
-(** The key point of the nominal approach is that the swap operation is stable under $\alpha$-equivalence in the sense that, $t_1 =_\alpha t_2$ if, and only if $\swap{x}{y}{t_1} =_\alpha \swap{x}{y}{t_2}$. Note that this is not true for renaming substitutions: in fact, $\lambda_x.z =_\alpha \lambda_y.z$, but $(\lambda_x.z)\msub{z}{x} = \lambda_x.x \neq_\alpha \lambda_y.x (\lambda_y.z)\msub{z}{x}$, assuming that $x \neq y$. This stability result is formalized as follows: *)
+(** The key point of the nominal approach is that the swap operation is stable under $\alpha$-equivalence in the sense that, $t_1 =_\alpha t_2$ if, and only if $\swap{x}{y}{t_1} =_\alpha \swap{x}{y}{t_2}, \forall t_1, t_2, x, y$. Note that this is not true for renaming substitutions: in fact, $\lambda_x.z =_\alpha \lambda_y.z$, but $(\lambda_x.z)\msub{z}{x} = \lambda_x.x \neq_\alpha \lambda_y.x (\lambda_y.z)\msub{z}{x}$, assuming that $x \neq y$. This stability result is formalized as follows: *)
 
 Corollary aeq_swap: forall t1 t2 x y, t1 =a t2 <-> (swap x y t1) =a (swap x y t2).
 Proof.
@@ -1286,19 +1336,19 @@ Proof.
 Qed.
 (* end hide *)
 
-(** There are several interesting auxiliary properties that need to be proved before achieving the substitution lemma. In what follows, we refer only to the tricky or challenging ones, but the interested reader can have a detailed look in the source files. Note that, swaps are introduced in proofs by the rules $\mbox{\it aeq}\_\mbox{\it abs}\_\mbox{\it diff}$ and $\mbox{\it aeq}\_\mbox{\it sub}\_\mbox{\it diff}$. As we will see, the proof steps involving these rules are trick because a naïve strategy can easily result in a proofless branch. so that one can establish the $\alpha$-equivalence between two abstractions or two explicit substitutions with different binders. The following proposition states when two swaps with a common name collapse, and it is used in the transitivity proof of [aeq]: *)
+(** There are several interesting auxiliary properties that need to be proved before achieving the substitution lemma. In what follows, we refer only to the tricky or challenging ones, but the interested reader can have a detailed look in the source files. Note that, swaps are introduced in proofs by the rules $\mbox{\it aeq}\_\mbox{\it abs}\_\mbox{\it diff}$ and $\mbox{\it aeq}\_\mbox{\it sub}\_\mbox{\it diff}$. As we will see, the proof steps involving these rules are trick because a naïve strategy can easily get blocked in a branch without proof. The following lemma states the conditions for two swaps to be merged: *)
 
 Lemma aeq_swap_swap: forall t x y z, z `notin` fv_nom t -> x `notin` fv_nom t -> (swap z x (swap x y t)) =a (swap z y t).
 Proof.
-  intros. case (x == z); intros; subst.
+  intros. case (x == z); intros; subst. (** %\noindent{\bf Proof.}% The proof is by case analysis on the variables [x], [y] and [z]. If [x = z] then  the external swap of the LHS is trivial, and the terms on both LHS and RHS are equal. *)
   - rewrite swap_id; apply aeq_refl.
-  - case (y == z); intros; subst.
+  - case (y == z); intros; subst. (** When [x <> z] then we compare [y] and [z]. If [y = z] then we can use the fact that swap is involutive and reduce the LHS to [t], and the RHS also reduces to [t] since the swap is trivial. *)
     -- replace (swap x z t) with (swap z x t).
        --- rewrite swap_involutive; rewrite swap_id. apply aeq_refl.
        --- rewrite swap_symmetric; reflexivity.
-    -- case (x == y); intros; subst.
+    -- case (x == y); intros; subst. (** When [y <> z] then we compare [x] and [y]. If [x = y] then the internal swap of the LHS is trivial and both sides are equal to [swap z y t]. *)
        --- rewrite swap_id; apply aeq_refl.
-       --- rewrite shuffle_swap.
+       --- rewrite shuffle_swap. (** Finally, if [x <> y], %{\it i.e.}% all [x], [y] and [z] are different from each other, then *)
            + apply aeq_swap. apply swap_reduction; assumption.
            + apply aux_not_equal; assumption.
            + assumption.
@@ -1376,61 +1426,7 @@ Lemma m_subst_app: forall t1 t2 u x, [x := u](n_app t1 t2) = n_app ([x := u]t1) 
 Proof.
   intros t1 t2 u x. unfold m_subst. rewrite subst_rec_fun_equation. reflexivity.
 Qed.
-(* end hide *)
 
-(** The standard proof strategy for the non trivial properties is induction on the structure of the terms. Nevertheless, the builtin induction principle automatically generated for the inductive definition [n_sexp] is not strong enough due to swappings. In fact, in general, the induction hypothesis in the abstraction case, for instance, refer to the body of the abstraction, while the goal involves a swap acting on the body of the abstraction. In order to circunvet this problem, we use an induction principle based on the size of terms: *)
-
-Lemma n_sexp_induction:
- forall P : n_sexp -> Prop,
- (forall x, P (n_var x)) ->
- (forall t1 z, (forall t2 x y, size t2 = size t1 -> P (swap x y t2)) -> P (n_abs z t1)) ->
- (forall t1 t2, P t1 -> P t2 -> P (n_app t1 t2)) ->
- (forall t1 t3 z, P t3 -> (forall t2 x y, size t2 = size t1 -> P (swap x y t2)) -> P (n_sub t1 z t3)) -> 
- (forall t, P t).
-Proof.
-  intros P Hvar Habs Happ Hsub t.
-  remember (size t) as n.
-  generalize dependent t.
-  induction n using strong_induction.
-  intro t; case t.
-  - intros x Hsize.
-    apply Hvar.
-  - intros x t' Hsize.
-    apply Habs.
-    intros t'' x1 x2 Hsize'.
-    apply H with (size t'').
-    + rewrite Hsize'.
-      rewrite Hsize.
-      simpl.
-      apply Nat.lt_succ_diag_r.
-    + symmetry.
-      apply swap_size_eq.
-  - intros. apply Happ.
-    + apply H with ((size t1)).
-      ++ simpl in Heqn. rewrite Heqn.
-         apply le_lt_n_Sm.
-         apply le_plus_l.
-      ++ reflexivity.
-    + apply H with ((size t2)).
-      ++ simpl in Heqn. rewrite Heqn.
-          apply le_lt_n_Sm.
-         apply le_plus_r.
-      ++ reflexivity.
-  - intros. apply Hsub.
-    + apply H with ((size t2)).
-      ++ simpl in Heqn. rewrite Heqn.
-          apply le_lt_n_Sm.
-         apply le_plus_r.
-      ++ reflexivity.
-    + intros. apply H with ((size (swap x0 y t0))).
-      ++ rewrite swap_size_eq. rewrite H0.
-         simpl in Heqn. rewrite Heqn.
-         apply le_lt_n_Sm.
-         apply le_plus_l.
-      ++ reflexivity.
-Qed. 
-
-(* begin hide *)
 Lemma aeq_trans: forall t1 t2 t3, t1 =a t2 -> t2 =a t3 -> t1 =a t3.
 Proof.
   induction t1 using n_sexp_induction.
@@ -2367,18 +2363,18 @@ Proof.
                     assumption. apply notin_union. apply notin_union_1 in Fr. assumption. apply notin_union. simpl. apply notin_remove_3. reflexivity. apply notin_singleton_2. assumption.
                     assumption. apply notin_union. apply fv_nom_remove. apply notin_union_1 in Fr. assumption. apply notin_remove_2. apply notin_union_2 in Fr. apply notin_union_1 in Fr.
                     assumption. apply notin_union_2 in Fr. apply notin_union_2 in Fr. assumption.
-      * pose proof m_subst_abs_neq as Habs. pick fresh w for (union (fv_nom e3) (union (fv_nom e2) (union (fv_nom (n_abs z e1)) (union (singleton x) (singleton y))))). specialize (Habs e1 e2 x z w).
+      * pose proof m_subst_abs_neq as Habs. pick fresh w for (union (fv_nom e3) (union (fv_nom e2) (union (fv_nom (n_abs z e1)) (union (singleton x) (singleton y))))). specialize (Habs e1 e2 x z w). (** In the case in which [y <> z], we start by adding and specializing the lemma [m_subst_abs_neq] to our htpothesis. Let [w] be a new name that is not in the set $fv(\lambda_z'.e_1) \cup fv(e3) \cup fv(e2) \cup \{x\} \cup \{y\}$, we use this to apply the transitivity of the $\alpha$-equivalency using [([y := e3] n_abs w ([x := e2] swap z w e1))]. **)
         apply aeq_trans with ([y := e3] n_abs w ([x := e2] swap z w e1)).
-        ** apply aeq_m_subst_out. apply Habs.
+        ** apply aeq_m_subst_out. apply Habs. (** In the first case, we have the $\alpha$-equivalency of the LHS and our new term, used in the transitivity. The use of [aeq_m_subst_out] is enought to turn this into a trivial proof since the result is the application of the lemma [m_subst_abs_neq]. **)
            *** apply not_eq_sym. assumption.
            *** apply notin_union. 
                **** apply notin_union_2 in Fr. apply notin_union_1 in Fr. assumption.
                **** apply notin_union.
                     ***** apply notin_union_2 in Fr. apply notin_union_2 in Fr. apply notin_union_1 in Fr. assumption.
                     ***** apply notin_union_2 in Fr. apply notin_union_2 in Fr. apply notin_union_2 in Fr. apply notin_union_1 in Fr. assumption.
-        ** pose proof m_subst_abs_neq as Habs'. specialize (Habs' e1 e3 y z w). apply aeq_trans with ([x := [y := e3] e2] n_abs w ([y := e3] swap z w e1)).
-           *** pick fresh w' for (union (fv_nom e3) (union (fv_nom e2) (union (fv_nom (n_abs y e1)) (union (singleton x) (union (singleton w) (singleton y)))))). destruct (z == w'). 
-               **** subst. pose proof m_subst_abs_neq as Habs''. specialize (Habs'' ([x := e2] swap w' w e1) e3 y w w'). rewrite Habs''. 
+        ** pose proof m_subst_abs_neq as Habs'. specialize (Habs' e1 e3 y z w). apply aeq_trans with ([x := [y := e3] e2] n_abs w ([y := e3] swap z w e1)). (** The second case consists of removing the abstractions from the metasubstitutions to use the induction hypothesis on the remaining goal. We start on the RHS by removing the abstraction from inside the metasubstitution in the subtherm [([y := e3] n_abs z e1)]. To do this we use the lemma [m_subst_abs_neq] and the transitivity of the $\alpha$-equivalency using as a middle therm [([x := [y := e3] e2] n_abs w ([y := e3] swap z w e1))]. **)
+           *** pick fresh w' for (union (fv_nom e3) (union (fv_nom e2) (union (fv_nom (n_abs y e1)) (union (singleton x) (union (singleton w) (singleton y)))))). destruct (z == w'). (** As a first case, we have to prove that the LHS is $\alpha$-equivalent to the new middle therm. Let [w'] be a new name that is not in the set $fv(\lambda_y'.e_1) \cup fv(e3) \cup fv(e2) \cup \{x\} \cup \{y\} \cup \{w\}. Then, a comparison is made between [z] and [w']. $ **)
+               **** subst. pose proof m_subst_abs_neq as Habs''. specialize (Habs'' ([x := e2] swap w' w e1) e3 y w w'). rewrite Habs''. (** For [z == w'], we remove the abstractions from inside the metasubstitutions using the same strategy as previously, using the lemma [m_subst_abs_neq]. Then, we use the lemma [aeq_abs_same] to eliminate the abstraction since given that if the variables are the same, the therms have to be $\alpha$-equivatent.**)
                     ***** pose proof m_subst_abs_neq as Habs'''. specialize (Habs''' ([y := e3] swap w' w e1) ([y := e3] e2) x w w'). rewrite Habs'''.
                     ****** apply aeq_abs_same. unfold m_subst in *. pose proof swap_subst_rec_fun as Hsubst. specialize (Hsubst w w' x (swap w' w e1) e2). apply aeq_trans with (subst_rec_fun (subst_rec_fun (swap w' w e1) e2 x) e3 y).
                     ******* pose proof aeq_m_subst_out as Hout. unfold m_subst in *. apply Hout. rewrite Hsubst. unfold swap_var. destruct (x == w).
