@@ -103,7 +103,7 @@ This is a well known result already formalized in the context of the $\lambda$-c
 \item A solution to a circularity problem in the proofs is given. It adds an axiom to the formalization that replaces the set equality by the syntactic equality. In this way, we are allowed to replace/rewrite sets of (free) variables by another sets of (free) variables in arbitrary contexts.
 \end{enumerate}%
 
-This document is built directly from a Coq script using the CoqDoc%\footnote{\url{https://coq.inria.fr/refman/using/tools/coqdoc.html}}% tool. In the following section, we present the general framework and the basics of the nominal approach. In Section 3, we present our definition of metasubstitution and some of its properties. In Section 4, we present the main theorem, %{\it i.e.}% the substitution lemma, and we conclude in Section 5.*)
+This document is built directly from a Coq script using the CoqDoc%\footnote{\url{https://coq.inria.fr/refman/using/tools/coqdoc.html}}% tool. In the following section, we present the general framework and the basics of the nominal approach. In Section 3, we present our definition of metasubstitution and some of its properties. In Section 4, we present the formalization of the main theorem, %{\it i.e.}% the substitution lemma, and we conclude in Section 5.*)
 
 (** * A syntactic extension of the $\lambda$-calculus *)
 
@@ -1894,11 +1894,12 @@ Proof.
                     ****** assumption.
 Qed.
  
-(** * The substitution lemma for the metasubstitution *)
+(** * The substitution lemma *)
 
-(** In the pure $\lambda$-calculus, the substitution lemma is probably the first non trivial property. In our framework, we have defined two different substitution operation, namely, the metasubstitution denoted by [[x:=u]t] and the explicit substitution that has [n_sub] as a constructor. In what follows, we present the main steps of our proof of the substitution lemma for the metasubstitution operation: *)
+(** In the pure $\lambda$-calculus, the substitution lemma is probably the first non trivial property. In our framework, we have defined two different substitution operation, namely, the metasubstitution denoted by [{x:=u}t] and the explicit substitution, written as [[x:=u]t]. In what follows, we present the main steps of our proof of the substitution lemma for [n_sexp] terms, %{\it i.e.}% for nominal terms with explicit substitutions. *)
 
-Lemma m_subst_lemma: forall e1 e2 x e3 y, x <> y -> x `notin` (fv_nom e3) -> ([y := e3]([x := e2]e1)) =a ([x := ([y := e3]e2)]([y := e3]e1)).
+Lemma m_subst_lemma: forall e1 e2 x e3 y, x <> y -> x `notin` (fv_nom e3) ->
+                     ({y := e3}({x := e2}e1)) =a ({x := ({y := e3}e2)}({y := e3}e1)).
 Proof.
   induction e1 using n_sexp_induction. (** %\noindent{\bf Proof.}% The proof is by induction on the size of the term [e1]. *)
 - intros e2 x' e3 y Hneq Hfv. case (x == x').
