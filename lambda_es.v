@@ -150,7 +150,7 @@ Definition vswap (x:atom) (y:atom) (z:atom) := if (z == x) then y else if (z == 
 
 (** %\noindent% therefore, the swap $\vswap{x}{y}{z}$ is written in Coq as [vswap x y z]. A short example to acquaint ourselves with the Coq notation, let us show how we will write the proofs:*)
 
-Lemma swap_var_id: forall x y, vswap x x y = y.
+Lemma vswap_id: forall x y, vswap x x y = y.
 Proof.
   intros. unfold vswap. case (y == x); intros; subst; reflexivity. (** %\noindent{\bf Proof.}% The proof is done by case analysis, and it is straightforward in both cases, when [x = y] and [x <> y]. $\hfill\Box$ *)
 Qed.
@@ -1714,21 +1714,21 @@ Qed.
 
 (** Now, we show how to propagated a swap inside metasubstitutions using the decomposition of the metasubstitution provided by the corollary [aeq_m_subst_eq].%\newline% *)
 
-Lemma swap_subst_rec_fun: forall x y z t u, swap x y (subst_rec_fun t u z) =a subst_rec_fun (swap x y t) (swap x y u) (vswap x y z).
+Lemma swap_subst_rec_fun: forall x y z t u, swap x y ({z := u}t) =a ({(vswap x y z) := (swap x y u)}(swap x y t)).
 Proof.
   (** %\noindent{\bf Proof.}% Firstly, we compare [x] and [y], since the case [x = y] is trivial.*)
   intros x y z t u. destruct (x == y). 
   - subst. repeat rewrite swap_id. rewrite vswap_id. apply aeq_refl.
     (** The proof proceeds by induction on the size of the term [t], assuming that [x <> y]. The tricky cases are the abstraction and explicit substitution. *)
   - generalize dependent u. generalize dependent z. generalize dependent y. generalize dependent x. induction t as  [y | t1 y | t1 t2 | t1 t2 y] using n_sexp_induction.    
-    + intros x' y' Hneq z u. rewrite subst_rec_fun_equation. destruct (z == y).
+    + intros x' y' Hneq z u. unfold m_subst. rewrite subst_rec_fun_equation. destruct (z == y).
       * subst. simpl swap at 2. rewrite subst_rec_fun_equation. rewrite eq_dec_refl. apply aeq_refl.
       * pose proof n as Hswap. apply (swap_neq x' y') in n. simpl swap at 2. rewrite subst_rec_fun_equation. destruct (vswap x' y' z == vswap x' y' y).
         ** contradiction.
         ** simpl swap. apply aeq_refl.
     + intros x y' Hneq z u. simpl. case (y == z). (** In the abstraction case, %{\it i.e.}% when $t = \lambda_{y'}.t_1$ then we must prove that [swap x y ([z := u](n_abs y' t1)) =a [(vswap x y z) := (swap x y u)](swap x y (n_abs y' t1))], and the induction hypothesis states that a swap can be propagated inside a metasubstitution whose body is a term with the same size as [t1]. Firstly, we compare the variables [y'] and [z] to check whether we should propagate the metasubstitution inside the abstraction of the LHS. *)
-      * intro Heq. subst. repeat rewrite subst_rec_fun_equation. repeat rewrite eq_dec_refl. simpl. apply aeq_refl. (** When [y' = z] the metasubstitution is erased according to the definition %(\ref{msubst})% on both sides of the $\alpha$-equation and we are done.*)
-      * intro Hneq'. repeat rewrite subst_rec_fun_equation. destruct (z == y). (** When [y' <> z] then the metasubstitutions on both sides of the $\alpha$-equation need to be propagated inside the corresponding abstractions. In order to do so, a new name need to be created. Note that in this case, it is not possible to create a unique name for both sides because the name of the LHS cannot belong to the set $fv(\lambda_y'.t_1) \cup fv(u) \cup \{z\}$, while the name of the RHS cannot belong to the set $fv(\swap{x}{y}{\lambda_y'.t_1}) \cup fv(\swap{x}{y}{u}) \cup \{\vswap{x}{y}{z}\}$.*)
+      * intro Heq. subst. repeat rewrite m_subst_abs_eq. simpl. apply aeq_refl. (** When [y' = z] the metasubstitution is erased according to the definition %(\ref{msubst})% on both sides of the $\alpha$-equation and we are done.*)
+      * intro Hneq'. (* aqui *) repeat rewrite subst_rec_fun_equation. destruct (z == y). (** When [y' <> z] then the metasubstitutions on both sides of the $\alpha$-equation need to be propagated inside the corresponding abstractions. In order to do so, a new name need to be created. Note that in this case, it is not possible to create a unique name for both sides because the name of the LHS cannot belong to the set $fv(\lambda_y'.t_1) \cup fv(u) \cup \{z\}$, while the name of the RHS cannot belong to the set $fv(\swap{x}{y}{\lambda_y'.t_1}) \cup fv(\swap{x}{y}{u}) \cup \{\vswap{x}{y}{z}\}$.*)
         ** symmetry in e. contradiction.
         ** destruct (vswap x y' z == vswap x y' y).
            *** apply (swap_neq x y') in n. contradiction.
