@@ -1,9 +1,6 @@
 (* Infrastructure *)
 (* begin hide *)
 Require Export Arith Lia.  Print LoadPath.
-Require Export Metalib.Metatheory.
-Require Export Metalib.LibDefaultSimp.
-Require Export Metalib.LibLNgen.
 
 Lemma strong_induction: forall (P:nat->Prop), (forall n, (forall m, m < n -> P m) -> P n) -> (forall n, P n).
 Proof.
@@ -2040,7 +2037,7 @@ Proof.
                   ******* assumption.
                   ***** apply notin_union_2 in Fr. apply notin_union_2 in Fr. apply notin_union_1 in Fr. simpl in Fr. apply notin_union_2 in Fr. assumption.
              **** repeat apply notin_union_2 in Fr. assumption.
-  + intro Hneq'. pick fresh w for (union (fv_nom t3) (union (fv_nom t2) (union (fv_nom ([z := t12]t11)) (union (singleton x) (singleton y))))). (** When [z <> x], then we take a fresh name [w] such that it is not in the set $fv(t_3)\cup fv(t_2) \cup fv(\esub{t_{11}}{z}{t_{12}})\cup \{x\} \cup \{y]}$. The current goal is [({y := t3} ({x := t2} ([z := t12] t11))) =a ({x := {y := t3} t2} ({y := t3} ([z := t12] t11)))] and we start propagating the internal metasubstitution. Let's start with the LHS.*) pose proof m_subst_sub_neq as Hsubneq. specialize (Hsubneq t11 t12 t2 x z w). apply aeq_trans with ({y := t3} ([w := {x := t2} t12] ({x := t2} swap z w t11))).
+  + intro Hneq'. pick fresh w for (union (fv_nom t3) (union (fv_nom t2) (union (fv_nom ([z := t12]t11)) (union (singleton x) (singleton y))))). (** When [z <> x], then we take a fresh name [w] such that it is not in the set $fv(t_3)\cup fv(t_2) \cup fv(\esub{t_{11}}{z}{t_{12}})\cup \{x\} \cup \{y\}$. The current goal is [({y := t3} ({x := t2} ([z := t12] t11))) =a ({x := {y := t3} t2} ({y := t3} ([z := t12] t11)))] and we start propagating the internal metasubstitution. Let's start with the LHS.*) pose proof m_subst_sub_neq as Hsubneq. specialize (Hsubneq t11 t12 t2 x z w). apply aeq_trans with ({y := t3} ([w := {x := t2} t12] ({x := t2} swap z w t11))).
     * apply aeq_m_subst_out. pose proof m_subst_sub_neq as Hsubneq'. specialize (Hsubneq' t11 t12 t2 x z w). rewrite Hsubneq'.
       ** apply aeq_refl.
       ** apply aux_not_equal. assumption.

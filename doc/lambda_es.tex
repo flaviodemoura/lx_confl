@@ -558,33 +558,10 @@ In the former case, we can apply the rule $\mbox{\it aeq}\_\mbox{\it abs}\_\mbox
 \begin{coqdoccode}
 \end{coqdoccode}
 When $w'' \neq \vswap{y}{z}{w'}$, the application of the rule $\mbox{\it aeq}\_\mbox{\it abs}\_\mbox{\it diff}$ generates the goal $\swap{w''}{\vswap{y}{z}{w'}}{\swap{y}{z}{(\metasub{\swap{w}{w'}{t_1}}{x}{u})}} =_\alpha \metasub{(\swap{w''}{\vswap{y}{z}{w}}{(\swap{y}{z}{t_1})})}{\vswap{y}{z}{x}}{\swap{y}{z}{u}}$. We can use the induction hypothesis to propagate the swap inside the metasubstitution, and then we get an $\alpha$-equality with metasubstitution as main operation on both sides, and whose correspondent components are $\alpha$-equivalent. In a more abstract way, we have to prove an $\alpha$-equality of the form $\metasub{t}{x}{u} =_\alpha \metasub{t'}{x}{u'}$, where $t =_\alpha t'$ and $u =_\alpha u'$. The problem is that we cannot rewrite $\alpha$-equalities inside metasubstitution unless we prove some special lemmas stating the compatibilities between them using the \coqdockw{Equations} library or something similar. Alternatively, if we decide to analise the metasubtitution componentwise, {\it i.e.} as stated in a lemma similar to \coqdocvar{aeq\_m\_subst\_in\_trial}, we get a circular proof problem because both \coqdocvar{aeq\_m\_subst\_in\_trial} and \coqdocvar{swap\_m\_subst} depend on each other to be proved. We will present a solution that do not use any additional library, but it adds the following axiom to the formalization:
-
- Teste sem axioma - pensar mais um pouco, mas aparentemente não funciona. 
 \begin{coqdoccode}
 \coqdocemptyline
 \coqdocnoindent
-\coqdockw{Lemma} \coqdocvar{aeq\_m\_subst\_in}: \coqdockw{\ensuremath{\forall}} \coqdocvar{t} \coqdocvar{u} \coqdocvar{u'} \coqdocvar{x}, \coqdocvar{u} =\coqdocvar{a} \coqdocvar{u'} \ensuremath{\rightarrow} (\{\coqdocvar{x} := \coqdocvar{u}\}\coqdocvar{t}) =\coqdocvar{a} (\{\coqdocvar{x} := \coqdocvar{u'}\}\coqdocvar{t}).\coqdoceol
-\end{coqdoccode}
-\noindent{\bf Proof.} The proof is by induction on the size of the term \coqdocvar{t}.
-\begin{coqdoccode}
-\end{coqdoccode}
-If \coqdocvar{t} is a variable, say \coqdocvar{y}, then we proceed by comparing \coqdocvar{x} and \coqdocvar{y}.\begin{coqdoccode}
- \end{coqdoccode}
-When \coqdocvar{x} = \coqdocvar{y} then the LHS reduces to \coqdocvar{u}, the RHS reduces to \coqdocvar{u'} and we are done by hypothesis. 
-\begin{coqdoccode}
-\end{coqdoccode}
-When \coqdocvar{x} \ensuremath{\not=} \coqdocvar{y}, then both sides reduce to \coqdocvar{y}. 
-\begin{coqdoccode}
-\end{coqdoccode}
-When \coqdocvar{t} is an abstraction of the form $\lambda_y.t_1$, then we proceed by comparing \coqdocvar{x} and \coqdocvar{y}.\begin{coqdoccode}
- \end{coqdoccode}
-When \coqdocvar{x} = \coqdocvar{y}, then both sides reduce to $\lambda_y.t_1$, and we are done.
-\begin{coqdoccode}
-\end{coqdoccode}
-When \coqdocvar{x} \ensuremath{\not=} \coqdocvar{y}, we pick a fresh name, say \coqdocvar{z} such that it is not in the set $fv(u) \cup fv(u') \cup fv(\lambda_y.t_1) \cup \{x\}$.\begin{coqdoccode}
- \coqdocemptyline
-\coqdocnoindent
-\coqdockw{Lemma} \coqdocvar{aeq\_m\_subst\_out}: \coqdockw{\ensuremath{\forall}} \coqdocvar{t} \coqdocvar{t'} \coqdocvar{u} \coqdocvar{x}, \coqdocvar{t} =\coqdocvar{a} \coqdocvar{t'} \ensuremath{\rightarrow} (\{\coqdocvar{x} := \coqdocvar{u}\}\coqdocvar{t}) =\coqdocvar{a} (\{\coqdocvar{x} := \coqdocvar{u}\}\coqdocvar{t'}).\coqdoceol
+\coqdockw{Axiom} \coqdocvar{Eq\_implies\_equality}: \coqdockw{\ensuremath{\forall}} \coqdocvar{s} \coqdocvar{s'}: \coqdocvar{atoms}, \coqdocvar{s} [=] \coqdocvar{s'} \ensuremath{\rightarrow} \coqdocvar{s} = \coqdocvar{s'}.\coqdoceol
 \coqdocemptyline
 \end{coqdoccode}
 This axiom transform a set equality into a syntactic equality. This will allow us to rewrite sets of atoms in a more flexible way. To show how it works, we will start proving the lemma \coqdocvar{aeq\_m\_subst\_in} without the need of the lemma \coqdocvar{swap\_m\_subst}:
@@ -710,7 +687,7 @@ The first component follows the strategy used in the abstraction case. The curre
 \begin{coqdoccode}
 \coqdocemptyline
 \end{coqdoccode}
-The lemma \coqdocvar{swap\_subst\_rec\_fun} is essential to prove the following results:
+The lemma \coqdocvar{swap\_subst\_rec\_fun} is essential to prove the following results: 
 \begin{coqdoccode}
 \coqdocemptyline
 \coqdocnoindent
