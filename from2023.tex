@@ -10,38 +10,118 @@
   \usepackage{breakurl}           % Not needed if you use pdflatex only.
 \fi
 
-\usepackage[utf8]{inputenc}
-\usepackage{babel}
-\usepackage{amsmath,amsfonts}
-\usepackage{xcolor}
 \usepackage[color]{coqdoc}
 \usepackage{mathpartir}
-\usepackage{minibox}
-\usepackage{tabto,calc}
+\usepackage{tcolorbox}
+\usepackage{amsmath,amssymb}
+
+\newtheorem{definition}{Definition}
+\newtheorem{lemma}{Lemma}
 
 \newcommand{\vswap}[3]{(\!\!(#1\ #2)\!\!) #3}
 \newcommand{\swap}[3]{(#1\ #2) #3}
-\newcommand{\msub}[2]{\{#1 / #2\}}
-\newcommand{\esub}[3]{#1 [ #2 := #3 ] }
+%\newcommand{\msub}[2]{\{#1 / #2\}}
+\newcommand{\esub}[3]{[ #2 := #3 ] #1}
+\newcommand{\metasub}[3]{\{ #2 := #3 \}#1}
 
 \title{A formalized extension of the substitution lemma in Coq}
-\author{Flávio L. C. de Moura
-  \institute{Departamento de Ciência da Computação \\
-    Universidade de Brasília, Brasília, Brazil}
-  \email{flaviomoura@unb.br}
-  \and
-  Maria J. D. Lima
+\author{Maria J. D. Lima
   \institute{Departamento de Ciência da Computação \\
     Universidade de Brasília, Brasília, Brazil}
   \email{majuhdl@gmail.com}
-}
-\def\titlerunning{A formalized extension of the substitution lemma}
-\def\authorrunning{Flávio L. C. de Moura \& Maria J. D. Lima}
+  \and
+  Flávio L. C. de Moura
+  \institute{Departamento de Ciência da Computação \\
+    Universidade de Brasília, Brasília, Brazil}
+  \email{flaviomoura@unb.br}}
+\def\titlerunning{A formalized substitution lemma with explicit substitutions}
+\def\authorrunning{M. J. D. Lima \& F. L. C. de Moura}
+
 \begin{document}
+
+\def\@departamento{Departamento de Ci\^{e}ncia da Computa\c{c}\~{a}o}
+\def\@instituto{Instituto de Ci\^{e}ncias Exatas}
+\def\@universidade{Universidade de Bras\'{\i}lia}
+\def\@siglauni{UnB}
+\def\@cidade{Bras\'ilia}
+\def\@uf{DF}
+\def\@cidadeuf{\@cidade--\@uf}
+\def\@pais{Brasil}
+
+\DeclareOptionX{bacharelado}{%
+    \gdef\@nomecurso{Bacharelado em Ci\^encia da Computa\c{c}\~ao}%
+    \gdef\@mododeescrita{Monografia}}%
+    
+\def\@nomecurso{\@empty}%
+\def\@assunto{Monografia (\@ifundefined{XeTeXversion}{Gradua\c{c}\~ao}{Graduação})}
+
+%modo de geração do PDF
+\newif\if@ForScreenView
+\newif\if@LoadHyperref
+\DeclareOptionX{impressao}{\@ForScreenViewfalse\@LoadHyperreffalse}
+\DeclareOptionX{hyperref}[load]{\@ForScreenViewtrue%
+	\def\@tempa{#1}\def\@tempb{load}\def\@tempc{config}%
+	\ifx\@tempa\@tempb\@LoadHyperreftrue%
+	\else%
+		\ifx\@tempa\@tempc\@LoadHyperreffalse%
+		\else
+			\ClassError{UnB-CIC}
+				{Valor invalido para opcao hyperref: #1}
+				{Valores validos: hyperref,hyperref=load,hyperref=config}
+		\fi
+	\fi%
+}
+
+%fontes
+\def\fontelogo{\@ifundefined{XeTeXversion}{ua1}{Arial}}
+\DeclareOptionX{10pt}{\gdef\@fontsize{10pt}}
+\DeclareOptionX{11pt}{\gdef\@fontsize{11pt}}
+\DeclareOptionX{12pt}{\gdef\@fontsize{12pt}}
+
+%estilos das páginas
+\DeclareOptionX{prestyle}{\gdef\style@pretextual{#1}}
+\DeclareOptionX{textstyle}{\gdef\style@textual{#1}}
+\DeclareOptionX{chapstyle}{\gdef\style@chapter{#1}}
+
+%rascunho (draft)
+\newif\if@draftthesis
+\DeclareOptionX{draft}{\@draftthesistrue}
+
+%%
+%% --- Processamento de opções e classe-base ---
+%%
+
+%repassa opções desconhecidas
+\DeclareOptionX*{\PassOptionsToClass{\CurrentOption}{report}}
+
+%default options
+\ExecuteOptionsX{onehalfspacing,hyperref,prestyle=plain,textstyle=plain,chapstyle=plain}
+\ProcessOptionsX\relax
+
+\newcommand{\ifhyperref}[2]{\if@ForScreenView #1\else #2\fi}
+
+
+\newcommand\capa{
+  \begin{paginatitulo}%
+	\onehalfspacing%
+        \begin{center}%
+             \@logo[contorno_preto]
+             \null\vfill%
+             \@printfulltitle%
+             \vfill%
+             {\large \@author}%
+             \vfill%
+            {\large \@cidade}\\
+            {\large \@ano}%
+       \end{center}%
+	\defaultspacing%
+  \end{paginatitulo}%
+}
+
 \maketitle
 
 \begin{abstract}
-  The substitution lemma is a renowned theorem within the realm of $\lambda$-calculus theory and concerns the interactional behavior of the metasubstitution operation. In this study, we augment the $\lambda$-calculus's grammar with an uninterpreted explicit substitution operation. Our primary contribution lies in verifying that, despite these modifications, the substitution lemma continues to remain valid. This confirmation was achieved using the Coq proof assistant. Our formalization methodology employs a nominal approach, which provides a remarkably direct implementation of the $\alpha$-equivalence concept. Despite this simplicity, the strategy involved in variable renaming within the proofs presents a substantial challenge, ensuring a comprehensive exploration of the implications of our extension to the grammar of the $\lambda$-calculus.
+  The substitution lemma is a renowned theorem within the realm of $\lambda$-calculus theory and concerns the interactional behaviour of the metasubstitution operation. In this work, we augment the $\lambda$-calculus's grammar with an uninterpreted explicit substitution operation, which allows the use of our framework for different calculi with explicit substitutions. Our primary contribution lies in verifying that, despite these modifications, the substitution lemma continues to remain valid. This confirmation was achieved using the Coq proof assistant. Our formalization methodology employs a nominal approach, which provides a remarkably direct implementation of the $\alpha$-equivalence concept. Despite this simplicity, the strategy involved in variable renaming within the proofs presents a substantial challenge, ensuring a comprehensive exploration of the implications of our extension to the grammar of the $\lambda$-calculus.
 \end{abstract}
 
 
@@ -62,3 +142,10 @@
 %%% End:
 
 
+This approach contrasts with the use of  De Bruijn indexes detailed in De Bruijn's landmark paper on $\lambda$-calculus notation%\cite{bruijnLambdaCalculusNotation1972}%.
+
+
+(**
+When it is equal, the meta-substitution is irrelevant. When they are different, we take a new variable that does not occur freely in the substituted term in the meta-substitution nor in the abstraction and is not the variable in the meta-substitution, and the abstraction of this new variable using the meta-substitution of the swap of the former variable in the meta-substitution is alpha-equivalent to the original meta-substitution of the abstraction.
+
+REVISAR The following lemmas are the equivalent version of the two previous lemmas for the case of the explicit substitution. They state, respectively, what hapens when the variable in the meta-substitution is equal or different from the one in the explicit substitution. When it is equal, the meta-substitution is irrelevant on [t1], but it is applied to [e2]. When they are different, we take a new variable that does not occur freely in the substituted term in the meta-substitution nor in the substitution and is not the variable in the meta-substitution, and the explicit substitution of this new variable using the meta-substitution of the swap of the former variable in the meta-substitution in [e11] and the application of the original meta_substitution in [e12] is alpha-equivalent to the original meta-substitution of the explicit substitution. The proofs are straighforward from the definition of the meta-substitution, each case being respectively each one in the definition. %\newline%*)
