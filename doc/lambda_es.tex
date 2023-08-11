@@ -119,19 +119,16 @@ The following inductive definition corresponds to the grammar (\ref{es:grammar})
 \coqdocemptyline
 \coqdocnoindent
 \coqdockw{Inductive} \coqdocvar{n\_sexp} : \coqdockw{Set} :=\coqdoceol
-\coqdocindent{0.50em}
-\ensuremath{|} \coqdocvar{n\_var} (\coqdocvar{x}:\coqdocvar{atom})\coqdoceol
-\coqdocindent{0.50em}
-\ensuremath{|} \coqdocvar{n\_abs} (\coqdocvar{x}:\coqdocvar{atom}) (\coqdocvar{t}:\coqdocvar{n\_sexp})\coqdoceol
-\coqdocindent{0.50em}
-\ensuremath{|} \coqdocvar{n\_app} (\coqdocvar{t1}:\coqdocvar{n\_sexp}) (\coqdocvar{t2}:\coqdocvar{n\_sexp})\coqdoceol
-\coqdocindent{0.50em}
-\ensuremath{|} \coqdocvar{n\_sub} (\coqdocvar{t1}:\coqdocvar{n\_sexp}) (\coqdocvar{x}:\coqdocvar{atom}) (\coqdocvar{t2}:\coqdocvar{n\_sexp}).\coqdoceol
 \coqdocnoindent
-\coqdockw{Notation} "[ x := u ] t" := (\coqdocvar{n\_sub} \coqdocvar{t} \coqdocvar{x} \coqdocvar{u}) (\coqdoctac{at} \coqdockw{level} 60).\coqdoceol
-\coqdocemptyline
+\ensuremath{|} \coqdocvar{n\_var} (\coqdocvar{x}:\coqdocvar{atom})\coqdoceol
+\coqdocnoindent
+\ensuremath{|} \coqdocvar{n\_abs} (\coqdocvar{x}:\coqdocvar{atom}) (\coqdocvar{t}:\coqdocvar{n\_sexp})\coqdoceol
+\coqdocnoindent
+\ensuremath{|} \coqdocvar{n\_app} (\coqdocvar{t1}:\coqdocvar{n\_sexp}) (\coqdocvar{t2}:\coqdocvar{n\_sexp})\coqdoceol
+\coqdocnoindent
+\ensuremath{|} \coqdocvar{n\_sub} (\coqdocvar{t1}:\coqdocvar{n\_sexp}) (\coqdocvar{x}:\coqdocvar{atom}) (\coqdocvar{t2}:\coqdocvar{n\_sexp}).\coqdoceol
 \end{coqdoccode}
-The \coqdocvar{size} and the set \coqdocvar{fv\_nom} of the free variables of a term are defined as usual: 
+\noindent where (\coqdocvar{n\_sub} \coqdocvar{t1} \coqdocvar{x} \coqdocvar{t2}) is written [\coqdocvar{x} := \coqdocvar{t2}]\coqdocvar{t1} from now on. The \coqdocvar{size} and the set \coqdocvar{fv\_nom} of the free variables of a term are defined as usual: 
 \begin{coqdoccode}
 \coqdocemptyline
 \coqdocnoindent
@@ -329,23 +326,18 @@ Each of these rules correspond to a constructor in the \coqdocvar{aeq} inductive
 \coqdocnoindent
 \ensuremath{|} \coqdocvar{aeq\_abs\_same} : \coqdockw{\ensuremath{\forall}} \coqdocvar{x} \coqdocvar{t1} \coqdocvar{t2}, \coqdocvar{aeq} \coqdocvar{t1} \coqdocvar{t2} \ensuremath{\rightarrow} \coqdocvar{aeq} (\coqdocvar{n\_abs} \coqdocvar{x} \coqdocvar{t1})(\coqdocvar{n\_abs} \coqdocvar{x} \coqdocvar{t2})\coqdoceol
 \coqdocnoindent
-\ensuremath{|} \coqdocvar{aeq\_abs\_diff} : \coqdockw{\ensuremath{\forall}} \coqdocvar{x} \coqdocvar{y} \coqdocvar{t1} \coqdocvar{t2}, \coqdocvar{x} \ensuremath{\not=} \coqdocvar{y} \ensuremath{\rightarrow} \coqdocvar{x} `\coqdocvar{notin}` \coqdocvar{fv\_nom} \coqdocvar{t2} \ensuremath{\rightarrow} \coqdocvar{aeq} \coqdocvar{t1} (\coqdocvar{swap} \coqdocvar{y} \coqdocvar{x} \coqdocvar{t2}) \ensuremath{\rightarrow}\coqdoceol
-\coqdocindent{1.00em}
-\coqdocvar{aeq} (\coqdocvar{n\_abs} \coqdocvar{x} \coqdocvar{t1}) (\coqdocvar{n\_abs} \coqdocvar{y} \coqdocvar{t2})\coqdoceol
+\ensuremath{|} \coqdocvar{aeq\_abs\_diff} : \coqdockw{\ensuremath{\forall}} \coqdocvar{x} \coqdocvar{y} \coqdocvar{t1} \coqdocvar{t2}, \coqdocvar{x} \ensuremath{\not=} \coqdocvar{y} \ensuremath{\rightarrow} \coqdocvar{x} `\coqdocvar{notin}` \coqdocvar{fv\_nom} \coqdocvar{t2} \ensuremath{\rightarrow} \coqdocvar{aeq} \coqdocvar{t1} (\coqdocvar{swap} \coqdocvar{y} \coqdocvar{x} \coqdocvar{t2}) \ensuremath{\rightarrow} \coqdocvar{aeq} (\coqdocvar{n\_abs} \coqdocvar{x} \coqdocvar{t1}) (\coqdocvar{n\_abs} \coqdocvar{y} \coqdocvar{t2})\coqdoceol
 \coqdocnoindent
 \ensuremath{|} \coqdocvar{aeq\_app} : \coqdockw{\ensuremath{\forall}} \coqdocvar{t1} \coqdocvar{t2} \coqdocvar{t1'} \coqdocvar{t2'}, \coqdocvar{aeq} \coqdocvar{t1} \coqdocvar{t1'} \ensuremath{\rightarrow} \coqdocvar{aeq} \coqdocvar{t2} \coqdocvar{t2'} \ensuremath{\rightarrow} \coqdocvar{aeq} (\coqdocvar{n\_app} \coqdocvar{t1} \coqdocvar{t2}) (\coqdocvar{n\_app} \coqdocvar{t1'} \coqdocvar{t2'})\coqdoceol
 \coqdocnoindent
 \ensuremath{|} \coqdocvar{aeq\_sub\_same} : \coqdockw{\ensuremath{\forall}} \coqdocvar{t1} \coqdocvar{t2} \coqdocvar{t1'} \coqdocvar{t2'} \coqdocvar{x}, \coqdocvar{aeq} \coqdocvar{t1} \coqdocvar{t1'} \ensuremath{\rightarrow} \coqdocvar{aeq} \coqdocvar{t2} \coqdocvar{t2'} \ensuremath{\rightarrow} \coqdocvar{aeq} ([\coqdocvar{x} := \coqdocvar{t2}] \coqdocvar{t1}) ([\coqdocvar{x} := \coqdocvar{t2'}] \coqdocvar{t1'})\coqdoceol
 \coqdocnoindent
-\ensuremath{|} \coqdocvar{aeq\_sub\_diff} : \coqdockw{\ensuremath{\forall}} \coqdocvar{t1} \coqdocvar{t2} \coqdocvar{t1'} \coqdocvar{t2'} \coqdocvar{x} \coqdocvar{y}, \coqdocvar{aeq} \coqdocvar{t2} \coqdocvar{t2'} \ensuremath{\rightarrow} \coqdocvar{x} \ensuremath{\not=} \coqdocvar{y} \ensuremath{\rightarrow} \coqdocvar{x} `\coqdocvar{notin}` \coqdocvar{fv\_nom} \coqdocvar{t1'} \ensuremath{\rightarrow} \coqdocvar{aeq} \coqdocvar{t1} (\coqdocvar{swap} \coqdocvar{y} \coqdocvar{x} \coqdocvar{t1'}) \ensuremath{\rightarrow}\coqdoceol
-\coqdocindent{1.00em}
-\coqdocvar{aeq} ([\coqdocvar{x} := \coqdocvar{t2}] \coqdocvar{t1}) ([\coqdocvar{y} := \coqdocvar{t2'}] \coqdocvar{t1'}).\coqdoceol
-\coqdocnoindent
-\coqdockw{Notation} "t =a u" := (\coqdocvar{aeq} \coqdocvar{t} \coqdocvar{u}) (\coqdoctac{at} \coqdockw{level} 60).\coqdoceol
+\ensuremath{|} \coqdocvar{aeq\_sub\_diff} : \coqdockw{\ensuremath{\forall}} \coqdocvar{t1} \coqdocvar{t2} \coqdocvar{t1'} \coqdocvar{t2'} \coqdocvar{x} \coqdocvar{y}, \coqdocvar{aeq} \coqdocvar{t2} \coqdocvar{t2'} \ensuremath{\rightarrow} \coqdocvar{x} \ensuremath{\not=} \coqdocvar{y} \ensuremath{\rightarrow} \coqdocvar{x} `\coqdocvar{notin}` \coqdocvar{fv\_nom} \coqdocvar{t1'} \ensuremath{\rightarrow} \coqdocvar{aeq} \coqdocvar{t1} (\coqdocvar{swap} \coqdocvar{y} \coqdocvar{x} \coqdocvar{t1'}) \ensuremath{\rightarrow} \coqdocvar{aeq} ([\coqdocvar{x} := \coqdocvar{t2}] \coqdocvar{t1}) ([\coqdocvar{y} := \coqdocvar{t2'}] \coqdocvar{t1'}).\coqdoceol
 \coqdocemptyline
 \end{coqdoccode}
-In what follows, we use a infix notation for $\alpha$-equivalence in the Coq code. Therefore, we write \coqdocvar{t} =\coqdocvar{a} \coqdocvar{u} instead of \coqdocvar{aeq} \coqdocvar{t} \coqdocvar{u}. The above notion defines an equivalence relation over the set \coqdocvar{n\_sexp} of nominal expressions with explicit substitutions, {\it i.e.} the \coqdocvar{aeq} relation is reflexive, symmetric and transitive. 
+\noindent where we use a infix notation for $\alpha$-equivalence in the Coq code and write \coqdocvar{t} =\coqdocvar{a} \coqdocvar{u} instead of (\coqdocvar{aeq} \coqdocvar{t} \coqdocvar{u}). The above notion defines an equivalence relation over the set \coqdocvar{n\_sexp} of nominal expressions with explicit substitutions, {\it i.e.} the \coqdocvar{aeq} relation is reflexive, symmetric and transitive.
 \begin{coqdoccode}
+\coqdocemptyline
 \end{coqdoccode}
 In addition, $\alpha$-equivalent terms have the same size, and the same set of free variables: 
 \begin{coqdoccode}
@@ -462,16 +454,10 @@ Let $t$ and $u$ be terms, and $x$ a variable. The result of substituting $u$ for
 \coqdocvar{n\_sub} (\coqdocvar{subst\_rec\_fun} (\coqdocvar{swap} \coqdocvar{y} \coqdocvar{z} \coqdocvar{t1}) \coqdocvar{u} \coqdocvar{x}) \coqdocvar{z} (\coqdocvar{subst\_rec\_fun} \coqdocvar{t2} \coqdocvar{u} \coqdocvar{x}) \coqdoceol
 \coqdocnoindent
 \coqdockw{end}.\coqdoceol
-\coqdocnoindent
-\coqdockw{Definition} \coqdocvar{m\_subst} (\coqdocvar{u} : \coqdocvar{n\_sexp}) (\coqdocvar{x}:\coqdocvar{atom}) (\coqdocvar{t}:\coqdocvar{n\_sexp}) :=\coqdoceol
-\coqdocindent{1.00em}
-\coqdocvar{subst\_rec\_fun} \coqdocvar{t} \coqdocvar{u} \coqdocvar{x}.\coqdoceol
-\coqdocnoindent
-\coqdockw{Notation} "\{ x := u \} t" := (\coqdocvar{m\_subst} \coqdocvar{u} \coqdocvar{x} \coqdocvar{t}) (\coqdoctac{at} \coqdockw{level} 60).\coqdoceol
-\coqdocemptyline
 \end{coqdoccode}
-Note that this function is not structurally recursive due to the swaps in the recursive calls. A structurally recursive version of the function \coqdocvar{subst\_rec\_fun} can be found in the file \coqdocvar{nominal.v} of the \coqdocvar{Metalib} library\footnote{\url{https://github.com/plclub/metalib}}, but it uses the size of the term in which the substitution will be performed as an extra argument that decreases with each recursive call. We write [\coqdocvar{x}:=\coqdocvar{u}]\coqdocvar{t} instead of \coqdocvar{subst\_rec\_fun} \coqdocvar{t} \coqdocvar{u} \coqdocvar{x} in the Coq code to represent $\metasub{t}{x}{u}$.
+Note that this function is not structurally recursive due to the swaps in the recursive calls. A structurally recursive version of the function \coqdocvar{subst\_rec\_fun} can be found in the file \coqdocvar{nominal.v} of the \coqdocvar{Metalib} library\footnote{\url{https://github.com/plclub/metalib}}, but it uses the size of the term in which the substitution will be performed as an extra argument that decreases with each recursive call. We write \{\coqdocvar{x} := \coqdocvar{u}\}\coqdocvar{t} instead of \coqdocvar{subst\_rec\_fun} \coqdocvar{t} \coqdocvar{u} \coqdocvar{x} in the Coq code to represent $\metasub{t}{x}{u}$.
 \begin{coqdoccode}
+\coqdocemptyline
 \coqdocemptyline
 \end{coqdoccode}
 The following lemma states that if $x \notin fv(t)$ then $\metasub{t}{x}{u} =_\alpha t$. In informal proofs the conclusion of this lemma is usually stated as a syntactic equality, {\i.e.} $\metasub{t}{x}{u} = t$ instead of the $\alpha$-equivalence, but the function \coqdocvar{subst\_rec\_fun} renames bound variables whenever the metasubstitution is propagated inside an abstraction or an explicit substitution, even in the case that the metasubstitution has no effect in a subterm. That's why the syntactic equality does not hold here. 
@@ -513,9 +499,7 @@ The following lemmas concern the expected behaviour of the metasubstitution. For
 \coqdockw{Lemma} \coqdocvar{m\_subst\_sub\_eq}: \coqdockw{\ensuremath{\forall}} \coqdocvar{u} \coqdocvar{x} \coqdocvar{t1} \coqdocvar{t2}, \{\coqdocvar{x} := \coqdocvar{u}\}(\coqdocvar{n\_sub} \coqdocvar{t1} \coqdocvar{x} \coqdocvar{t2}) = \coqdocvar{n\_sub} \coqdocvar{t1} \coqdocvar{x} (\{\coqdocvar{x} := \coqdocvar{u}\}\coqdocvar{t2}).\coqdoceol
 \coqdocemptyline
 \coqdocnoindent
-\coqdockw{Lemma} \coqdocvar{fv\_nom\_remove}: \coqdockw{\ensuremath{\forall}} \coqdocvar{t} \coqdocvar{u} \coqdocvar{x} \coqdocvar{y}, \coqdocvar{y} `\coqdocvar{notin}` \coqdocvar{fv\_nom} \coqdocvar{u} \ensuremath{\rightarrow} \coqdocvar{y} `\coqdocvar{notin}` \coqdocvar{remove} \coqdocvar{x} (\coqdocvar{fv\_nom} \coqdocvar{t}) \ensuremath{\rightarrow}\coqdoceol
-\coqdocindent{10.50em}
-\coqdocvar{y} `\coqdocvar{notin}` \coqdocvar{fv\_nom} (\{\coqdocvar{x} := \coqdocvar{u}\}\coqdocvar{t}).\coqdoceol
+\coqdockw{Lemma} \coqdocvar{fv\_nom\_remove}: \coqdockw{\ensuremath{\forall}} \coqdocvar{t} \coqdocvar{u} \coqdocvar{x} \coqdocvar{y}, \coqdocvar{y} `\coqdocvar{notin}` \coqdocvar{fv\_nom} \coqdocvar{u} \ensuremath{\rightarrow} \coqdocvar{y} `\coqdocvar{notin}` \coqdocvar{remove} \coqdocvar{x} (\coqdocvar{fv\_nom} \coqdocvar{t}) \ensuremath{\rightarrow} \coqdocvar{y} `\coqdocvar{notin}` \coqdocvar{fv\_nom} (\{\coqdocvar{x} := \coqdocvar{u}\}\coqdocvar{t}).\coqdoceol
  \coqdocemptyline
 \end{coqdoccode}
 We will now prove some stability results for the metasubstitution w.r.t. $\alpha$-equivalence. More precisely, we will prove that if $t =_\alpha t'$ and $u =_\alpha u'$ then $\metasub{t}{x}{u} =_\alpha \metasub{t'}{x}{u'}$, where $x$ is any variable and $t, t', u$ and $u'$ are any \coqdocvar{n\_sexp} terms. This proof is split in two steps: firstly, we prove that if $u =_\alpha u'$ then $\metasub{t}{x}{u} =_\alpha \metasub{t}{x}{u'}, \forall x, t, u, u'$; secondly, we prove that if $t =_\alpha t'$ then $\metasub{t}{x}{u} =_\alpha \metasub{t'}{x}{u}, \forall x, t, t', u$. These two steps are then combined through the transitivity of the $\alpha$-equivalence relation. Nevertheless, this task were not straighforward. Let's follow the steps of our first trial.
@@ -748,7 +732,45 @@ When \coqdocvar{z} \ensuremath{\not=} \coqdocvar{w}, then we need to prove that 
 \end{coqdoccode}
 In the case in which \coqdocvar{y} \ensuremath{\not=} \coqdocvar{z}, the goal is (\{\coqdocvar{y} := \coqdocvar{t3}\} (\{\coqdocvar{x} := \coqdocvar{t2}\} \coqdocvar{n\_abs} \coqdocvar{z} \coqdocvar{t11})) =\coqdocvar{a} (\{\coqdocvar{x} := \{\coqdocvar{y} := \coqdocvar{t3}\} \coqdocvar{t2}\} (\{\coqdocvar{y} := \coqdocvar{t3}\} \coqdocvar{n\_abs} \coqdocvar{z} \coqdocvar{t11})). Similarly to the previous case, we pick a fresh name \coqdocvar{w} that is not in the set $fv(\lambda_z.t_{11}) \cup fv(t_3) \cup fv(t_2) \cup \{x\} \cup \{y\}$, and since we also have that \coqdocvar{x} \ensuremath{\not=} \coqdocvar{z}, then we can propagate all metasubstitutions inside the abstractions (LHS and RHS) and we conclude by the induction hypothesis. $\hfill\Box$
 \begin{coqdoccode}
-\coqdocemptyline
+\end{coqdoccode}
+In the explicit substitution case, the initial goal is (\{\coqdocvar{y} := \coqdocvar{t3}\} (\{\coqdocvar{x} := \coqdocvar{t2}\} ([\coqdocvar{z} := \coqdocvar{t12}] \coqdocvar{t11}))) =\coqdocvar{a} (\{\coqdocvar{x} := \{\coqdocvar{y} := \coqdocvar{t3}\} \coqdocvar{t2}\} (\{\coqdocvar{y} := \coqdocvar{t3}\} ([\coqdocvar{z} := \coqdocvar{t12}] \coqdocvar{t11}))), and we start comparing \coqdocvar{x} and \coqdocvar{z}. \begin{coqdoccode}
+ \end{coqdoccode}
+When \coqdocvar{z} = \coqdocvar{x}, the LHS (\{\coqdocvar{y} := \coqdocvar{t3}\} (\{\coqdocvar{x} := \coqdocvar{t2}\} ([\coqdocvar{z} := \coqdocvar{t12}] \coqdocvar{t11}))) reduces to ([\coqdocvar{x} := \{\coqdocvar{x} := \coqdocvar{t2}\} \coqdocvar{t12}] \coqdocvar{t11}), but differently to the abstraction case, the external metasubstitution of the RHS cannot be ignored because \coqdocvar{x} may occur free in \coqdocvar{t12}, and it will therefore be propagated over the explicit substitution. We then need a fresh name, say \coqdocvar{w}, that is not in the set $fv(t_3)\cup fv(t_2) \cup fv(\esub{t_{11}}{x}{t_{12}}) \cup \{y\}$. We use lemma \coqdocvar{m\_subst\_sub\_neq} to perform the propagation.\begin{coqdoccode}
+ \end{coqdoccode}
+We proceed by comparing \coqdocvar{x} and \coqdocvar{w} because if they are equal the external metasubstitution of the RHS can be removed as in the abstraction case.
+\begin{coqdoccode}
+\end{coqdoccode}
+The current goal is (\{\coqdocvar{y} := \coqdocvar{t3}\} ([\coqdocvar{w} := \{\coqdocvar{w} := \coqdocvar{t2}\} \coqdocvar{t12}] \coqdocvar{t11})) =\coqdocvar{a} ([\coqdocvar{w} := \{\coqdocvar{w} := \{\coqdocvar{y} := \coqdocvar{t3}\} \coqdocvar{t2}\} (\{\coqdocvar{y} := \coqdocvar{t3}\} \coqdocvar{t12})] (\{\coqdocvar{y} := \coqdocvar{t3}\} \coqdocvar{t11})), and the next step is to propagate the external metasubstitution of the LHS without the need of a new name.
+\begin{coqdoccode}
+\end{coqdoccode}
+As the same name \coqdocvar{w} is used on both sides, we can proceed with \coqdocvar{aeq\_sub\_same}. 
+\begin{coqdoccode}
+\end{coqdoccode}
+The first subcase is trivial.
+\begin{coqdoccode}
+\end{coqdoccode}
+And the second is proved by the induction hypothesis for \coqdocvar{t12}.
+\begin{coqdoccode}
+\end{coqdoccode}
+When \coqdocvar{x} \ensuremath{\not=} \coqdocvar{w}, then we can propagate the external metasubstitutions on both sides of the current goal (\{\coqdocvar{y} := \coqdocvar{t3}\} ([\coqdocvar{x} := \{\coqdocvar{x} := \coqdocvar{t2}\} \coqdocvar{t12}] \coqdocvar{t11})) =\coqdocvar{a} (\{\coqdocvar{x} := \{\coqdocvar{y} := \coqdocvar{t3}\} \coqdocvar{t2}\} ([\coqdocvar{w} := \{\coqdocvar{y} := \coqdocvar{t3}\} \coqdocvar{t12}] (\{\coqdocvar{y} := \coqdocvar{t3}\} \coqdocvar{swap} \coqdocvar{x} \coqdocvar{w} \coqdocvar{t11}))). We use two different instances of \coqdocvar{m\_subst\_sub\_neq}, and on both cases we use the fresh name \coqdocvar{w} that was already created.\begin{coqdoccode}
+ \end{coqdoccode}
+Again, since we have used the same fresh name \coqdocvar{w} on both sides of the $\alpha$-equation, we proceed with \coqdocvar{aeq\_sub\_same}.
+\begin{coqdoccode}
+\end{coqdoccode}
+In the first subcase, we need to prove that (\{\coqdocvar{y} := \coqdocvar{t3}\} \coqdocvar{swap} \coqdocvar{x} \coqdocvar{w} \coqdocvar{t11}) =\coqdocvar{a} (\{\coqdocvar{x} := \{\coqdocvar{y} := \coqdocvar{t3}\} \coqdocvar{t2}\} (\{\coqdocvar{y} := \coqdocvar{t3}\} \coqdocvar{swap} \coqdocvar{x} \coqdocvar{w} \coqdocvar{t11})), and we conclude with \coqdocvar{m\_subst\_notin}, since \coqdocvar{x} does not occur free in (\{\coqdocvar{y} := \coqdocvar{t3}\} \coqdocvar{swap} \coqdocvar{x} \coqdocvar{w} \coqdocvar{t11}).\begin{coqdoccode}
+ \end{coqdoccode}
+The second subcase is proved by the induction hypothesis on \coqdocvar{t12}.
+\begin{coqdoccode}
+\end{coqdoccode}
+When \coqdocvar{z} \ensuremath{\not=} \coqdocvar{x}, then we take a fresh name \coqdocvar{w} such that it is not in the set $fv(t_3)\cup fv(t_2) \cup fv(\esub{t_{11}}{z}{t_{12}})\cup \{x\} \cup \{y\}$. The current goal is (\{\coqdocvar{y} := \coqdocvar{t3}\} (\{\coqdocvar{x} := \coqdocvar{t2}\} ([\coqdocvar{z} := \coqdocvar{t12}] \coqdocvar{t11}))) =\coqdocvar{a} (\{\coqdocvar{x} := \{\coqdocvar{y} := \coqdocvar{t3}\} \coqdocvar{t2}\} (\{\coqdocvar{y} := \coqdocvar{t3}\} ([\coqdocvar{z} := \coqdocvar{t12}] \coqdocvar{t11}))) and we start propagating the internal metasubstitution. Let's start with the LHS.\begin{coqdoccode}
+ \end{coqdoccode}
+After the propagation, we get the following goal (\{\coqdocvar{y} := \coqdocvar{t3}\} ([\coqdocvar{w} := \{\coqdocvar{x} := \coqdocvar{t2}\} \coqdocvar{t12}] (\{\coqdocvar{x} := \coqdocvar{t2}\} \coqdocvar{swap} \coqdocvar{z} \coqdocvar{w} \coqdocvar{t11}))) =\coqdocvar{a} (\{\coqdocvar{x} := \{\coqdocvar{y} := \coqdocvar{t3}\} \coqdocvar{t2}\} (\{\coqdocvar{y} := \coqdocvar{t3}\} ([\coqdocvar{z} := \coqdocvar{t12}] \coqdocvar{t11}))). We now compare \coqdocvar{y} and \coqdocvar{z}, and propagate the internal metasubstitution of the RHS.
+\begin{coqdoccode}
+\end{coqdoccode}
+When \coqdocvar{y} = \coqdocvar{z}, we have the goal (\{\coqdocvar{z} := \coqdocvar{t3}\} ([\coqdocvar{w} := \{\coqdocvar{x} := \coqdocvar{t2}\} \coqdocvar{t12}] (\{\coqdocvar{x} := \coqdocvar{t2}\} \coqdocvar{swap} \coqdocvar{z} \coqdocvar{w} \coqdocvar{t11}))) =\coqdocvar{a} (\{\coqdocvar{x} := \{\coqdocvar{z} := \coqdocvar{t3}\} \coqdocvar{t2}\} ([\coqdocvar{z} := \{\coqdocvar{z} := \coqdocvar{t3}\} \coqdocvar{t12}] \coqdocvar{t11})). The next step is to propagate the external metasubstitutions on both sides of the current goal. To do so, we will use the same fresh name \coqdocvar{w} on both propagations.\begin{coqdoccode}
+ \end{coqdoccode}
+When \coqdocvar{y} \ensuremath{\not=} \coqdocvar{z}, we again propagate all the metasubstitutions, one in the LHS and two in the RHS, using the same fresh name \coqdocvar{w} for all of them.\begin{coqdoccode}
+ \coqdocemptyline
 \end{coqdoccode}
 \section{Conclusion and Future work}
 
