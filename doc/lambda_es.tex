@@ -455,8 +455,10 @@ Let $t$ and $u$ be terms, and $x$ a variable. The result of substituting $u$ for
 \coqdocnoindent
 \coqdockw{end}.\coqdoceol
 \end{coqdoccode}
-Note that this function is not structurally recursive due to the swaps in the recursive calls. A structurally recursive version of the function \coqdocvar{subst\_rec\_fun} can be found in the file \coqdocvar{nominal.v} of the \coqdocvar{Metalib} library\footnote{\url{https://github.com/plclub/metalib}}, but it uses the size of the term in which the substitution will be performed as an extra argument that decreases with each recursive call. We write \{\coqdocvar{x} := \coqdocvar{u}\}\coqdocvar{t} instead of \coqdocvar{subst\_rec\_fun} \coqdocvar{t} \coqdocvar{u} \coqdocvar{x} in the Coq code to represent $\metasub{t}{x}{u}$.
+Note that this function is not structurally recursive due to the swaps in the recursive calls. A structurally recursive version of the function \coqdocvar{subst\_rec\_fun} can be found in the file \coqdocvar{nominal.v} of the \coqdocvar{Metalib} library\footnote{\url{https://github.com/plclub/metalib}}, but it uses the size of the term in which the substitution will be performed as an extra argument that decreases with each recursive call. We write \{\coqdocvar{x} := \coqdocvar{u}\}\coqdocvar{t} instead of \coqdocvar{subst\_rec\_fun} \coqdocvar{t} \coqdocvar{u} \coqdocvar{x} in the Coq code to represent the metasubstitution $\metasub{t}{x}{u}$.
 \begin{coqdoccode}
+\coqdocemptyline
+\coqdocemptyline
 \coqdocemptyline
 \coqdocemptyline
 \end{coqdoccode}
@@ -576,34 +578,80 @@ The next lemma, named \coqdocvar{aeq\_m\_subst\_out} will benefit the strategy u
 \coqdocnoindent
 \coqdockw{Lemma} \coqdocvar{aeq\_m\_subst\_out}: \coqdockw{\ensuremath{\forall}} \coqdocvar{t} \coqdocvar{t'} \coqdocvar{u} \coqdocvar{x}, \coqdocvar{t} =\coqdocvar{a} \coqdocvar{t'} \ensuremath{\rightarrow} (\{\coqdocvar{x} := \coqdocvar{u}\}\coqdocvar{t}) =\coqdocvar{a} (\{\coqdocvar{x} := \coqdocvar{u}\}\coqdocvar{t'}).\coqdoceol
 \end{coqdoccode}
-\noindent{\bf Proof.} The proof is by induction on the size of the term \coqdocvar{t}. 
+\noindent{\bf Proof.} The proof is by induction on the size of the term \coqdocvar{t}. The abstraction and the explicit substitution are the interesting cases.
 \begin{coqdoccode}
 \end{coqdoccode}
-The interesting case is the abstraction. The are two cases based on the definition of the $\alpha$-equivalence relation: either the binders have the same name or they are different. 
+In the former case, we need to prove that (\{\coqdocvar{x} := \coqdocvar{u}\} \coqdocvar{n\_abs} \coqdocvar{y} \coqdocvar{t1}) =\coqdocvar{a} (\{\coqdocvar{x} := \coqdocvar{u}\} \coqdocvar{t'}), where \coqdocvar{n\_abs} \coqdocvar{y} \coqdocvar{t1} =\coqdocvar{a} \coqdocvar{t'} by hypothesis.\begin{coqdoccode}
+ \end{coqdoccode}
+Therefore, \coqdocvar{t'} is an abstraction, and according to our definition of $\alpha$-equivalence there are two subcases: \newline {\bf 1.} In the first subcase, \coqdocvar{t'} also has \coqdocvar{y} as binding variable {\it i.e.} \coqdocvar{t'} = \coqdocvar{n\_abs} \coqdocvar{y} \coqdocvar{t2}, where \coqdocvar{t1} =\coqdocvar{a} \coqdocvar{t2}, and hence the current goal is given by (\{\coqdocvar{x} := \coqdocvar{u}\} \coqdocvar{n\_abs} \coqdocvar{y} \coqdocvar{t1}) =\coqdocvar{a} (\{\coqdocvar{x} := \coqdocvar{u}\} \coqdocvar{n\_abs} \coqdocvar{y} \coqdocvar{t2}).
 \begin{coqdoccode}
 \end{coqdoccode}
-In the former case, we have to prove  ([\coqdocvar{x} := \coqdocvar{u}] \coqdocvar{n\_abs} \coqdocvar{y} \coqdocvar{t1}) =\coqdocvar{a} ([\coqdocvar{x} := \coqdocvar{u}] \coqdocvar{n\_abs} \coqdocvar{y} \coqdocvar{t2}) assumming that \coqdocvar{t1} =\coqdocvar{a} \coqdocvar{t2}. In both sides of the $\alpha$-equation, the metasubstitutition need to be propagated over the abstraction, and according to our definition of metasubstitution, one name will be generated for each propagation. The new name to be generate for the term [\coqdocvar{x} := \coqdocvar{u}] (\coqdocvar{n\_abs} \coqdocvar{y} \coqdocvar{t1}) (lhs) is such that it is not in the set $fv(\lambda_y.t_1)\cup fv(u) \cup \{x\}$, while the new name to be generated for the term [\coqdocvar{x} := \coqdocvar{u}] (\coqdocvar{n\_abs} \coqdocvar{y} \coqdocvar{t2}) (rhs) is such that it is not in the set $fv(\lambda_y.t_2)\cup fv(u) \cup \{x\}$. Since \coqdocvar{t1} =\coqdocvar{a} \coqdocvar{t2}, by lemma \coqdocvar{aeq\_fv\_nom} the set of free variables of \coqdocvar{t1} is equal to the set of free variables of \coqdocvar{t2}, and therefore, we can generate just one new name for both propagations of the metasubstitution. 
+We proceed by comparing \coqdocvar{x} and \coqdocvar{y}.
 \begin{coqdoccode}
 \end{coqdoccode}
-If this new name is \coqdocvar{x0} then the new goal to be proved is \coqdocvar{n\_abs} \coqdocvar{x0} (\coqdocvar{subst\_rec\_fun} (\coqdocvar{swap} \coqdocvar{y} \coqdocvar{x0} \coqdocvar{t1}) \coqdocvar{u} \coqdocvar{x}) =\coqdocvar{a} \coqdocvar{n\_abs} \coqdocvar{x0} (\coqdocvar{subst\_rec\_fun} (\coqdocvar{swap} \coqdocvar{y} \coqdocvar{x0} \coqdocvar{t2}) \coqdocvar{u} \coqdocvar{x}), which can be proved by the induction hypothesis. 
+If \coqdocvar{x} = \coqdocvar{y} then, we are done by using twice lemma \coqdocvar{m\_subst\_abs\_eq}.
 \begin{coqdoccode}
 \end{coqdoccode}
-If \coqdocvar{y} = \coqdocvar{x} then \coqdocvar{x} \ensuremath{\not=} \coqdocvar{y0} and the metasubstitution [\coqdocvar{x} := \coqdocvar{u}] has no effect on the LHS, but it can be propagated on the RHS, {\it i.e.} over the abstraction (\coqdocvar{n\_abs} \coqdocvar{y0} \coqdocvar{t2}) but it also has no effect in \coqdocvar{t2} because \coqdocvar{x} does not occur free in \coqdocvar{t2}. 
+When \coqdocvar{x} \ensuremath{\not=} \coqdocvar{y}, then we need to propagate the metasubstitution on both sides of the $\alpha$-equation.\begin{coqdoccode}
+ \end{coqdoccode}
+On the LHS, we need a fresh name that is not in the set $fv(u)\cup fv(\lambda_y.t_1) \cup \{x\}$, while for the RHS, the fresh name cannot belong to the set $fv(u)\cup fv(\lambda_y.t_1) \cup \{x\}$.\begin{coqdoccode}
+ \end{coqdoccode}
+From the hypothesis \coqdocvar{t1} =\coqdocvar{a} \coqdocvar{t2}, we get that $fv(t_1) = fv(t_2)$ using lemma \coqdocvar{aeq\_fv\_nom} and the axiom \coqdocvar{Eq\_implies\_equality}\begin{coqdoccode}
+ \end{coqdoccode}
+Therefore, using this equality the sets become equal, and we can generate only one name, say \coqdocvar{x0}, satisfying the conditions for both LHS and RHS of the $\alpha$-equation. This means that the current goal has the same binding variable on both sides of the $\alpha$-equation. We proceed using the constructor \coqdocvar{aeq\_abs\_same}, and conclude by induction hypothesis.\begin{coqdoccode}
+ \end{coqdoccode}
+\newline {\bf 2.} In the second subcase, \coqdocvar{t'} = \coqdocvar{n\_abs} \coqdocvar{y0} \coqdocvar{t2}, where \coqdocvar{t1} =\coqdocvar{a} \coqdocvar{swap} \coqdocvar{y0} \coqdocvar{y} \coqdocvar{t2} and \coqdocvar{y} \ensuremath{\not=} \coqdocvar{y0}. The current goal is (\{\coqdocvar{x} := \coqdocvar{u}\} \coqdocvar{n\_abs} \coqdocvar{y} \coqdocvar{t1}) =\coqdocvar{a} (\{\coqdocvar{x} := \coqdocvar{u}\} \coqdocvar{n\_abs} \coqdocvar{y0} \coqdocvar{t2}), and we proceed by comparing \coqdocvar{x} and \coqdocvar{y} in the LHS:
 \begin{coqdoccode}
 \end{coqdoccode}
-If \coqdocvar{y} \ensuremath{\not=} \coqdocvar{x} then the metasubstitution can be propagated over the abstraction of the LHS, and similarly we compare \coqdocvar{x} with \coqdocvar{y0} to see what happens in the RHS. 
+If \coqdocvar{y} = \coqdocvar{x} then the metasubstitution \{\coqdocvar{x} := \coqdocvar{u}\} has no effect on the LHS, but in this case \coqdocvar{y} \ensuremath{\not=} \coqdocvar{y0} and in the RHS the metasubstitution has to be propagated.\begin{coqdoccode}
+ \end{coqdoccode}
+Let \coqdocvar{x} be a fresh name not in the set $fv(u)\cup fv(\lambda_{y_0}.t_2)\cup \{y\}$. The current goal is \coqdocvar{n\_abs} \coqdocvar{y} \coqdocvar{t1} =\coqdocvar{a} \coqdocvar{n\_abs} \coqdocvar{x} \{\coqdocvar{y} := \coqdocvar{u}\}(\coqdocvar{swap} \coqdocvar{y0} \coqdocvar{x} \coqdocvar{t2}), but the metasubstitution \{\coqdocvar{y} := \coqdocvar{u}\} has no effect in the term (\coqdocvar{swap} \coqdocvar{y0} \coqdocvar{x} \coqdocvar{t2}) because \coqdocvar{y} \ensuremath{\not=} \coqdocvar{y0}, \coqdocvar{y} \ensuremath{\not=} \coqdocvar{x} and \coqdocvar{y} does not occur free in \coqdocvar{t2} by hypothesis.\begin{coqdoccode}
+ \end{coqdoccode}
+The proof that \coqdocvar{n\_abs} \coqdocvar{y} \coqdocvar{t1} =\coqdocvar{a} \coqdocvar{n\_abs} \coqdocvar{x} (\coqdocvar{swap} \coqdocvar{y0} \coqdocvar{x} \coqdocvar{t2}) is straightforward because \coqdocvar{n\_abs} \coqdocvar{y} \coqdocvar{t1} =\coqdocvar{a} \coqdocvar{n\_abs} \coqdocvar{y0} \coqdocvar{t2} by hypothesis.
 \begin{coqdoccode}
 \end{coqdoccode}
-When \coqdocvar{y0} = \coqdocvar{x} then the metasubstitution has no effect on the abstraction of the RHS. On the LHS the metasubstitution is propagated since \coqdocvar{y} \ensuremath{\not=} \coqdocvar{x} but, as in the previous case, it has no effect in \coqdocvar{t1} because \coqdocvar{y0} does not occur free in \coqdocvar{t1}.
+If \coqdocvar{y} \ensuremath{\not=} \coqdocvar{x} then we proceed by comparing \coqdocvar{x} and \coqdocvar{y0} on the RHS, and the proof when \coqdocvar{x} = \coqdocvar{y0} is analogous to the previous subcase.\begin{coqdoccode}
+ \end{coqdoccode}
+When both \coqdocvar{x} \ensuremath{\not=} \coqdocvar{y} and \coqdocvar{x} \ensuremath{\not=} \coqdocvar{y0} then we need to propagate the metasubstitution on both sides of the current goal: (\{\coqdocvar{x} := \coqdocvar{u}\} \coqdocvar{n\_abs} \coqdocvar{y} \coqdocvar{t1}) =\coqdocvar{a} (\{\coqdocvar{x} := \coqdocvar{u}\} \coqdocvar{n\_abs} \coqdocvar{y0} \coqdocvar{t2}).\begin{coqdoccode}
+ \end{coqdoccode}
+By hypothesis, \coqdocvar{n\_abs} \coqdocvar{y} \coqdocvar{t1} =\coqdocvar{a} \coqdocvar{n\_abs} \coqdocvar{y0} \coqdocvar{t2} and hence the set of free variables of \coqdocvar{n\_abs} \coqdocvar{y} \coqdocvar{t1} is equal to the set of free variables of \coqdocvar{n\_abs} \coqdocvar{y0} \coqdocvar{t2}. Therefore, only one fresh name, say \coqdocvar{x0}, that is not in the set $x_0 \notin fv(u) \cup fv(\lambda_{y_0}.t_2) \cup \{x\}$ is enough to fulfill the conditions for propagating the metasubstitutions on both sides of the $\alpha$-equation, and we are done by the induction hypothesis.\begin{coqdoccode}
+ \end{coqdoccode}
+The explicit substitution operation is also interesting. Initially, the goal is (\{\coqdocvar{x} := \coqdocvar{u}\} ([\coqdocvar{y} := \coqdocvar{t2}] \coqdocvar{t1})) =\coqdocvar{a} (\{\coqdocvar{x} := \coqdocvar{u}\} \coqdocvar{t}), and according to the definition of $\alpha$-equivalence, there are 2 subcases.\begin{coqdoccode}
+ \end{coqdoccode}
+\newline {\bf 1.} In the first subcase, \coqdocvar{t} = ([\coqdocvar{y} := \coqdocvar{t2'}] \coqdocvar{t1'}) with \coqdocvar{t1} =\coqdocvar{a} \coqdocvar{t1'} and \coqdocvar{t2} =\coqdocvar{a} \coqdocvar{t2'}.
 \begin{coqdoccode}
 \end{coqdoccode}
-Now we have to prove that [\coqdocvar{x} := \coqdocvar{u}](\coqdocvar{n\_abs} \coqdocvar{y} \coqdocvar{t1}) =\coqdocvar{a} [\coqdocvar{x} := \coqdocvar{u}](\coqdocvar{n\_abs} \coqdocvar{y0} \coqdocvar{t2}), when \coqdocvar{y} \ensuremath{\not=} \coqdocvar{x}, \coqdocvar{y0} \ensuremath{\not=} \coqdocvar{x} and \coqdocvar{n\_abs} \coqdocvar{y} \coqdocvar{t1} =\coqdocvar{a} \coqdocvar{n\_abs} \coqdocvar{y0} \coqdocvar{t2}. Since the set of free variables of \coqdocvar{n\_abs} \coqdocvar{y} \coqdocvar{t1} is equal to the set of free variables of \coqdocvar{n\_abs} \coqdocvar{y0} \coqdocvar{t2}, we can as in the previous case generate only one new name, say \coqdocvar{x0} that fulfill the condition to propagate the metasubstitution on both sides of the $\alpha$-equation. More precisely, $x_0 \notin fv(\lambda_y.t1) \cup fv(u) \cup \{x\}$, and the goal to be proved is \coqdocvar{n\_abs} \coqdocvar{x0} ([\coqdocvar{x} := \coqdocvar{u}](\coqdocvar{swap} \coqdocvar{y} \coqdocvar{x0} \coqdocvar{t1})) =\coqdocvar{a} \coqdocvar{n\_abs} \coqdocvar{x0} ([\coqdocvar{x} := \coqdocvar{u}](\coqdocvar{swap} \coqdocvar{y0} \coqdocvar{x0} \coqdocvar{t2})).
+As in the abstraction case, we start comparing \coqdocvar{x} and \coqdocvar{y}.
 \begin{coqdoccode}
 \end{coqdoccode}
-As just one new name was generated, there is no case where the binders of the abstractions are different. Remember that abstractions with different binders were the cause of the circularity problem in the proofs because the application of the rule \coqdocvar{aeq\_abs\_diff} introduces a new swap that will be outside the metasubstitution in this case, whose solution would require a lemma of the form of \coqdocvar{swap\_m\_subst}. Therefore, after an applycation of the rule \coqdocvar{aeq\_abs\_same}, we conclude with the induction hypothesis.
+When \coqdocvar{x} = \coqdocvar{y}, the proof is trivial because both metasubstitutions are removed by applying lemma \coqdocvar{m\_subst\_sub\_eq} twice, and we get the following goal: ([\coqdocvar{y} := \{\coqdocvar{y} := \coqdocvar{u}\} \coqdocvar{t2}] \coqdocvar{t1}) =\coqdocvar{a} ([\coqdocvar{y} := \{\coqdocvar{y} := \coqdocvar{u}\} \coqdocvar{t2'}] \coqdocvar{t1'})\begin{coqdoccode}
+ \end{coqdoccode}
+We compare the corresponding components of the explicit substitution via the constructor \coqdocvar{aeq\_sub\_same}, and the first case is trivial since \coqdocvar{t1} =\coqdocvar{a} \coqdocvar{t1'}.
 \begin{coqdoccode}
 \end{coqdoccode}
-The explicit substitution operation is also interesting, but the proof strategy is similar to the one used in the abstraction case. $\hfill\Box$
+In order to show that (\{\coqdocvar{y} := \coqdocvar{u}\} \coqdocvar{t2}) =\coqdocvar{a} (\{\coqdocvar{y} := \coqdocvar{u}\} \coqdocvar{t2'}), we apply the induction hypothesis.
+\begin{coqdoccode}
+\end{coqdoccode}
+When \coqdocvar{x} \ensuremath{\not=} \coqdocvar{y}, we propagate the metasubstitutions inside the explicit substitution on both sides.\begin{coqdoccode}
+ \end{coqdoccode}
+As \coqdocvar{t1} =\coqdocvar{a} \coqdocvar{t1'} and \coqdocvar{t2} =\coqdocvar{a} \coqdocvar{t2'}, we have that \coqdocvar{fv\_nom} \coqdocvar{t1} = \coqdocvar{fv\_nom} \coqdocvar{t1'} and \coqdocvar{fv\_nom} \coqdocvar{t2} = \coqdocvar{fv\_nom} \coqdocvar{t2'}, and we need just one fresh name, say \coqdocvar{x0}, to do these propagations, as long as \coqdocvar{x0} does not belong to the set $fv(u)\cup fv(\metasub{t_1'}{y}{t_2'})\cup \{x\}$. The goal after the propagation is ([\coqdocvar{x0} := \{\coqdocvar{x} := \coqdocvar{u}\}\coqdocvar{t2'}] \{\coqdocvar{x} := \coqdocvar{u}\}(\coqdocvar{swap} \coqdocvar{y} \coqdocvar{x0} \coqdocvar{t1'})) =\coqdocvar{a} ([\coqdocvar{x0} := \{\coqdocvar{x} := \coqdocvar{u}\}\coqdocvar{t2}] \{\coqdocvar{x} := \coqdocvar{u}\}(\coqdocvar{swap} \coqdocvar{y} \coqdocvar{x0} \coqdocvar{t1})), and we proceed by a componentwise comparison via constructor \coqdocvar{aeq\_sub\_same}.\begin{coqdoccode}
+ \end{coqdoccode}
+Each subcase is proved by the induction hypothesis.
+\begin{coqdoccode}
+\end{coqdoccode}
+\newline {\bf 2.} In the second subcase, the goal is (\{\coqdocvar{x} := \coqdocvar{u}\} ([\coqdocvar{y} := \coqdocvar{t2}] \coqdocvar{t1})) =\coqdocvar{a} (\{\coqdocvar{x} := \coqdocvar{u}\} ([\coqdocvar{y0} := \coqdocvar{t2'}] \coqdocvar{t1'})) with \coqdocvar{y} \ensuremath{\not=} \coqdocvar{y0}. We proceed by comparing \coqdocvar{x} and \coqdocvar{y}.
+\begin{coqdoccode}
+\end{coqdoccode}
+If \coqdocvar{x} = \coqdocvar{y} then the metasubstitution of the LHS only propagates to the subterm \coqdocvar{t2}.\begin{coqdoccode}
+ \end{coqdoccode}
+In the RHS, the metasubstitution is propagated to both subterms because \coqdocvar{x} = \coqdocvar{y} \ensuremath{\not=} \coqdocvar{y0}.\begin{coqdoccode}
+ \end{coqdoccode}
+To do so, we take a fresh name \coqdocvar{x} that is not in the set $fv(u) \cup fv(\esub{t_1'}{y_0}{t_2'})$. We proceed by comparing componentwise according to the constructor \coqdocvar{aeq\_sub\_diff}.\begin{coqdoccode}
+ \end{coqdoccode}
+The proof that \{\coqdocvar{y} := \coqdocvar{u}\}\coqdocvar{t2} =\coqdocvar{a} \{\coqdocvar{y} := \coqdocvar{u}\}\coqdocvar{t2'} is straightforward by the induction hypothesis.
+\begin{coqdoccode}
+\end{coqdoccode}
+The proof that \{\coqdocvar{y} := \coqdocvar{u}\}(\coqdocvar{swap} \coqdocvar{y0} \coqdocvar{x} \coqdocvar{t1'}) =\coqdocvar{a} \coqdocvar{swap} \coqdocvar{y} \coqdocvar{x} \coqdocvar{t1} is done by lemma \coqdocvar{m\_subst\_notin} since \coqdocvar{y} \ensuremath{\not=} \coqdocvar{y0}, \coqdocvar{y} \ensuremath{\not=} \coqdocvar{x} and \coqdocvar{y} is not in $fv(t_1')$.
 \begin{coqdoccode}
 \coqdocemptyline
 \end{coqdoccode}
