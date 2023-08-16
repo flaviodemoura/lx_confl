@@ -653,7 +653,16 @@ The proof that \{\coqdocvar{y} := \coqdocvar{u}\}\coqdocvar{t2} =\coqdocvar{a} \
 \end{coqdoccode}
 The proof that \{\coqdocvar{y} := \coqdocvar{u}\}(\coqdocvar{swap} \coqdocvar{y0} \coqdocvar{x} \coqdocvar{t1'}) =\coqdocvar{a} \coqdocvar{swap} \coqdocvar{y} \coqdocvar{x} \coqdocvar{t1} is done by lemma \coqdocvar{m\_subst\_notin} since \coqdocvar{y} \ensuremath{\not=} \coqdocvar{y0}, \coqdocvar{y} \ensuremath{\not=} \coqdocvar{x} and \coqdocvar{y} is not in $fv(t_1')$.
 \begin{coqdoccode}
-\coqdocemptyline
+\end{coqdoccode}
+When \coqdocvar{x} \ensuremath{\not=} \coqdocvar{y}, we start with the following goal: (\{\coqdocvar{x} := \coqdocvar{u}\} ([\coqdocvar{y} := \coqdocvar{t2}] \coqdocvar{t1})) =\coqdocvar{a} (\{\coqdocvar{x} := \coqdocvar{u}\} ([\coqdocvar{y0} := \coqdocvar{t2'}] \coqdocvar{t1'})). We proceed by comparing \coqdocvar{x} and \coqdocvar{y0}.\begin{coqdoccode}
+ \end{coqdoccode}
+When \coqdocvar{x} = \coqdocvar{y0}, the strategy is similar to the previous case \coqdocvar{x} = \coqdocvar{y} and \coqdocvar{x} \ensuremath{\not=} \coqdocvar{y0}.\begin{coqdoccode}
+ \end{coqdoccode}
+The last case is when \coqdocvar{x} \ensuremath{\not=} \coqdocvar{y} and \coqdocvar{x} \ensuremath{\not=} \coqdocvar{y0}. The current goal is (\{\coqdocvar{x} := \coqdocvar{u}\} ([\coqdocvar{y} := \coqdocvar{t2}] \coqdocvar{t1})) =\coqdocvar{a} (\{\coqdocvar{x} := \coqdocvar{u}\} ([\coqdocvar{y0} := \coqdocvar{t2'}] \coqdocvar{t1'})).\begin{coqdoccode}
+ \end{coqdoccode}
+We take a fresh name \coqdocvar{x0} that is not in the set $fv(u)\cup fv(\esub{t_1'}{y_0}{t_2'})\cup \{ x \}$, and propagate the metasubstitutions inside the explicit substitutions according to the definition of the metasubstitution. The current goal is ([\coqdocvar{x0} := \{\coqdocvar{x} := \coqdocvar{u}\}\coqdocvar{t2'}](\{\coqdocvar{x} := \coqdocvar{u}\}(\coqdocvar{swap} \coqdocvar{y0} \coqdocvar{x0} \coqdocvar{t1'}))) =\coqdocvar{a}
+  ([\coqdocvar{x0} := \{\coqdocvar{x} := \coqdocvar{u}\}\coqdocvar{t2}](\{\coqdocvar{x} := \coqdocvar{u}\}(\coqdocvar{swap} \coqdocvar{y} \coqdocvar{x0} \coqdocvar{t1}))), and we proceed using the constructor \coqdocvar{aeq\_sub\_same}. Each subcase is proved by the induction hypothesis. $\hfill\Box$\begin{coqdoccode}
+ \coqdocemptyline
 \end{coqdoccode}
 As a corollary, one can join the lemmas \coqdocvar{aeq\_m\_subst\_in} and \coqdocvar{aeq\_m\_subst\_out} as follows:
 \begin{coqdoccode}
