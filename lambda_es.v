@@ -1746,29 +1746,82 @@ Qed.
 
 (** We finish this section with a lemma that express the expected behaviour of the metasubstitution in the sense that $\metasub{t}{x}{u}$ represents the result of the substitution for $u$ of all free occurrences of the variable $x$ in $t$. Therefore, if $x$ has no occurrences in $t$ then $fv(\metasub{t}{x}{u}) = fv(t)$. This is not the case for the explicit substitution, where $fv(\esub{t}{x}{u}) = (fv(t)\backslash \{x\})\cup fv(u)$ even if $x$ does not occur free in $t$.*)
 
-Lemma fv_nom_metasub: forall t u x, x `notin` (fv_nom t) ->  fv_nom ({x := u}t) [=] fv_nom t.
+Lemma fv_nom_notin_metasub: forall t u x, x `notin` (fv_nom t) ->  fv_nom ({x := u}t) [=] fv_nom t.
 Proof. 
-  induction t as  [y | y t1 | t1 t2 | t1 t2 y]. (** %\noindent {\bf Proof.}% The proof is by structural induction on [t].*)
+  induction t as  [y | t1 y | t1 t2 | t1 t2 y] using n_sexp_induction. (** %\noindent {\bf Proof.}% The proof is by structural induction on [t].*)
   - intros u x Hfv. simpl in *. apply notin_singleton_1 in Hfv. unfold m_subst. rewrite subst_rec_fun_equation. destruct (x == y).
     + subst. contradiction.
     + simpl. reflexivity. (** When [t] is a variable, say [y], then both sides of the (set) equality reduce to the set $\{y\}$, and we are done.*)
   - intros u x Hfv. (** If [t] has the form $\lambda_y.t_1$ then the current goal is [fv_nom ({x := u} n_abs y t1) [=] fv_nom (n_abs y t1)] and we proceed by comparing [x] and [y].*) case (x == y).
-    + intro Heq. subst. (** If [x = y] then the metasubstitution is erased by lemma [m_subst_abs_eq], and we are done.*) rewrite m_subst_abs_eq. simpl. reflexivity.
+    + intro Heq. subst. (** If [x = y] then the metasubstitution is erased by lemma [m_subst_abs_eq], and we are done.*) rewrite m_subst_abs_eq. reflexivity.
     + intro Hneq. (** If [x <> y] then we pick a fresh name [x0] that is not in the set $fv(u)\cup fv(\lambda_y.t_1) \cup \{x\}$, and propagate the metasubstitution inside the abstraction.*) unfold m_subst in *. rewrite subst_rec_fun_equation. destruct (x == y).
       * contradiction.
       * destruct (atom_fresh (union (fv_nom u) (union (fv_nom (n_abs y t1)) (singleton x)))). simpl in *. case (x0 == y). (**  The current goal is [fv_nom (n_abs x0 ({x := u}(swap y x0 t1))) [=] (fv_nom (n_abs y t1))]. We proceed comparing [x0] and [y].*)
-        ** intro Heq. subst. (** If [x0 = y] then we are done by induction hypothesis.*) rewrite swap_id. apply AtomSetProperties.Equal_remove. apply IHt1. apply notin_remove_1 in Hfv. destruct Hfv.
-           *** symmetry in H. contradiction.
-           *** assumption.
-        ** intro Hneq'. (** If [x0 <> y] then AQUI *) assert (Haeq: ({x := u}(swap y x0 t1)) =a (swap y x0 t1)). {apply m_subst_notin. apply fv_nom_remove_swap. - repeat apply notin_union_2 in n0. apply notin_singleton_1 in n0. assumption. - assumption. - apply notin_remove_1 in Hfv. destruct Hfv. + symmetry in H. contradiction. + assumption.}
-           apply aeq_fv_nom in Haeq. rewrite Haeq. 
-
-           apply AtomSetProperties.equal_trans with (remove x0 (fv_nom (swap y x0 t1))).
-           *** apply AtomSetProperties.Equal_remove. remove_fv_swap. apply notin_remove_1 in Hfv. destruct Hfv.
-           *** symmetry in H. contradiction.
-           *** apply (IHt u) in H. apply notin_union_2 in n0. apply notin_union_1 in n0. simpl in n0. apply notin_remove_1 in n0. destruct n0.
+        ** intro Heq. subst. (** If [x0 = y] then we are done by induction hypothesis.*) apply AtomSetProperties.Equal_remove. replace t1 with (swap y y t1) at 2.
+           *** apply H.
+               **** reflexivity.
+               **** rewrite swap_id. apply notin_remove_1 in Hfv. destruct Hfv.
+                    ***** symmetry in H0. contradiction.
+                    ***** assumption.
+           *** apply swap_id.
+        ** intro Hneq'. apply AtomSetProperties.equal_trans with (remove x0 (fv_nom (swap y x0 t1))). (** If [x0 <> y] then AQUI *) 
+           *** apply AtomSetProperties.Equal_remove. apply H.
+               **** reflexivity.
+               **** apply fv_nom_remove_swap.
+                    ***** repeat apply notin_union_2 in n0. apply notin_singleton_1 in n0. assumption.
+                    ***** assumption.
+                    ***** apply notin_remove_1 in Hfv. destruct Hfv.
+                    ****** symmetry in H0. contradiction.
+                    ****** assumption.
+           *** apply remove_fv_swap. apply notin_union_2 in n0. apply notin_union_1 in n0. apply notin_remove_1 in n0. destruct n0.
                **** symmetry in H0. contradiction.
-               **** apply (IHt u) in H0. Admitted.             
+               **** assumption.
+  - intros u x Hfv. simpl in *. unfold m_subst in *. rewrite subst_rec_fun_equation. simpl. rewrite IHt2.
+    + rewrite IHt1.
+      * reflexivity.
+      * apply notin_union_2 in Hfv. assumption.
+    + apply notin_union_1 in Hfv. assumption.
+  - intros u x Hfv. (** In the case of the explicit substitution the goal is [fv_nom ({x := u} ([y := t2] t1)) [=] fv_nom ([y := t2] t1)], and we proceed by comparing [x] and [y].*) case (x == y).
+    * intro Heq. subst. rewrite m_subst_sub_eq. simpl. rewrite IHt1.
+      ** reflexivity.
+      ** simpl in Hfv. apply notin_union_2 in Hfv. assumption.
+    * intro Hneq. unfold m_subst in *. rewrite subst_rec_fun_equation. destruct (x == y).
+      ** contradiction.
+      ** destruct (atom_fresh (union (fv_nom u) (union (fv_nom ([y := t2] t1)) (singleton x)))). simpl in *. rewrite H.
+         *** rewrite IHt1.
+             **** replace (remove x0 (fv_nom (swap y x0 t1))) with (remove y (fv_nom t1)).
+                  ***** reflexivity.
+                  ***** symmetry. case (x0 == y).
+                  ****** intro Heq. subst. rewrite swap_id. reflexivity.
+                  ****** intro Hneq'. apply Eq_implies_equality. apply remove_fv_swap. apply notin_union_2 in n0. apply notin_union_1 in n0. apply notin_union_1 in n0. apply notin_remove_1 in n0. destruct n0.
+                  ******* symmetry in H0. contradiction.
+                  ******* assumption.
+             **** apply notin_union_2 in Hfv. assumption.
+         *** reflexivity.
+         *** apply notin_union_1 in Hfv. apply notin_remove_1 in Hfv. destruct Hfv.
+             **** symmetry in H0. contradiction.
+             **** apply fv_nom_remove_swap.
+                  ***** repeat apply notin_union_2 in n0. apply notin_singleton_1 in n0. assumption.
+                  ***** assumption.
+                  ***** assumption.
+Qed.      
+
+Lemma fv_nom_in_metasub: forall t u x, x `in` (fv_nom t) ->  fv_nom ({x := u}t) [=] (union (remove x (fv_nom t)) (fv_nom u)).
+Proof.
+  induction t as  [y | t1 y | t1 t2 | t1 t2 y] using n_sexp_induction.
+  - intros u x Hfv. simpl in *. apply AtomSetImpl.singleton_1 in Hfv. subst. rewrite m_subst_var_eq. rewrite remove_singleton_empty. rewrite AtomSetProperties.empty_union_1.
+    + reflexivity.
+    + apply AtomSetImpl.empty_1.
+  - intros u x Hfv. simpl in *. apply AtomSetProperties.Dec.F.remove_iff in Hfv. destruct Hfv. unfold m_subst in *. rewrite subst_rec_fun_equation. destruct (x == y).
+    + symmetry in e. contradiction.
+    + destruct (atom_fresh (union (fv_nom u) (union (fv_nom (n_abs y t1)) (singleton x)))). simpl. rewrite H.
+      * apply AtomSetProperties.equal_trans with ?? (* aqui *)
+        ** rewrite remove_fv_swap.
+      *
+      *
+  -
+  -
+  Admitted.
 
 (** * The substitution lemma *)
 
