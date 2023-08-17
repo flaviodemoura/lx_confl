@@ -460,7 +460,6 @@ Note that this function is not structurally recursive due to the swaps in the re
 \coqdocemptyline
 \coqdocemptyline
 \coqdocemptyline
-\coqdocemptyline
 \end{coqdoccode}
 The following lemma states that if $x \notin fv(t)$ then $\metasub{t}{x}{u} =_\alpha t$. In informal proofs the conclusion of this lemma is usually stated as a syntactic equality, {\i.e.} $\metasub{t}{x}{u} = t$ instead of the $\alpha$-equivalence, but the function \coqdocvar{subst\_rec\_fun} renames bound variables whenever the metasubstitution is propagated inside an abstraction or an explicit substitution, even in the case that the metasubstitution has no effect in a subterm. That's why the syntactic equality does not hold here. 
 \begin{coqdoccode}
@@ -730,11 +729,15 @@ The first component follows the strategy used in the abstraction case. The curre
 \begin{coqdoccode}
 \coqdocemptyline
 \end{coqdoccode}
-The lemma \coqdocvar{swap\_subst\_rec\_fun} is essential to prove the following results: 
+The following lemma establishes the conditions for a more direct way of propagating a metasubstitution inside an abstraction when the binding variable and the variable of the metasubstitution are different:
 \begin{coqdoccode}
 \coqdocemptyline
 \coqdocnoindent
 \coqdockw{Lemma} \coqdocvar{m\_subst\_abs\_neq}: \coqdockw{\ensuremath{\forall}} \coqdocvar{t} \coqdocvar{u} \coqdocvar{x} \coqdocvar{y} \coqdocvar{z}, \coqdocvar{x} \ensuremath{\not=} \coqdocvar{y} \ensuremath{\rightarrow} \coqdocvar{z} `\coqdocvar{notin}` \coqdocvar{fv\_nom} \coqdocvar{u} `\coqdocvar{union}` \coqdocvar{fv\_nom} (\coqdocvar{n\_abs} \coqdocvar{y} \coqdocvar{t}) `\coqdocvar{union}` \{\{\coqdocvar{x}\}\} \ensuremath{\rightarrow} \{\coqdocvar{x} := \coqdocvar{u}\}(\coqdocvar{n\_abs} \coqdocvar{y} \coqdocvar{t}) =\coqdocvar{a} \coqdocvar{n\_abs} \coqdocvar{z} (\{\coqdocvar{x} := \coqdocvar{u}\}(\coqdocvar{swap} \coqdocvar{y} \coqdocvar{z} \coqdocvar{t})).\coqdoceol
+\coqdocemptyline
+\end{coqdoccode}
+The lemma \coqdocvar{m\_subst\_sub\_neq} that follows is the analogous version of the previous lemma for the case of the explicit substitution:
+\begin{coqdoccode}
 \coqdocemptyline
 \coqdocnoindent
 \coqdockw{Lemma} \coqdocvar{m\_subst\_sub\_neq} : \coqdockw{\ensuremath{\forall}} \coqdocvar{t1} \coqdocvar{t2} \coqdocvar{u} \coqdocvar{x} \coqdocvar{y} \coqdocvar{z}, \coqdocvar{x} \ensuremath{\not=} \coqdocvar{y} \ensuremath{\rightarrow} \coqdocvar{z} `\coqdocvar{notin}` \coqdocvar{fv\_nom} \coqdocvar{u} `\coqdocvar{union}` \coqdocvar{fv\_nom} ([\coqdocvar{y} := \coqdocvar{t2}]\coqdocvar{t1}) `\coqdocvar{union}` \{\{\coqdocvar{x}\}\} \ensuremath{\rightarrow} \{\coqdocvar{x} := \coqdocvar{u}\}([\coqdocvar{y} := \coqdocvar{t2}]\coqdocvar{t1}) =\coqdocvar{a} ([\coqdocvar{z} := (\{\coqdocvar{x} := \coqdocvar{u}\}\coqdocvar{t2})](\{\coqdocvar{x} := \coqdocvar{u}\}(\coqdocvar{swap} \coqdocvar{y} \coqdocvar{z} \coqdocvar{t1}))).\coqdoceol
@@ -743,6 +746,19 @@ The lemma \coqdocvar{swap\_subst\_rec\_fun} is essential to prove the following 
 In fact, the need of the lemma \coqdocvar{swap\_subst\_rec\_fun} in the proofs of the two previous lemmas is justified because when the $\alpha$-equation involves abstractions with different binders, or explicit substitutions with different binders, the rules \coqdocvar{aeq\_abs\_diff} and \coqdocvar{aeq\_sub\_diff} introduce swaps that are outside the metasubstitutions. 
 \begin{coqdoccode}
 \coqdocemptyline
+\coqdocemptyline
+\end{coqdoccode}
+We finish this section with a lemma that express the expected behaviour of the metasubstitution in the sense that $\metasub{t}{x}{u}$ represents the result of the substitution for $u$ of all free occurrences of the variable $x$ in $t$. Therefore, if $x$ has no occurrences in $t$ then $fv(\metasub{t}{x}{u}) = fv(t)$. This is not the case for the explicit substitution, where $fv(\esub{t}{x}{u}) = (fv(t)\backslash \{x\})\cup fv(u)$ even if $x$ does not occur free in $t$.
+\begin{coqdoccode}
+\coqdocemptyline
+\coqdocnoindent
+\coqdockw{Lemma} \coqdocvar{fv\_nom\_metasub}: \coqdockw{\ensuremath{\forall}} \coqdocvar{t} \coqdocvar{u} \coqdocvar{x}, \coqdocvar{x} `\coqdocvar{notin}` (\coqdocvar{fv\_nom} \coqdocvar{t}) \ensuremath{\rightarrow}  \coqdocvar{fv\_nom} (\{\coqdocvar{x} := \coqdocvar{u}\}\coqdocvar{t}) [=] \coqdocvar{fv\_nom} \coqdocvar{t}.\coqdoceol
+ \end{coqdoccode}
+\noindent {\bf Proof.} The proof is by structural induction on \coqdocvar{t}.
+\begin{coqdoccode}
+\end{coqdoccode}
+When \coqdocvar{t} is a variable, say \coqdocvar{y}, then both sides of the (set) equality reduce to $\{y\}$, and we are done.
+\begin{coqdoccode}
 \coqdocemptyline
 \end{coqdoccode}
 \section{The substitution lemma}

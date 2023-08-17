@@ -1111,15 +1111,13 @@ Proof.
   - unfold Symmetric. apply aeq_sym.
   - unfold Transitive. apply aeq_trans.
 Qed.
+(* end hide *)
+
 (* From now on aeq can be rewritten at root position
 
 Lemma aeq_test: forall a b c, a =a b -> b =a c -> a =a c.
 Proof.
   intros a b c H1 H2. rewrite H1. Before the above Instance, it was not possible.*)
-(* end hide *)
-
-  
-  
 
 (** The following lemma states that if $x \notin fv(t)$ then $\metasub{t}{x}{u} =_\alpha t$. In informal proofs the conclusion of this lemma is usually stated as a syntactic equality, %{\i.e.}% $\metasub{t}{x}{u} = t$ instead of the $\alpha$-equivalence, but the function [subst_rec_fun] renames bound variables whenever the metasubstitution is propagated inside an abstraction or an explicit substitution, even in the case that the metasubstitution has no effect in a subterm. That's why the syntactic equality does not hold here. *)
 
@@ -1660,7 +1658,7 @@ Proof.
                     ****** assumption.
 Qed.
 
-(** The lemma [swap_subst_rec_fun] is essential to prove the following results: *)
+(** The following lemma establishes the conditions for a more direct way of propagating a metasubstitution inside an abstraction when the binding variable and the variable of the metasubstitution are different:*)
 
 Lemma m_subst_abs_neq: forall t u x y z, x <> y -> z `notin` fv_nom u `union` fv_nom (n_abs y t) `union` {{x}} -> {x := u}(n_abs y t) =a n_abs z ({x := u}(swap y z t)).
 Proof.
@@ -1699,6 +1697,8 @@ Proof.
                     ***** apply notin_union_1 in n0. assumption.
            *** unfold vswap. repeat apply notin_union_2 in H2. apply notin_singleton_1 in H2. repeat apply notin_union_2 in n0. apply notin_singleton_1 in n0. default_simp.
 Qed.               
+
+(** The lemma [m_subst_sub_neq] that follows is the analogous version of the previous lemma for the case of the explicit substitution:*)
 
 Lemma m_subst_sub_neq : forall t1 t2 u x y z, x <> y -> z `notin` fv_nom u `union` fv_nom ([y := t2]t1) `union` {{x}} -> {x := u}([y := t2]t1) =a ([z := ({x := u}t2)]({x := u}(swap y z t1))).
 Proof.
@@ -1743,25 +1743,32 @@ Qed.
 (** In fact, the need of the lemma [swap_subst_rec_fun] in the proofs of the two previous lemmas is justified because when the $\alpha$-equation involves abstractions with different binders, or explicit substitutions with different binders, the rules [aeq_abs_diff] and [aeq_sub_diff] introduce swaps that are outside the metasubstitutions. *)
 
 (* This is the intended behaviour of the metasubstitution *)
-(* Lemma fv_nom_metasub: forall t u x,  x `notin` (fv_nom t) ->  fv_nom ({x := u}t) [=] fv_nom t.
+
+(** We finish this section with a lemma that express the expected behaviour of the metasubstitution in the sense that $\metasub{t}{x}{u}$ represents the result of the substitution for $u$ of all free occurrences of the variable $x$ in $t$. Therefore, if $x$ has no occurrences in $t$ then $fv(\metasub{t}{x}{u}) = fv(t)$. This is not the case for the explicit substitution, where $fv(\esub{t}{x}{u}) = (fv(t)\backslash \{x\})\cup fv(u)$ even if $x$ does not occur free in $t$.*)
+
+Lemma fv_nom_metasub: forall t u x, x `notin` (fv_nom t) ->  fv_nom ({x := u}t) [=] fv_nom t.
 Proof. 
-  induction t.
-  - intros u x' Hfv. simpl in *. apply notin_singleton_1 in Hfv. unfold m_subst. rewrite subst_rec_fun_equation. destruct (x' == x).
+  induction t as  [y | y t1 | t1 t2 | t1 t2 y]. (** %\noindent {\bf Proof.}% The proof is by structural induction on [t].*)
+  - intros u x Hfv. simpl in *. apply notin_singleton_1 in Hfv. unfold m_subst. rewrite subst_rec_fun_equation. destruct (x == y).
     + subst. contradiction.
-    + simpl. reflexivity.
-  - intros u x' Hfv. simpl in *. case (x' == x).
-    + intro Heq. subst. rewrite m_subst_abs_eq. simpl. reflexivity.
-    + intro Hneq. unfold m_subst in *. rewrite subst_rec_fun_equation. destruct (x' == x).
+    + simpl. reflexivity. (** When [t] is a variable, say [y], then both sides of the (set) equality reduce to the set $\{y\}$, and we are done.*)
+  - intros u x Hfv. (** If [t] has the form $\lambda_y.t_1$ then the current goal is [fv_nom ({x := u} n_abs y t1) [=] fv_nom (n_abs y t1)] and we proceed by comparing [x] and [y].*) case (x == y).
+    + intro Heq. subst. (** If [x = y] then the metasubstitution is erased by lemma [m_subst_abs_eq], and we are done.*) rewrite m_subst_abs_eq. simpl. reflexivity.
+    + intro Hneq. (** If [x <> y] then we pick a fresh name [x0] that is not in the set $fv(u)\cup fv(\lambda_y.t_1) \cup \{x\}$, and propagate the metasubstitution inside the abstraction.*) unfold m_subst in *. rewrite subst_rec_fun_equation. destruct (x == y).
       * contradiction.
-      * destruct (atom_fresh (union (fv_nom u) (union (fv_nom (n_abs x t)) (singleton x')))). simpl. case (x0 == x).
-        ** intro Heq. subst. apply AtomSetProperties.Equal_remove. rewrite swap_id. apply IHt. apply notin_remove_1 in Hfv. destruct Hfv.
+      * destruct (atom_fresh (union (fv_nom u) (union (fv_nom (n_abs y t1)) (singleton x)))). simpl in *. case (x0 == y). (**  The current goal is [fv_nom (n_abs x0 ({x := u}(swap y x0 t1))) [=] (fv_nom (n_abs y t1))]. We proceed comparing [x0] and [y].*)
+        ** intro Heq. subst. (** If [x0 = y] then we are done by induction hypothesis.*) rewrite swap_id. apply AtomSetProperties.Equal_remove. apply IHt1. apply notin_remove_1 in Hfv. destruct Hfv.
            *** symmetry in H. contradiction.
            *** assumption.
-        ** intro Hneq'. apply notin_remove_1 in Hfv. destruct Hfv.
+        ** intro Hneq'. (** If [x0 <> y] then AQUI *) assert (Haeq: ({x := u}(swap y x0 t1)) =a (swap y x0 t1)). {apply m_subst_notin. apply fv_nom_remove_swap. - repeat apply notin_union_2 in n0. apply notin_singleton_1 in n0. assumption. - assumption. - apply notin_remove_1 in Hfv. destruct Hfv. + symmetry in H. contradiction. + assumption.}
+           apply aeq_fv_nom in Haeq. rewrite Haeq. 
+
+           apply AtomSetProperties.equal_trans with (remove x0 (fv_nom (swap y x0 t1))).
+           *** apply AtomSetProperties.Equal_remove. remove_fv_swap. apply notin_remove_1 in Hfv. destruct Hfv.
            *** symmetry in H. contradiction.
            *** apply (IHt u) in H. apply notin_union_2 in n0. apply notin_union_1 in n0. simpl in n0. apply notin_remove_1 in n0. destruct n0.
                **** symmetry in H0. contradiction.
-               **** apply (IHt u) in H0. Admitted. *)             
+               **** apply (IHt u) in H0. Admitted.             
 
 (** * The substitution lemma *)
 
