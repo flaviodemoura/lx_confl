@@ -348,7 +348,20 @@ Lemma fv_nom_remove_swap: forall t x y y0, x <> y ->  x <> y0 -> x `notin` fv_no
   Proof.
     induction t; simpl in *; unfold vswap; default_simp.
 Qed.
-(* end hide *)
+
+Lemma fv_nom_in_swap: forall t x y y0, x <> y ->  x <> y0 -> x `in` fv_nom t -> x `in` fv_nom (swap y0 y t).
+Proof.
+  induction t.
+  - intros x' y y' H1 H2 Hfv. simpl in *. apply AtomSetImpl.singleton_1 in Hfv. subst. unfold vswap. default_simp.
+  - intros x' y y' H1 H2 Hfv. simpl in *. case (x == x').
+    + intro Heq. apply AtomSetNotin.D.F.remove_iff in Hfv. destruct Hfv. contradiction.
+    + intro Hneq.
+  - (* aqui *)
+  -
+    simpl in *; unfold vswap; default_simp.
+Qed.
+
+  (* end hide *)
 
 (** The standard proof strategy for the non trivial properties is induction on the structure of the terms. Nevertheless, the builtin induction principle automatically generated for the inductive definition [n_sexp] is not strong enough due to swappings. In fact, in general, the induction hypothesis in the abstraction case, for instance, refer to the body of the abstraction, while the goal involves a swap acting on the body of the abstraction. In order to circunvet this problem, we use an induction principle based on the size of terms: *)
 
@@ -1815,10 +1828,19 @@ Proof.
   - intros u x Hfv. simpl in *. apply AtomSetProperties.Dec.F.remove_iff in Hfv. destruct Hfv. unfold m_subst in *. rewrite subst_rec_fun_equation. destruct (x == y).
     + symmetry in e. contradiction.
     + destruct (atom_fresh (union (fv_nom u) (union (fv_nom (n_abs y t1)) (singleton x)))). simpl. rewrite H.
-      * apply AtomSetProperties.equal_trans with ?? (* aqui *)
-        ** rewrite remove_fv_swap.
-      *
-      *
+      * rewrite remove_union_distrib. replace (remove x0 (fv_nom u)) with (fv_nom u).
+        ** rewrite remove_symmetric. case (x0 == y).
+           *** intro Heq. subst. rewrite swap_id. reflexivity.
+           *** intro Hneq. rewrite remove_fv_swap.
+               **** reflexivity.
+               **** apply notin_union_2 in n0. apply notin_union_1 in n0. simpl in n0. apply notin_remove_1 in n0. destruct n0.
+                    ***** symmetry in H2. contradiction.
+                    ***** assumption.
+        ** apply Eq_implies_equality. rewrite AtomSetProperties.remove_equal.
+           *** reflexivity.
+           *** apply notin_union_1 in n0. assumption.
+      * reflexivity.
+      * repeat apply notin_union_2 in n0. apply notin_singleton_1 in n0. apply 
   -
   -
   Admitted.
