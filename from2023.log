@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.22 (TeX Live 2022/dev/Debian) (preloaded format=pdflatex 2023.7.20)  6 AUG 2023 21:59
+This is pdfTeX, Version 3.141592653-2.6-1.40.22 (TeX Live 2022/dev/Debian) (preloaded format=pdflatex 2023.7.20)  21 AUG 2023 20:24
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -598,39 +598,28 @@ File: l3backend-pdftex.def 2022-01-12 L3 backend support: PDF output (pdfTeX)
 \l__color_backend_stack_int=\count300
 \l__pdf_internal_box=\box70
 )
-(./from2023.aux
-
-! LaTeX Error: Missing \begin{document}.
-
-See the LaTeX manual or LaTeX Companion for explanation.
-Type  H <return>  for immediate help.
- ...                                              
-                                                  
-l.20 c
-      itation{barendregtLambdaCalculusIts1984}
-? 
-)
+(./from2023.aux)
 \openout1 = `from2023.aux'.
 
-LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 40.
-LaTeX Font Info:    ... okay on input line 40.
-LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 40.
-LaTeX Font Info:    ... okay on input line 40.
-LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 40.
-LaTeX Font Info:    ... okay on input line 40.
-LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 40.
-LaTeX Font Info:    ... okay on input line 40.
-LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 40.
-LaTeX Font Info:    ... okay on input line 40.
-LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 40.
-LaTeX Font Info:    ... okay on input line 40.
-LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 40.
-LaTeX Font Info:    ... okay on input line 40.
-LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 40.
-LaTeX Font Info:    ... okay on input line 40.
-LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 40.
-LaTeX Font Info:    ... okay on input line 40.
-Package hyperref Info: Link coloring ON on input line 40.
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 39.
+LaTeX Font Info:    ... okay on input line 39.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 39.
+LaTeX Font Info:    ... okay on input line 39.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 39.
+LaTeX Font Info:    ... okay on input line 39.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 39.
+LaTeX Font Info:    ... okay on input line 39.
+LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 39.
+LaTeX Font Info:    ... okay on input line 39.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 39.
+LaTeX Font Info:    ... okay on input line 39.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 39.
+LaTeX Font Info:    ... okay on input line 39.
+LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 39.
+LaTeX Font Info:    ... okay on input line 39.
+LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 39.
+LaTeX Font Info:    ... okay on input line 39.
+Package hyperref Info: Link coloring ON on input line 39.
  (/usr/share/texlive/texmf-dist/tex/latex/hyperref/nameref.sty
 Package: nameref 2021-04-02 v2.47 Cross-referencing by name of section
 
@@ -642,30 +631,11 @@ Package: gettitlestring 2019/12/15 v1.6 Cleanup title references (HO)
 )
 \c@section@level=\count301
 )
-LaTeX Info: Redefining \ref on input line 40.
-LaTeX Info: Redefining \pageref on input line 40.
-LaTeX Info: Redefining \nameref on input line 40.
+LaTeX Info: Redefining \ref on input line 39.
+LaTeX Info: Redefining \pageref on input line 39.
+LaTeX Info: Redefining \nameref on input line 39.
 
-(./from2023.out
-Overfull \hbox (1.61224pt too wide) in paragraph at lines 20--1
-[]\T1/ptm/m/n/10.95 citationbarendregtLambdaCalculusIts1984 ci-ta-tionfmm2021 c
-i-ta-tion-nakazawa-Com-po-si-tion-al-Con-flu-
- []
-
-
-Overfull \hbox (2.26329pt too wide) in paragraph at lines 20--1
-\T1/ptm/m/n/10.95 en-ce-Proofs2016 ci-ta-tion-nakazawa-Call-by-value2017 ci-ta-
-tionkesner-Per-pet-u-al-i-ty-Full-Safe2008 bib-styleeptcs
- []
-
-
-Overfull \hbox (39.45265pt too wide) in paragraph at lines 20--1
-\T1/ptm/m/n/10.95 bib-data-zotLib newla-bel-Last-Page1page.1 gdef @ab-spage@las
-t1                                                                             
-                             
- []
-
-) (./from2023.out)
+(./from2023.out) (./from2023.out)
 \@outlinefile=\write4
 \openout4 = `from2023.out'.
 
@@ -692,835 +662,305 @@ Package epstopdf-base Info: Redefining graphics rule for `.eps' on input line 4
 File: epstopdf-sys.cfg 2010/07/13 v1.3 Configuration of (r)epstopdf for TeX Liv
 e
 ))
-! Undefined control sequence.
-l.51 \DeclareOptionX
-                    {bacharelado}{%
-? 
-! Undefined control sequence.
-l.61 \DeclareOptionX
-                    {impressao}{\@ForScreenViewfalse\@LoadHyperreffalse}
-? 
-! Use of \@ doesn't match its definition.
-l.61 \DeclareOptionX{impressao}{\@F
-                                   orScreenViewfalse\@LoadHyperreffalse}
-? 
-! Use of \@ doesn't match its definition.
-l.61 ...OptionX{impressao}{\@ForScreenViewfalse\@L
-                                                  oadHyperreffalse}
-? 
-! Undefined control sequence.
-l.62 \DeclareOptionX
-                    {hyperref}[load]{\@ForScreenViewtrue%
-? 
-! Use of \@ doesn't match its definition.
-l.62 \DeclareOptionX{hyperref}[load]{\@F
-                                        orScreenViewtrue%
-? 
-! Illegal parameter number in definition of \@.
-<to be read again> 
-                   1
-l.63 	\def\@tempa{#1
-                    }\def\@tempb{load}\def\@tempc{config}%
-? 
-
-! Illegal parameter number in definition of  .
-<to be read again> 
-                   1
-l.70 ...s: hyperref,hyperref=load,hyperref=config}
-                                                  
-? 
-! Class UnB-CIC Error: Valor invalido para opcao hyperref: ##1.
-
-See the UnB-CIC class documentation for explanation.
-Type  H <return>  for immediate help.
- ...                                              
-                                                  
-l.70 ...s: hyperref,hyperref=load,hyperref=config}
-                                                  
-? 
-
-Overfull \hbox (62.01219pt too wide) in paragraph at lines 59--74
-[]\T1/ptm/m/n/10.95 @ForScreenView @Load-Hy-per-ref im-pres-saoorScreen-View-fa
-lseoad-Hy-per-ref-false hy-per-ref[load]orScreenViewtrue
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 59--74
-
- []
-
-! Undefined control sequence.
-l.77 \DeclareOptionX
-                    {10pt}{\gdef\@fontsize{10pt}}
-? 
-! Undefined control sequence.
-l.78 \DeclareOptionX
-                    {11pt}{\gdef\@fontsize{11pt}}
-? 
-! Undefined control sequence.
-l.79 \DeclareOptionX
-                    {12pt}{\gdef\@fontsize{12pt}}
-? 
-! Undefined control sequence.
-l.82 \DeclareOptionX
-                    {prestyle}{\gdef\style@pretextual{#1}}
-? 
-! Illegal parameter number in definition of \style.
-<to be read again> 
-                   1
-l.82 ...ptionX{prestyle}{\gdef\style@pretextual{#1
-                                                  }}
-? 
-! Undefined control sequence.
-l.83 \DeclareOptionX
-                    {textstyle}{\gdef\style@textual{#1}}
-? 
-! Illegal parameter number in definition of \style.
-<to be read again> 
-                   1
-l.83 ...eOptionX{textstyle}{\gdef\style@textual{#1
-                                                  }}
-? 
-! Undefined control sequence.
-l.84 \DeclareOptionX
-                    {chapstyle}{\gdef\style@chapter{#1}}
-? 
-! Illegal parameter number in definition of \style.
-<to be read again> 
-                   1
-l.84 ...eOptionX{chapstyle}{\gdef\style@chapter{#1
-                                                  }}
-? 
-! Undefined control sequence.
-l.88 \DeclareOptionX
-                    {draft}{\@draftthesistrue}
-? 
-! Use of \@ doesn't match its definition.
-l.88 \DeclareOptionX{draft}{\@d
-                               raftthesistrue}
-? 
-! Undefined control sequence.
-l.95 \DeclareOptionX
-                    *{\PassOptionsToClass{\CurrentOption}{report}}
-? 
-
-! LaTeX Error: Can be used only in preamble.
-
-See the LaTeX manual or LaTeX Companion for explanation.
-Type  H <return>  for immediate help.
- ...                                              
-                                                  
-l.95 \DeclareOptionX*{\PassOptionsToClass
-                                         {\CurrentOption}{report}}
-? 
-! Undefined control sequence.
-l.98 \ExecuteOptionsX
-                     {onehalfspacing,hyperref,prestyle=plain,textstyle=plain...
-
-? 
-! Undefined control sequence.
-l.99 \ProcessOptionsX
-                     \relax
-? 
-! Argument of reserved@f has an extra }.
-<inserted text> 
-                par 
-l.122 
-      
-? 
-Runaway argument?
-@nnil ifx external@font @empty @latex@error {Font expandafter string ETC.
-! Paragraph ended before reserved@f was complete.
-<to be read again> 
-                   par 
-l.122 
-      
-? 
-! Extra }, or forgotten endgroup.
-<recently read> }
-                 
-l.122 
-      
-? 
-! Extra }, or forgotten endgroup.
-@outputpage ...lcolor hb@xt@ textwidth {@thehead }
-                                                  color@endbox }dp @tempboxa...
-l.122 
-      
-? 
-! Missing \endgroup inserted.
-<inserted text> 
-                \endgroup 
-l.122 
-      
-? 
-! Missing } inserted.
-<inserted text> 
-                }
-l.122 
-      
-? 
-
-Overfull \vbox (673.43399pt too high) has occurred while \output is active []
-
-
-[2]
-! Argument of reserved@f has an extra }.
-<inserted text> 
-                par 
-l.122 
-      
-? 
-Runaway argument?
-@nnil ifx external@font @empty @latex@error {Font expandafter string ETC.
-! Paragraph ended before reserved@f was complete.
-<to be read again> 
-                   par 
-l.122 
-      
-? 
-! Extra }, or forgotten endgroup.
-<recently read> }
-                 
-l.122 
-      
-? 
-! Argument of reserved@f has an extra }.
-<inserted text> 
-                par 
-l.122 
-      
-? 
-Runaway argument?
-@nnil ifx external@font @empty @latex@error {Font expandafter string ETC.
-! Paragraph ended before reserved@f was complete.
-<to be read again> 
-                   par 
-l.122 
-      
-? 
-! Extra }, or forgotten endgroup.
-<recently read> }
-                 
-l.122 
-      
-? 
-
-! LaTeX Error: Something's wrong--perhaps a missing \item.
-
-See the LaTeX manual or LaTeX Companion for explanation.
-Type  H <return>  for immediate help.
- ...                                              
-                                                  
-l.122 
-      
-? 
-
-! LaTeX Error: Something's wrong--perhaps a missing \item.
-
-See the LaTeX manual or LaTeX Companion for explanation.
-Type  H <return>  for immediate help.
- ...                                              
-                                                  
-l.122 
-      
-? 
-
-! LaTeX Error: Something's wrong--perhaps a missing \item.
-
-See the LaTeX manual or LaTeX Companion for explanation.
-Type  H <return>  for immediate help.
- ...                                              
-                                                  
-l.122 
-      
-? 
-Runaway argument?
-@nnil ifx external@font @empty @latex@error {Font expandafter string ETC.
-! Paragraph ended before reserved@f was complete.
-<to be read again> 
-                   par 
-l.122 
-      
-? 
-! Extra }, or forgotten endgroup.
-@maketitle ... thanks {LARGE bfseries @title par }
-                                                  vskip 2em{large lineskip ....
-l.122 
-      
-? 
-! Missing endgroup inserted.
-<inserted text> 
-                endgroup 
-l.122 
-      
-? 
-! Missing } inserted.
-<inserted text> 
-                }
-l.122 
-      
-? 
-! Missing \endgroup inserted.
-<inserted text> 
-                \endgroup 
-l.122 
-      
-? 
-! Missing \endgroup inserted.
-<inserted text> 
-                \endgroup 
-l.122 
-      
-? 
-! Missing } inserted.
-<inserted text> 
-                }
-l.122 
-      
-? 
-! Missing \endgroup inserted.
-<inserted text> 
-                \endgroup 
-l.122 
-      
-? 
-! Missing \endgroup inserted.
-<inserted text> 
-                \endgroup 
-l.122 
-      
-? 
-! Missing } inserted.
-<inserted text> 
-                }
-l.122 
-      
-? 
-Runaway argument?
-@nnil ifx external@font @empty @latex@error {Font expandafter string ETC.
-! Paragraph ended before reserved@f was complete.
-<to be read again> 
-                   par 
-l.122 
-      
-? 
-! Extra }, or forgotten endgroup.
-@maketitle ...lar}[t]{c}@author end {tabular}par }
-                                                  vskip 1emend {center}par m...
-l.122 
-      
-? 
-
-! LaTeX Error: Something's wrong--perhaps a missing item.
-
-See the LaTeX manual or LaTeX Companion for explanation.
-Type  H <return>  for immediate help.
- ...                                              
-                                                  
-l.122 
-      
-? 
-
-! LaTeX Error: begin{document} ended by end{center}.
-
-See the LaTeX manual or LaTeX Companion for explanation.
-Type  H <return>  for immediate help.
- ...                                              
-                                                  
-l.122 
-      
-? 
-! Missing } inserted.
-<inserted text> 
-                }
-l.122 
-      
-? 
-Runaway argument?
-@nnil ifx external@font @empty @latex@error {Font expandafter string ETC.
-! Paragraph ended before reserved@f was complete.
-<to be read again> 
-                   par 
-l.126 
-      
-? 
-(./lambda_es.tex
-Runaway argument?
-@nnil ifx external@font @empty @latex@error {Font expandafter string ETC.
-! Paragraph ended before reserved@f was complete.
-<to be read again> 
-                   par 
-l.5 
-    
-? 
-! Argument of reserved@f has an extra }.
-<inserted text> 
-                par 
-l.8 ...lemma\cite{barendregtLambdaCalculusIts1984}
-                                                   in a general framework th...
-
-? 
-Runaway argument?
-@nnil ifx external@font @empty @latex@error {Font expandafter string ETC.
-! Paragraph ended before reserved@f was complete.
-<to be read again> 
-                   par 
-l.8 ...lemma\cite{barendregtLambdaCalculusIts1984}
-                                                   in a general framework th...
-
-? 
-! Extra }, or forgotten endgroup.
-<recently read> }
-                 
-l.8 ...lemma\cite{barendregtLambdaCalculusIts1984}
-                                                   in a general framework th...
-
-? 
-
-LaTeX Warning: Citation `barendregtLambdaCalculusIts1984' on page 2 undefined o
-n input line 8.
-
-! Extra }, or forgotten endgroup.
-@cite #1#2->[{#1if@tempswa , #2fi }
-                                   ]
-l.8 ...lemma\cite{barendregtLambdaCalculusIts1984}
-                                                   in a general framework th...
-
-? 
 LaTeX Font Info:    Trying to load font information for OT1+ztmcm on input line
- 8.
+ 41.
+
 (/usr/share/texlive/texmf-dist/tex/latex/psnfss/ot1ztmcm.fd
 File: ot1ztmcm.fd 2000/01/03 Fontinst v1.801 font definitions for OT1/ztmcm.
 )
-! Font OT1/ztmcm/m/n/10= not loadable: Metric (TFM) file not found.
-<to be read again> 
-                   OT1/ztmcm/m/n/10 
-l.747 ...lemmas regarding [fv_nom], [swap] and [<>
-                                                  ] in a trivial manner.*$
-? 
-! Missing endgroup inserted.
-<inserted text> 
-                endgroup 
-l.747 ...lemmas regarding [fv_nom], [swap] and [<>
-                                                  ] in a trivial manner.*$
-? 
-! Missing endgroup inserted.
-<inserted text> 
-                endgroup 
-l.747 ...lemmas regarding [fv_nom], [swap] and [<>
-                                                  ] in a trivial manner.*$
-? 
-! Math formula deleted: Insufficient symbol fonts.
-<recently read> $
-                 
-l.747 ...lemmas regarding [fv_nom], [swap] and [<>
-                                                  ] in a trivial manner.*$
-? 
-! Missing number, treated as zero.
-<to be read again> 
-                   advance 
-l.747 ...lemmas regarding [fv_nom], [swap] and [<>
-                                                  ] in a trivial manner.*$
-? 
-! Illegal unit of measure (pt inserted).
-<to be read again> 
-                   advance 
-l.747 ...lemmas regarding [fv_nom], [swap] and [<>
-                                                  ] in a trivial manner.*$
-? 
-! Argument of reserved@f has an extra }.
-<inserted text> 
-                par 
-l.747 ...lemmas regarding [fv_nom], [swap] and [<>
-                                                  ] in a trivial manner.*$
-? 
-Runaway argument?
-@nnil ifx external@font @empty @latex@error {Font expandafter string ETC.
-! Paragraph ended before reserved@f was complete.
-<to be read again> 
-                   par 
-l.747 ...lemmas regarding [fv_nom], [swap] and [<>
-                                                  ] in a trivial manner.*$
-? 
-! Extra }, or forgotten endgroup.
-<recently read> }
-                 
-l.747 ...lemmas regarding [fv_nom], [swap] and [<>
-                                                  ] in a trivial manner.*$
-? 
-! Extra else.
-tryif@simple ...empdimc def best@size {#1}fi else 
-                                                  ifx external@font @empty i...
-l.747 ...lemmas regarding [fv_nom], [swap] and [<>
-                                                  ] in a trivial manner.*$
-? 
-Runaway argument?
-font@submax relax xdef font@submax {the @tempdimb }fi let f@user@size ETC.
-! Paragraph ended before reserved@f was complete.
-<to be read again> 
-                   par 
-l.799 
-      
-? 
+LaTeX Font Info:    Trying to load font information for OML+ztmcm on input line
+ 41.
 
-! LaTeX Error: Something's wrong--perhaps a missing item.
-
-See the LaTeX manual or LaTeX Companion for explanation.
-Type  H <return>  for immediate help.
- ...                                              
-                                                  
-l.800 \section
-              {Conclusion and Future work}
-? 
-
-! LaTeX Error: Something's wrong--perhaps a missing item.
-
-See the LaTeX manual or LaTeX Companion for explanation.
-Type  H <return>  for immediate help.
- ...                                              
-                                                  
-l.800 \section
-              {Conclusion and Future work}
-? 
-Runaway argument?
-@nnil ifx external@font @empty @latex@error {Font expandafter string ETC.
-! Paragraph ended before reserved@f was complete.
-<to be read again> 
-                   par 
-l.801 
-      
-? 
-Runaway argument?
-@nnil ifx external@font @empty @latex@error {Font expandafter string ETC.
-! Paragraph ended before reserved@f was complete.
-<to be read again> 
-                   par 
-l.805 
-      
-? 
-
-! LaTeX Error: Command $ invalid in math mode.
-
-See the LaTeX manual or LaTeX Companion for explanation.
-Type  H <return>  for immediate help.
- ...                                              
-                                                  
-l.807 ...laviodemoura/lx_confl/tree/m_subst_lemma}
-                                                  .
-? 
-
-! LaTeX Error: Command ttfamily invalid in math mode.
-
-See the LaTeX manual or LaTeX Companion for explanation.
-Type  H <return>  for immediate help.
- ...                                              
-                                                  
-l.807 ...laviodemoura/lx_confl/tree/m_subst_lemma}
-                                                  .
-? 
-! Argument of reserved@f has an extra }.
-<inserted text> 
-                par 
-l.807 ...laviodemoura/lx_confl/tree/m_subst_lemma}
-                                                  .
-? 
-Runaway argument?
-@nnil ifx external@font @empty @latex@error {Font expandafter string ETC.
-! Paragraph ended before reserved@f was complete.
-<to be read again> 
-                   par 
-l.807 ...laviodemoura/lx_confl/tree/m_subst_lemma}
-                                                  .
-? 
-! Extra }, or forgotten endgroup.
-<recently read> }
-                 
-l.807 ...laviodemoura/lx_confl/tree/m_subst_lemma}
-                                                  .
-? 
-! Missing } inserted.
-<inserted text> 
-                }
-l.807 ...laviodemoura/lx_confl/tree/m_subst_lemma}
-                                                  .
-? 
-! Argument of reserved@f has an extra }.
-<inserted text> 
-                par 
-l.810 ... related to the Z property \cite{fmm2021}
-                                                   to prove properties of ca...
-
-? 
-Runaway argument?
-@nnil ifx external@font @empty @latex@error {Font expandafter string ETC.
-! Paragraph ended before reserved@f was complete.
-<to be read again> 
-                   par 
-l.810 ... related to the Z property \cite{fmm2021}
-                                                   to prove properties of ca...
-
-? 
-! Extra }, or forgotten endgroup.
-<recently read> }
-                 
-l.810 ... related to the Z property \cite{fmm2021}
-                                                   to prove properties of ca...
-
-? 
-
-LaTeX Warning: Citation `fmm2021' on page 2 undefined on input line 810.
-
-! Extra }, or forgotten endgroup.
-@cite #1#2->[{#1if@tempswa , #2fi }
-                                   ]
-l.810 ... related to the Z property \cite{fmm2021}
-                                                   to prove properties of ca...
-
-? 
-! Argument of reserved@f has an extra }.
-<inserted text> 
-                par 
-l.810 ...value2017,kesnerPerpetualityFullSafe2008}
-                                                  .
-? 
-Runaway argument?
-@nnil ifx external@font @empty @latex@error {Font expandafter string ETC.
-! Paragraph ended before reserved@f was complete.
-<to be read again> 
-                   par 
-l.810 ...value2017,kesnerPerpetualityFullSafe2008}
-                                                  .
-? 
-! Extra }, or forgotten endgroup.
-<recently read> }
-                 
-l.810 ...value2017,kesnerPerpetualityFullSafe2008}
-                                                  .
-? 
-
-LaTeX Warning: Citation `nakazawaCompositionalConfluenceProofs2016' on page 2 u
-ndefined on input line 810.
-
-! Argument of reserved@f has an extra }.
-<inserted text> 
-                par 
-l.810 ...value2017,kesnerPerpetualityFullSafe2008}
-                                                  .
-? 
-Runaway argument?
-@nnil ifx external@font @empty @latex@error {Font expandafter string ETC.
-! Paragraph ended before reserved@f was complete.
-<to be read again> 
-                   par 
-l.810 ...value2017,kesnerPerpetualityFullSafe2008}
-                                                  .
-? 
-! Extra }, or forgotten endgroup.
-<recently read> }
-                 
-l.810 ...value2017,kesnerPerpetualityFullSafe2008}
-                                                  .
-? 
-
-LaTeX Warning: Citation `nakazawaCallbyvalue2017' on page 2 undefined on input 
-line 810.
-
-! Argument of reserved@f has an extra }.
-<inserted text> 
-                par 
-l.810 ...value2017,kesnerPerpetualityFullSafe2008}
-                                                  .
-? 
-Runaway argument?
-@nnil ifx external@font @empty @latex@error {Font expandafter string ETC.
-! Paragraph ended before reserved@f was complete.
-<to be read again> 
-                   par 
-l.810 ...value2017,kesnerPerpetualityFullSafe2008}
-                                                  .
-? 
-! Extra }, or forgotten endgroup.
-<recently read> }
-                 
-l.810 ...value2017,kesnerPerpetualityFullSafe2008}
-                                                  .
-? 
-
-LaTeX Warning: Citation `kesnerPerpetualityFullSafe2008' on page 2 undefined on
- input line 810.
-
-! Extra }, or forgotten endgroup.
-@cite #1#2->[{#1if@tempswa , #2fi }
-                                   ]
-l.810 ...value2017,kesnerPerpetualityFullSafe2008}
-                                                  .
-? 
+(/usr/share/texlive/texmf-dist/tex/latex/psnfss/omlztmcm.fd
+File: omlztmcm.fd 2000/01/03 Fontinst v1.801 font definitions for OML/ztmcm.
 )
-LaTeX Font Info:    No file from2023.bbl. on input line 136.
+LaTeX Font Info:    Trying to load font information for OMS+ztmcm on input line
+ 41.
 
-! Improper prevdepth.
-newpage ...alse everypar {}fi par ifdim prevdepth 
-                                                  >z@ vskip -ifdim prevdepth...
-l.137 \end{document}
-                    
-? 
-! Missing endgroup inserted.
-<inserted text> 
-                endgroup 
-l.137 \end{document}
-                    
-? 
-! Missing } inserted.
-<inserted text> 
-                }
-l.137 \end{document}
-                    
-? 
-! Missing endgroup inserted.
-<inserted text> 
-                endgroup 
-l.137 \end{document}
-                    
-? 
-! Missing } inserted.
-<inserted text> 
-                }
-l.137 \end{document}
-                    
-? 
-! Missing endgroup inserted.
-<inserted text> 
-                endgroup 
-l.137 \end{document}
-                    
-? 
-! Missing } inserted.
-<inserted text> 
-                }
-l.137 \end{document}
-                    
-? 
-! Missing } inserted.
-<inserted text> 
-                }
-l.137 \end{document}
-                    
-? 
-! Missing endgroup inserted.
-<inserted text> 
-                endgroup 
-l.137 \end{document}
-                    
-? 
-! Missing } inserted.
-<inserted text> 
-                }
-l.137 \end{document}
-                    
-? 
-! Missing $ inserted.
-<inserted text> 
-                $
-l.137 \end{document}
-                    
-? 
-! Missing } inserted.
-<inserted text> 
-                }
-l.137 \end{document}
-                    
-? 
-! Missing endgroup inserted.
-<inserted text> 
-                endgroup 
-l.137 \end{document}
-                    
-? 
-! Missing endgroup inserted.
-<inserted text> 
-                endgroup 
-l.137 \end{document}
-                    
-? 
-! Missing endgroup inserted.
-<inserted text> 
-                endgroup 
-l.137 \end{document}
-                    
-? 
-! Math formula deleted: Insufficient symbol fonts.
-<recently read> $
-                 
-l.137 \end{document}
-                    
-? 
-! Missing endgroup inserted.
-<inserted text> 
-                endgroup 
-l.137 \end{document}
-                    
-? 
-! Missing endgroup inserted.
-<inserted text> 
-                endgroup 
-l.137 \end{document}
-                    
-? 
-! Missing endgroup inserted.
-<inserted text> 
-                endgroup 
-l.137 \end{document}
-                    
-? 
-! Missing } inserted.
-<inserted text> 
-                }
-l.137 \end{document}
-                    
-? 
+(/usr/share/texlive/texmf-dist/tex/latex/psnfss/omsztmcm.fd
+File: omsztmcm.fd 2000/01/03 Fontinst v1.801 font definitions for OMS/ztmcm.
+)
+LaTeX Font Info:    Trying to load font information for OMX+ztmcm on input line
+ 41.
 
-! LaTeX Error: Something's wrong--perhaps a missing item.
+(/usr/share/texlive/texmf-dist/tex/latex/psnfss/omxztmcm.fd
+File: omxztmcm.fd 2000/01/03 Fontinst v1.801 font definitions for OMX/ztmcm.
+)
+LaTeX Font Info:    Trying to load font information for OT1+ptm on input line 4
+1.
 
-See the LaTeX manual or LaTeX Companion for explanation.
-Type  H <return>  for immediate help.
- ...                                              
-                                                  
-l.137 \end{document}
-                    
-? 
+(/usr/share/texlive/texmf-dist/tex/latex/psnfss/ot1ptm.fd
+File: ot1ptm.fd 2001/06/04 font definitions for OT1/ptm.
+)
+LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <9> not available
+(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 41.
+LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <7> not available
+(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 41.
+LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <5> not available
+(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 41.
+LaTeX Font Info:    Trying to load font information for TS1+ptm on input line 4
+1.
 
-Overfull \hbox (526.90524pt too wide) has occurred while \output is active
-[]T1/ptm/m/n/10.95 In this work, we present a for-mal-iza-tion of the sub-sti-t
-u-tion lemma[[] 
+(/usr/share/texlive/texmf-dist/tex/latex/psnfss/ts1ptm.fd
+File: ts1ptm.fd 2001/06/04 font definitions for TS1/ptm.
+)
+LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <12> not available
+(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 41.
+LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <8> not available
+(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 41.
+LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <6> not available
+(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 41.
+LaTeX Font Info:    Trying to load font information for T1+cmtt on input line 4
+1.
+
+(/usr/share/texlive/texmf-dist/tex/latex/base/t1cmtt.fd
+File: t1cmtt.fd 2019/12/16 v2.5j Standard LaTeX font definitions
+)
+LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <10> not available
+(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 43.
+LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <7.4> not available
+(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 43.
+ (./lambda_es.tex
+
+LaTeX Warning: Citation `barendregtLambdaCalculusIts1984' on page 1 undefined o
+n input line 8.
+
+LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <10.95> not available
+(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 8.
+
+LaTeX Warning: Citation `teamCoqProofAssistant2021' on page 1 undefined on inpu
+t line 8.
+
+
+LaTeX Warning: Citation `berghoferHeadtoHeadComparisonBruijn2007' on page 1 und
+efined on input line 22.
+
+
+LaTeX Warning: Citation `kesnerPerpetualityFullSafe2008' on page 1 undefined on
+ input line 26.
+
+
+LaTeX Warning: Citation `nakazawaCompositionalConfluenceProofs2016' on page 1 u
+ndefined on input line 26.
+
+
+LaTeX Warning: Citation `nakazawaPropertyShufflingCalculus2023' on page 1 undef
+ined on input line 26.
+
+[1
+
+{/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map}]
+LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <14.4> not available
+(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 33.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `math shift' on input line 33.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `\lambda' on input line 33.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `math shift' on input line 33.
+
+
+LaTeX Warning: Citation `gabbayNewApproachAbstract1999' on page 2 undefined on 
+input line 37.
+
+[2]
+
+LaTeX Warning: Citation `melliesTypedLcalculiExplicit1995' on page 3 undefined 
+on input line 111.
+
+
+LaTeX Warning: Citation `guillaumeLambdaCalculusDoes2000' on page 3 undefined o
+n input line 111.
+
+
+LaTeX Warning: Citation `abadiExplicitSubstitutions1991' on page 3 undefined on
+ input line 114.
+
+
+LaTeX Warning: Citation `blooPreservationStrongNormalisation1995' on page 3 und
+efined on input line 114.
+
+
+LaTeX Warning: Citation `benaissaLambdaUpsilonCalculus1996' on page 3 undefined
+ on input line 114.
+
+
+LaTeX Warning: Citation `curienConfluencePropertiesWeak1996' on page 3 undefine
+d on input line 114.
+
+
+LaTeX Warning: Citation `munozConfluencePreservationStrong1996' on page 3 undef
+ined on input line 114.
+
+
+LaTeX Warning: Citation `kamareddineExtendingLambdaCalculusExplicit1997' on pag
+e 3 undefined on input line 114.
+
+
+LaTeX Warning: Citation `blooExplicitSubstitutionEdge1999' on page 3 undefined 
+on input line 114.
+
+
+LaTeX Warning: Citation `davidLambdacalculusExplicitWeakening2001' on page 3 un
+defined on input line 114.
+
+
+LaTeX Warning: Citation `kesnerTheoryExplicitSubstitutions2009' on page 3 undef
+ined on input line 114.
+
+[3] [4]
+Overfull \hbox (132.50179pt too wide) in paragraph at lines 259--285
+\T1/ptm/m/n/10.95 by hy-poth-e-sis, and we con-clude by lemma []\T1/ptm/m/it/10
+.95 swap[]neq[] \T1/ptm/m/n/10.95 \foot-note{\url{https://github.com/flaviodemo
+ura/lx[]confl/tree/m[]subst[]lemma}}.
  []
 
-pages=write5
+[5]
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `math shift' on input line 295.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `\alpha' on input line 295.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `math shift' on input line 295.
+
+[6]
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `math shift' on input line 399.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `\lambda' on input line 399.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `math shift' on input line 399.
+
+
+LaTeX Warning: Citation `barendregtLambdaCalculusIts1984' on page 7 undefined o
+n input line 403.
+
+[7]
+Underfull \hbox (badness 10000) in paragraph at lines 427--428
+
+ []
+
+
+Overfull \hbox (0.36993pt too wide) detected at line 439
+[][]\OMS/ztmcm/m/n/10.95 f\OML/ztmcm/m/it/10.95 x \OT1/ztmcm/m/n/10.95 := \OML/
+ztmcm/m/it/10.95 u\OMS/ztmcm/m/n/10.95 g\OML/ztmcm/m/it/10.95 t \OT1/ztmcm/m/n/
+10.95 = []
+ []
+
+[8]
+Underfull \hbox (badness 10000) in paragraph at lines 506--508
+
+ []
+
+[9]
+Underfull \hbox (badness 10000) in paragraph at lines 561--563
+
+ []
+
+[10] [11]
+! Extra }, or forgotten $.
+l.709 ...{t_{11}}{z}{t_{12}})\cup \{x\} \cup \{y]}
+                                                  $. The current goal is (\{...
+
+? 
+[12]
+
+LaTeX Warning: Citation `abadiExplicitSubstitutions1991' on page 13 undefined o
+n input line 723.
+
+
+LaTeX Warning: Citation `accattoliAbstractFactorizationTheorem2012' on page 13 
+undefined on input line 723.
+
+
+LaTeX Warning: Citation `ayala-rinconComparingCalculiExplicit2002' on page 13 u
+ndefined on input line 723.
+
+
+LaTeX Warning: Citation `ayala-rinconComparingImplementingCalculi2005' on page 
+13 undefined on input line 723.
+
+
+LaTeX Warning: Citation `bonelliPerpetualityNamedLambda2001' on page 13 undefin
+ed on input line 723.
+
+
+LaTeX Warning: Citation `fujitaChurchRosserTheoremCompositional2016' on page 13
+ undefined on input line 723.
+
+
+LaTeX Warning: Citation `fmm2021' on page 13 undefined on input line 729.
+
+
+LaTeX Warning: Citation `nakazawaCompositionalConfluenceProofs2016' on page 13 
+undefined on input line 729.
+
+
+LaTeX Warning: Citation `nakazawaCallbyvalue2017' on page 13 undefined on input
+ line 729.
+
+
+LaTeX Warning: Citation `kesnerPerpetualityFullSafe2008' on page 13 undefined o
+n input line 729.
+
+) (./from2023.bbl
+
+LaTeX Warning: Empty `thebibliography' environment on input line 13.
+
+) [13]
+\pages=\write5
 \openout5 = `from2023.pag'.
 
+ (./from2023.aux)
 
-! LaTeX Error: Something's wrong--perhaps a missing item.
+LaTeX Warning: There were undefined references.
 
-See the LaTeX manual or LaTeX Companion for explanation.
-Type  H <return>  for immediate help.
- ...                                              
-                                                  
-l.137 \end{document}
-                    
-? 
 
-! LaTeX Error: begin{list} on input line 123 ended by end{document}.
+LaTeX Warning: Label(s) may have changed. Rerun to get cross-references right.
 
-See the LaTeX manual or LaTeX Companion for explanation.
-Type  H <return>  for immediate help.
- ...                                              
-                                                  
-l.137 \end{document}
-                    
-? 
+Package rerunfilecheck Info: File `from2023.out' has not changed.
+(rerunfilecheck)             Checksum: 3189784E68963818E30739572A4ADFF4;1333.
+ ) 
+Here is how much of TeX's memory you used:
+ 20396 strings out of 480171
+ 374849 string characters out of 5894489
+ 651603 words of memory out of 5000000
+ 37919 multiletter control sequences out of 15000+600000
+ 556234 words of font info for 167 fonts, out of 8000000 for 9000
+ 59 hyphenation exceptions out of 8191
+ 99i,19n,104p,1523b,463s stack positions out of 5000i,500n,10000p,200000b,80000s
+{/usr/share/texlive/texmf-dist/fonts/enc/dvips/base/8r.enc} </home/maria/.tex
+live2021/texmf-var/fonts/pk/ljfour/jknappen/ec/ectt1095.600pk> </home/maria/.te
+xlive2021/texmf-var/fonts/pk/ljfour/jknappen/ec/ectt0900.600pk></usr/share/texl
+ive/texmf-dist/fonts/type1/public/amsfonts/cm/cmex10.pfb></usr/share/texlive/te
+xmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb></usr/share/texlive/texmf-di
+st/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/share/texlive/texmf-dist/font
+s/type1/public/amsfonts/cm/cmsy10.pfb></usr/share/texlive/texmf-dist/fonts/type
+1/public/amsfonts/symbols/msam10.pfb></usr/share/texlive/texmf-dist/fonts/type1
+/urw/symbol/usyr.pfb></usr/share/texlive/texmf-dist/fonts/type1/urw/times/utmb8
+a.pfb></usr/share/texlive/texmf-dist/fonts/type1/urw/times/utmr8a.pfb></usr/sha
+re/texlive/texmf-dist/fonts/type1/urw/times/utmr8a.pfb></usr/share/texlive/texm
+f-dist/fonts/type1/urw/times/utmri8a.pfb>
+Output written on from2023.pdf (13 pages, 194344 bytes).
+PDF statistics:
+ 277 PDF objects out of 1000 (max. 8388607)
+ 164 compressed objects within 2 object streams
+ 37 named destinations out of 1000 (max. 500000)
+ 69 words of extra memory for PDF output out of 10000 (max. 10000000)
 
-! LaTeX Error: Something's wrong--perhaps a missing item.
-
-See the LaTeX manual or LaTeX Companion for explanation.
-Type  H <return>  for immediate help.
- ...                                    

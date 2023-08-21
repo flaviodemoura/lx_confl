@@ -45,7 +45,7 @@ HASNATDYNLINK     := $(COQMF_HASNATDYNLINK)
 OCAMLWARN         := $(COQMF_WARN)
 
 makefile.conf: 
-	coq_makefile -o makefile lambda_es.v new.v teste.v teste1.v
+	coq_makefile -o makefile lambda_es.v
 
 # This file can be created by the user to hook into double colon rules or
 # add any other Makefile code he may need
