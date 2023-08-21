@@ -355,11 +355,11 @@ Proof.
   - intros x' y y' H1 H2 Hfv. simpl in *. apply AtomSetImpl.singleton_1 in Hfv. subst. unfold vswap. default_simp.
   - intros x' y y' H1 H2 Hfv. simpl in *. case (x == x').
     + intro Heq. apply AtomSetNotin.D.F.remove_iff in Hfv. destruct Hfv. contradiction.
-    + intro Hneq.
-  - (* aqui *)
+    + intro Hneq. Admitted.
+(*  - (* aqui *)
   -
     simpl in *; unfold vswap; default_simp.
-Qed.
+Qed. *)
 
   (* end hide *)
 
@@ -1347,20 +1347,53 @@ Proof.
            *** apply aeq_sym. unfold m_subst in H. apply aeq_trans with (swap (vswap y z' x0) x1 (subst_rec_fun (swap y z' (swap w x0 t1)) (swap y z' u) (vswap y z' x))). (** In the former case, we can apply the rule $\mbox{\it aeq}\_\mbox{\it abs}\_\mbox{\it same}$ and we get $\swap{y}{z}{(\metasub{(\swap{w}{w'}{t_1})}{x}{u})} =_\alpha \metasub{(\swap{w''}{\vswap{y}{z}{w}}{(\swap{y}{z}{t_1})})}{\vswap{y}{z}{x}}{\swap{y}{z}{u}}$ that can be proved by the induction hypothesis.*)
                **** apply aeq_swap. rewrite H.
                     ***** apply aeq_refl. Abort. (** When $w'' \neq \vswap{y}{z}{w'}$, the application of the rule $\mbox{\it aeq}\_\mbox{\it abs}\_\mbox{\it diff}$ generates the goal $\swap{w''}{\vswap{y}{z}{w'}}{\swap{y}{z}{(\metasub{\swap{w}{w'}{t_1}}{x}{u})}} =_\alpha \metasub{(\swap{w''}{\vswap{y}{z}{w}}{(\swap{y}{z}{t_1})})}{\vswap{y}{z}{x}}{\swap{y}{z}{u}}$. We can use the induction hypothesis to propagate the swap inside the metasubstitution, and then we get an $\alpha$-equality with metasubstitution as main operation on both sides, and whose correspondent components are $\alpha$-equivalent. In a more abstract way, we have to prove an $\alpha$-equality of the form $\metasub{t}{x}{u} =_\alpha \metasub{t'}{x}{u'}$, where $t =_\alpha t'$ and $u =_\alpha u'$. The problem is that we cannot rewrite $\alpha$-equalities inside metasubstitution unless we prove some special lemmas stating the compatibilities between them using the [Equations] library or something similar. Alternatively, if we decide to analise the metasubtitution componentwise, %{\it i.e.}% as stated in a lemma similar to [aeq_m_subst_in_trial], we get a circular proof problem because both [aeq_m_subst_in_trial] and [swap_m_subst] depend on each other to be proved. We will present a solution that do not use any additional library, but it adds the following axiom to the formalization:*)
-                  
-Axiom Eq_implies_equality: forall s s': atoms, s [=] s' -> s = s'.
 
+(* tests - to be erased 
+Instance set_eq_rewrite ((AtomSetImpl.Equal) ==> iff ==> flip impl) eq.
+                        
+Lemma Eq_implies_equality: forall s s': atoms, s [=] s' -> s = s'.
+Proof.
+  intros s s' H. rewrite H.
+ 
+Axiom Eq_implies_equality: forall s s': atoms, s [=] s' -> s = s'. *)
+
+Parameter a b: atom.
+Lemma test: (singleton a) [=] (singleton b) -> let (x,_) := atom_fresh (singleton a) in True.
+Proof.
+ intro H. Fail rewrite H.
+ 
+  
+(* Theorem axiom_inconsistency: False.
+Proof.
+  assert (H: (union (singleton a) (singleton b)) [=] (union (singleton b) (singleton a))). {rewrite AtomSetProperties.union_sym. reflexivity. } apply Eq_implies_equality in H. injection H. *)
+  
+  
 (** This axiom transform a set equality into a syntactic equality. This will allow us to rewrite sets of atoms in a more flexible way. To show how it works, we will start proving the lemma [aeq_m_subst_in] without the need of the lemma [swap_m_subst]:*)
+
+Instance aeq_eq_set: Proper (aeq ==> aeq ==> iff) (aeq).
+intros x y Haeq. split. Admitted.
+(*
+Instance Equiv_set: Equivalence AtomSetImpl.Equal.
+Proof.
+  split. Admitted.
+ *)
+
+
+
+
+
+
+
 
 Lemma aeq_m_subst_in: forall t u u' x, u =a u' -> ({x := u}t) =a ({x := u'}t).
 Proof.
   induction t as [y | t1 y | t1 t2 | t1 t2 y] using n_sexp_induction. (** %\noindent{\bf Proof.}% The proof is by induction on the size of the term [t].*)
-  - intros u u' x Haeq. pose proof Haeq as Hfv. unfold m_subst. rewrite subst_rec_fun_equation. destruct (x == y).
-    + subst. rewrite subst_rec_fun_equation. rewrite eq_dec_refl. assumption.
-    + rewrite subst_rec_fun_equation. destruct (x == y).
-      * contradiction.
-      * reflexivity. 
-  - intros u u' x Haeq. pose proof Haeq as Hfv. apply aeq_fv_nom in Hfv. apply Eq_implies_equality in Hfv. unfold m_subst in *. repeat rewrite subst_rec_fun_equation. rewrite Hfv. destruct (atom_fresh (union (fv_nom u') (union (fv_nom (n_abs y t1)) (singleton x)))). destruct (x == y). (** The interesting case is the abstraction. We have by hypothesis that $u =_\alpha u'$ therefore both $u$ and $u'$ have the same set of free variables by lemma [aeq_fv_nom]. With the axiom [Eq_implies_equality], we can replace the set $fv(u)$ by $fv(u')$, or vice-versa, in such a way that instead of generating two new names for the propagation of the metasusbstitutions inside the abstractions, we need just one new name and there is no more the case where the binders of the abstractions were different names. *)
+  - intros u u' x Haeq. pose proof Haeq as Hfv. unfold m_subst. repeat rewrite subst_rec_fun_equation. destruct (x == y).
+    + assumption.
+    + apply aeq_refl. 
+  - intros u u' x Haeq. unfold m_subst in *. repeat rewrite subst_rec_fun_equation. destruct (x == y).
+    + apply aeq_refl.
+    + pose proof Haeq as Hfv. apply aeq_fv_nom in Hfv. rewrite Haeq. destruct (atom_fresh (union (fv_nom u') (union (fv_nom (n_abs y t1)) (singleton x)))). destruct (atom_fresh (union (fv_nom u) (union (fv_nom (n_abs y t1)) (singleton x)))). rewrite Hfv in n1. (** The interesting case is the abstraction. We have by hypothesis that $u =_\alpha u'$ therefore both $u$ and $u'$ have the same set of free variables by lemma [aeq_fv_nom]. With the axiom [Eq_implies_equality], we can replace the set $fv(u)$ by $fv(u')$, or vice-versa, in such a way that instead of generating two new names for the propagation of the metasusbstitutions inside the abstractions, we need just one new name and there is no more the case where the binders of the abstractions were different names. *)
     * apply aeq_refl.
     * apply aeq_abs_same. apply H.
       ** reflexivity.
