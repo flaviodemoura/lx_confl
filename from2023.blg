@@ -2,76 +2,48 @@ This is BibTeX, Version 0.99d (TeX Live 2022/dev/Debian)
 Capacity: max_strings=200000, hash_size=200000, hash_prime=170003
 The top-level auxiliary file: from2023.aux
 The style file: eptcs.bst
-I couldn't open database file zotLib.bib
----line 62 of file from2023.aux
- : \bibdata{zotLib
- :                }
-I'm skipping whatever remains of this command
-I found no database files---while reading file from2023.aux
-Warning--I didn't find a database entry for "barendregtLambdaCalculusIts1984"
-Warning--I didn't find a database entry for "teamCoqProofAssistant2021"
-Warning--I didn't find a database entry for "berghoferHeadtoHeadComparisonBruijn2007"
-Warning--I didn't find a database entry for "kesnerPerpetualityFullSafe2008"
-Warning--I didn't find a database entry for "nakazawaCompositionalConfluenceProofs2016"
-Warning--I didn't find a database entry for "nakazawaPropertyShufflingCalculus2023"
-Warning--I didn't find a database entry for "gabbayNewApproachAbstract1999"
-Warning--I didn't find a database entry for "melliesTypedLcalculiExplicit1995"
-Warning--I didn't find a database entry for "guillaumeLambdaCalculusDoes2000"
-Warning--I didn't find a database entry for "abadiExplicitSubstitutions1991"
-Warning--I didn't find a database entry for "blooPreservationStrongNormalisation1995"
-Warning--I didn't find a database entry for "benaissaLambdaUpsilonCalculus1996"
-Warning--I didn't find a database entry for "curienConfluencePropertiesWeak1996"
-Warning--I didn't find a database entry for "munozConfluencePreservationStrong1996"
-Warning--I didn't find a database entry for "kamareddineExtendingLambdaCalculusExplicit1997"
-Warning--I didn't find a database entry for "blooExplicitSubstitutionEdge1999"
-Warning--I didn't find a database entry for "davidLambdacalculusExplicitWeakening2001"
-Warning--I didn't find a database entry for "kesnerTheoryExplicitSubstitutions2009"
-Warning--I didn't find a database entry for "accattoliAbstractFactorizationTheorem2012"
-Warning--I didn't find a database entry for "ayala-rinconComparingCalculiExplicit2002"
-Warning--I didn't find a database entry for "ayala-rinconComparingImplementingCalculi2005"
-Warning--I didn't find a database entry for "bonelliPerpetualityNamedLambda2001"
-Warning--I didn't find a database entry for "fujitaChurchRosserTheoremCompositional2016"
-Warning--I didn't find a database entry for "fmm2021"
-Warning--I didn't find a database entry for "nakazawaCallbyvalue2017"
-You've used 0 entries,
+Database file #1: zotLib.bib
+Warning--empty pages in fmm2021
+Warning--missing publisher in fujitaChurchRosserTheoremCompositional2016
+You've used 27 entries,
             2735 wiz_defined-function locations,
-            639 strings with 6781 characters,
-and the built_in function-call counts, 38 in all, are:
-= -- 0
-> -- 0
-< -- 0
-+ -- 0
-- -- 0
-* -- 2
-:= -- 7
-add.period$ -- 0
-call.type$ -- 0
-change.case$ -- 0
+            782 strings with 11392 characters,
+and the built_in function-call counts, 14403 in all, are:
+= -- 1066
+> -- 318
+< -- 21
++ -- 142
+- -- 105
+* -- 1665
+:= -- 1644
+add.period$ -- 53
+call.type$ -- 27
+change.case$ -- 122
 chr.to.int$ -- 0
-cite$ -- 0
-duplicate$ -- 0
-empty$ -- 1
-format.name$ -- 0
-if$ -- 1
+cite$ -- 56
+duplicate$ -- 1196
+empty$ -- 1257
+format.name$ -- 122
+if$ -- 2912
 int.to.chr$ -- 0
-int.to.str$ -- 0
-missing$ -- 0
-newline$ -- 13
-num.names$ -- 0
-pop$ -- 0
+int.to.str$ -- 27
+missing$ -- 251
+newline$ -- 147
+num.names$ -- 56
+pop$ -- 225
 preamble$ -- 1
-purify$ -- 0
+purify$ -- 106
 quote$ -- 0
-skip$ -- 1
+skip$ -- 446
 stack$ -- 0
-substring$ -- 0
-swap$ -- 0
-text.length$ -- 0
+substring$ -- 701
+swap$ -- 1142
+text.length$ -- 21
 text.prefix$ -- 0
 top$ -- 0
-type$ -- 0
-warning$ -- 0
-while$ -- 0
-width$ -- 0
-write$ -- 12
-(There were 2 error messages)
+type$ -- 131
+warning$ -- 2
+while$ -- 115
+width$ -- 29
+write$ -- 297
+(There were 2 warnings)

@@ -1,4 +1,4 @@
-\begin{thebibliography}{}
+\begin{thebibliography}{10}
 \providecommand{\bibitemdeclare}[2]{}
 \providecommand{\surnamestart}{}
 \providecommand{\surnameend}{}
@@ -9,5 +9,256 @@
 \providecommand{\doi}[1]{doi:\urlalt{https://doi.org/#1}{#1}}
 \providecommand{\eprint}[1]{arXiv:\urlalt{https://arxiv.org/abs/#1}{#1}}
 \providecommand{\bibinfo}[2]{#2}
+
+\bibitemdeclare{article}{abadiExplicitSubstitutions1991}
+\bibitem{abadiExplicitSubstitutions1991}
+\bibinfo{author}{M.~\surnamestart Abadi\surnameend},
+  \bibinfo{author}{L.~\surnamestart Cardelli\surnameend},
+  \bibinfo{author}{P.-L. \surnamestart Curien\surnameend} \&
+  \bibinfo{author}{J.-J. \surnamestart L{\'e}vy\surnameend}
+  (\bibinfo{year}{1991}): \emph{\bibinfo{title}{Explicit {{Substitutions}}}}.
+\newblock {\slshape \bibinfo{journal}{Journal of Functional Programming}}
+  \bibinfo{volume}{1}(\bibinfo{number}{4}), pp. \bibinfo{pages}{375--416}.
+
+\bibitemdeclare{inproceedings}{accattoliAbstractFactorizationTheorem2012}
+\bibitem{accattoliAbstractFactorizationTheorem2012}
+\bibinfo{author}{B.~\surnamestart Accattoli\surnameend} (\bibinfo{year}{2012}):
+  \emph{\bibinfo{title}{An {{Abstract Factorization Theorem}} for {{Explicit
+  Substitutions}}}}.
+\newblock In: {\slshape \bibinfo{booktitle}{{{RTA}}}}, pp.
+  \bibinfo{pages}{6--21}.
+
+\bibitemdeclare{inproceedings}{ayala-rinconComparingCalculiExplicit2002}
+\bibitem{ayala-rinconComparingCalculiExplicit2002}
+\bibinfo{author}{M.~\surnamestart {Ayala-Rinc{\'o}n}\surnameend},
+  \bibinfo{author}{F.C. \surnamestart {de Moura}\surnameend} \&
+  \bibinfo{author}{F.~\surnamestart Kamareddine\surnameend}
+  (\bibinfo{year}{2002}): \emph{\bibinfo{title}{Comparing {{Calculi}} of
+  {{Explicit Substitutions}} with {{Eta-reduction}}}}.
+\newblock In \bibinfo{editor}{R.J.G.B. \surnamestart {de Queiroz}\surnameend},
+  editor: {\slshape \bibinfo{booktitle}{Proceedings {{Ninth Workshop}} on
+  {{Logic}}, {{Language}}, {{Information}} and {{Computation}} ({{WoLLIC}}
+  2002)}}, {\slshape \bibinfo{series}{{{ENTCS}}}}~\bibinfo{volume}{67},
+  \bibinfo{publisher}{{Elsevier Science Publishers}}, pp.
+  \bibinfo{pages}{77--96}.
+
+\bibitemdeclare{article}{ayala-rinconComparingImplementingCalculi2005}
+\bibitem{ayala-rinconComparingImplementingCalculi2005}
+\bibinfo{author}{M.~\surnamestart {Ayala-Rinc{\'o}n}\surnameend},
+  \bibinfo{author}{F.~L.~C. \surnamestart de~Moura\surnameend} \&
+  \bibinfo{author}{F.~\surnamestart Kamareddine\surnameend}
+  (\bibinfo{year}{2005}): \emph{\bibinfo{title}{Comparing and {{Implementing
+  Calculi}} of {{Explicit Substitutions}} with {{Eta-Reduction}}}}.
+\newblock {\slshape \bibinfo{journal}{Annals of Pure and Applied Logic}}
+  \bibinfo{volume}{134}, pp. \bibinfo{pages}{5--41}.
+
+\bibitemdeclare{book}{barendregtLambdaCalculusIts1984}
+\bibitem{barendregtLambdaCalculusIts1984}
+\bibinfo{author}{H.~P. \surnamestart Barendregt\surnameend}
+  (\bibinfo{year}{1984}): \emph{\bibinfo{title}{The {{Lambda Calculus}} : {{Its
+  Syntax}} and {{Semantics}} (Revised Edition)}}.
+\newblock \bibinfo{publisher}{{North Holland}}.
+
+\bibitemdeclare{article}{benaissaLambdaUpsilonCalculus1996}
+\bibitem{benaissaLambdaUpsilonCalculus1996}
+\bibinfo{author}{Z.-el-A. \surnamestart Benaissa\surnameend},
+  \bibinfo{author}{D.~\surnamestart Briaud\surnameend},
+  \bibinfo{author}{P.~\surnamestart Lescanne\surnameend} \&
+  \bibinfo{author}{J.~\surnamestart {Rouyer-Degli}\surnameend}
+  (\bibinfo{year}{1996}): \emph{\bibinfo{title}{\$\textbackslash
+  lambda\textbackslash upsilon\$, a {{Calculus}} of {{Explicit Substitutions}}
+  Which {{Preserves Strong Normalization}}}}.
+\newblock {\slshape \bibinfo{journal}{JFP}}
+  \bibinfo{volume}{6}(\bibinfo{number}{5}), pp. \bibinfo{pages}{699--722}.
+
+\bibitemdeclare{article}{berghoferHeadtoHeadComparisonBruijn2007}
+\bibitem{berghoferHeadtoHeadComparisonBruijn2007}
+\bibinfo{author}{Stefan \surnamestart Berghofer\surnameend} \&
+  \bibinfo{author}{Christian \surnamestart Urban\surnameend}
+  (\bibinfo{year}{2007}): \emph{\bibinfo{title}{A {{Head-to-Head Comparison}}
+  of de {{Bruijn Indices}} and {{Names}}}}.
+\newblock {\slshape \bibinfo{journal}{Electronic Notes in Theoretical Computer
+  Science}} \bibinfo{volume}{174}(\bibinfo{number}{5}), pp.
+  \bibinfo{pages}{53--67}, \doi{10.1016/j.entcs.2007.01.018}.
+
+\bibitemdeclare{inproceedings}{blooPreservationStrongNormalisation1995}
+\bibitem{blooPreservationStrongNormalisation1995}
+\bibinfo{author}{R.~\surnamestart Bloo\surnameend} \&
+  \bibinfo{author}{K.~\surnamestart Rose\surnameend} (\bibinfo{year}{1995}):
+  \emph{\bibinfo{title}{Preservation of {{Strong Normalisation}} in {{Named
+  Lambda Calculi}} with {{Explicit Substitution}} and {{Garbage Collection}}}}.
+\newblock In: {\slshape \bibinfo{booktitle}{{{CSN-95}}: {{COMPUTER SCIENCE IN
+  THE NETHERLANDS}}}}, pp. \bibinfo{pages}{62--72}.
+
+\bibitemdeclare{article}{blooExplicitSubstitutionEdge1999}
+\bibitem{blooExplicitSubstitutionEdge1999}
+\bibinfo{author}{Roel \surnamestart Bloo\surnameend} \& \bibinfo{author}{Herman
+  \surnamestart Geuvers\surnameend} (\bibinfo{year}{1999}):
+  \emph{\bibinfo{title}{Explicit {{Substitution}}: On the {{Edge}} of {{Strong
+  Normalization}}}}.
+\newblock {\slshape \bibinfo{journal}{Theoretical Computer Science}}
+  \bibinfo{volume}{211}(\bibinfo{number}{1-2}), pp. \bibinfo{pages}{375--395},
+  \doi{10.1016/s0304-3975(97)00183-7}.
+
+\bibitemdeclare{article}{bonelliPerpetualityNamedLambda2001}
+\bibitem{bonelliPerpetualityNamedLambda2001}
+\bibinfo{author}{E.~\surnamestart Bonelli\surnameend} (\bibinfo{year}{2001}):
+  \emph{\bibinfo{title}{Perpetuality in a {{Named Lambda Calculus With Explicit
+  Substitutions}}}}.
+\newblock {\slshape \bibinfo{journal}{Mathematical Structures in Computer
+  Science}} \bibinfo{volume}{11}(\bibinfo{number}{1}), pp.
+  \bibinfo{pages}{47--90}, \doi{10.1017/s0960129500003248}.
+
+\bibitemdeclare{misc}{metalib}
+\bibitem{metalib}
+\bibinfo{author}{The Penn~PL \surnamestart Club\surnameend}:
+  \emph{\bibinfo{title}{Metalib}}.
+\newblock \urlprefix\url{https://github.com/plclub/metalib}.
+
+\bibitemdeclare{article}{curienConfluencePropertiesWeak1996}
+\bibitem{curienConfluencePropertiesWeak1996}
+\bibinfo{author}{Pierre-Louis \surnamestart Curien\surnameend},
+  \bibinfo{author}{Th{\'e}r{\`e}se \surnamestart Hardin\surnameend} \&
+  \bibinfo{author}{Jean-Jacques \surnamestart L{\'e}vy\surnameend}
+  (\bibinfo{year}{1996}): \emph{\bibinfo{title}{Confluence {{Properties}} of
+  {{Weak}} and {{Strong Calculi}} of {{Explicit Substitutions}}}}.
+\newblock {\slshape \bibinfo{journal}{Journal of the ACM}}
+  \bibinfo{volume}{43}(\bibinfo{number}{2}), pp. \bibinfo{pages}{362--397},
+  \doi{10.1145/226643.226675}.
+
+\bibitemdeclare{article}{davidLambdacalculusExplicitWeakening2001}
+\bibitem{davidLambdacalculusExplicitWeakening2001}
+\bibinfo{author}{R.~\surnamestart David\surnameend} \&
+  \bibinfo{author}{B.~\surnamestart Guillaume\surnameend}
+  (\bibinfo{year}{2001}): \emph{\bibinfo{title}{A Lambda-Calculus with Explicit
+  Weakening and Explicit Substitution}}.
+\newblock {\slshape \bibinfo{journal}{Mathematical Structures in Computer
+  Science}} \bibinfo{volume}{11}(\bibinfo{number}{1}), pp.
+  \bibinfo{pages}{169--206}.
+
+\bibitemdeclare{inproceedings}{fmm2021}
+\bibitem{fmm2021}
+\bibinfo{author}{Fl{\'a}vio L.~C. \surnamestart {de Moura}\surnameend} \&
+  \bibinfo{author}{Leandro~O. \surnamestart Rezende\surnameend}
+  (\bibinfo{year}{2021}): \emph{\bibinfo{title}{A Formalization of the
+  (Compositional) z Property}}.
+\newblock In: {\slshape \bibinfo{booktitle}{Fifth Workshop on Formal
+  Mathematics for Mathematicians}}.
+
+\bibitemdeclare{book}{fujitaChurchRosserTheoremCompositional2016}
+\bibitem{fujitaChurchRosserTheoremCompositional2016}
+\bibinfo{author}{Ken-etsu \surnamestart Fujita\surnameend} \&
+  \bibinfo{author}{Koji \surnamestart Nakazawa\surnameend}
+  (\bibinfo{year}{2016}): \emph{\bibinfo{title}{Church-{{Rosser Theorem}} and
+  {{Compositional Z-Property}}}}.
+
+\bibitemdeclare{inproceedings}{gabbayNewApproachAbstract1999}
+\bibitem{gabbayNewApproachAbstract1999}
+\bibinfo{author}{M.~\surnamestart Gabbay\surnameend} \&
+  \bibinfo{author}{A.~\surnamestart Pitts\surnameend} (\bibinfo{year}{1999}):
+  \emph{\bibinfo{title}{A {{New Approach}} to {{Abstract Syntax Involving
+  Binders}}}}.
+\newblock In: {\slshape \bibinfo{booktitle}{14th {{Symposium}} on {{Logic}} in
+  {{Computer Science}} ({{LICS}}'99)}}, \bibinfo{publisher}{{IEEE}},
+  \bibinfo{address}{{Washington - Brussels - Tokyo}}, pp.
+  \bibinfo{pages}{214--224}.
+
+\bibitemdeclare{article}{guillaumeLambdaCalculusDoes2000}
+\bibitem{guillaumeLambdaCalculusDoes2000}
+\bibinfo{author}{B.~\surnamestart Guillaume\surnameend} (\bibinfo{year}{2000}):
+  \emph{\bibinfo{title}{The \$\textbackslash lambda S\_e\$-Calculus {{Does Not
+  Preserve Strong Normalization}}}}.
+\newblock {\slshape \bibinfo{journal}{J. of Func. Programming}}
+  \bibinfo{volume}{10}(\bibinfo{number}{4}), pp. \bibinfo{pages}{321--325}.
+
+\bibitemdeclare{article}{kamareddineExtendingLambdaCalculusExplicit1997}
+\bibitem{kamareddineExtendingLambdaCalculusExplicit1997}
+\bibinfo{author}{Fairouz \surnamestart Kamareddine\surnameend} \&
+  \bibinfo{author}{Alejandro \surnamestart R{\'i}os\surnameend}
+  (\bibinfo{year}{1997}): \emph{\bibinfo{title}{Extending a Lambda-{{Calculus}}
+  with {{Explicit Substitution}} Which {{Preserves Strong Normalisation Into}}
+  a {{Confluent Calculus}} on {{Open Terms}}}}.
+\newblock {\slshape \bibinfo{journal}{J. Funct. Program.}}
+  \bibinfo{volume}{7}(\bibinfo{number}{4}), pp. \bibinfo{pages}{395--420}.
+
+\bibitemdeclare{inproceedings}{kesnerPerpetualityFullSafe2008}
+\bibitem{kesnerPerpetualityFullSafe2008}
+\bibinfo{author}{D.~\surnamestart Kesner\surnameend} (\bibinfo{year}{2008}):
+  \emph{\bibinfo{title}{Perpetuality for {{Full}} and {{Safe Composition}} (in
+  a {{Constructive Setting}})}}.
+\newblock In: {\slshape \bibinfo{booktitle}{Automata, {{Languages}} and
+  {{Programming}}, 35th {{International Colloquium}}, {{ICALP}} 2008,
+  {{Reykjavik}}, {{Iceland}}, {{July}} 7-11, 2008, {{Proceedings}}, {{Part II}}
+  - {{Track B}}: {{Logic}}, {{Semantics}}, and {{Theory}} of {{Programming}} \&
+  {{Track C}}: {{Security}} and {{Cryptography Foundations}}}}, pp.
+  \bibinfo{pages}{311--322}, \doi{10.1007/978-3-540-70583-3\_26}.
+
+\bibitemdeclare{article}{kesnerTheoryExplicitSubstitutions2009}
+\bibitem{kesnerTheoryExplicitSubstitutions2009}
+\bibinfo{author}{D.~\surnamestart Kesner\surnameend} (\bibinfo{year}{2009}):
+  \emph{\bibinfo{title}{A {{Theory}} of {{Explicit Substitutions}} with
+  {{Safe}} and {{Full Composition}}}}.
+\newblock {\slshape \bibinfo{journal}{Logical Methods in Computer Science}}
+  \bibinfo{volume}{5}(\bibinfo{number}{3:1}), pp. \bibinfo{pages}{1--29}.
+
+\bibitemdeclare{misc}{msubstlemma}
+\bibitem{msubstlemma}
+\bibinfo{author}{Maria J.~D. \surnamestart Lima\surnameend} \&
+  \bibinfo{author}{Flavio L.~C. \surnamestart Moura\surnameend}:
+  \emph{\bibinfo{title}{A formalized extension of the substitution lemma in
+  Coq}}.
+\newblock
+  \urlprefix\url{https://github.com/flaviodemoura/lx_confl/tree/m_subst_lemma}.
+
+\bibitemdeclare{article}{melliesTypedLcalculiExplicit1995}
+\bibitem{melliesTypedLcalculiExplicit1995}
+\bibinfo{author}{P.-A. \surnamestart Melli{\`e}s\surnameend}
+  (\bibinfo{year}{1995}): \emph{\bibinfo{title}{Typed {$\lambda$}-Calculi with
+  Explicit Substitutions May Not Terminate in {{Proceedings}} of {{TLCA}}'95}}.
+\newblock {\slshape \bibinfo{journal}{LNCS}} \bibinfo{volume}{902}.
+
+\bibitemdeclare{inproceedings}{munozConfluencePreservationStrong1996}
+\bibitem{munozConfluencePreservationStrong1996}
+\bibinfo{author}{C.~A. \surnamestart Mu{\~n}oz\surnameend}
+  (\bibinfo{year}{1996}): \emph{\bibinfo{title}{Confluence and {{Preservation}}
+  of {{Strong Normalisation}} in an {{Explicit Substitutions Calculus}}}}.
+\newblock In: {\slshape \bibinfo{booktitle}{Proceedings, 11th {{Annual IEEE
+  Symposium}} on {{Logic}} in {{Computer Science}}, {{New Brunswick}}, {{New
+  Jersey}}, {{USA}}, {{July}} 27-30, 1996}}, pp. \bibinfo{pages}{440--447},
+  \doi{10.1109/LICS.1996.561460}.
+
+\bibitemdeclare{article}{nakazawaCompositionalConfluenceProofs2016}
+\bibitem{nakazawaCompositionalConfluenceProofs2016}
+\bibinfo{author}{Koji \surnamestart Nakazawa\surnameend} \&
+  \bibinfo{author}{Ken-etsu \surnamestart Fujita\surnameend}
+  (\bibinfo{year}{2016}): \emph{\bibinfo{title}{Compositional {{Z}}:
+  {{Confluence Proofs}} for {{Permutative Conversion}}}}.
+\newblock {\slshape \bibinfo{journal}{Studia Logica}}
+  \bibinfo{volume}{104}(\bibinfo{number}{6}), pp. \bibinfo{pages}{1205--1224},
+  \doi{10.1007/s11225-016-9673-0}.
+
+\bibitemdeclare{inproceedings}{nakazawaCallbyvalue2017}
+\bibitem{nakazawaCallbyvalue2017}
+\bibinfo{author}{Koji \surnamestart Nakazawa\surnameend} \&
+  \bibinfo{author}{Ken-etsu \surnamestart Fujita\surnameend}
+  (\bibinfo{year}{2017}): \emph{\bibinfo{title}{Z for Call-by-Value}}.
+\newblock In: {\slshape \bibinfo{booktitle}{6th {{International Workshop}} on
+  {{Cofluence}} ({{IWC}} 2017)}}, pp. \bibinfo{pages}{57--61}.
+
+\bibitemdeclare{article}{nakazawaPropertyShufflingCalculus2023}
+\bibitem{nakazawaPropertyShufflingCalculus2023}
+\bibinfo{author}{Koji \surnamestart Nakazawa\surnameend},
+  \bibinfo{author}{Ken-etsu \surnamestart Fujita\surnameend} \&
+  \bibinfo{author}{Yuta \surnamestart Imagawa\surnameend}
+  (\bibinfo{year}{2023}): \emph{\bibinfo{title}{Z Property for the Shuffling
+  Calculus}}.
+\newblock {\slshape \bibinfo{journal}{Mathematical Structures in Computer
+  Science}}, pp. \bibinfo{pages}{1--13}, \doi{10.1017/S0960129522000408}.
+
+\bibitemdeclare{misc}{teamCoqProofAssistant2021}
+\bibitem{teamCoqProofAssistant2021}
+\bibinfo{author}{The Coq~Development \surnamestart Team\surnameend}
+  (\bibinfo{year}{2021}): \emph{\bibinfo{title}{The {{Coq Proof Assistant}}}}.
+\newblock \bibinfo{howpublished}{Zenodo}, \doi{10.5281/ZENODO.5704840}.
 
 \end{thebibliography}

@@ -86,9 +86,7 @@ Qed.
 
 (** * Introduction *)
 
-(** In this work, we present a formalization of the substitution lemma %\cite{barendregtLambdaCalculusIts1984}% in a general framework that extends the $\lambda$-calculus with an explicit substitution operator. The formalization is made in the Coq proof assistant %\cite{teamCoqProofAssistant2021}% and the source code is available at: %\vspace{0.25cm}%
-
- %\url{https://github.com/flaviodemoura/lx_confl/tree/m_subst_lemma} \vspace{0.25cm}%
+(** In this work, we present a formalization of the substitution lemma %\cite{barendregtLambdaCalculusIts1984}% in a general framework that extends the $\lambda$-calculus with an explicit substitution operator. The formalization is made in the Coq proof assistant %\cite{teamCoqProofAssistant2021}% and the source code is available at %\cite{msubstlemma}%.
 
 The substitution lemma is an important result concerning the composition of the substitution operation, and is usually presented as follows in the context of the $\lambda$-calculus:
 
@@ -96,7 +94,7 @@ The substitution lemma is an important result concerning the composition of the 
  Let $t,u$ and $v$ be $\lambda$-terms. If $x\notin FV(v)$ ({\it i.e.} $x$ does not occur in the set of free variables of the term $v$) then $\metasub{\metasub{t}{x}{u}}{y}{v} =_\alpha \metasub{\metasub{t}{y}{v}}{x}{\metasub{u}{y}{v}}$.
 \end{tcolorbox}%
 
-This is a well known result already formalized in the context of the $\lambda$-calculus %\cite{berghoferHeadtoHeadComparisonBruijn2007}%. Nevertheless, in the context of $\lambda$-calculi with explicit substitutions its formalization is not trivial due to the interaction between the metasubstitution and the explicit substitution operator. Our formalization is done in a nominal setting that uses the MetaLib%\footnote{\url{https://github.com/plclub/metalib}}% package of Coq, but no particular explicit substitution calculi is taken into account because the expected behaviour between the metasubstitution operation with the explicit substitutition constructor is the same regardless the calculus. The novel contributions of this work are twofold:
+This is a well known result already formalized in the context of the $\lambda$-calculus %\cite{berghoferHeadtoHeadComparisonBruijn2007}%. Nevertheless, in the context of $\lambda$-calculi with explicit substitutions its formalization is not trivial due to the interaction between the metasubstitution and the explicit substitution operator. Our formalization is done in a nominal setting that uses the MetaLib %\cite{metalib}% package of Coq, but no particular explicit substitution calculi is taken into account because the expected behaviour between the metasubstitution operation with the explicit substitutition constructor is the same regardless the calculus. The novel contributions of this work are twofold:
 
 %\begin{enumerate}
 \item The formalization is modular in the sense that no particular calculi with explicit substitutions is taken into account. Therefore, we believe that this formalization could be seen as a generic framework for proving properties of these calculi that uses the substitution lemma in the nominal setting \cite{kesnerPerpetualityFullSafe2008,nakazawaCompositionalConfluenceProofs2016,nakazawaPropertyShufflingCalculus2023}, which means it could allow the reuse and provide an easier form to understand the proof we have provided;
@@ -144,7 +142,7 @@ This notion can be extended to $\lambda$-terms in a straightfoward way:
 
 In the previous example, one could apply a swap to avoid the variable capture in a way that, a swap is applied to the body of the abstraction before applying the metasubstitution to it: $(\lambda_x\lambda_y.x\ y)\ y \to_{\beta} \metasub{(\swap{y}{z}{(\lambda_y.x\ y)})}{x}{y} = \metasub{(\lambda_z.x\ z)}{x}{y} = \lambda_z.y\ z$. Could we have used a variable substitution instead of a swapping in the previous example? Absolutely. We could have done the reduction as $(\lambda_x\lambda_y.x\ y)\ y \to_{\beta} \metasub{(\metasub{(\lambda_y.x\ y)}{y}{z})}{x}{y} = \metasub{(\lambda_z.x\ z)}{x}{y} = \lambda_z.y\ z$, but as we will shortly see, variable substitution is not stable under $\alpha$-equivalence, while the swapping is stable under $\alpha$-equivalence, thereby rendering it a more fitting choice when operating modulo $\alpha$-equivalence.
 
-In what follows, we will adopt a mixed-notation approach, intertwining metanotation with the equivalent Coq notation. This strategy aids in elucidating the proof steps of the upcoming lemmas, enabling a clearer and more detailed comprehension of each stage in the argumentation. The corresponding Coq code for the swapping of variables, named [swap_var], is defined as follows: *)
+In what follows, we will adopt a mixed-notation approach, intertwining metanotation with the equivalent Coq notation. This strategy aids in elucidating the proof steps of the upcoming lemmas, enabling a clearer and more detailed comprehension of each stage in the argumentation. The corresponding Coq code for the swapping of variables, named [vswap], is defined as follows: *)
 
 Definition vswap (x:atom) (y:atom) (z:atom) := if (z == x) then y else if (z == y) then x else z.
 
@@ -252,7 +250,7 @@ Proof.
 Qed.
 (* end hide *)
 
-(** The [swap] function has many interesting properties, but we will focus on the ones that are more relevant to the proofs related to the substitution lemma. Nevertheless, all lemmas can be found in the source code of the formalization%\footnote{\url{https://github.com/flaviodemoura/lx_confl/tree/m_subst_lemma}}%. The next lemma shows that the [swap] function preserves the size of terms. It is proved by induction on the structure of [t]: *)
+(** The [swap] function has many interesting properties, but we will focus on the ones that are more relevant to the proofs related to the substitution lemma. Nevertheless, all lemmas can be found in the source code of the formalization %\cite{msubstlemma}%. The next lemma shows that the [swap] function preserves the size of terms. It is proved by induction on the structure of [t]: *)
 
 Lemma swap_size_eq : forall x y t, size (swap x y t) = size t.
 Proof.
@@ -403,7 +401,7 @@ Qed.
 Lemma notin_fv_nom_equivariance : forall t x' x y, x' `notin` fv_nom t -> vswap x y x'  `notin` fv_nom (swap x y t).
 Proof.
   induction t as [z | t1 z | t1 t2 | t1 t2 z ] using n_sexp_induction. (** %\noindent{\bf Proof.}% The proof is by induction on the size of the term [t].*)
-  - intros x' x y Hfv. simpl in *. apply notin_singleton_1 in Hfv. apply notin_singleton. apply swap_neq. assumption. (** If [t] is a variable, say [z], then we have that [x' <> z] by hypothesis, and we conclude by lemma [swap_neq] \footnote{\url{https://github.com/flaviodemoura/lx_confl/tree/m_subst_lemma}}%.*)
+  - intros x' x y Hfv. simpl in *. apply notin_singleton_1 in Hfv. apply notin_singleton. apply swap_neq. assumption. (** If [t] is a variable, say [z], then we have that [x' <> z] by hypothesis, and we conclude by lemma [swap_neq] %\cite{msubstlemma}%.*)
   - intros x' x y Hfv. simpl in *. apply notin_remove_1 in Hfv. destruct Hfv. (** If [t = n_abs z t1] then we have that $x' \notin fv(t1) \backslash \{z\}$ by hypothesis. This means that either [x' = z] or [x'] is not in $fv(t1)$, %{\it i.e.}% [fv_nom t1] in Coq.*)
     + subst. apply notin_remove_3. reflexivity. (** If [x' = z] then we have to prove that a certain element is not in a set where it has been removed, and we are done by lemma [notin_remove_3]%\footnote{This is a lemma from Metalib library and it states that {\tt forall (x y : atom) (s : atoms), x = y -> y `notin` remove x s}.}%. *)
     + apply notin_remove_2. specialize (H t1 x x). rewrite swap_id in H. apply H. (** Otherwise, [x'] is not in $fv(t1)$, and we conclude using the induction hypothesis.*)
@@ -735,7 +733,7 @@ Proof.
 Qed.
 (* end hide *)
 
-(** When both variables in a swap does not occur free in a term, it eventually rename bound variables only, %{\it i.e.}% the action of this swap results in a term that is $\alpha$-equivalent to the original term. This is the content of the followin lemma:*)
+(** When both variables in a swap do not occur free in a term, it eventually renames only bound variables, %{\it i.e.}% the action of this swap results in a term that is $\alpha$-equivalent to the original term. This is the content of the followin lemma:*)
 
 Lemma swap_reduction: forall t x y, x `notin` fv_nom t -> y `notin` fv_nom t -> (swap x y t) =a  t.
 Proof. (* revisar *)
@@ -900,7 +898,7 @@ Proof.
 Qed.
 (* end hide *)
 
-(** There are several other interesting auxiliary properties that need to be proved before achieving the substitution lemma. In what follows, we refer only to the tricky or challenging ones, but the interested reader can have a detailed look in the source files %\footnote{\url{https://github.com/flaviodemoura/lx_confl/tree/m_subst_lemma}}%. Note that, swaps are introduced in proofs by the rules $\mbox{\it aeq}\_\mbox{\it abs}\_\mbox{\it diff}$ and $\mbox{\it aeq}\_\mbox{\it sub}\_\mbox{\it diff}$. As we will see, the proof steps involving these rules are trick because a naïve strategy can easily get blocked in a branch without proof. We conclude this section, with a lemma that gives the conditions for two swaps with a common variable to be merged: *)
+(** There are several other interesting auxiliary properties that need to be proved before achieving the substitution lemma. In what follows, we refer only to the tricky or challenging ones, but the interested reader can have a detailed look in the source files %\cite{msubstlemma}%. Note that, swaps are introduced in proofs by the rules $\mbox{\it aeq}\_\mbox{\it abs}\_\mbox{\it diff}$ and $\mbox{\it aeq}\_\mbox{\it sub}\_\mbox{\it diff}$. As we will see, the proof steps involving these rules are trick because a naïve strategy can easily get blocked in a branch without proof. We conclude this section, with a lemma that gives the conditions for two swaps with a common variable to be merged: *)
 
 Lemma aeq_swap_swap: forall t x y z, z `notin` fv_nom t -> x `notin` fv_nom t -> (swap z x (swap x y t)) =a (swap z y t).
 Proof.
@@ -933,7 +931,7 @@ $\metasub{t}{x}{u} = \left\{
  If $t_1, t_2, \ldots, t_n$ occur in a certain mathematical context (e.g. definition, proof), then in these terms all bound variables are chosen to be different from the free variables.  
 \end{tcolorbox}%
 
-This means that we are assumming that both $x \neq y$ and $y\notin fv(u)$ in the case $t = \lambda_y.t_1$. This approach is very convenient in informal proofs because it avoids having to rename bound variables. In order to formalize the capture free substitution, %{\it i.e.}% the metasubstitution, there exists different possible approaches. In our case, we perform a renaming of bound variables whenever the metasubstitution is propagated inside a binder. In our case, there are two binders: abstractions and explicit substitutions.
+This means that we are assumming that both $x \neq y$ and $y\notin fv(u)$ in the case $t = \lambda_y.t_1$. This approach is very convenient in informal proofs because it avoids having to rename bound variables. In order to formalize the capture free substitution, %{\it i.e.}% the metasubstitution, there are different possible approaches. In our case, we perform a renaming of bound variables whenever the metasubstitution is propagated inside a binder. In our case, there are two binders: abstractions and explicit substitutions.
 
 Let $t$ and $u$ be terms, and $x$ a variable. The result of substituting $u$ for the free ocurrences of $x$ in $t$, written $\metasub{t}{x}{u}$ is defined as follows:%\newline%
 %\begin{equation}\label{msubst}
@@ -976,7 +974,7 @@ Definition m_subst (u : n_sexp) (x:atom) (t:n_sexp) :=
   subst_rec_fun t u x.
 Notation "{ x := u } t" := (m_subst u x t) (at level 60).
 
-(** Note that this function is not structurally recursive due to the swaps in the recursive calls. A structurally recursive version of the function [subst_rec_fun] can be found in the file [nominal.v] of the [Metalib] library%\footnote{\url{https://github.com/plclub/metalib}}%, but it uses the size of the term in which the substitution will be performed as an extra argument that decreases with each recursive call. We write [[x:=u]t] instead of [subst_rec_fun t u x] in the Coq code to represent $\metasub{t}{x}{u}$.*)
+(** Note that this function is not structurally recursive due to the swaps in the recursive calls. A structurally recursive version of the function [subst_rec_fun] can be found in the file [nominal.v] of the [Metalib] library%\cite{metalib}%, but it uses the size of the term in which the substitution will be performed as an extra argument that decreases with each recursive call. We write [[x:=u]t] instead of [subst_rec_fun t u x] in the Coq code to represent $\metasub{t}{x}{u}$.*)
                                                                                      (* begin hide *)
 Lemma m_subst_var_eq: forall u x, {x := u}(n_var x) = u.
 Proof.
@@ -1336,7 +1334,7 @@ Proof.
 Qed.
 (* end hide *)
 
-(** The following lemmas concern the expected behaviour of the metasubstitution. For instance, the next two lemmas show what happens when the variable in the meta-substitution is equal to the one in the abstraction and in the explicit substitution.  The proofs were straightforward from the definition of the meta-substitution, where each case is respectively each equivalent one in the definition. %\newline%*)
+(** The following lemmas concern the expected behaviour of the metasubstitution. For instance, the next two lemmas show what happens when the variable in the metasubstitution is equal to the one in the abstraction and in the explicit substitution.  The proofs were straightforward from the definition of the meta-substitution, where each case is respectively each equivalent one in the definition. %\newline%*)
 
 Lemma m_subst_abs_eq: forall u x t, {x := u}(n_abs x t) = n_abs x t.
 Proof.
@@ -1661,7 +1659,7 @@ Proof.
   - apply aeq_m_subst_in. assumption.
 Qed.
 
-(** Now, we show how to propagated a swap inside metasubstitutions using the decomposition of the metasubstitution provided by the corollary [aeq_m_subst_eq].%\newline% *)
+(** Now, we show how to propagate a swap inside metasubstitutions using the decomposition of the metasubstitution provided by the corollary [aeq_m_subst_eq].%\newline% *)
 
 Lemma swap_subst_rec_fun: forall x y z t u, swap x y ({z := u}t) =a ({(vswap x y z) := (swap x y u)}(swap x y t)).
 Proof.
@@ -1872,7 +1870,7 @@ Proof.
            *** unfold vswap. repeat apply notin_union_2 in H2. apply notin_singleton_1 in H2. repeat apply notin_union_2 in n0. apply notin_singleton_1 in n0. default_simp.
 Qed.
 
-(** In fact, the need of the lemma [swap_subst_rec_fun] in the proofs of the two previous lemmas is justified because when the $\alpha$-equation involves abstractions with different binders, or explicit substitutions with different binders, the rules [aeq_abs_diff] and [aeq_sub_diff] introduce swaps that are outside the metasubstitutions. *)
+(** In fact, the need of the lemma [swap_subst_rec_fun] in the proofs of the two previous lemmas is justified by the fact that when the $\alpha$-equation involves abstractions with different binders, or explicit substitutions with different binders, the rules [aeq_abs_diff] and [aeq_sub_diff] introduce swaps that are outside the metasubstitutions. *)
 
 (* This is the intended behaviour of the metasubstitution *)
 (* Lemma fv_nom_metasub: forall t u x,  x `notin` (fv_nom t) ->  fv_nom ({x := u}t) [=] fv_nom t.
@@ -2175,6 +2173,6 @@ Qed.
 
 (** In this work, we presented a formalization of the substitution lemma in a framework that extends the $\lambda$-calculus with an explicit substitution operator. Calculi with explicit substitutions are important frameworks to study properties of the $\lambda$-calculus and have been extensively studied in the last decades %\cite{abadiExplicitSubstitutions1991,accattoliAbstractFactorizationTheorem2012,ayala-rinconComparingCalculiExplicit2002,ayala-rinconComparingImplementingCalculi2005,bonelliPerpetualityNamedLambda2001,fujitaChurchRosserTheoremCompositional2016}%. 
  
-The formalization is modular in the sense that the explicit substitution operator is generic and could be instantiated with any calculi with  explicit substitutions in a nominal setting. The main contribution of this work, besides the formalization itself, is the solution to a circular proof problem. Several auxiliary (minor) results were not included in this document, but they are numerous and can be found in the source file of the formalization that is available in a GitHub repository (%\url{https://github.com/flaviodemoura/lx_confl/tree/m_subst_lemma}%).
+The formalization is modular in the sense that the explicit substitution operator is generic and could be instantiated with any calculi with  explicit substitutions in a nominal setting. The main contribution of this work, besides the formalization itself, is the solution to a circular proof problem. Several auxiliary (minor) results were not included in this document, but they are numerous and can be found in the source file of the formalization that is available in a GitHub repository (%\cite{msubstlemma}%).
 
 As future work, we plan to integrate this formalization with another one related to the Z property %\cite{fmm2021}% to prove confluence  of calculi with explicit substitutions %\cite{nakazawaCompositionalConfluenceProofs2016,nakazawaCallbyvalue2017}%, as well as  other properties in the nominal framework %\cite{kesnerPerpetualityFullSafe2008}%. *)
