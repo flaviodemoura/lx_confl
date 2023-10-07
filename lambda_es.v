@@ -32,7 +32,7 @@ Proof.
   - reflexivity.
   - apply notin_empty_1.
 Qed.
-
+  
 Lemma remove_singleton: forall t1 t2, remove t1 (singleton t1) [=] remove t2 (singleton t2).
 Proof.
   intros. repeat rewrite remove_singleton_empty. reflexivity.
@@ -633,8 +633,46 @@ Proof.
   - simpl. pose proof remove_fv_swap.
     specialize (H3 x y t1'). apply H3 in H1.
     inversion H2; subst; rewrite IHaeq1; rewrite IHaeq2; rewrite H1; reflexivity.
-Qed.  
+Qed.
 
+(**
+   Sets are represented by lists, and these lists are built exactly the same way for $\alpha$-equivalent terms. Therefore, the sets [fv_nom t1] and [fv_nom t2] are syntactically equal. This is the content of the following lemma that has a key hole in this formalization.
+ *)
+
+Lemma remove_singleton_empty_eq: forall x, remove x (singleton x) = empty.
+Proof.
+  Admitted.
+
+Lemma remove_singleton_neq: forall x y, x <> y -> remove x (singleton y) = singleton y.
+Proof.  
+Admitted.
+
+Lemma remove_swap_fv_nom: forall t x y, x `notin` (fv_nom t) -> remove x (fv_nom (swap y x t)) = remove y (fv_nom t). 
+Proof.
+  induction t as [z | z t1 | t1 IHt1 t2 IHt2 | t1 IHt1 z t2 IHt2].
+  - intros x y Hfv. simpl in *. unfold vswap. destruct (z == y).
+    + subst. repeat rewrite remove_singleton_empty_eq. reflexivity.
+    + destruct (z == x).
+      * subst. apply notin_singleton_1 in Hfv. contradiction.
+      * rewrite remove_singleton_neq.
+        ** rewrite remove_singleton_neq.
+           *** reflexivity.
+           *** apply aux_not_equal. assumption.
+        ** apply aux_not_equal. assumption.
+  - intros x y Hfv. simpl in *.
+  Admitted.
+
+Lemma aeq_fv_nom_eq : forall t1 t2, t1 =a t2 -> fv_nom t1 = fv_nom t2.
+Proof.
+  induction 1.
+  - reflexivity.
+  - simpl. rewrite IHaeq. reflexivity.
+  - simpl. rewrite IHaeq. apply remove_swap_fv_nom. assumption.
+  - simpl. rewrite IHaeq1. rewrite IHaeq2. reflexivity.
+  - simpl. rewrite IHaeq1. rewrite IHaeq2. reflexivity.
+  - simpl. rewrite IHaeq1. f_equal. rewrite IHaeq2. apply remove_swap_fv_nom. assumption.
+Qed.
+    
 (* begin hide *)
 Lemma aeq_refl : forall n, n =a n.
 Proof.
