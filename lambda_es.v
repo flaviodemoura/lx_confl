@@ -1411,11 +1411,11 @@ Our solution to this problem consists in taking advantage of the fact that $\alp
 
  Axiom Eq_implies_equality: forall s s': atoms, s [=] s' -> s = s'.
 
-This axiom transforms a set equality into a syntactic equality. This will allow us to rewrite sets of atoms in a more flexible way. To show how it works, we will start proving the lemma [aeq_m_subst_in] without the need of the lemma [swap_m_subst]:*)
+This axiom transforms a set equality into a syntactic equality. This will allow us to rewrite sets of atoms in a more flexible way. To show how it works, we will start proving the lemma [aeq_m_subst_in] without the need of the lemma [swap_m_subst]:
 (* begin hide *)
 Axiom Eq_implies_equality: forall t1 t2, t1 =a t2 -> fv_nom t1 = fv_nom t2.
-(* end hide *)
-
+(* end hide *) 
+*)
 Lemma aeq_m_subst_in: forall t u u' x, u =a u' -> ({x := u}t) =a ({x := u'}t).
 Proof.
   induction t as [y | t1 y | t1 t2 | t1 t2 y ] using n_sexp_induction. 
@@ -1424,7 +1424,7 @@ Proof.
     + apply aeq_refl.
   - intros u u' x Haeq. unfold m_subst in *. repeat rewrite subst_rec_fun_equation. destruct (x == y). 
     + apply aeq_refl. 
-    + pose proof Haeq as Hfv. apply Eq_implies_equality in Hfv. rewrite Hfv. destruct (atom_fresh (union (fv_nom u') (union (fv_nom (n_abs y t1)) (singleton x)))). apply aeq_abs_same. apply H. 
+    + pose proof Haeq as Hfv. apply aeq_fv_nom_eq in Hfv. rewrite Hfv. destruct (atom_fresh (union (fv_nom u') (union (fv_nom (n_abs y t1)) (singleton x)))). apply aeq_abs_same. apply H. 
       * reflexivity.
       * assumption.
   - intros u u' x Haeq. unfold m_subst in *. rewrite subst_rec_fun_equation. apply aeq_sym. rewrite subst_rec_fun_equation. apply aeq_app.
@@ -1436,7 +1436,7 @@ Proof.
       * apply IHt1. assumption.
     + intro Hneq. unfold m_subst in *. rewrite subst_rec_fun_equation. apply aeq_sym. rewrite subst_rec_fun_equation. destruct (x == y).
       * contradiction.
-      * pose proof Haeq as Hfv. apply Eq_implies_equality in Hfv. rewrite Hfv. destruct (atom_fresh (union (fv_nom u') (union (fv_nom ([y := t2]t1)) (singleton x)))). apply aeq_sub_same.     
+      * pose proof Haeq as Hfv. apply aeq_fv_nom_eq in Hfv. rewrite Hfv. destruct (atom_fresh (union (fv_nom u') (union (fv_nom ([y := t2]t1)) (singleton x)))). apply aeq_sub_same.     
         ** apply H.
            *** reflexivity.
            *** apply aeq_sym. assumption.
@@ -1478,7 +1478,7 @@ Proof.
     + intro Heq. subst. repeat rewrite m_subst_abs_eq. apply aeq_abs_same. assumption.
     + intro Hneq. unfold m_subst. repeat rewrite subst_rec_fun_equation. destruct (x == x0).
       * subst. contradiction.
-      * pose proof H as Hfv. apply aeq_fv_nom in Hfv. apply Eq_implies_equality in Hfv. simpl. rewrite Hfv. destruct (atom_fresh (union (fv_nom u) (union (remove x0 (fv_nom t2)) (singleton x)))). apply aeq_abs_same. *)
+      * pose proof H as Hfv. apply aeq_fv_nom in Hfv. apply aeq_fv_nom_eq in Hfv. simpl. rewrite Hfv. destruct (atom_fresh (union (fv_nom u) (union (remove x0 (fv_nom t2)) (singleton x)))). apply aeq_abs_same. *)
   induction t as [y | t1 y | t1 t2 | t1 t2 y] using n_sexp_induction. 
   - intros t' u x Haeq. inversion Haeq; subst. apply aeq_refl.
   - intros t' u x Haeq. inversion Haeq; subst. 
@@ -1486,7 +1486,7 @@ Proof.
       * intro Heq. subst. repeat rewrite m_subst_abs_eq. assumption. 
       * intro Hneq. unfold m_subst in *. repeat rewrite subst_rec_fun_equation. destruct (x == y).
         ** contradiction.
-        ** simpl. pose proof H3 as Haeq'. apply Eq_implies_equality in H3. rewrite H3. destruct (atom_fresh (union (fv_nom u) (union (remove y (fv_nom t2)) (singleton x)))) as [z]. apply aeq_abs_same. apply H.
+        ** simpl. pose proof H3 as Haeq'. apply aeq_fv_nom_eq in H3. rewrite H3. destruct (atom_fresh (union (fv_nom u) (union (remove y (fv_nom t2)) (singleton x)))) as [z]. apply aeq_abs_same. apply H.
            *** reflexivity. 
            *** apply aeq_swap1. assumption. 
     + case (x == y). 
@@ -1514,7 +1514,7 @@ Proof.
            *** contradiction.
            *** destruct (x == y0).
                **** contradiction.
-               **** pose proof Haeq as Hfv. apply Eq_implies_equality in Hfv. rewrite Hfv. destruct (atom_fresh (union (fv_nom u) (union (fv_nom (n_abs y0 t2)) (singleton x)))) as [x0]. apply  aeq_abs_same. apply H. 
+               **** pose proof Haeq as Hfv. apply aeq_fv_nom_eq in Hfv. rewrite Hfv. destruct (atom_fresh (union (fv_nom u) (union (fv_nom (n_abs y0 t2)) (singleton x)))) as [x0]. apply  aeq_abs_same. apply H. 
                     ***** reflexivity.
                     ***** apply (aeq_swap _ _ y x0) in H5. rewrite H5. case (x0 == y0).
                     ****** intro Heq. subst. rewrite swap_id. rewrite (swap_symmetric _ y y0). rewrite swap_involutive. apply aeq_refl.
@@ -1533,7 +1533,7 @@ Proof.
         ** apply IHt1. assumption. (* In order to show that [({y := u} t2) =a ({y := u} t2')], we apply the induction hypothesis.*)
       * intro Hneq. (* When [x <> y], we propagate the metasubstitutions inside the explicit substitution on both sides.*) unfold m_subst in *. rewrite subst_rec_fun_equation. apply aeq_sym. rewrite subst_rec_fun_equation. destruct (x == y).
         ** contradiction.
-        ** pose proof H4 as Hfvt1. apply Eq_implies_equality in Hfvt1. pose proof H5 as Hfvt2. apply Eq_implies_equality in Hfvt2. simpl. rewrite Hfvt1. rewrite Hfvt2. destruct (atom_fresh (union (fv_nom u) (union (union (remove y (fv_nom t1')) (fv_nom t2')) (singleton x)))). (* As [t1 =a t1'] and [t2 =a t2'], we have that [fv_nom t1 = fv_nom t1'] and [fv_nom t2 = fv_nom t2'], and we need just one fresh name, say [x0], to do these propagations, as long as [x0] does not belong to the set $fv(u)\cup fv(\metasub{t_1'}{y}{t_2'})\cup \{x\}$. The goal after the propagation is [([x0 := {x := u}t2'] {x := u}(swap y x0 t1')) =a ([x0 := {x := u}t2] {x := u}(swap y x0 t1))], and we proceed by a componentwise comparison via constructor [aeq_sub_same].*) apply aeq_sub_same.
+        ** pose proof H4 as Hfvt1. apply aeq_fv_nom_eq in Hfvt1. pose proof H5 as Hfvt2. apply aeq_fv_nom_eq in Hfvt2. simpl. rewrite Hfvt1. rewrite Hfvt2. destruct (atom_fresh (union (fv_nom u) (union (union (remove y (fv_nom t1')) (fv_nom t2')) (singleton x)))). (* As [t1 =a t1'] and [t2 =a t2'], we have that [fv_nom t1 = fv_nom t1'] and [fv_nom t2 = fv_nom t2'], and we need just one fresh name, say [x0], to do these propagations, as long as [x0] does not belong to the set $fv(u)\cup fv(\metasub{t_1'}{y}{t_2'})\cup \{x\}$. The goal after the propagation is [([x0 := {x := u}t2'] {x := u}(swap y x0 t1')) =a ([x0 := {x := u}t2] {x := u}(swap y x0 t1))], and we proceed by a componentwise comparison via constructor [aeq_sub_same].*) apply aeq_sub_same.
            *** apply H. (* Each subcase is proved by the induction hypothesis.*)
                **** apply aeq_size in H4. symmetry. assumption.
                **** apply aeq_swap. apply aeq_sym. assumption.
@@ -1604,7 +1604,7 @@ Proof.
            *** contradiction.
            *** apply aeq_sym. rewrite subst_rec_fun_equation. destruct (x == y0).
                **** contradiction.
-               ****  apply Eq_implies_equality in Haeq. simpl in *. rewrite Haeq. destruct (atom_fresh (union (fv_nom u) (union (union (remove y0 (fv_nom t1')) (fv_nom t2')) (singleton x)))). (* We take a fresh name [x0] that is not in the set $fv(u)\cup fv(\esub{t_1'}{y_0}{t_2'})\cup \{ x \}$, and propagate the metasubstitutions inside the explicit substitutions according to the definition of the metasubstitution. The current goal is [([x0 := {x := u}t2']({x := u}(swap y0 x0 t1'))) =a
+               ****  apply aeq_fv_nom_eq in Haeq. simpl in *. rewrite Haeq. destruct (atom_fresh (union (fv_nom u) (union (union (remove y0 (fv_nom t1')) (fv_nom t2')) (singleton x)))). (* We take a fresh name [x0] that is not in the set $fv(u)\cup fv(\esub{t_1'}{y_0}{t_2'})\cup \{ x \}$, and propagate the metasubstitutions inside the explicit substitutions according to the definition of the metasubstitution. The current goal is [([x0 := {x := u}t2']({x := u}(swap y0 x0 t1'))) =a
   ([x0 := {x := u}t2]({x := u}(swap y x0 t1)))], and we proceed using the constructor [aeq_sub_same]. Each subcase is proved by the induction hypothesis. *) apply aeq_sub_same.
                     ***** apply H.
                     ****** apply aeq_size in H7. rewrite swap_size_eq in H7. symmetry. assumption.
