@@ -1,6 +1,7 @@
 (* Infrastructure *)
 (* begin hide *)
-Require Export Arith Lia.  Print LoadPath.
+From Coq Require Import Arith Lia.  Print LoadPath.
+(* Metalib is in CP.2023.03.0~8.17~2023.08/lib/coq/user-contrib/Metalib *)
 Require Export Metalib.Metatheory.
 Require Export Metalib.LibDefaultSimp.
 Require Export Metalib.LibLNgen.
