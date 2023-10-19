@@ -18,7 +18,7 @@ Require Import Metalib.FSetExtra.
 Require Import Metalib.FSetWeakNotin.
 Require Import Metalib.LibTactics.
 
-Require Import Omega.
+Require Import Lia.
 
 (* ********************************************************************** *)
 (** * Defining atoms *)
@@ -44,6 +44,7 @@ Module Type ATOM <: UsualDecidableType.
 
   Parameter nat_of : atom -> nat.
 
+  #[global]
   Hint Resolve eq_dec : core.
 
   Include HasUsualEq <+ UsualIsEq <+ UsualIsEqOrig.
@@ -66,7 +67,7 @@ Module Atom : ATOM.
   Proof.
     induction x. auto with arith.
     induction y. auto with arith.
-      simpl. induction z. omega. auto with arith.
+      simpl. induction z. lia. auto with arith.
   Qed.
 
   Lemma nat_list_max : forall (xs : list nat),
@@ -85,7 +86,7 @@ Module Atom : ATOM.
     forall (xs : list nat), { n : nat | ~ List.In n xs }.
   Proof.
     intros xs. destruct (nat_list_max xs) as [x H].
-    exists (S x). intros J. lapply (H (S x)). omega. trivial.
+    exists (S x). intros J. lapply (H (S x)). lia. trivial.
   Qed.
 
   Definition fresh (l : list atom) :=
@@ -120,7 +121,7 @@ Global Arguments Atom.eq /.
 
 (** It is trivial to declare an instance of [EqDec] for [atom]. *)
 
-Instance EqDec_atom : @EqDec atom eq eq_equivalence.
+#[export] Instance EqDec_atom : @EqDec atom eq eq_equivalence.
 Proof. exact Atom.eq_dec. Defined.
 
 
@@ -141,6 +142,7 @@ Notation atoms :=
 
 (** The [AtomSetDecide] module provides the [fsetdec] tactic for
     solving facts about finite sets of atoms. *)
+
 
 Module Export AtomSetDecide := Coq.FSets.FSetDecide.WDecide_fun Atom AtomSetImpl.
 

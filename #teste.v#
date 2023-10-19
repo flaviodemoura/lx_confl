@@ -1,0 +1,7 @@
+Print LoadPath.
+
+-Q "~/coq-platform/lib/user-contrib/Metalib" Metalib.
+
+
+
+-Q "~/coq-platform/lib/user-contrib/Metalib" Metalib

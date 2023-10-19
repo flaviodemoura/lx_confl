@@ -15,8 +15,11 @@ Require Import Coq.Logic.Decidable.
 (* *********************************************************************** *)
 (** * Hints for [equiv] *)
 
+#[global]
 Hint Extern 0 (?x === ?x) => reflexivity : core. 
+#[global]
 Hint Extern 1 (_ === _) => (symmetry; trivial; fail) : core.
+#[global]
 Hint Extern 1 (_ =/= _) => (symmetry; trivial; fail) : core.
 
 
@@ -73,7 +76,7 @@ Proof. intros. unfold decidable. destruct (x == y); auto. Defined.
 Class EqDec_eq (A : Type) :=
   eq_dec : forall (x y : A), {x = y} + {x <> y}.
 
-Instance EqDec_eq_of_EqDec (A : Type) `(@EqDec A eq eq_equivalence) : EqDec_eq A.
+#[export] Instance EqDec_eq_of_EqDec (A : Type) `(@EqDec A eq eq_equivalence) : EqDec_eq A.
 Proof. trivial. Defined.
 
 (** We can also provide a reflexivity theorem for rewriting with, since types

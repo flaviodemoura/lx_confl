@@ -11,6 +11,9 @@ Require Export Metalib.LibDefaultSimp.
 Require Import Metalib.Metatheory.
 Require Import Lia.
 
+(* Suppress warnings about Hint Resolve *)
+Local Set Warnings "-fragile-hint-constr".
+
 
 (* ********************************************************************** *)
 (** * Assorted functions not in the standard library *)
@@ -46,10 +49,10 @@ Ltac generalize_wrt x :=
     over should come first. *)
 
 Ltac apply_mutual_ind ind :=
-  match goal with 
-     [ |- (and _ _) ]  => apply ind 
-   | [ |- (prod _ _) ]  => apply ind 
-   | _ => 
+  match goal with
+     [ |- (and _ _) ]  => apply ind
+   | [ |- (prod _ _) ]  => apply ind
+   | _ =>
      let H := fresh in
      first [ (* apply ind
         | *) intros H; induction H using ind
@@ -77,6 +80,28 @@ Ltac specialize_all x :=
   repeat (match goal with
             | H : _ |- _ => specialize (H x)
           end).
+
+(** Specialize and dispatch freshness hypothesis. *)
+Ltac spec y := 
+  repeat (match goal with [H0 : forall x : atom, x \notin ?L -> _ |- _ ] => 
+     specialize (H0 y ltac:(auto)) end). 
+
+(* Destruct all hypotheses with conjunctions *)
+Ltac split_hyp :=
+  repeat (
+      match goal with
+        | [ H : _ /\ _ |- _ ] => destruct H
+      end).
+
+Ltac invert_equality := 
+  repeat match goal with 
+    | [H : (_,_) = (_,_) |- _ ] => inversion H; subst; clear H
+    | [H : (_,_,_) = (_,_,_) |- _ ] => inversion H; subst; clear H
+    | [H : (_,_,_,_) = (_,_,_,_) |- _ ] => inversion H; subst; clear H
+    | [H : [_] ++ _ = [_] ++ _ |- _ ] => inversion H; subst; clear H
+    | [H : ( _ :: _ ) = ( _ :: _ )  |- _ ] => inversion H; subst; clear H
+  end.
+
 
 
 (* *********************************************************************** *)
@@ -127,18 +152,29 @@ Proof. fsetdec. Qed.
 (* *********************************************************************** *)
 (** * Hints *)
 
+#[global]
 Hint Resolve sym_eq : brute_force.
 
+#[global]
 Hint Extern 5 (_ = _ :> nat) => lia : brute_force.
+#[global]
 Hint Extern 5 (_ < _)        => lia : brute_force.
+#[global]
 Hint Extern 5 (_ <= _)       => lia : brute_force.
 
+#[global]
 Hint Rewrite @remove_union_distrib : lngen.
-
+#[global]
 Hint Resolve @Equal_union_compat : lngen.
+#[global]
 Hint Resolve @Subset_refl : lngen.
+#[global]
 Hint Resolve @Subset_empty_any : lngen.
+#[global]
 Hint Resolve @Subset_union_compat : lngen.
+#[global]
 Hint Resolve @Subset_union_left : lngen.
+#[global]
 Hint Resolve @Subset_union_right : lngen.
+#[global]
 Hint Resolve @Subset_union_lngen_open_upper : lngen.
