@@ -1,6 +1,6 @@
 (* Infrastructure *)
 (* begin hide *)
-From Coq Require Import Arith Lia.  Print LoadPath.
+Require Import Arith Lia.  Print LoadPath.
 (* Metalib is in CP.2023.03.0~8.17~2023.08/lib/coq/user-contrib/Metalib *)
 Require Export Metalib.Metatheory.
 Require Export Metalib.LibDefaultSimp.
@@ -244,7 +244,7 @@ Proof.
 Qed.
 
 (* begin hide *)
-Hint Rewrite swap_size_eq.
+#[export] Hint Rewrite swap_size_eq.
 (* end hide *)
 
 Lemma swap_symmetric : forall t x y, swap x y t = swap y x t.
@@ -594,7 +594,7 @@ Inductive aeq : n_sexp -> n_sexp -> Prop :=
 (* begin hide *)
 Notation "t =a u" := (aeq t u) (at level 60).
 
-Hint Constructors aeq.
+#[export] Hint Constructors aeq.
 (* end hide *)
 
 (** In what follows, we use a infix notation for $\alpha$-equivalence in the Coq code. Therefore, we write [t =a u] instead of [aeq t u]. The above notion defines an equivalence relation over the set [n_sexp] of nominal expressions with explicit substitutions, %{\it i.e.}% the [aeq] relation is reflexive, symmetric and transitive (proofs in the source file%\footnote{\url{https://flaviomoura.info/files/msubst.v}}%). In addition, $\alpha$-equivalent terms have the same size, and the same set of free variables: *)
@@ -1146,7 +1146,7 @@ Qed.
 
 Require Import Setoid Morphisms.
 
-Instance Equivalence_aeq: Equivalence aeq.
+#[export] Instance Equivalence_aeq: Equivalence aeq.
 Proof.
   split.
   - unfold Reflexive. apply aeq_refl.

@@ -1,53 +1,22 @@
-(** * A Formalization that Z property implies confluence *)
-(** We present a formalization that Z property, in the context of ARS (sets with a binary relation), implies confluence. A binary relation is a predicate over a type [A]: *)
-
-Definition Rel (A:Type) := A -> A -> Prop.
-
-(** If $(A,R)$, is an ARS and $a,b\in A$ then we write $a\to_R b$ (or $R\ a\ b$ in the Coq syntax below) to denote that $(a,b)\in R$, and in this case, we say that $a$ $R$-reduces to $b$ in one step. The transitive closure of $\to_R$, written $\to^+_R$, is defined as usual by the following inference rules:
-
-%\begin{mathpar}
-     \inferrule*[Right={($singl$)}]{a \to_R b}{a \to^+_R b} \and
-     \inferrule*[Right={($transit$)}]{a \to_R b \and b \to^+_R c}{a \to^+_R c}
-\end{mathpar}%
-
- This definition corresponds to the following Coq code, where $\to_R$ (resp. $\to^+_R$) corresponds to [R] (resp. [trans R]):$\newline$ *)
-
-Inductive trans {A} (R: Rel A) : Rel A :=
-| singl: forall a b,  R a b -> trans R a b
-| transit: forall b a c,  R a b -> trans R b c -> trans R a c.
 (* begin hide *)
-Arguments transit {A} {R} _ _ _ _ _ .
-
-Lemma trans_composition {A} (R: Rel A):
-  forall t u v, trans R t u -> trans R u v -> trans R t v.
-Proof.
-  intros t u v H1 H2. induction H1.
-  - apply transit with b; assumption.
-  - apply transit with b.
-    + assumption.
-    + apply IHtrans; assumption.
-Qed.
+Require Import lambda_es.
 (* end hide *)
 
-(** The reflexive transitive closure of $\to_R$, written $\tto_R$, is defined by:
+(** * A Formalization that Z property implies confluence in a nominal context. *)
 
-%\begin{mathpar}
-     \inferrule*[Right={($refl$)}]{a \to_R b}{a \tto_R b}\and\and
-     \inferrule*[Right={($rtrans$)}]{a \to_R b \and b \tto_R c}{a \tto_R c}
-\end{mathpar}%
-
- This definition corresponds to the following Coq code, where $\tto_R$ is written as [refltrans R]: *)
-
-Inductive refltrans {A:Type} (R: Rel A) : A -> A -> Prop :=
-| refl: forall a, refltrans R a a
+Inductive refltrans (R: n_sexp -> n_sexp -> Prop) : n_sexp -> n_sexp -> Prop :=
+| refl: forall a b, a =a b -> refltrans R a b
 | rtrans: forall a b c, R a b -> refltrans R b c -> refltrans R a c.
-(* begin hide *)
-Lemma refltrans_composition {A} (R: Rel A): forall t u v, refltrans R t u -> refltrans R u v -> refltrans R t v.
+
+(* to be fixed*)
+#[export] Instance  aeq_refltrans {R: n_sexp -> n_sexp -> Prop}: Proper (aeq ==> R ==> flip impl) (refltrans R).
 Proof.
-  intros t u v.
-  intros H1 H2.
-  induction H1.
-  - assumption.
+  intros a b Haeq. Admitted.
+                             
+Lemma refltrans_composition {R: n_sexp -> n_sexp -> Prop}: forall t u v, refltrans R t u -> refltrans R u v -> refltrans R t v.
+Proof.
+  intros t u v H1 H2. induction H1.
+  - rewrite H. assumption.
   - apply rtrans with b.
     + assumption.
     + apply IHrefltrans; assumption.
