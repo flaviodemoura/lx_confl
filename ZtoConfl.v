@@ -1,6 +1,5 @@
-(** * A Formalization of the Z property *)
-(* comments used in the report *)
-(** In this section, we present a formalization of the Z property in the context of ARS, which are sets with a binary relation. A binary relation is a predicate over a type [A]: *)
+(** * A Formalization that Z property implies confluence *)
+(** We present a formalization that Z property, in the context of ARS (sets with a binary relation), implies confluence. A binary relation is a predicate over a type [A]: *)
 
 Definition Rel (A:Type) := A -> A -> Prop.
 
@@ -119,21 +118,35 @@ Definition Z_prop {A:Type} (R: Rel A) := exists f:A -> A, forall a b, R a b -> (
 
 Theorem Z_prop_implies_Confl {A:Type}: forall R: Rel A, Z_prop R -> Confl R.
 Proof.
-  intros R HZ_prop. (** %\comm{Let $R$ be a relation over $A$ that satisfies
+  intros R HZ_prop. unfold Z_prop, Confl in *. intros a b c Hrefl1 Hrefl2. destruct HZ_prop as [g HZ_prop]. generalize dependent c. induction Hrefl1.   - intros c Hrefl2. exists c; split. 
+    + assumption. 
+    + apply refl. 
+  - intros c0 Hrefl2. assert (Hbga: refltrans R b (g a)).
+    { apply HZ_prop; assumption.  } 
+    assert (Haga: refltrans R a (g a)).
+    { apply rtrans with b; assumption.  } 
+    clear H. generalize dependent b. induction Hrefl2. 
+    + intros b Hrefl1 IHHrefl1 Hbga. assert (IHHrefl1_ga := IHHrefl1 (g a));  apply IHHrefl1_ga in Hbga. destruct Hbga. exists x; split.  
+      * apply H.    
+      * apply refltrans_composition with (g a); [assumption | apply H].       
+    + intros b0 Hrefl1 IHHrefl1 Hb0ga. apply IHHrefl2 with b0.       
+      * apply refltrans_composition with (g a); apply HZ_prop; assumption.         
+      * assumption. 
+      * assumption. 
+      * apply refltrans_composition with (g a); [ assumption | apply HZ_prop; assumption].         
+Qed.
+(** %\comm{Let $R$ be a relation over $A$ that satisfies
     the Z property, which will be denoted by $HZ\_prop$ for future
     reference.}% *)
-
-  unfold Z_prop, Confl in *. (** %\comm{Unfolding both definitions of
+(** %\comm{Unfolding both definitions of
   $Z\_prop$ and $Confl$, we get the following proof context:
 
      \includegraphics[scale=0.5]{figs/fig3.png} }% *)
-
-  intros a b c Hrefl1 Hrefl2. (** %\comm{Let $a, b$ and $c$ be elements of
+(** %\comm{Let $a, b$ and $c$ be elements of
      the set $A$, $Hrefl1$ the hypothesis that $a \tto_R b$, and
      $Hrefl2$ the hypothesis that $a\tto_R c$. We need to prove that
      there exists $d$ such that $b\tto_R d$ and $c\tto_R d$.}% *)
-  
-  destruct HZ_prop as [g HZ_prop]. (** %\comm{We know from the hypothesis
+(** %\comm{We know from the hypothesis
      $HZ\_prop$ that there exists a mapping $f$ that is Z. Let's call
      $g$ this mapping, and we get following proof context:
 
@@ -141,30 +154,22 @@ Proof.
 
       The proof proceeds by nested induction, firstly on the length of
       the reduction from $a$ to $b$, and then on the length of the
-      reduction from $a$ to $c$.}% *)
-  
-  generalize dependent c. (** %\comm{Before the first induction,
+      reduction from $a$ to $c$.}% *)(** %\comm{Before the first induction,
       i.e. induction on $Hrefl1$, the element $c$ needs to be
       generalized so that it can be afterwards instantiated with any
       reduct of $a$.}% *)
-  
-  induction Hrefl1. (** %\comm{The induction on $Hrefl1$ corresponds to
+  (** %\comm{The induction on $Hrefl1$ corresponds to
        induction on the reflexive transitive closure of the relation
        $R$, and since $refltrans$ has two rules, the goal splits in
        two subgoals, one for each possible way of constructing $a
        \tto_R b$.}% *)
   
-  - intros c Hrefl2. (** %\comm{In the first case, we have that $b = a$ since
+(** %\comm{In the first case, we have that $b = a$ since
     we are in the reflexive case. This means that we have to prove
     that there exists $d$, such that $a \tto_R d$ and $c \tto_R d$.}% *)
-    
-    exists c; split. (** %\comm{Taking $d$ as $c$, the proof is simplified to $a
-    \tto_R c$ and $c \tto_R c$.}% *)
-
-    + assumption. (** %\comm{The first component is exactly the hypothesis
-        $Hrefl2$ and }% *) 
-
-    + apply refl. (** %\comm{$c \tto_R c$ corresponds to an application of
+(** %\comm{Taking $d$ as $c$, the proof is simplified to $a
+    \tto_R c$ and $c \tto_R c$.}% *)(** %\comm{The first component is exactly the hypothesis
+        $Hrefl2$ and }% *) (** %\comm{$c \tto_R c$ corresponds to an application of
         the $refl$ axiom.}% *)
 
         (** The interesting part of the proof is then given by the
@@ -195,8 +200,7 @@ Proof.
         this problem, we need to discard the hypothesis [H] from our proof 
         context, and replace it by another relevant information derived from 
         the Z property as shown in what follows. *)
-
-  - intros c0 Hrefl2. (** %\comm{Let $c_0$ be a reduct of $a$, and $Hrefl2$
+(** %\comm{Let $c_0$ be a reduct of $a$, and $Hrefl2$
     be the hypothesis $a \tto_R c_0$. So the reduction $a\tto_R c$ in
     the above diagram is now $a\tto_R c_0$ due to a renaming of
     variables automatically done by the Coq system. In addition, the
@@ -208,13 +212,8 @@ Proof.
     Before applying induction to $Hrefl2$: $a \tto_R c_0$, we will derive 
     $b\tto_R (g\ a)$ and $a\tto_R (g\ a)$ from the proof context so we can
     discard the hypothesis $H$: $a\to_R$.}% *)
-
-    assert (Hbga: refltrans R b (g a)).
-    { apply HZ_prop; assumption.  } (** %\comm{We call $Hbga$ the reduction
-    $b\tto_R (g\ a)$ that is directly obtained from the Z property.}% *)
-
-    assert (Haga: refltrans R a (g a)).
-    { apply rtrans with b; assumption.  } (** %\comm{Call $Haga$ the
+(** %\comm{We call $Hbga$ the reduction
+    $b\tto_R (g\ a)$ that is directly obtained from the Z property.}% *)(** %\comm{Call $Haga$ the
         reduction $a\tto_R (g\ a)$, and prove it using the
         transitivity of $\tto_R$, since $a \to_R b$ and $b \tto_R (g\
         a)$. Diagrammatically, we change from the situation on the
@@ -226,19 +225,14 @@ Proof.
 
         \xymatrix{ & & a \ar@{->>}[ddrr]_R \ar@{->>}[dd]_R & & \\ & b
         \ar@{->>}[dl]^R \ar@{->>}[dr]_R & & & \\ c \ar@{.>>}[ddrr]_R &
-        & (g \; a) & & c_0 \ar@{.>>}[ddll]^R \\ & & & & \\ & & d & &} }% *) 
-
-    clear H. generalize dependent b. (** %\comm{At this point we can remove
+        & (g \; a) & & c_0 \ar@{.>>}[ddll]^R \\ & & & & \\ & & d & &} }% *) (** %\comm{At this point we can remove
       the hypothesis $H$ from the context, and generalize $b$. Doing so, 
       we generalize $IHHrefl1$, which, in conjunction with the hypotheses 
       that depend on a (namely, $Hrefl2$, $Hbga$, and $Haga$), will form 
       the four necessary conditions for use of the second inductive 
       hypothesis, $IHHrefl2$.}% *)
-
-    induction Hrefl2. (** %\comm{Now we are ready to start the induction on
-    the reduction $a\tto_R c_0$, and we have two subgoals.}% *)
-    
-    + intros b Hrefl1 IHHrefl1 Hbga. (** %\comm{The first subgoal corresponds
+(** %\comm{Now we are ready to start the induction on
+    the reduction $a\tto_R c_0$, and we have two subgoals.}% *)(** %\comm{The first subgoal corresponds
         to the reflexive case that is closed by the induction
         hypothesis $IHHrefl1$:
 
@@ -246,28 +240,18 @@ Proof.
         \ar@{->>}[dl]_{Hrefl1} \ar@{->>}[dr]^{H1} & & & \\ c
         \ar@{.>>}[dr] & IHHrefl1 & (g \; a) \ar@{.>>}[dl] & & \\ & d &
         &&}\] }% *)
-      
-      assert (IHHrefl1_ga := IHHrefl1 (g a));
-        
-        apply IHHrefl1_ga in Hbga. (** %\comm{In order to apply $IHHrefl1$, we instantiate $c_0$ with $(g\
+      (** %\comm{In order to apply $IHHrefl1$, we instantiate $c_0$ with $(g\
       a)$.}% *)
-      
-      destruct Hbga. (** %\comm{Therefore, there exists an element, say $x$,
+      (** %\comm{Therefore, there exists an element, say $x$,
       such that both $c\tto_R x$ and $(g\ a) \tto_R x$.}% *)
-      
-      exists x; split. (** %\comm{We then take $x$ to show that $c\tto_R x$ and $a
+     (** %\comm{We then take $x$ to show that $c\tto_R x$ and $a
       \tto_R x$.}% *)
-      
-      * apply H. (** %\comm{Note that $c\tto_R x$ is already an hypothesis,
+     (** %\comm{Note that $c\tto_R x$ is already an hypothesis,
         and we are done.}% *)
-        
-      * apply refltrans_composition with (g a);
-
-        [assumption | apply H]. (**
+     (**
       %\comm{The proof of $a \tto_R x$ is done by the transitivity of
       $\tto_R$ taking $(g\ a)$ as the intermediate step.}% *)
-           
-    + intros b0 Hrefl1 IHHrefl1 Hb0ga. (** %\comm{The second subgoal corresponds
+     (** %\comm{The second subgoal corresponds
         to the case in which $a\tto_R c_0$ is generated by the rule
         $(rtrans)$. Therefore, there exists a term $b$ such that
         $a\to_R b$ and $b \tto_R c_0$. The corresponding proof context
@@ -277,35 +261,26 @@ Proof.
         that $b0 \tto_R (g\ a)$ is given by:
 
         \includegraphics[scale=0.48]{figs/fig7.png} }% *)
-
-      apply IHHrefl2 with b0. (** %\comm{The second goal, i.e. the inductive case is 
+(** %\comm{The second goal, i.e. the inductive case is 
       the consequent on $IHHrefl2$, so we can apply $IHHrefl2$ to prove it. Doing so, 
       we must prove the antecedent of $IHHrefl2$, which consists of four separate 
       hypotheses that we must prove. Those hypotheses are as follows:}% *)
-      
-      * apply refltrans_composition with (g a);
-          
-        apply HZ_prop; assumption. (** %\comm{1. $b \tto_R (g\ b)$: This is proved by the transitivity of the
+(** %\comm{1. $b \tto_R (g\ b)$: This is proved by the transitivity of the
       reflexive transitive closure of $R$ using the
       hypothesis (H: $a\to_R b$) and $HZ\_prop$: $\forall a\
       b: a \to_R b \to (b \tto_R (g\ a) \land (g\ a) \tto_R (g\ b))$.}% *)
-        
-      * assumption. (** %\comm{2. $b0 \tto_R c$: This is exactly the
+(** %\comm{2. $b0 \tto_R c$: This is exactly the
           hypothesis $Hrefl1$.}% *)
-
-      * assumption. (** %\comm{3. $\forall c0: b0 \tto_R c0 \to (\exists d:
+(** %\comm{3. $\forall c0: b0 \tto_R c0 \to (\exists d:
             c \tto_R d \land c0 \tto_R d)$: This is exactly the
             induction hypothesis $IHHrefl1$.}% *)
-
-      * apply refltrans_composition with (g a);
-        [ assumption | apply HZ_prop; assumption]. (** %\comm{4. $b0 \tto_R (g\ b)$: This is proved by the transitivity of
+(** %\comm{4. $b0 \tto_R (g\ b)$: This is proved by the transitivity of
       the reflexive transitive closure of $R$ using the
       hypothesis $H'$: $b0 \tto_R (g\ a)$ and the fact that
       $(g\ a) \tto_R (g\ b)$ that is obtained from the fact that
       $R$ satisfies the Z property (hypothesis
       $HZ\_prop$).}% *)
-        
-Qed.
+
 
 Definition SemiConfl {A:Type} (R: Rel A) := forall a b c, R a b -> (refltrans R) a c -> (exists d, (refltrans R) b d /\ (refltrans R) c d).
 
