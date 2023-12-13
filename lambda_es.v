@@ -36,7 +36,7 @@ Qed.
   
 Lemma remove_singleton: forall t1 t2, remove t1 (singleton t1) [=] remove t2 (singleton t2).
 Proof.
-  intros. repeat rewrite remove_singleton_empty. reflexivity.
+  intros t1 t2. repeat rewrite remove_singleton_empty. reflexivity.
 Qed.
 
 Lemma notin_singleton_is_false: forall x, x `notin` (singleton x) -> False.
@@ -639,7 +639,7 @@ Qed.
 (**
    Sets are represented by lists, and these lists are built exactly the same way for $\alpha$-equivalent terms. Therefore, the sets [fv_nom t1] and [fv_nom t2] are syntactically equal. This is the content of the following lemma that has a key hole in this formalization.
  *)
-
+(** try Proper 
 Lemma remove_singleton_empty_eq: forall x, remove x (singleton x) = empty.
 Proof.
   Admitted.
@@ -648,11 +648,69 @@ Lemma remove_singleton_neq: forall x y, x <> y -> remove x (singleton y) = singl
 Proof.  
 Admitted.
 
+Lemma remove_remove_fv_nom: forall t x y, x <> y -> remove x (remove y (fv_nom (swap y x t))) = remove y (remove x (fv_nom t)). 
+Proof.
+  induction t as [z | z t1 | t1 IHt1 t2 IHt2 | t1 IHt1 z t2 IHt2].
+  - intros x y Hneq. simpl in *. unfold vswap. destruct (z == y).
+    + subst. rewrite remove_singleton_neq.
+      * rewrite remove_singleton_empty_eq. rewrite remove_singleton_neq.
+        ** symmetry. apply remove_singleton_empty_eq.
+        ** assumption.
+      * apply aux_not_equal. assumption.
+    + destruct (z == x).
+      * subst. repeat rewrite remove_singleton_empty_eq. rewrite remove_empty. ?? reflexivity.
+      * rewrite remove_singleton_neq.
+        ** rewrite remove_singleton_neq.
+           *** reflexivity.
+           *** apply aux_not_equal. assumption.
+        ** apply aux_not_equal. assumption.
+  - intros x y Hneq. simpl in *. apply notin_remove_1 in Hneq. destruct Hneq as [Hneq | Hneq].
+    + subst. unfold vswap. destruct (x == y).
+      * subst. rewrite swap_id. reflexivity.
+      * destruct (x == x).
+        ** rewrite remove_singleton_neq.
+           *** rewrite remove_singleton_neq.
+               **** reflexivity.
+               **** apply aux_not_equal. assumption.
+           *** apply aux_not_equal. assumption.
+        ** apply aux_not_equal. assumption.
+    + unfold vswap. destruct (z == y).
+      * subst. rewrite swap_id. reflexivity.
+      * destruct (z == x).
+        ** subst. rewrite remove_singleton_neq.
+           *** rewrite remove_singleton_neq.
+               **** reflexivity.
+               **** apply aux_not_equal. assumption.
+           *** apply aux_not_equal. assumption.
+        ** rewrite remove_singleton_neq.
+           *** rewrite remove_singleton_neq.
+               **** reflexivity.
+               **** apply aux_not_equal. assumption.
+           *** apply aux_not_equal. assumption.
+  - intros x y Hneq. simpl in *. rewrite IHt1.
+    + rewrite IHt2.
+      * reflexivity.
+      * assumption.
+    + assumption.
+  - intros x y Hneq. simpl in *. apply notin_remove_1 in Hneq. destruct Hneq as [Hneq | Hneq].
+    + subst. unfold vswap. destruct (x == y).
+      * subst. rewrite swap_id. reflexivity.
+      * destruct (x == x).
+        ** rewrite remove_singleton_neq.
+           *** rewrite remove_singleton_neq.
+               **** reflexivity.
+               **** apply aux_not_equal. assumption.
+           *** apply aux_not_equal. *)
+  
 Lemma remove_swap_fv_nom: forall t x y, x `notin` (fv_nom t) -> remove x (fv_nom (swap y x t)) = remove y (fv_nom t). 
 Proof.
   induction t as [z | z t1 | t1 IHt1 t2 IHt2 | t1 IHt1 z t2 IHt2].
   - intros x y Hfv. simpl in *. unfold vswap. destruct (z == y).
-    + subst. repeat rewrite remove_singleton_empty_eq. reflexivity.
+    + subst.
+
+      Instace
+      
+      rewrite remove_singleton_empty.
     + destruct (z == x).
       * subst. apply notin_singleton_1 in Hfv. contradiction.
       * rewrite remove_singleton_neq.
@@ -660,7 +718,18 @@ Proof.
            *** reflexivity.
            *** apply aux_not_equal. assumption.
         ** apply aux_not_equal. assumption.
-  - intros x y Hfv. simpl in *.
+  - intros x y Hfv. simpl in *. apply notin_remove_1 in Hfv. destruct Hfv as [Hfv | Hfv].
+    + subst. unfold vswap. destruct (x == y).
+      * subst. rewrite swap_id. reflexivity.
+      * destruct (x == x).
+        **
+
+
+
+          rewrite remove_singleton_neq.
+           *** reflexivity.
+           *** apply aux_not_equal. assumption.
+        ** apply aux_not_equal. assumption.
   Admitted.
 
 Lemma aeq_fv_nom_eq : forall t1 t2, t1 =a t2 -> fv_nom t1 = fv_nom t2.
