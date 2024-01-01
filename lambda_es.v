@@ -705,12 +705,13 @@ Proof.
 Lemma remove_swap_fv_nom: forall t x y, x `notin` (fv_nom t) -> remove x (fv_nom (swap y x t)) = remove y (fv_nom t). 
 Proof.
   induction t as [z | z t1 | t1 IHt1 t2 IHt2 | t1 IHt1 z t2 IHt2].
-  - intros x y Hfv. simpl in *. unfold vswap. destruct (z == y).
-    + subst.
+  - intros x y Hfv. simpl in *. apply notin_singleton_1 in Hfv. unfold vswap. destruct (z == y).
+    + subst. Admitted.
+(*      rewrite remove_singleton_empty.
 
-      Instace
+      Instance
       
-      rewrite remove_singleton_empty.
+      
     + destruct (z == x).
       * subst. apply notin_singleton_1 in Hfv. contradiction.
       * rewrite remove_singleton_neq.
@@ -730,7 +731,7 @@ Proof.
            *** reflexivity.
            *** apply aux_not_equal. assumption.
         ** apply aux_not_equal. assumption.
-  Admitted.
+  Admitted. *)
 
 Lemma aeq_fv_nom_eq : forall t1 t2, t1 =a t2 -> fv_nom t1 = fv_nom t2.
 Proof.

@@ -5,19 +5,18 @@ Require Import lambda_es.
 (** * A Formalization that Z property implies confluence in a nominal context. *)
 
 Inductive refltrans (R: n_sexp -> n_sexp -> Prop) : n_sexp -> n_sexp -> Prop :=
-| refl: forall a b, a =a b -> refltrans R a b
-| rtrans: forall a b c, R a b -> refltrans R b c -> refltrans R a c.
-
-(* to be fixed*)
-#[export] Instance  aeq_refltrans {R: n_sexp -> n_sexp -> Prop}: Proper (aeq ==> R ==> flip impl) (refltrans R).
-Proof.
-  intros a b Haeq. Admitted.
-                             
+| refl: forall a, refltrans R a a
+| rtrans: forall a b c, R a b -> refltrans R b c -> refltrans R a c
+| rtrans_aeq: forall a b c, a =a b -> refltrans R b c -> refltrans R a c.
+                               
 Lemma refltrans_composition {R: n_sexp -> n_sexp -> Prop}: forall t u v, refltrans R t u -> refltrans R u v -> refltrans R t v.
 Proof.
   intros t u v H1 H2. induction H1.
-  - rewrite H. assumption.
+  - assumption.
   - apply rtrans with b.
+    + assumption.
+    + apply IHrefltrans; assumption.
+  - apply rtrans_aeq with b.
     + assumption.
     + apply IHrefltrans; assumption.
 Qed.
