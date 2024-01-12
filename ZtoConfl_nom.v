@@ -1,16 +1,17 @@
 (* begin hide *)
 Require Import lambda_es.
+Definition Rel (A: Type) := A -> A -> Prop.
 (* end hide *)
 
 (** * A Formalization that Z property implies confluence in a nominal context. *)
 
-Inductive refltrans (R: n_sexp -> n_sexp -> Prop) : n_sexp -> n_sexp -> Prop :=
+Inductive refltrans (R: Rel n_sexp) : Rel n_sexp :=
 | refl: forall a, refltrans R a a
 | rtrans: forall a b c, R a b -> refltrans R b c -> refltrans R a c
 | refl_aeq: forall a b, a =a b -> refltrans R a b
 | rtrans_aeq: forall a b c, a =a b -> refltrans R b c -> refltrans R a c.
                                
-Lemma refltrans_composition {R: n_sexp -> n_sexp -> Prop}: forall t u v, refltrans R t u -> refltrans R u v -> refltrans R t v.
+Lemma refltrans_composition {R: Rel n_sexp}: forall t u v, refltrans R t u -> refltrans R u v -> refltrans R t v.
 Proof.
   intros t u v H1 H2. induction H1.
   - assumption.
@@ -25,11 +26,7 @@ Qed.
 
 Lemma refltrans_composition3 (R: Rel n_sexp): forall t u v, refltrans R t u -> refltrans R v t -> refltrans R v u.
 Proof.
-  intros. induction H0.
-  - assumption.
-  - apply rtrans with b.
-    -- assumption.
-    -- apply IHrefltrans. assumption.
+  intros t u v H1 H2. apply refltrans_composition with t; assumption.
 Qed.
     
 (* not needed
@@ -67,7 +64,7 @@ such that both $b$ and $c$ reduce to $d$. The existential
 quantification is expressed by the dotted lines in the diagram. This
 notion is defined in the Coq system as follows: *)
 
-Definition Confl (R: n_sexp -> n_sexp -> Prop) := forall a b c, (refltrans R) a b -> (refltrans R) a c -> (exists d, (refltrans R) b d /\ (refltrans R) c d).
+Definition Confl (R: Rel n_sexp) := forall a b c, (refltrans R) a b -> (refltrans R) a c -> (exists d, (refltrans R) b d /\ (refltrans R) c d).
 
 (** In %\cite{dehornoy2008z}%, V. van Oostrom gives a sufficient condition
 for an ARS to be confluent. This condition is based on the $\textit{Z
@@ -87,12 +84,12 @@ If a function [f] satisfies the Z property for $\to_R$ then
 we say that [f] is Z for $\to_R$, and the corresponding Coq
 definition is given by the following predicate: *)
 
-Definition f_is_Z (R: n_sexp -> n_sexp -> Prop) (f: n_sexp -> n_sexp) := forall a b, R a b -> ((refltrans R)  b (f a) /\ (refltrans R) (f a) (f b)).
+Definition f_is_Z (R: Rel n_sexp) (f: n_sexp -> n_sexp) := forall a b, R a b -> ((refltrans R)  b (f a) /\ (refltrans R) (f a) (f b)).
 
 (** Alternatively, an ARS $(A,\to_R)$ satisfies the Z property if there
 exists a mapping $f:A \to A$ such that $f$ is Z for $\to_R$: *)
 
-Definition Z_prop (R: n_sexp -> n_sexp -> Prop) := exists f, forall a b, R a b -> ((refltrans R) b (f a) /\ (refltrans R) (f a) (f b)).
+Definition Z_prop (R: Rel n_sexp) := exists f, forall a b, R a b -> ((refltrans R) b (f a) /\ (refltrans R) (f a) (f b)).
 
 Lemma Z_implies_a_fa: forall R f a, f_is_Z R f -> refltrans R a (f a). 
 Proof.
@@ -370,8 +367,6 @@ Qed.
  *)
 
 (** * An extension of the Z property: Compositional Z *)
-
-Definition Rel (A: Type) := A -> A -> Prop.
 
 Definition f_is_weak_Z (R R': Rel n_sexp) (f: n_sexp -> n_sexp) := forall a b, R a b -> ((refltrans R') b (f a) /\ (refltrans R') (f a) (f b)).
 

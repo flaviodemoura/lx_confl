@@ -5,7 +5,7 @@ Fixpoint B (t : n_sexp) := match t with
                            | n_var x => n_var x
                            | n_abs x t1 => n_abs x (B t1)
                            | n_app t1 t2 => match t1 with
-                                            | n_abs x t3 => m_subst (B t2) x (B t3)
+                                            | n_abs x t3 => {x := (B t2)}(B t3)
                                             | _ => n_app (B t1) (B t2)
                                             end
                            | n_sub t1 x t2 => n_sub (B t1) x (B t2)
@@ -15,7 +15,7 @@ Fixpoint P (t : n_sexp) := match t with
                            | n_var x => n_var x
                            | n_abs x t1 => n_abs x (P t1)
                            | n_app t1 t2 => n_app (P t1) (P t2)
-                           | n_sub t1 x t2 => m_subst (P t2) x (P t1)
+                           | n_sub t1 x t2 => {x := (P t2)}(P t1)
                            end.
      
 Lemma notin_P: forall x t, x `notin` fv_nom t -> x `notin` fv_nom (P t).
@@ -575,7 +575,7 @@ Proof.
 Qed.
 
 (*Lemma 4 in Nakazawa*)
-Lemma pure_pix: forall e1 x e2, pure e1 -> refltrans (ctx pix) (n_sub e1 x e2) (m_subst e2 x e1).
+Lemma pure_pix: forall e1 x e2, pure e1 -> refltrans (ctx pix) (n_sub e1 x e2) ({x := e2}e1).
 Proof.
   induction e1 using n_sexp_induction.
   - intros. case (x == x0).
@@ -698,7 +698,7 @@ Proof.
            --- apply step_sub_right. assumption.
 Qed.
 
-Lemma pure_pix_2: forall e1 x e2, pure e1 -> refltrans (ctx betapi) (n_sub e1 x e2) (m_subst e2 x e1).
+Lemma pure_pix_2: forall e1 x e2, pure e1 -> refltrans (ctx betapi) (n_sub e1 x e2) ({x := e2}e1).
 Proof.
   intros. apply (pure_pix _ x e2) in H. induction H.
   - apply refl.
@@ -941,11 +941,6 @@ Proof.
   apply in_swap;assumption.
 Qed.
 
-Lemma m_subst_lemma: forall e1 e2 e3 x y, x <> y -> x `notin` (fv_nom e3) ->
-  aeq (m_subst e3 y (m_subst e2 x e1)) (m_subst (m_subst e3 y e2) x (m_subst e3 y e1)).
-Proof.
-Admitted.
-
 Lemma lx_fv_nom: forall e1 e2 x, lx e1 e2 -> x `notin` (fv_nom e1) -> x `notin` (fv_nom e2).
   intros. induction H.
   - apply aeq_fv_nom in H. rewrite <- H. assumption.
@@ -987,7 +982,7 @@ Proof.
 Qed.
 
 Lemma refltrans_m_subst_1: forall e1 e2 e3 x,
-  refltrans lx e1 e2 -> refltrans lx (m_subst e1 x e3) (m_subst e2 x e3).
+  refltrans lx e1 e2 -> refltrans lx ({x := e1}e3) ({x := e2}e3).
 Proof.
   induction e3 using n_sexp_induction;intros;unfold m_subst in *.
   - simpl. default_simp. apply refl.
@@ -1097,7 +1092,7 @@ Proof.
 Qed.
 
 Lemma refltrans_subst_fresh_1: forall e1 e2 x, x `notin` (fv_nom e1) -> 
-  refltrans lx e1 (m_subst e2 x e1).
+  refltrans lx e1 ({x := e2}e1).
 Proof.
   intros. apply (rtrans _ _ (m_subst e2 x e1)).
   - apply step_aeq. apply aeq_sym. apply subst_fresh_eq. assumption.
@@ -1105,7 +1100,7 @@ Proof.
 Qed.
 
 Lemma refltrans_subst_fresh_2: forall e1 e2 x, x `notin` (fv_nom e1) -> 
-  refltrans lx (m_subst e2 x e1) e1.
+  refltrans lx ({x := e2}e1) e1.
 Proof.
   intros. apply (rtrans _ _ e1).
   - apply step_aeq. apply subst_fresh_eq. assumption.
@@ -1113,14 +1108,14 @@ Proof.
 Qed.
 
 Lemma refltrans_m_subst1 (R: Rel n_sexp): forall e1 e2 e3 x, refltrans (ctx R) e1 e2 -> 
-  refltrans (ctx R) (m_subst e1 x e3) (m_subst e2 x e3).
+  refltrans (ctx R) ({x := e1}e3) ({x := e2}e3).
 Admitted.
 
 Lemma refltrans_m_subst2 (R: Rel n_sexp): forall e1 e2 e3 x, refltrans (ctx R) e1 e2 -> 
-  refltrans (ctx R) (m_subst e3 x e1) (m_subst e3 x e2).
+  refltrans (ctx R) ({x := e3}e1) ({x := e3}e2).
 Admitted.
 
-Lemma aeq_double_m_subst: forall e1 e2 e3 x, aeq (m_subst (e1) x (m_subst e2 x e3)) (m_subst (m_subst e1 x e2) x e3).
+Lemma aeq_double_m_subst: forall e1 e2 e3 x, {x := e1}({x := e2}e3) =a {x := ({x := e1}e2)}e3.
 Proof.
   intros e1 e2 e3. generalize dependent e1. generalize dependent e2. induction e3 using n_sexp_induction;intros.
   - unfold m_subst. default_simp. apply aeq_refl.
@@ -1771,7 +1766,7 @@ Proof.
   - apply refl.
 Qed.
 
-Lemma refltrans_m_subst_B: forall e1 e2 x, pure e1 -> pure e2 -> refltrans lx (m_subst (B e2) x (B e1)) (B (m_subst e2 x e1)).
+Lemma refltrans_m_subst_B: forall e1 e2 x, pure e1 -> pure e2 -> refltrans lx ({x := (B e2)}(B e1)) (B ({x := e2}e1)).
 Proof.
   induction e1 using n_sexp_size_induction;intros.
   destruct e1 eqn:He.
@@ -1954,7 +1949,7 @@ Proof.
 Qed.
 
 Lemma refltrans_m_subst (R: Rel n_sexp): forall e1 e2 e3 e4 x, refltrans (ctx R) e1 e2 -> 
-  refltrans (ctx R) e3 e4 -> refltrans (ctx R) (m_subst e3 x e1) (m_subst e4 x e2).
+  refltrans (ctx R) e3 e4 -> refltrans (ctx R) ({x := e3}e1) ({x := e4}e2).
 Proof.
   intros. apply (refltrans_composition _ _ (m_subst e3 x e2)).
   - apply refltrans_m_subst2. assumption.
@@ -2237,13 +2232,11 @@ Proof.
   - assumption.
 Qed.
 
-Lemma Z_property_B_beta: forall e1 e2, pure e1 -> pure e2 -> (ctx beta) e1 e2 -> refltrans (ctx beta) e2 (B e1) /\
-  refltrans (ctx beta) (B e1) (B e2).
+Lemma Z_property_B_beta: forall e1 e2, pure e1 -> pure e2 -> (ctx beta) e1 e2 -> refltrans (ctx beta) e2 (B e1) /\ refltrans (ctx beta) (B e1) (B e2).
 Proof.
 Admitted.
 
-Lemma refltrans_beta_imply_B: forall e1 e2, pure e1 -> pure e2 -> refltrans (ctx beta) e1 e2 ->
-  refltrans (ctx beta) (B e1) (B e2). 
+Lemma refltrans_beta_imply_B: forall e1 e2, pure e1 -> pure e2 -> refltrans (ctx beta) e1 e2 -> refltrans (ctx beta) (B e1) (B e2). 
 Proof.
   induction 3.
   - apply refl.
@@ -2257,8 +2250,7 @@ Proof.
        --- assumption.
 Qed.
 
-Lemma refltrans_beta_to_lx: forall e1 e2, pure e1 -> pure e2 -> refltrans (ctx beta) e1 e2 ->
-  refltrans lx e1 e2.
+Lemma refltrans_beta_to_lx: forall e1 e2, pure e1 -> pure e2 -> refltrans (ctx beta) e1 e2 -> refltrans lx e1 e2.
 Proof.
   intros. induction H1.
   - apply refl.
