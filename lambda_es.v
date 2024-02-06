@@ -285,8 +285,7 @@ Proof.
  induction t; intros; simpl; unfold vswap; default_simp.
 Qed.
 
-Lemma swap_inverse: forall x y t1 t2,
-  t1 = swap x y t2 -> t2 = swap x y t1.
+Lemma swap_inverse: forall x y t1 t2, t1 = swap x y t2 -> t2 = swap x y t1.
 Proof.
   intros. rewrite H. rewrite swap_involutive. reflexivity.
 Qed.
@@ -1766,6 +1765,55 @@ Proof.
   - apply aeq_m_subst_in. assumption.
 Qed.
 
+Lemma aeq_swap_m_subst: forall t t' x y, x <> y -> y `notin` (fv_nom t) -> ({y := t'} swap x y t) =a ({x := t'}t).
+Proof.
+  induction t as [z | z t1 | t1 t2 | t1 t2 z].
+  - intros t x y Hneq Hnot. simpl. unfold vswap. destruct (z == x).
+    + subst. unfold m_subst. repeat rewrite subst_rec_fun_equation. repeat rewrite eq_dec_refl. apply aeq_refl.
+    + destruct (z == y).
+      * subst. simpl in Hnot. apply notin_singleton_1 in Hnot. contradiction.
+      * unfold m_subst. repeat rewrite subst_rec_fun_equation. destruct (y == z).
+        ** subst. contradiction.
+        ** destruct (x == z).
+           *** subst. contradiction.
+           *** apply aeq_refl.
+  - intros t2 x y Hneq Hnot. simpl. unfold m_subst. apply aeq_sym. rewrite subst_rec_fun_equation. destruct (x == z).
+    + subst. unfold vswap. rewrite eq_dec_refl. rewrite subst_rec_fun_equation. rewrite eq_dec_refl. apply aeq_sym. apply aeq_abs. simpl in Hnot. apply notin_remove_1 in Hnot. destruct Hnot.
+      * contradiction.
+      * assumption.
+    + rewrite subst_rec_fun_equation. unfold vswap. destruct (z == x).
+      * symmetry in e. contradiction.
+      * destruct (z == y). 
+        ** subst. destruct (y == x).
+           *** contradiction.
+           *** destruct (atom_fresh (union (fv_nom t2) (union (fv_nom (n_abs y t1)) (singleton x)))). destruct (atom_fresh (union (fv_nom t2) (union (fv_nom (n_abs x (swap x y t1))) (singleton y)))). rewrite (swap_symmetric _ x x1). apply aeq_trans with (n_abs x1 (subst_rec_fun (swap x1 y t1) t2 y)).
+               **** admit.
+               **** apply aeq_abs_same. apply aeq_m_subst_out. apply aeq_sym. apply aeq_swap_swap.
+Admitted.
+  
+Lemma aeq_m_subst_out_neq: forall t1 t1' t2 x y, x <> y -> x `notin` (fv_nom t1') -> t1 =a (swap x y t1') -> ({x := t2}t1) =a ({y := t2}t1').
+Proof.
+  induction t1 as [z | t1' z | t11 t12 | t11 t12 z].
+  - intros t1' t2 x y Hneq Hnotin H. apply aeq_sym in H. apply aeq_nvar_1 in H. rewrite <- H. rewrite swap_symmetric. apply aeq_swap_m_subst.
+    + apply aux_not_equal. assumption.
+    + assumption.
+  - intros t11 t2 x y Hneq Hnot H. apply aeq_trans with ({x := t2}(swap x y t11)).
+    + apply aeq_m_subst_out. assumption.
+    + rewrite swap_symmetric. apply aeq_swap_m_subst.
+      * apply aux_not_equal. assumption.
+      * assumption.
+  - intros t1 t2 x y Hneq Hnot H. apply aeq_sym in H. pose proof aeq_swap1 as H'. specialize (H' (swap x y t1) (n_app t11 t1_1) x y). apply H' in H. clear H'.  rewrite swap_involutive in H. apply aeq_trans with ({y := t2} (swap x y (n_app t11 t1_1))).
+    + apply aeq_sym. apply aeq_swap_m_subst.
+      * assumption.
+      * pose proof aeq_fv_nom as H'. specialize (H' t1 (swap x y (n_app t11 t1_1))). apply H' in H. rewrite H in Hnot. apply fv_nom_swap_2 with x. rewrite swap_symmetric. assumption.
+     + apply aeq_m_subst_out. apply aeq_sym. assumption.
+  - intros t1 t2 x y Hneq Hnot H. apply aeq_sym in H. pose proof aeq_swap1 as H'. specialize (H' (swap x y t1) ([z := t1_1]t11) x y). apply H' in H. clear H'.  rewrite swap_involutive in H. apply aeq_trans with ({y := t2} (swap x y ([z := t1_1]t11))).
+    + apply aeq_sym. apply aeq_swap_m_subst.
+      * assumption.
+      * pose proof aeq_fv_nom as H'. specialize (H' t1 (swap x y ([z := t1_1]t11))). apply H' in H. rewrite H in Hnot. apply fv_nom_swap_2 with x. rewrite swap_symmetric. assumption.
+    + apply aeq_m_subst_out. apply aeq_sym. assumption.
+Qed.
+  
 (* begin hide  - proof need to be revised
 Lemma aeq_m_subst_3: forall t1 t1' t2 x y, x <> y -> x `notin` (fv_nom t1') -> t1 =a (swap x y t1') -> ({x := t2}t1) =a ({y := t2}t1').
 Proof.
@@ -3539,7 +3587,7 @@ Qed.
 
 (** Now, we show how to propagate a swap inside metasubstitutions using the decomposition of the metasubstitution provided by the corollary [aeq_m_subst_eq].%\newline% *)
 
-Lemma swap_subst_rec_fun: forall x y z t u, swap x y ({z := u}t) =a ({(vswap x y z) := (swap x y u)}(swap x y t)).
+Lemma aeq_swap_m_subst: forall x y z t u, swap x y ({z := u}t) =a ({(vswap x y z) := (swap x y u)}(swap x y t)).
 Proof.
   intros x y z t u. destruct (x == y). 
   - subst. repeat rewrite swap_id. rewrite vswap_id. apply aeq_refl.
@@ -3674,7 +3722,7 @@ Qed.
 \end{enumerate} $\hfill\Box$
 \end{enumerate}%*) 
 
-(** The following two lemmas toghether with lemmas [m_subst_abs_eq] and [m_subst_sub_eq] are essential in simplifying the propagations of metasubstitution. They are presented here because they depend on lemma [swap_subst_rec_fun]. *)
+(** The following two lemmas toghether with lemmas [m_subst_abs_eq] and [m_subst_sub_eq] are essential in simplifying the propagations of metasubstitution. They are presented here because they depend on lemma [aeq_swap_m_subst]. *)
 
 Lemma m_subst_abs_neq: forall t u x y z, x <> y -> z `notin` fv_nom u `union` fv_nom (n_abs y t) `union` {{x}} -> {x := u}(n_abs y t) =a n_abs z ({x := u}(swap y z t)).
 Proof.
@@ -3694,7 +3742,7 @@ Proof.
                **** symmetry in H. contradiction.
                **** apply fv_nom_remove_swap; assumption.
       * apply aeq_sym. apply aeq_trans with (subst_rec_fun (swap z x0 (swap y z t)) (swap z x0 u) (vswap z x0 x)).
-        ** apply swap_subst_rec_fun.
+        ** apply aeq_swap_m_subst.
         ** replace (vswap z x0 x) with x.
            *** apply aeq_m_subst_eq.
                **** rewrite (swap_symmetric _ z x0). rewrite (swap_symmetric _ y z). rewrite (swap_symmetric _ y x0). case (x0 == y).
@@ -3734,7 +3782,7 @@ Proof.
                **** assumption.
                **** apply notin_union_2 in n0. apply notin_union_1 in n0. apply notin_union_1 in n0. apply diff_remove_2 in n0; assumption.
       * apply aeq_sym. apply aeq_trans with (subst_rec_fun (swap z x0 (swap y z t1)) (swap z x0 u) (vswap z x0 x)). 
-        ** apply swap_subst_rec_fun.
+        ** apply aeq_swap_m_subst.
         ** replace (vswap z x0 x) with x. 
            *** apply aeq_m_subst_eq. 
                **** rewrite (swap_symmetric _ z x0). rewrite (swap_symmetric _ y z). rewrite (swap_symmetric _ y x0). simpl in *. case (x0 == y).
@@ -3754,7 +3802,7 @@ Proof.
            *** unfold vswap. repeat apply notin_union_2 in H2. apply notin_singleton_1 in H2. repeat apply notin_union_2 in n0. apply notin_singleton_1 in n0. default_simp.
 Qed.
 
-(* In fact, the need of the lemma [swap_subst_rec_fun] in the proofs of the two previous lemmas is justified by the fact that when the $\alpha$-equation involves abstractions with different binders, or explicit substitutions with different binders, the rules [aeq_abs_diff] and [aeq_sub_diff] introduce swaps that are outside the metasubstitutions. *)
+(* In fact, the need of the lemma [aeq_swap_m_subst] in the proofs of the two previous lemmas is justified by the fact that when the $\alpha$-equation involves abstractions with different binders, or explicit substitutions with different binders, the rules [aeq_abs_diff] and [aeq_sub_diff] introduce swaps that are outside the metasubstitutions. *)
 
 (* This is the intended behaviour of the metasubstitution *)
 (* Lemma fv_nom_metasub: forall t u x,  x `notin` (fv_nom t) ->  fv_nom ({x := u}t) [=] fv_nom t.
