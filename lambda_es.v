@@ -12,7 +12,9 @@ Proof.
   assert (H := nat_ind (fun n => (forall m : nat, m < n -> Q m))).
   apply IH. apply H.
   - intros m Hlt; inversion Hlt.
-  - intros n' H' m Hlt. apply IH. intros m0 Hlt'. apply H'. apply lt_n_Sm_le in Hlt.  apply lt_le_trans with m; assumption.
+  - intros n' H' m Hlt. apply IH. intros m0 Hlt'. apply H'. apply Nat.lt_succ_r in Hlt.  apply lt_le_trans with m.
+    + assumption.
+    + apply Arith_prebase.lt_n_Sm_le. apply Arith_prebase.lt_S_n. assumption.
 Qed.
 
 Lemma diff_remove_2: forall x y s, x <> y -> x `notin` remove y s -> x `notin` s.
@@ -23,8 +25,7 @@ Qed.
 Lemma aux_not_equal : forall (x:atom) (y:atom), x <> y -> y <> x.
 Proof.
   intros. unfold not. intros. unfold not in H.
-  assert (x = y). rewrite H0. reflexivity.
-  contradiction.
+  assert (x = y). rewrite H0. reflexivity.contradiction.
 Qed.
 
 Lemma remove_singleton_empty: forall x, remove x (singleton x) [=] empty.
@@ -84,7 +85,8 @@ Proof.
   intros. apply notin_remove_2. assumption.
 Qed.
 (* end hide *)
-
+(* begin hide *)
+(* used in from 2023 *)
 (** * A syntactic extension of the $\lambda$-calculus *)
 
 (** In this section, we present the framework of the formalization, which is based on a nominal approach %\cite{gabbayNewApproachAbstract2002}% where variables use names. In the nominal setting, variables are represented by atoms that are structureless entities with a decidable equality: 
@@ -127,9 +129,10 @@ This notion can be extended to $\lambda$-terms in a straightfoward way:
 In the previous example, one could apply a swap to avoid the variable capture in a way that, a swap is applied to the body of the abstraction before applying the metasubstitution to it: $(\lambda_x\lambda_y.x\ y)\ y \to_{\beta} \metasub{(\swap{y}{z}{(\lambda_y.x\ y)})}{x}{y} = \metasub{(\lambda_z.x\ z)}{x}{y} = \lambda_z.y\ z$. Could we have used a variable substitution instead of a swapping in the previous example? Absolutely. We could have done the reduction as $(\lambda_x\lambda_y.x\ y)\ y \to_{\beta} \metasub{(\metasub{(\lambda_y.x\ y)}{y}{z})}{x}{y} = \metasub{(\lambda_z.x\ z)}{x}{y} = \lambda_z.y\ z$, but as we will shortly see, variable substitution is not stable modulo $\alpha$-equivalence, while the swapping is, thereby rendering it a more fitting choice when operating with $\alpha$-classes.
 
 In what follows, we will adopt a mixed-notation approach, intertwining metanotation with the equivalent Coq notation. This strategy aids in elucidating the proof steps of the upcoming lemmas, enabling a clearer and more detailed comprehension of each stage in the argumentation. The corresponding Coq code for the swapping of variables, named [vswap], is defined as follows: *)
-
+(* end hide *)
 Definition vswap (x:atom) (y:atom) (z:atom) := if (z == x) then y else if (z == y) then x else z.
 
+(* begin hide *)
 (** %\noindent% therefore, the swap $\vswap{x}{y}{z}$ is written in Coq as [vswap x y z]. As a short example to acquaint ourselves with the Coq notation, let us show how we will write the proofs:*)
 
 Lemma vswap_id: forall x y, vswap x x y = y.
@@ -166,7 +169,7 @@ Qed.
 Calculi with explicit substitutions are formalisms that deconstruct the metasubstitution operation into finer-grained steps, thereby functioning as an intermediary between the $\lambda$-calculus and its practical implementations. In other words, these calculi shed light on the execution models of higher-order languages. In fact, the development of a calculus with explicit substitutions faithful to the $\lambda$-calculus, in the sense of the preservation of some desired properties were the main motivation for such a long list of calculi with explicit substitutions invented in the last decades %\cite{abadiExplicitSubstitutions1991,roseExplicitSubstitutionNames2011,benaissaLnCalculusExplicit1996,curienConfluencePropertiesWeak1996,munozConfluencePreservationStrong1996,kamareddineExtendingLcalculusExplicit1997a,blooExplicitSubstitutionEdge1999,davidLambdacalculusExplicitWeakening2001,kesnerTheoryExplicitSubstitutions2009a}%.
 
 The following inductive definition corresponds to the grammar (%\ref{es:grammar}%), where the explicit substitution constructor, named [n_sub], has a special notation. Instead of writing [n_sub t x u], we will write [[x := u] t] similarly to (%\ref{es:grammar}%). Accordingly, [n_sexp] denotes the set of nominal $\lambda$-expressions equipped with an explicit substitution operator, which, for simplicity, we will refer to as just "terms". *)
-
+(* end hide *)
 Inductive n_sexp : Set :=
 | n_var (x:atom)
 | n_abs (x:atom) (t:n_sexp)
