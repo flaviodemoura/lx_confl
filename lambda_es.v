@@ -1542,6 +1542,14 @@ This axiom transforms a set equality into a syntactic equality. This will allow 
 Axiom Eq_implies_equality: forall t1 t2, t1 =a t2 -> fv_nom t1 = fv_nom t2.
 (* end hide *) 
 *)
+
+(* Tarefa Jose Roberto *)
+
+Lemma aeq_implies_fv_nom_eq: forall t1 t2, t1 =a t2 -> fv_nom t1 = fv_nom t2.
+Proof.
+  induction 1. (* induction t1 as [y | t11 y | t11 t2 | t11 t2 y ] using n_sexp_induction. *)
+Admitted.
+  
 Lemma aeq_m_subst_in: forall t u u' x, u =a u' -> ({x := u}t) =a ({x := u'}t).
 Proof.
   induction t as [y | t1 y | t1 t2 | t1 t2 y ] using n_sexp_induction. 
