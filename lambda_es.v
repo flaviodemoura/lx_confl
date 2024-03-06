@@ -25,7 +25,9 @@ Qed.
 Lemma aux_not_equal : forall (x:atom) (y:atom), x <> y -> y <> x.
 Proof.
   intros. unfold not. intros. unfold not in H.
-  assert (x = y). rewrite H0. reflexivity.contradiction.
+  assert (x = y).
+  - subst. reflexivity.
+  - contradiction.
 Qed.
 
 Lemma remove_singleton_empty: forall x, remove x (singleton x) [=] empty.
@@ -85,9 +87,8 @@ Proof.
   intros. apply notin_remove_2. assumption.
 Qed.
 (* end hide *)
-(* begin hide *)
-(* used in from 2023 *)
-(** * A syntactic extension of the $\lambda$-calculus *)
+
+(** used in FROM 2023 * A syntactic extension of the $\lambda$-calculus *)
 
 (** In this section, we present the framework of the formalization, which is based on a nominal approach %\cite{gabbayNewApproachAbstract2002}% where variables use names. In the nominal setting, variables are represented by atoms that are structureless entities with a decidable equality: 
 
@@ -129,11 +130,10 @@ This notion can be extended to $\lambda$-terms in a straightfoward way:
 In the previous example, one could apply a swap to avoid the variable capture in a way that, a swap is applied to the body of the abstraction before applying the metasubstitution to it: $(\lambda_x\lambda_y.x\ y)\ y \to_{\beta} \metasub{(\swap{y}{z}{(\lambda_y.x\ y)})}{x}{y} = \metasub{(\lambda_z.x\ z)}{x}{y} = \lambda_z.y\ z$. Could we have used a variable substitution instead of a swapping in the previous example? Absolutely. We could have done the reduction as $(\lambda_x\lambda_y.x\ y)\ y \to_{\beta} \metasub{(\metasub{(\lambda_y.x\ y)}{y}{z})}{x}{y} = \metasub{(\lambda_z.x\ z)}{x}{y} = \lambda_z.y\ z$, but as we will shortly see, variable substitution is not stable modulo $\alpha$-equivalence, while the swapping is, thereby rendering it a more fitting choice when operating with $\alpha$-classes.
 
 In what follows, we will adopt a mixed-notation approach, intertwining metanotation with the equivalent Coq notation. This strategy aids in elucidating the proof steps of the upcoming lemmas, enabling a clearer and more detailed comprehension of each stage in the argumentation. The corresponding Coq code for the swapping of variables, named [vswap], is defined as follows: *)
-(* end hide *)
+
 Definition vswap (x:atom) (y:atom) (z:atom) := if (z == x) then y else if (z == y) then x else z.
 
-(* begin hide *)
-(** %\noindent% therefore, the swap $\vswap{x}{y}{z}$ is written in Coq as [vswap x y z]. As a short example to acquaint ourselves with the Coq notation, let us show how we will write the proofs:*)
+(** used in FROM 2023 %\noindent% therefore, the swap $\vswap{x}{y}{z}$ is written in Coq as [vswap x y z]. As a short example to acquaint ourselves with the Coq notation, let us show how we will write the proofs:*)
 
 Lemma vswap_id: forall x y, vswap x x y = y.
 Proof.
@@ -157,7 +157,7 @@ Proof.
   intros x y z H1 H2. unfold vswap. default_simp.
 Qed.
 
-(** ** An explicit substitution operator *)
+(** used in FROM 2023 ** An explicit substitution operator *)
 
 (** The extension of the swap operation to terms require an additional comment because we will not work with the grammar (%\ref{lambda:grammar}%), but rather, we will extend it with an explicit substitution operator:
 
@@ -169,7 +169,7 @@ Qed.
 Calculi with explicit substitutions are formalisms that deconstruct the metasubstitution operation into finer-grained steps, thereby functioning as an intermediary between the $\lambda$-calculus and its practical implementations. In other words, these calculi shed light on the execution models of higher-order languages. In fact, the development of a calculus with explicit substitutions faithful to the $\lambda$-calculus, in the sense of the preservation of some desired properties were the main motivation for such a long list of calculi with explicit substitutions invented in the last decades %\cite{abadiExplicitSubstitutions1991,roseExplicitSubstitutionNames2011,benaissaLnCalculusExplicit1996,curienConfluencePropertiesWeak1996,munozConfluencePreservationStrong1996,kamareddineExtendingLcalculusExplicit1997a,blooExplicitSubstitutionEdge1999,davidLambdacalculusExplicitWeakening2001,kesnerTheoryExplicitSubstitutions2009a}%.
 
 The following inductive definition corresponds to the grammar (%\ref{es:grammar}%), where the explicit substitution constructor, named [n_sub], has a special notation. Instead of writing [n_sub t x u], we will write [[x := u] t] similarly to (%\ref{es:grammar}%). Accordingly, [n_sexp] denotes the set of nominal $\lambda$-expressions equipped with an explicit substitution operator, which, for simplicity, we will refer to as just "terms". *)
-(* end hide *)
+
 Inductive n_sexp : Set :=
 | n_var (x:atom)
 | n_abs (x:atom) (t:n_sexp)
@@ -197,7 +197,7 @@ Fixpoint fv_nom (t : n_sexp) : atoms :=
   | n_sub t1 x t2 => (remove x (fv_nom t1)) `union` fv_nom t2
   end.
 
-(** The action of a permutation on a term, written $\swap{x}{y}{t}$, is inductively defined as in (%\ref{def:swap}%) with the additional case for the explicit substitution operator:%\vspace{.5cm}%
+(** used in FROM 2023 - The action of a permutation on a term, written $\swap{x}{y}{t}$, is inductively defined as in (%\ref{def:swap}%) with the additional case for the explicit substitution operator:%\vspace{.5cm}%
 
 $\swap{x}{y}{t} := \left\{ \begin{array}{ll}
 \vswap{x}{y}{v}, & \mbox{ if } t \mbox{ is the variable } v; \\
@@ -248,6 +248,20 @@ Proof.
   intros x y z w H. subst. reflexivity.
 Qed.
 (* end hide *)
+
+(** used in FROM 2023 ** An explicit substitution operator *)
+
+(** The extension of the swap operation to terms require an additional comment because we will not work with the grammar (%\ref{lambda:grammar}%), but rather, we will extend it with an explicit substitution operator:
+
+%\begin{equation}\label{es:grammar}
+  t ::= x \mid \lambda_x.t \mid t\ t \mid \esub{t}{x}{u}
+\end{equation}%
+%\noindent% where $[x := u] t$ represents a term with an operator that will be evaluated with specific rules of a substitution calculus. The intended meaning of the explicit substitution is that it will simulate the metasubstitution. This formalization aims to be a generic framework applicable to any calculi with explicit substitutions using a named notation for variables. Therefore, we will not specify rules about how one can simulate the metasubstitution, but it is important to be aware that this is not a trivial task as one can easily lose important properties of the original $\lambda$-calculus %\cite{melliesTypedLcalculiExplicit1995b,guillaumeCalculusDoesNot2000}%.
+
+Calculi with explicit substitutions are formalisms that deconstruct the metasubstitution operation into finer-grained steps, thereby functioning as an intermediary between the $\lambda$-calculus and its practical implementations. In other words, these calculi shed light on the execution models of higher-order languages. In fact, the development of a calculus with explicit substitutions faithful to the $\lambda$-calculus, in the sense of the preservation of some desired properties were the main motivation for such a long list of calculi with explicit substitutions invented in the last decades %\cite{abadiExplicitSubstitutions1991,roseExplicitSubstitutionNames2011,benaissaLnCalculusExplicit1996,curienConfluencePropertiesWeak1996,munozConfluencePreservationStrong1996,kamareddineExtendingLcalculusExplicit1997a,blooExplicitSubstitutionEdge1999,davidLambdacalculusExplicitWeakening2001,kesnerTheoryExplicitSubstitutions2009a}%.
+
+The following inductive definition corresponds to the grammar (%\ref{es:grammar}%), where the explicit substitution constructor, named [n_sub], has a special notation. Instead of writing [n_sub t x u], we will write [[x := u] t] similarly to (%\ref{es:grammar}%). Accordingly, [n_sexp] denotes the set of nominal $\lambda$-expressions equipped with an explicit substitution operator, which, for simplicity, we will refer to as just "terms". *)
+
 
 (** The [swap] function has many interesting properties, but we will focus on the ones that are more relevant to the proofs related to the substitution lemma. Nevertheless, all lemmas can be found in the source code of the formalization%\footnote{\url{https://flaviomoura.info/files/msubst.v}}%. The next lemmas are simple properties that are all proved by induction on the structure of term [t]: *)
 
@@ -352,7 +366,7 @@ Lemma fv_nom_remove_swap: forall t x y y0, x <> y ->  x <> y0 -> x `notin` fv_no
 Qed.
 (* end hide *)
 
-(** The standard proof strategy used so far is induction on the structure of terms. Nevertheless, the builtin induction principle automatically generated in Coq for the inductive definition [n_sexp] is not strong enough due to swappings:
+(** used in FROM 2023 -  The standard proof strategy used so far is induction on the structure of terms. Nevertheless, the builtin induction principle automatically generated in Coq for the inductive definition [n_sexp] is not strong enough due to swappings:
 
 <<
 forall P :n_sexp -> Prop,
@@ -363,7 +377,9 @@ forall P :n_sexp -> Prop,
        forall t:n_sexp, P t
 >>
 
-In fact, in general, the induction hypothesis in the abstraction case (resp. explicit substitution case) refers to the body [t] of the abstraction (resp. [t1] of the explicit substitution), while the goal involves a swap acting on the body of the abstraction (resp. explicit substitution). In order to circunvet this problem, we defined a customized induction principle based on the size of terms: *)
+In fact, in general, the induction hypothesis in the abstraction case (resp. explicit substitution case) refers to the body [t] of the abstraction (resp. [t1] of the explicit substitution), while the goal involves a swap acting on the body of the abstraction (resp. explicit substitution). In order to circunvet this problem, we defined a customized induction principle based on the size of terms:
+
+Check the need of the swap P (swap x y t2)) for instance in the abstraction case. The proof below is a bit simpler.
 
 Lemma n_sexp_induction: forall P : n_sexp -> Prop, (forall x, P (n_var x)) ->
  (forall t1 z, (forall t2 x y, size t2 = size t1 -> P (swap x y t2)) -> P (n_abs z t1)) ->
@@ -389,9 +405,35 @@ Proof.
     + intros. apply H with ((size (swap x0 y t0))).
       ++ rewrite swap_size_eq. rewrite H0. simpl in Heqn. rewrite Heqn. apply le_lt_n_Sm. apply le_plus_l.
       ++ reflexivity.
-Qed. 
+Qed. *)
 
-(** %\noindent% which states that in order to conclude that a certain property $P$ holds for all terms, we need to prove that:
+  Lemma n_sexp_induction: forall P : n_sexp -> Prop, (forall x, P (n_var x)) ->
+                                                     (forall t1 z, (forall t2, size t2 = size t1 -> P t2) -> P (n_abs z t1)) ->
+                                                     (forall t1 t2, P t1 -> P t2 -> P (n_app t1 t2)) ->
+                                                     (forall t1 t3 z, P t3 -> (forall t2, size t2 = size t1 -> P t2) -> P (n_sub t1 z t3)) -> (forall t, P t).
+Proof.
+  intros P Hvar Habs Happ Hsub t. remember (size t) as n. generalize dependent t. induction n using strong_induction. intro t; case t.
+  - intros x Hsize. apply Hvar.
+  - intros x t' Hsize. apply Habs. intros t'' Hsize'. apply H with (size t'').
+    + rewrite Hsize'. rewrite Hsize. simpl. apply Nat.lt_succ_diag_r.
+    + reflexivity.
+  - intros t1 t2 Hsize. simpl in Hsize. apply Happ.
+    + apply H with ((size t1)).
+      ++ rewrite Hsize. apply le_lt_n_Sm. apply le_plus_l.
+      ++ reflexivity.
+    + apply H with ((size t2)).
+      ++ rewrite Hsize. apply le_lt_n_Sm. apply le_plus_r.
+      ++ reflexivity.
+  - intros t1 x t2 Hsize. simpl in Hsize. apply Hsub.
+    + apply H with (size t2).
+      ++ rewrite Hsize. apply le_lt_n_Sm. apply le_plus_r.
+      ++ reflexivity.
+    + intros t1' Hsize'. apply H with (size t1').
+      ++ rewrite Hsize'. rewrite Hsize. apply le_lt_n_Sm. apply le_plus_l.
+      ++ reflexivity.
+Qed.
+  
+(** used in FROM 2023 %\noindent% which states that in order to conclude that a certain property $P$ holds for all terms, we need to prove that:
 %\begin{enumerate}
  \item $P$ must hold for any variable;
  \item If $P$ holds for the term $\swap{x}{y}{t_2}$, where $t_1$ and $t_2$ have the same size, then it also holds for the abstraction $\lambda_z.t_1,\forall x, y, z, t_1$ and $t_2$;
@@ -418,24 +460,7 @@ Proof.
     + apply IHt2. apply notin_union_2 in Hfv. assumption. 
 Qed.
       
-(*  induction t as [z | t1 z | t1 t2 | t1 t2 z ] using n_sexp_induction. 
-  - intros x' x y Hfv. simpl in *. apply notin_singleton_1 in Hfv. apply notin_singleton. apply swap_neq. assumption. 
-  - intros x' x y Hfv. simpl in *. apply notin_remove_1 in Hfv. destruct Hfv. 
-    + subst. apply notin_remove_3. reflexivity. 
-    + apply notin_remove_2. specialize (H t1 x x). rewrite swap_id in H. apply H. 
-      * reflexivity.
-      * assumption.
-  - intros x' x y Hfv. simpl in *. apply notin_union. 
-    + apply IHt2. apply notin_union_1 in Hfv. assumption.
-    + apply IHt1. apply notin_union_2 in Hfv. assumption. 
-  - intros x' x y Hfv. simpl in *. apply notin_union. 
-    + apply notin_union_1 in Hfv. apply notin_remove_1 in Hfv. destruct Hfv. 
-      * subst. apply notin_remove_3. reflexivity.
-      * apply notin_remove_2. specialize (H t1 x x). rewrite swap_id in H. apply H.
-        ** reflexivity.
-        ** assumption.
-    + apply notin_union_2 in Hfv. apply IHt1; assumption. 
-Qed. This is not a good example. The justification below is wrong. *)
+(* used in FROM 2023 -  This is not a good example. The justification below is wrong. *)
 (** %\noindent{\bf Proof.}% Note that in the paper and pencil notation, this lemma states that: %\newline%
 
 If $x' \notin fv\_nom(t)$ then $\vswap{x}{y}{x'} \notin fv\_nom(\swap{x}{y}{t})$.%\newline%
@@ -488,41 +513,29 @@ Qed. Induction on the size not needed here also! *)
 (* begin hide *)
 Lemma swap_remove_reduction: forall x y t, remove x (remove y (fv_nom (swap y x t))) [=] remove x (remove y (fv_nom t)).
 Proof.
-  induction t.
-  - rewrite remove_symmetric. simpl. unfold vswap. default_simp.
-    -- repeat rewrite remove_singleton_empty. repeat rewrite remove_empty. reflexivity.
-    -- rewrite remove_symmetric. rewrite remove_singleton_empty. rewrite remove_symmetric. rewrite remove_singleton_empty. repeat rewrite remove_empty. reflexivity.
-    -- rewrite remove_symmetric. reflexivity.
-  - simpl. unfold vswap. default_simp.
-    -- rewrite double_remove. rewrite remove_symmetric. rewrite double_remove. rewrite remove_symmetric. assumption.
-    -- rewrite double_remove. symmetry. rewrite remove_symmetric. rewrite double_remove.
-       rewrite remove_symmetric. symmetry. assumption.
-    -- assert (remove y (remove x0 (fv_nom (swap y x t))) [=] remove x0 (remove y (fv_nom (swap y x t)))). {
-         rewrite remove_symmetric. reflexivity.
-       }
-       assert (remove y (remove x0 (fv_nom  t)) [=] remove x0 (remove y (fv_nom t))). {
-         rewrite remove_symmetric. reflexivity.
-       }
-       rewrite H; rewrite H0. rewrite remove_symmetric. symmetry. rewrite remove_symmetric. rewrite IHt. reflexivity.       
+  induction t as [z | z t1 | t1 IHt1 t2 IHt2 | t1 IHt1 z t2 IHt2 ].
+  - rewrite remove_symmetric. simpl. unfold vswap. destruct (z == y).
+    +  subst. repeat rewrite remove_singleton_empty. repeat rewrite remove_empty. reflexivity.
+    + destruct (z == x).
+      * subst. rewrite remove_symmetric. rewrite remove_singleton_empty. rewrite remove_symmetric. rewrite remove_singleton_empty. repeat rewrite remove_empty. reflexivity.
+      * rewrite remove_symmetric. reflexivity.
+  - simpl. unfold vswap. destruct (z == y).
+    +  subst. rewrite double_remove. rewrite remove_symmetric. rewrite double_remove. rewrite remove_symmetric. assumption.
+    + destruct (z == x).
+      * subst. rewrite double_remove. symmetry. rewrite remove_symmetric. rewrite double_remove. rewrite remove_symmetric. symmetry. assumption.
+      * rewrite (remove_symmetric y z _). rewrite (remove_symmetric x z _). rewrite IHt1. rewrite (remove_symmetric y z _). symmetry. rewrite (remove_symmetric x z _). reflexivity.
   - simpl. repeat rewrite remove_union_distrib. apply Equal_union_compat.
-    -- assumption.
-    -- assumption.
-  - simpl. unfold vswap. default_simp.
-    -- repeat rewrite remove_union_distrib. apply Equal_union_compat.
-       --- rewrite remove_symmetric. rewrite double_remove. rewrite double_remove. rewrite remove_symmetric. assumption.
-       --- assumption.
-    -- repeat rewrite remove_union_distrib. apply Equal_union_compat.
-       --- rewrite double_remove. symmetry. rewrite remove_symmetric. rewrite double_remove. rewrite remove_symmetric. symmetry. assumption.
-       --- assumption.
-    -- repeat rewrite remove_union_distrib. apply Equal_union_compat.
-       --- assert (remove y (remove x0 (fv_nom (swap y x t1))) [=] remove x0 (remove y (fv_nom (swap y x t1)))). {
-         rewrite remove_symmetric. reflexivity.
-           }
-           assert (remove y (remove x0 (fv_nom  t1)) [=] remove x0 (remove y (fv_nom t1))). {
-         rewrite remove_symmetric. reflexivity.
-           }
-           rewrite H; rewrite H0. rewrite remove_symmetric. symmetry. rewrite remove_symmetric. symmetry. rewrite IHt1. reflexivity.
-       --- assumption.
+    + assumption.
+    + assumption.
+  - simpl. unfold vswap. destruct (z == y).
+    + subst. repeat rewrite remove_union_distrib. apply Equal_union_compat.
+      * rewrite remove_symmetric. repeat rewrite double_remove. rewrite remove_symmetric. assumption.
+      * assumption.
+    + repeat rewrite remove_union_distrib. apply Equal_union_compat.
+      * destruct (z == x).
+        ** subst. symmetry. rewrite (remove_symmetric x y _). repeat rewrite double_remove. rewrite remove_symmetric. symmetry. assumption.
+        ** rewrite (remove_symmetric y z _). rewrite (remove_symmetric x z _). rewrite IHt1. rewrite (remove_symmetric z x _). rewrite (remove_symmetric z y _). reflexivity.
+      * assumption. 
 Qed.
 
 Lemma remove_fv_swap: forall x y t, x `notin` fv_nom t -> remove x (fv_nom (swap y x t)) [=] remove y (fv_nom t).
@@ -584,7 +597,7 @@ Proof. (** %\noindent {\bf Proof.}% The proof is by induction on the structure o
 Qed.
 (* end hide *)
 
-(** ** $\alpha$-equivalence *)
+(** used in FROM 2023 ** $\alpha$-equivalence *)
 
 (** As usual in the standard presentations of the $\lambda$-calculus, we work with terms modulo $\alpha$-equivalence. This means that $\lambda$-terms are identified up to renaming of bound variables. For instance, all terms $\lambda_x.x$, $\lambda_y.y$ and $\lambda_z.z$ are seen as the same term which corresponds to the identity function. Formally, the notion of $\alpha$-equivalence is defined by the following inference rules:
 
@@ -619,10 +632,10 @@ Inductive aeq : n_sexp -> n_sexp -> Prop :=
 (* begin hide *)
 Notation "t =a u" := (aeq t u) (at level 60).
 
-#[export] Hint Constructors aeq.
+Hint Constructors aeq.
 (* end hide *)
 
-(** In what follows, we use a infix notation for $\alpha$-equivalence in the Coq code. Therefore, we write [t =a u] instead of [aeq t u]. The above notion defines an equivalence relation over the set [n_sexp] of nominal expressions with explicit substitutions, %{\it i.e.}% the [aeq] relation is reflexive, symmetric and transitive (proofs in the source file%\footnote{\url{https://flaviomoura.info/files/msubst.v}}%). In addition, $\alpha$-equivalent terms have the same size, and the same set of free variables: *)
+(** used in FROM 2023 -  In what follows, we use a infix notation for $\alpha$-equivalence in the Coq code. Therefore, we write [t =a u] instead of [aeq t u]. The above notion defines an equivalence relation over the set [n_sexp] of nominal expressions with explicit substitutions, %{\it i.e.}% the [aeq] relation is reflexive, symmetric and transitive (proofs in the source file%\footnote{\url{https://flaviomoura.info/files/msubst.v}}%). In addition, $\alpha$-equivalent terms have the same size, and the same set of free variables: *)
 (* begin hide *)
 Example aeq1 : forall x y, x <> y -> (n_abs x (n_var x)) =a (n_abs y (n_var y)).
 Proof.
@@ -645,16 +658,6 @@ Lemma aeq_nvar_1: forall t x, t =a (n_var x) -> t = n_var x.
 Proof.
   induction t.
   - intros x' H. inversion H; subst. reflexivity.
-  - intros x' H. inversion H.
-  - intros x H. inversion H.
-  - intros x' H. inversion H.
-Qed.
-
-(* possivelmente pode ser generalizado para algo da forma t = u -> t =a u *)
-Lemma aeq_nvar_2: forall t x, t = n_var x -> t =a (n_var x).
-Proof.
-  induction t.
-  - intros x' H. inversion H; subst. apply aeq_refl.
   - intros x' H. inversion H.
   - intros x H. inversion H.
   - intros x' H. inversion H.
@@ -765,11 +768,11 @@ Proof.
                **** apply aux_not_equal. assumption.
            *** apply aux_not_equal. *)
   
-Lemma remove_swap_fv_nom: forall t x y, x `notin` (fv_nom t) -> remove x (fv_nom (swap y x t)) = remove y (fv_nom t). 
+(* Lemma remove_swap_fv_nom: forall t x y, x `notin` (fv_nom t) -> remove x (fv_nom (swap y x t)) = remove y (fv_nom t). 
 Proof.
   induction t as [z | z t1 | t1 IHt1 t2 IHt2 | t1 IHt1 z t2 IHt2].
   - intros x y Hfv. simpl in *. apply notin_singleton_1 in Hfv. unfold vswap. destruct (z == y).
-    + subst. Admitted.
+    + subst. Admitted. *)
 (*      rewrite remove_singleton_empty.
 
       Instance
@@ -797,15 +800,15 @@ Proof.
   Admitted. *)
 
 Lemma aeq_fv_nom_eq : forall t1 t2, t1 =a t2 -> fv_nom t1 = fv_nom t2.
-Proof.
-  induction 1.
+Proof. Admitted.
+(*  induction 1. Jose Roberto está tentando resolver (06-MAR-2024)
   - reflexivity.
   - simpl. rewrite IHaeq. reflexivity.
   - simpl. rewrite IHaeq. apply remove_swap_fv_nom. assumption.
   - simpl. rewrite IHaeq1. rewrite IHaeq2. reflexivity.
   - simpl. rewrite IHaeq1. rewrite IHaeq2. reflexivity.
   - simpl. rewrite IHaeq1. f_equal. rewrite IHaeq2. apply remove_swap_fv_nom. assumption.
-Qed.
+Qed. *)
     
 (* begin hide *)
 Lemma aeq_swap1: forall t1 t2 x y, t1 =a t2 -> (swap x y t1) =a (swap x y t2).
@@ -846,6 +849,7 @@ Proof.
     + apply (aeq_swap1 _ _ x' y) in H. repeat rewrite swap_involutive in H. assumption.
 Qed.
 
+(* revisar sintaxe *)
 Lemma aeq_sym: forall t1 t2, t1 =a t2 -> t2 =a t1.
 Proof.
   induction 1.
