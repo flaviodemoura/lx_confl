@@ -4,7 +4,7 @@ Require Import Arith Lia.  Print LoadPath.
 (* Metalib is in CP.2023.03.0~8.17~2023.08/lib/coq/user-contrib/Metalib *)
 Require Export Metalib.Metatheory.
 Require Export Metalib.LibDefaultSimp.
-Require Export Metalib.LibLNgen.
+Require Export Metalib.LibLNgen. 
 
 Lemma strong_induction: forall (P:nat->Prop), (forall n, (forall m, m < n -> P m) -> P n) -> (forall n, P n).
 Proof.
@@ -694,19 +694,13 @@ Qed.
 (**
    Sets are represented by lists, and these lists are built exactly the same way for $\alpha$-equivalent terms. Therefore, the sets [fv_nom t1] and [fv_nom t2] are syntactically equal. This is the content of the following lemma that has a key hole in this formalization.
  *)
-(** try Proper 
+
+Axiom remove_singleton_all: forall x y, remove x (singleton x) = remove y (singleton y).
+
 Lemma remove_singleton_empty_eq: forall x, remove x (singleton x) = empty.
 Proof.
+  unfold empty.
   Admitted.
-
-Lemma remove_singleton_neq: forall x y,
-    x <> y -> remove y (singleton x) [=] singleton x.
-Proof.
-  intros. 
-  pose proof notin_singleton_2. specialize (H0 x y).
-  apply H0 in H.
-  apply AtomSetProperties.remove_equal in H. assumption.
-Qed.
 
 Lemma remove_singleton_neq: forall x y, x <> y -> remove x (singleton y) = singleton y.
 Proof.  
@@ -764,13 +758,20 @@ Proof.
            *** rewrite remove_singleton_neq.
                **** reflexivity.
                **** apply aux_not_equal. assumption.
-           *** apply aux_not_equal. *)
-  
-(* Lemma remove_swap_fv_nom: forall t x y, x `notin` (fv_nom t) -> remove x (fv_nom (swap y x t)) = remove y (fv_nom t). 
+           *** apply aux_not_equal.
+
+
+
+Lemma remove_swap_fv_nom: forall t x y, x `notin` (fv_nom t) -> remove x (fv_nom (swap y x t)) = remove y (fv_nom t). 
 Proof.
   induction t as [z | z t1 | t1 IHt1 t2 IHt2 | t1 IHt1 z t2 IHt2].
-  - intros x y Hfv. simpl in *. apply notin_singleton_1 in Hfv. unfold vswap. destruct (z == y).
-    + subst. Admitted. *)
+  - admit.
+  - intros x y Hfv. simpl in *. apply notin_remove_1 in Hfv. destruct Hfv.
+    + subst. unfold vswap. destruct (x == y).
+      * subst. rewrite swap_id. reflexivity.
+      * rewrite eq_dec_refl.
+Admitted.
+
 (*      rewrite remove_singleton_empty.
 
       Instance
