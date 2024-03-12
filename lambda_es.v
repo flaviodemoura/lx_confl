@@ -695,20 +695,17 @@ Qed.
    Sets are represented by lists, and these lists are built exactly the same way for $\alpha$-equivalent terms. Therefore, the sets [fv_nom t1] and [fv_nom t2] are syntactically equal. This is the content of the following lemma that has a key hole in this formalization.
  *)
 
-Axiom remove_singleton_all: forall x y, remove x (singleton x) = remove y (singleton y).
-
-Lemma remove_singleton_empty_eq: forall x, remove x (singleton x) = empty.
+Axiom remove_singleton_empty_eq: forall x, remove x (singleton x) = empty.
+Axiom remove_singleton_neq: forall x y, x <> y -> remove x (singleton y) = singleton y.
+  
+Corollary remove_singleton_all: forall x y, remove x (singleton x) = remove y (singleton y).
 Proof.
-  unfold empty.
-  Admitted.
-
-Lemma remove_singleton_neq: forall x y, x <> y -> remove x (singleton y) = singleton y.
-Proof.  
-Admitted.
-
-Lemma remove_remove_fv_nom: forall t x y, x <> y -> remove x (remove y (fv_nom (swap y x t))) = remove y (remove x (fv_nom t)). 
-Proof.
-  induction t as [z | z t1 | t1 IHt1 t2 IHt2 | t1 IHt1 z t2 IHt2].
+  intros x y. repeat rewrite remove_singleton_empty_eq. reflexivity.
+Qed.
+  
+Lemma remove_remove_fv_nom: forall t x y, remove y (remove x (fv_nom (swap y x t))) = remove x (remove y (fv_nom t)). 
+Proof.  Admitted. 
+(*  induction t as [z | z t1 | t1 IHt1 t2 IHt2 | t1 IHt1 z t2 IHt2].
   - intros x y Hneq. simpl in *. unfold vswap. destruct (z == y).
     + subst. rewrite remove_singleton_neq.
       * rewrite remove_singleton_empty_eq. rewrite remove_singleton_neq.
@@ -758,18 +755,18 @@ Proof.
            *** rewrite remove_singleton_neq.
                **** reflexivity.
                **** apply aux_not_equal. assumption.
-           *** apply aux_not_equal.
+           *** apply aux_not_equal. *)
 
-
-
-Lemma remove_swap_fv_nom: forall t x y, x `notin` (fv_nom t) -> remove x (fv_nom (swap y x t)) = remove y (fv_nom t). 
+Lemma remove_swap_eq: forall t x y, y `notin` (fv_nom t) -> remove x (fv_nom t) = remove y (fv_nom (swap y x t)). 
 Proof.
   induction t as [z | z t1 | t1 IHt1 t2 IHt2 | t1 IHt1 z t2 IHt2].
   - admit.
   - intros x y Hfv. simpl in *. apply notin_remove_1 in Hfv. destruct Hfv.
-    + subst. unfold vswap. destruct (x == y).
-      * subst. rewrite swap_id. reflexivity.
-      * rewrite eq_dec_refl.
+    + subst. unfold vswap. rewrite eq_dec_refl. symmetry. apply remove_remove_fv_nom.
+    + unfold vswap. destruct (z == y).
+      * subst. symmetry. apply remove_remove_fv_nom.
+      * destruct (z == x).
+        ** subst. specialize (IHt1 x y). assert (H' := H). apply IHt1 in H'. rewrite <- H'.
 Admitted.
 
 (*      rewrite remove_singleton_empty.
