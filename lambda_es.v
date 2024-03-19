@@ -702,6 +702,46 @@ Corollary remove_singleton_all: forall x y, remove x (singleton x) = remove y (s
 Proof.
   intros x y. repeat rewrite remove_singleton_empty_eq. reflexivity.
 Qed.
+
+Lemma remove_from_empty : forall x, remove x empty = empty.
+Proof.
+Admitted.
+
+
+Lemma remove_duplicates_eq: forall t x, remove x (remove x (fv_nom t)) = remove x (fv_nom t).
+Proof. 
+  intros. induction t as [z | z t1 | t1 IHt1 t2 IHt2 | t1 IHt1 z t2 IHt2].
+    - simpl. destruct (x == z).
+      + rewrite e. rewrite remove_singleton_empty_eq. rewrite remove_from_empty. reflexivity.
+      + rewrite remove_singleton_neq.
+        * rewrite remove_singleton_neq; auto.
+        * apply n.
+    - simpl in *. destruct (x == z).
+      + rewrite e in *. repeat rewrite IHt1. reflexivity.
+      + 
+    - simpl in *. admit. 
+    - simpl. 
+Admitted.
+
+
+Lemma swap_duplicates_eq: forall t x y, remove x (remove y (fv_nom t)) = remove y (remove x (fv_nom t)).
+Proof.
+  induction t as [z | z t1 | t1 IHt1 t2 IHt2 | t1 IHt1 z t2 IHt2].
+    - intros. destruct (x == y).
+      + rewrite e. rewrite remove_duplicates_eq. reflexivity.
+      + simpl. destruct (x==z).
+          * rewrite e. rewrite remove_singleton_neq.
+            ** rewrite remove_singleton_empty_eq. rewrite remove_from_empty. reflexivity.
+            ** rewrite e in n. auto.
+          * destruct (y == z).
+            ** rewrite e. rewrite remove_singleton_empty_eq. rewrite remove_from_empty. rewrite remove_singleton_neq.
+                *** rewrite remove_singleton_empty_eq. reflexivity.
+                *** apply n0.
+            ** repeat rewrite remove_singleton_neq; auto.
+    - intros. simpl. admit.
+    - intros. simpl. admit.
+    - intros. simpl. admit.
+Admitted.
   
 Lemma remove_remove_fv_nom: forall t x y, remove y (remove x (fv_nom (swap y x t))) = remove x (remove y (fv_nom t)). 
 Proof.  Admitted. 
@@ -757,16 +797,19 @@ Proof.  Admitted.
                **** apply aux_not_equal. assumption.
            *** apply aux_not_equal. *)
 
-Lemma remove_swap_eq: forall t x y, y `notin` (fv_nom t) -> remove x (fv_nom t) = remove y (fv_nom (swap y x t)). 
+Lemma remove_swap_eq: forall t x y, y `notin` (fv_nom t) -> remove x (fv_nom t) = remove y (fv_nom (swap x y t)). 
 Proof.
   induction t as [z | z t1 | t1 IHt1 t2 IHt2 | t1 IHt1 z t2 IHt2].
-  - admit.
-  - intros x y Hfv. simpl in *. apply notin_remove_1 in Hfv. destruct Hfv.
-    + subst. unfold vswap. rewrite eq_dec_refl. symmetry. apply remove_remove_fv_nom.
-    + unfold vswap. destruct (z == y).
-      * subst. symmetry. apply remove_remove_fv_nom.
-      * destruct (z == x).
-        ** subst. specialize (IHt1 x y). assert (H' := H). apply IHt1 in H'. rewrite <- H'.
+  - intros x0 y H. simpl in H. apply notin_singleton_1 in H. simpl. unfold vswap. destruct (z==x0).
+    + destruct (z == y).
+      * contradiction.
+      * subst. repeat (rewrite remove_singleton_empty_eq). reflexivity.
+    + destruct (z == y).
+      * contradiction.
+      * repeat rewrite remove_singleton_neq; auto.
+  - intros. simpl in *. rewrite swap_duplicates_eq. admit.
+    - intros. simpl in *. admit.
+    - admit. 
 Admitted.
 
 (*      rewrite remove_singleton_empty.
@@ -796,15 +839,19 @@ Admitted.
   Admitted. *)
 
 Lemma aeq_fv_nom_eq : forall t1 t2, t1 =a t2 -> fv_nom t1 = fv_nom t2.
-Proof. Admitted.
-(*  induction 1. Jose Roberto está tentando resolver (06-MAR-2024)
+Proof.
+  induction 1.
   - reflexivity.
   - simpl. rewrite IHaeq. reflexivity.
-  - simpl. rewrite IHaeq. apply remove_swap_fv_nom. assumption.
+  - simpl. rewrite IHaeq. symmetry. rewrite remove_swap_eq with (y:=x).
+    + reflexivity.
+    + apply H0.
   - simpl. rewrite IHaeq1. rewrite IHaeq2. reflexivity.
   - simpl. rewrite IHaeq1. rewrite IHaeq2. reflexivity.
-  - simpl. rewrite IHaeq1. f_equal. rewrite IHaeq2. apply remove_swap_fv_nom. assumption.
-Qed. *)
+  - simpl. rewrite IHaeq1. f_equal. rewrite IHaeq2. rewrite remove_swap_eq with (y:=x).
+    + rewrite swap_id. symmetry in IHaeq2. rewrite IHaeq2. admit.
+    + symmetry in IHaeq2. rewrite IHaeq2. apply fv_nom_swap.
+Admitted. 
     
 (* begin hide *)
 Lemma aeq_swap1: forall t1 t2 x y, t1 =a t2 -> (swap x y t1) =a (swap x y t2).
