@@ -703,32 +703,29 @@ Proof.
   intros x y. repeat rewrite remove_singleton_empty_eq. reflexivity.
 Qed.
 
+
+Lemma remove_duplicates_eq1: forall x, remove x (remove x (singleton x)) = remove x (singleton x).
+Proof.
+  intro x. 
+Admitted.
+
+Lemma remove_duplicates_eq2: forall t x, remove x (remove x (fv_nom t)) = remove x (fv_nom t).
+Proof. 
+Admitted.
+
 Lemma remove_from_empty : forall x, remove x empty = empty.
 Proof.
+  (* intro x. replace (empty) with (remove x (singleton x)).
+    - rewrite remove_duplicates_eq. reflexivity.
+    - apply remove_singleton_empty_eq.
+*)
 Admitted.
-
-
-Lemma remove_duplicates_eq: forall t x, remove x (remove x (fv_nom t)) = remove x (fv_nom t).
-Proof. 
-  intros. induction t as [z | z t1 | t1 IHt1 t2 IHt2 | t1 IHt1 z t2 IHt2].
-    - simpl. destruct (x == z).
-      + rewrite e. rewrite remove_singleton_empty_eq. rewrite remove_from_empty. reflexivity.
-      + rewrite remove_singleton_neq.
-        * rewrite remove_singleton_neq; auto.
-        * apply n.
-    - simpl in *. destruct (x == z).
-      + rewrite e in *. repeat rewrite IHt1. reflexivity.
-      + 
-    - simpl in *. admit. 
-    - simpl. 
-Admitted.
-
 
 Lemma swap_duplicates_eq: forall t x y, remove x (remove y (fv_nom t)) = remove y (remove x (fv_nom t)).
 Proof.
   induction t as [z | z t1 | t1 IHt1 t2 IHt2 | t1 IHt1 z t2 IHt2].
     - intros. destruct (x == y).
-      + rewrite e. rewrite remove_duplicates_eq. reflexivity.
+      + rewrite e. rewrite remove_duplicates_eq2. reflexivity.
       + simpl. destruct (x==z).
           * rewrite e. rewrite remove_singleton_neq.
             ** rewrite remove_singleton_empty_eq. rewrite remove_from_empty. reflexivity.
@@ -848,10 +845,8 @@ Proof.
     + apply H0.
   - simpl. rewrite IHaeq1. rewrite IHaeq2. reflexivity.
   - simpl. rewrite IHaeq1. rewrite IHaeq2. reflexivity.
-  - simpl. rewrite IHaeq1. f_equal. rewrite IHaeq2. rewrite remove_swap_eq with (y:=x).
-    + rewrite swap_id. symmetry in IHaeq2. rewrite IHaeq2. admit.
-    + symmetry in IHaeq2. rewrite IHaeq2. apply fv_nom_swap.
-Admitted. 
+  - simpl. rewrite IHaeq1. f_equal. rewrite IHaeq2. symmetry. apply remove_swap_eq. assumption.
+Qed.
     
 (* begin hide *)
 Lemma aeq_swap1: forall t1 t2 x y, t1 =a t2 -> (swap x y t1) =a (swap x y t2).
