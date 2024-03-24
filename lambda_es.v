@@ -693,7 +693,8 @@ Qed.
 
 (**
    Sets are represented by lists, and these lists are built exactly the same way for $\alpha$-equivalent terms. Therefore, the sets [fv_nom t1] and [fv_nom t2] are syntactically equal. This is the content of the following lemma that has a key hole in this formalization.
- *)
+  Jose Roberto 
+*)
 
 Axiom remove_singleton_empty_eq: forall x, remove x (singleton x) = empty.
 Axiom remove_singleton_neq: forall x y, x <> y -> remove x (singleton y) = singleton y.
@@ -703,23 +704,31 @@ Proof.
   intros x y. repeat rewrite remove_singleton_empty_eq. reflexivity.
 Qed.
 
-
-Lemma remove_duplicates_eq1: forall x, remove x (remove x (singleton x)) = remove x (singleton x).
+Lemma union_distr: forall x A B, remove x (union A B) = union (remove x A) (remove x B).
 Proof.
-  intro x. 
+  (* Prova da propriedade distributiva da remoção sobre a união *)
+Admitted.
+
+Lemma remove_duplicates_eq1: forall x y, remove x (remove x (singleton y)) = remove x (singleton y).
+Proof.
+  intros x y. admit.
 Admitted.
 
 Lemma remove_duplicates_eq2: forall t x, remove x (remove x (fv_nom t)) = remove x (fv_nom t).
 Proof. 
+  induction t as [z | z t1 | t1 IHt1 t2 IHt2 | t1 IHt1 z t2 IHt2]; intros; simpl.
+    - apply remove_duplicates_eq1.
+    - admit.
+    - repeat rewrite union_distr. rewrite IHt1. rewrite IHt2. reflexivity.
+    - repeat rewrite union_distr. rewrite IHt2. admit.
 Admitted.
 
 Lemma remove_from_empty : forall x, remove x empty = empty.
 Proof.
-  (* intro x. replace (empty) with (remove x (singleton x)).
-    - rewrite remove_duplicates_eq. reflexivity.
+  intro x. Search empty. replace (empty) with (remove x (singleton x)).
+    - rewrite remove_duplicates_eq1. reflexivity.
     - apply remove_singleton_empty_eq.
-*)
-Admitted.
+Qed.
 
 Lemma swap_duplicates_eq: forall t x y, remove x (remove y (fv_nom t)) = remove y (remove x (fv_nom t)).
 Proof.
@@ -735,117 +744,45 @@ Proof.
                 *** rewrite remove_singleton_empty_eq. reflexivity.
                 *** apply n0.
             ** repeat rewrite remove_singleton_neq; auto.
-    - intros. simpl. admit.
-    - intros. simpl. admit.
-    - intros. simpl. admit.
-Admitted.
-  
-Lemma remove_remove_fv_nom: forall t x y, remove y (remove x (fv_nom (swap y x t))) = remove x (remove y (fv_nom t)). 
-Proof.  Admitted. 
-(*  induction t as [z | z t1 | t1 IHt1 t2 IHt2 | t1 IHt1 z t2 IHt2].
-  - intros x y Hneq. simpl in *. unfold vswap. destruct (z == y).
-    + subst. rewrite remove_singleton_neq.
-      * rewrite remove_singleton_empty_eq. rewrite remove_singleton_neq.
-        ** symmetry. apply remove_singleton_empty_eq.
-        ** assumption.
-      * apply aux_not_equal. assumption.
-    + destruct (z == x).
-      * subst. repeat rewrite remove_singleton_empty_eq. rewrite remove_empty. ?? reflexivity.
-      * rewrite remove_singleton_neq.
-        ** rewrite remove_singleton_neq.
-           *** reflexivity.
-           *** apply aux_not_equal. assumption.
-        ** apply aux_not_equal. assumption.
-  - intros x y Hneq. simpl in *. apply notin_remove_1 in Hneq. destruct Hneq as [Hneq | Hneq].
-    + subst. unfold vswap. destruct (x == y).
-      * subst. rewrite swap_id. reflexivity.
-      * destruct (x == x).
-        ** rewrite remove_singleton_neq.
-           *** rewrite remove_singleton_neq.
-               **** reflexivity.
-               **** apply aux_not_equal. assumption.
-           *** apply aux_not_equal. assumption.
-        ** apply aux_not_equal. assumption.
-    + unfold vswap. destruct (z == y).
-      * subst. rewrite swap_id. reflexivity.
-      * destruct (z == x).
-        ** subst. rewrite remove_singleton_neq.
-           *** rewrite remove_singleton_neq.
-               **** reflexivity.
-               **** apply aux_not_equal. assumption.
-           *** apply aux_not_equal. assumption.
-        ** rewrite remove_singleton_neq.
-           *** rewrite remove_singleton_neq.
-               **** reflexivity.
-               **** apply aux_not_equal. assumption.
-           *** apply aux_not_equal. assumption.
-  - intros x y Hneq. simpl in *. rewrite IHt1.
-    + rewrite IHt2.
-      * reflexivity.
-      * assumption.
-    + assumption.
-  - intros x y Hneq. simpl in *. apply notin_remove_1 in Hneq. destruct Hneq as [Hneq | Hneq].
-    + subst. unfold vswap. destruct (x == y).
-      * subst. rewrite swap_id. reflexivity.
-      * destruct (x == x).
-        ** rewrite remove_singleton_neq.
-           *** rewrite remove_singleton_neq.
-               **** reflexivity.
-               **** apply aux_not_equal. assumption.
-           *** apply aux_not_equal. *)
-
-Lemma remove_swap_eq: forall t x y, y `notin` (fv_nom t) -> remove x (fv_nom t) = remove y (fv_nom (swap x y t)). 
-Proof.
-  induction t as [z | z t1 | t1 IHt1 t2 IHt2 | t1 IHt1 z t2 IHt2].
-  - intros x0 y H. simpl in H. apply notin_singleton_1 in H. simpl. unfold vswap. destruct (z==x0).
-    + destruct (z == y).
-      * contradiction.
-      * subst. repeat (rewrite remove_singleton_empty_eq). reflexivity.
-    + destruct (z == y).
-      * contradiction.
-      * repeat rewrite remove_singleton_neq; auto.
-  - intros. simpl in *. rewrite swap_duplicates_eq. admit.
     - intros. simpl in *. admit.
-    - admit. 
+    - intros. simpl. repeat rewrite union_distr. rewrite IHt1. rewrite IHt2. reflexivity.
+    - intros. simpl. repeat rewrite union_distr. rewrite IHt2. admit.
 Admitted.
 
-(*      rewrite remove_singleton_empty.
-
-      Instance
-      
-      
-    + destruct (z == x).
-      * subst. apply notin_singleton_1 in Hfv. contradiction.
-      * rewrite remove_singleton_neq.
-        ** rewrite remove_singleton_neq.
-           *** reflexivity.
-           *** apply aux_not_equal. assumption.
-        ** apply aux_not_equal. assumption.
-  - intros x y Hfv. simpl in *. apply notin_remove_1 in Hfv. destruct Hfv as [Hfv | Hfv].
-    + subst. unfold vswap. destruct (x == y).
-      * subst. rewrite swap_id. reflexivity.
-      * destruct (x == x).
-        **
-
-
-
-          rewrite remove_singleton_neq.
-           *** reflexivity.
-           *** apply aux_not_equal. assumption.
-        ** apply aux_not_equal. assumption.
-  Admitted. *)
+Lemma remove_swap_eq: forall t x y, x<>y -> y `notin` (fv_nom t) -> remove x (fv_nom t) = remove y (fv_nom (swap x y t)). 
+Proof.
+  induction t as [z | z t1 | t1 IHt1 t2 IHt2 | t1 IHt1 z t2 IHt2]; intros; simpl in *.
+  - unfold vswap. destruct (z==x).
+    + rewrite e. apply remove_singleton_all.
+    + destruct (z == y).
+      * rewrite e in H0. exfalso. apply notin_singleton_is_false with (x:=y). assumption.
+      * repeat rewrite remove_singleton_neq; auto.
+  - unfold vswap. destruct (z == x).
+    + rewrite e in *. subst. repeat rewrite remove_duplicates_eq2. apply IHt1.
+      * assumption.
+      * auto.
+    + destruct (z == y).
+      * rewrite e in *. subst. rewrite swap_duplicates_eq. admit. 
+      * symmetry. rewrite swap_duplicates_eq. rewrite <- IHt1.
+        ** rewrite swap_duplicates_eq. reflexivity.
+        ** assumption.
+        ** auto. 
+  - repeat rewrite union_distr. rewrite <- IHt1; auto. replace (remove y (fv_nom (swap x y t2))) with (remove x (fv_nom t2)); auto.
+  - intros. simpl in *. repeat rewrite union_distr. unfold vswap. destruct (z == x).
+    + rewrite e in *. subst. repeat rewrite remove_duplicates_eq2. rewrite <- IHt2; auto. f_equal. apply IHt1. destruct ( x == y).
+       * contradiction.
+       * auto.
+Admitted.
 
 Lemma aeq_fv_nom_eq : forall t1 t2, t1 =a t2 -> fv_nom t1 = fv_nom t2.
 Proof.
   induction 1.
   - reflexivity.
   - simpl. rewrite IHaeq. reflexivity.
-  - simpl. rewrite IHaeq. symmetry. rewrite remove_swap_eq with (y:=x).
-    + reflexivity.
-    + apply H0.
+  - simpl. rewrite IHaeq. symmetry. rewrite remove_swap_eq with (y:=x); auto.
   - simpl. rewrite IHaeq1. rewrite IHaeq2. reflexivity.
   - simpl. rewrite IHaeq1. rewrite IHaeq2. reflexivity.
-  - simpl. rewrite IHaeq1. f_equal. rewrite IHaeq2. symmetry. apply remove_swap_eq. assumption.
+  - simpl. rewrite IHaeq1. f_equal. rewrite IHaeq2. symmetry. apply remove_swap_eq; auto.
 Qed.
     
 (* begin hide *)
