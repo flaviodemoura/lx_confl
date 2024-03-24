@@ -696,23 +696,38 @@ Qed.
   Jose Roberto 
 *)
 
+Axiom remove_neq: forall s x , x `notin` s -> remove x s =  s.
 Axiom remove_singleton_empty_eq: forall x, remove x (singleton x) = empty.
-Axiom remove_singleton_neq: forall x y, x <> y -> remove x (singleton y) = singleton y.
   
 Corollary remove_singleton_all: forall x y, remove x (singleton x) = remove y (singleton y).
 Proof.
   intros x y. repeat rewrite remove_singleton_empty_eq. reflexivity.
 Qed.
 
+Corollary remove_singleton_neq: forall x y, x <> y -> remove x (singleton y) =  (singleton y).
+Proof.
+  intros. rewrite remove_neq. reflexivity. rewrite AtomSetFacts.singleton_iff. auto.
+Qed.
+
 Lemma union_distr: forall x A B, remove x (union A B) = union (remove x A) (remove x B).
 Proof.
-  (* Prova da propriedade distributiva da remoção sobre a união *)
 Admitted.
+
+Lemma remove_from_empty : forall x, remove x empty = empty.
+Proof.
+  intro x. rewrite remove_neq. 
+    * reflexivity. 
+    * apply AtomSetProperties.empty_is_empty_2. reflexivity.
+Qed.
 
 Lemma remove_duplicates_eq1: forall x y, remove x (remove x (singleton y)) = remove x (singleton y).
 Proof.
-  intros x y. admit.
-Admitted.
+  intros x y. destruct (x == y).
+   - rewrite e. rewrite remove_singleton_empty_eq. apply remove_from_empty.
+   - rewrite remove_singleton_neq.
+      * rewrite remove_singleton_neq. reflexivity. assumption.
+      * assumption.  
+Qed.
 
 Lemma remove_duplicates_eq2: forall t x, remove x (remove x (fv_nom t)) = remove x (fv_nom t).
 Proof. 
@@ -720,17 +735,10 @@ Proof.
     - apply remove_duplicates_eq1.
     - admit.
     - repeat rewrite union_distr. rewrite IHt1. rewrite IHt2. reflexivity.
-    - repeat rewrite union_distr. rewrite IHt2. admit.
+    - repeat rewrite union_distr. rewrite IHt2. f_equal.
 Admitted.
 
-Lemma remove_from_empty : forall x, remove x empty = empty.
-Proof.
-  intro x. Search empty. replace (empty) with (remove x (singleton x)).
-    - rewrite remove_duplicates_eq1. reflexivity.
-    - apply remove_singleton_empty_eq.
-Qed.
-
-Lemma swap_duplicates_eq: forall t x y, remove x (remove y (fv_nom t)) = remove y (remove x (fv_nom t)).
+Lemma swap_duplicates_eq: forall t x y, x<>y -> remove x (remove y (fv_nom t)) = remove y (remove x (fv_nom t)).
 Proof.
   induction t as [z | z t1 | t1 IHt1 t2 IHt2 | t1 IHt1 z t2 IHt2].
     - intros. destruct (x == y).
@@ -745,8 +753,10 @@ Proof.
                 *** apply n0.
             ** repeat rewrite remove_singleton_neq; auto.
     - intros. simpl in *. admit.
-    - intros. simpl. repeat rewrite union_distr. rewrite IHt1. rewrite IHt2. reflexivity.
-    - intros. simpl. repeat rewrite union_distr. rewrite IHt2. admit.
+    - intros. simpl. repeat rewrite union_distr. rewrite IHt1. rewrite IHt2; auto. assumption.
+    - intros. simpl. repeat rewrite union_distr. rewrite IHt2.
+      + f_equal. admit.
+      + assumption.
 Admitted.
 
 Lemma remove_swap_eq: forall t x y, x<>y -> y `notin` (fv_nom t) -> remove x (fv_nom t) = remove y (fv_nom (swap x y t)). 
