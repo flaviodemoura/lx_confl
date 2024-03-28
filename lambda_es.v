@@ -691,26 +691,30 @@ Proof.
     inversion H2; subst; rewrite IHaeq1; rewrite IHaeq2; rewrite H1; reflexivity.
 Qed.
 
-
 (**
    Sets are represented by lists, and these lists are built exactly the same way for $\alpha$-equivalent terms. Therefore, the sets [fv_nom t1] and [fv_nom t2] are syntactically equal. This is the content of the following lemma that has a key hole in this formalization.
   Jose Roberto 
 *)
+
+Axiom remove_singleton_empty_eq: forall x, remove x (singleton x) = empty.
+
+Axiom remove_singleton_neq: forall x y, x <> y -> remove x (singleton y) =  (singleton y).
+(*
+Proof.
+  intros. rewrite remove_neq.
+    - reflexivity.
+    - rewrite AtomSetFacts.singleton_iff. auto.
+Qed.
+ *)
 
 Lemma remove_neq: forall s x , x `notin` s -> remove x s =  s.
 Proof.
   intros. pose proof AtomSetFacts.singleton_iff as H1.
   pose proof AtomSetFacts.remove_iff as H2.
   pose proof AtomSetFacts.empty_iff as H3.
-  pose proof AtomSetImpl.remove_1 as H4.
-  pose proof AtomSetImpl.singleton_1.
-  pose proof notin_remove_3'.
-  specialize (H5 x x s).
-Admitted.
-
-Corollary remove_singleton_empty_eq: forall x, remove x (singleton x) = empty.
-Proof.
-  intro x. pose proof singleton_iff. specialize (H x x).
+  pose proof AtomSetImpl.remove_2 as H4.
+pose proof AtomSetImpl.singleton_1. 
+  pose proof notin_add_3.
 Admitted.
 
 Lemma union_distr: forall x A B, remove x (union A B) = union (remove x A) (remove x B).
@@ -718,24 +722,25 @@ Proof.
  pose proof remove_union_distrib.
 Admitted.
 
+(* Pode substituir remove_neq *)
+Lemma remove_neq2: forall t x , x `notin` (fv_nom t) -> remove x (fv_nom t) = (fv_nom t).
+Proof.
+Admitted. 
+
 Corollary remove_singleton_all: forall x y, remove x (singleton x) = remove y (singleton y).
 Proof.
   intros x y. repeat rewrite remove_singleton_empty_eq. reflexivity.
 Qed.
 
-Corollary remove_singleton_neq: forall x y, x <> y -> remove x (singleton y) =  (singleton y).
-Proof.
-  intros. rewrite remove_neq.
-    - reflexivity.
-    - rewrite AtomSetFacts.singleton_iff. auto.
-Qed.
-
 Lemma remove_from_empty : forall x, remove x empty = empty.
 Proof.
-  intro x. rewrite remove_neq. 
+  intro x. pose proof remove_empty. specialize (H x).
+
+rewrite remove_neq. 
     * reflexivity. 
     * apply AtomSetProperties.empty_is_empty_2. reflexivity.
 Qed.
+
 
 Lemma remove_duplicates_eq1: forall x y, remove x (remove x (singleton y)) = remove x (singleton y).
 Proof.
@@ -746,24 +751,17 @@ Proof.
       * assumption.  
 Qed.
 
+
+
 Lemma remove_duplicates_eq2: forall t x, remove x (remove x (fv_nom t)) = remove x (fv_nom t).
 Proof. 
-  induction t as [z | z t1 | t1 IHt1 t2 IHt2 | t1 IHt1 z t2 IHt2]; intros; simpl.
-    - apply remove_duplicates_eq1.
-    - assert (H: x `notin` (remove x (remove z (fv_nom t1)))).
-      { apply AtomSetImpl.remove_1. reflexivity. }
-       rewrite remove_neq.
-      + reflexivity.
-      + apply H.
-    - repeat rewrite union_distr. rewrite IHt1. rewrite IHt2. reflexivity.
-    - repeat rewrite union_distr. rewrite IHt2. f_equal. assert (H: x `notin` (remove x (remove z (fv_nom t1)))).
-      { apply AtomSetImpl.remove_1. reflexivity. }
-        rewrite remove_neq.
-       + reflexivity.
-       + apply H.
+  intros. assert (H: x `notin` (remove x (fv_nom t))).
+    { apply AtomSetImpl.remove_1 with (y:=x). reflexivity. } 
+  rewrite remove_neq; auto. 
 Qed.
 
-Lemma swap_duplicates_eq: forall t x y, x<>y -> remove x (remove y (fv_nom t)) = remove y (remove x (fv_nom t)).
+
+Lemma swap_duplicates_eq: forall t x y, remove x (remove y (fv_nom t)) = remove y (remove x (fv_nom t)).
 Proof.
   induction t as [z | z t1 | t1 IHt1 t2 IHt2 | t1 IHt1 z t2 IHt2].
     - intros. destruct (x == y).
@@ -777,32 +775,37 @@ Proof.
                 *** rewrite remove_singleton_empty_eq. reflexivity.
                 *** apply n0.
             ** repeat rewrite remove_singleton_neq; auto.
-    - intros. simpl in *. admit.
-    - intros. simpl. repeat rewrite union_distr. rewrite IHt1. rewrite IHt2; auto. assumption.
-    - intros. simpl. repeat rewrite union_distr. rewrite IHt2.
-      + f_equal. admit.
-      + assumption.
+    - intros. simpl in *. destruct (x == z).
+      + rewrite e in *. subst. rewrite IHt1.
+          * assert (H1: z `notin` remove z (remove y (fv_nom t1))).
+          { apply AtomSetImpl.remove_1. reflexivity. }
+         rewrite remove_neq.
+        ** rewrite remove_duplicates_eq2. apply IHt1.
+        ** assumption.
+      + destruct (y == z).
+        * rewrite e in *. symmetry. rewrite IHt1.
+          ** repeat rewrite remove_duplicates_eq2. assert (H1: z `notin` remove z (remove x (fv_nom t1))).
+          { apply AtomSetImpl.remove_1. reflexivity.  }
+          rewrite remove_neq; try auto.
+        * rewrite IHt1; try auto. symmetry. rewrite IHt1; try auto. admit.
+    - intros. simpl. repeat rewrite union_distr. rewrite IHt1. rewrite IHt2; auto.
+    - intros. simpl. repeat rewrite union_distr. rewrite IHt2. f_equal. admit.
 Admitted.
 
 Lemma remove_swap_eq: forall t x y, x<>y -> y `notin` (fv_nom t) -> remove x (fv_nom t) = remove y (fv_nom (swap x y t)). 
 Proof.
-  induction t as [z | z t1 | t1 IHt1 t2 IHt2 | t1 IHt1 z t2 IHt2]; intros; simpl in *.
-  - unfold vswap. destruct (z==x).
+  induction t as [z | z t1 | t1 IHt1 t2 IHt2 | t1 IHt1 z t2 IHt2].
+  - intros. simpl. unfold vswap. destruct (z==x).
     + rewrite e. apply remove_singleton_all.
     + destruct (z == y).
       * rewrite e in H0. exfalso. apply notin_singleton_is_false with (x:=y). assumption.
       * repeat rewrite remove_singleton_neq; auto.
-  - unfold vswap. destruct (z == x).
-    + rewrite e in *. subst. repeat rewrite remove_duplicates_eq2. apply IHt1.
-      * assumption.
-      * auto.
-    + destruct (z == y).
-      * rewrite e in *. subst. rewrite swap_duplicates_eq. admit. 
-      * symmetry. rewrite swap_duplicates_eq. rewrite <- IHt1.
-        ** rewrite swap_duplicates_eq. reflexivity.
-        ** assumption.
-        ** auto. 
-  - repeat rewrite union_distr. rewrite <- IHt1; auto. replace (remove y (fv_nom (swap x y t2))) with (remove x (fv_nom t2)); auto.
+  - intros. simpl in *. unfold vswap. apply notin_remove_1 in H0. destruct H0.
+    + subst. rewrite eq_dec_refl. destruct (y==x).
+      * subst. contradiction.
+      * admit.
+    + admit.
+  - intros. simpl in *. repeat rewrite union_distr. rewrite <- IHt1; auto. replace (remove y (fv_nom (swap x y t2))) with (remove x (fv_nom t2)); auto.
   - intros. simpl in *. repeat rewrite union_distr. unfold vswap. destruct (z == x).
     + rewrite e in *. subst. repeat rewrite remove_duplicates_eq2. rewrite <- IHt2; auto. f_equal. apply IHt1. destruct ( x == y).
        * contradiction.
