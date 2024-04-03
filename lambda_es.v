@@ -695,15 +695,86 @@ Qed.
    Sets are represented by lists, and these lists are built exactly the same way for $\alpha$-equivalent terms. Therefore, the sets [fv_nom t1] and [fv_nom t2] are syntactically equal. This is the content of the following lemma that has a key hole in this formalization.
  *)
 
-Axiom remove_singleton_empty_eq: forall x, remove x (singleton x) = empty.
+(*
+Axiom double_remove_eq: forall t x, remove x (remove x (fv_nom t)) = remove x (fv_nom t). 
 Axiom remove_singleton_neq: forall x y, x <> y -> remove x (singleton y) = singleton y.
+ *)
+
+Axiom remove_singleton_empty_eq: forall x, remove x (singleton x) = empty.
+Axiom remove_empty_empty: forall x, remove x empty = empty.
+Axiom remove_singleton_eq: forall x y, x <> y -> remove x (singleton y) = singleton y.
+
+Corollary remove_singleton_neq: forall x y z, x <> z -> y <> z -> remove x (singleton z) = remove y (singleton z).
+Proof.
+  intros x y z Hneq1 Hneq2. rewrite remove_singleton_eq.
+  - rewrite remove_singleton_eq.
+    + reflexivity.
+    + assumption.
+  - assumption.
+Qed.    
   
+Corollary remove_empty_eq: forall x y, remove x (singleton x) = remove y empty.
+Proof.
+ intros x y. rewrite remove_singleton_empty_eq. rewrite remove_empty_empty. reflexivity.
+Qed.  
+
 Corollary remove_singleton_all: forall x y, remove x (singleton x) = remove y (singleton y).
 Proof.
   intros x y. repeat rewrite remove_singleton_empty_eq. reflexivity.
 Qed.
+
+Lemma remove_remove_fv_nom: forall t x, remove x (remove x (fv_nom t)) = remove x (fv_nom t).
+Proof.
+  induction t as [z | z t1 | t1 IHt1 t2 IHt2 | t1 IHt1 z t2 IHt2].
+  - intro x. simpl. case (x == z).
+    + intro Heq. subst. rewrite remove_singleton_empty_eq. apply remove_empty_empty.
+    + intro Hneq. rewrite remove_singleton_eq.
+      * apply remove_singleton_eq. assumption.
+      * assumption.
+  - intro x. simpl in *. case (x == z).
+    + intro Heq. subst. rewrite IHt1 at 1. reflexivity.
+    + intro Hneq.
+  -
+  -
+
   
-Lemma remove_remove_fv_nom: forall t x y, remove y (remove x (fv_nom (swap y x t))) = remove x (remove y (fv_nom t)). 
+Lemma remove_remove_comm_fv_nom: forall t x y, x <> y -> remove x (remove y (fv_nom t)) = remove y (remove x (fv_nom t)).
+Proof.
+  induction t as [z | z t1 | t1 IHt1 t2 IHt2 | t1 IHt1 z t2 IHt2].
+  - intros x y Hneq. simpl. case (y == z).
+    + intro Heq. subst. rewrite remove_singleton_empty_eq. rewrite remove_empty_empty. symmetry. rewrite remove_singleton_eq.
+      * apply remove_singleton_empty_eq.
+      * assumption.
+    + intro Hneq2. case (x == z).
+      * intro Heq. subst. rewrite remove_singleton_eq.
+        ** symmetry. rewrite remove_singleton_empty_eq. apply remove_empty_empty.
+        ** assumption.
+      * intro Hneq3. rewrite remove_singleton_eq.
+        ** rewrite remove_singleton_eq.
+           *** rewrite remove_singleton_eq.
+               **** reflexivity.
+               **** assumption.
+           *** assumption.             
+        ** assumption.
+  - intros x y Hneq. simpl in *. case (y == z).
+    + intro Heq. subst.
+    +
+  -
+  -
+Admitted. 
+
+Lemma remove_notin: forall t x, x `notin` fv_nom t -> remove x (fv_nom t) = fv_nom t.
+Proof.
+  induction t as [y | y t1 | t1 IHt1 t2 IHt2 | t1 IHt1 y t2 IHt2].
+  - intros x H. simpl in *. apply notin_singleton_1 in H. apply aux_not_equal in H. apply remove_singleton_neq in H; assumption.
+  - intros x H. simpl in *. apply notin_remove_1 in H. destruct H.
+    + (* x = y *) subst. rewrite double_remove_eq; reflexivity.
+    + (* x <> y *) rewrite IHt1.
+  -
+  -
+  Admitted.
+
+Lemma remove_remove_fv_nom_swap: forall t x y, remove y (remove x (fv_nom (swap y x t))) = remove x (remove y (fv_nom t)). 
 Proof.  Admitted. 
 (*  induction t as [z | z t1 | t1 IHt1 t2 IHt2 | t1 IHt1 z t2 IHt2].
   - intros x y Hneq. simpl in *. unfold vswap. destruct (z == y).
