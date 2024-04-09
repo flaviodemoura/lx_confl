@@ -408,10 +408,23 @@ Proof.
 Qed. *)
 
 Lemma n_sexp_size_induction: forall P : n_sexp -> Prop, (forall x, P (n_var x)) ->
-                                                     (forall t1 z, (forall t2, size t2 <= size t1 -> P t2) -> P (n_abs z t1)) ->
-                                                     (forall t1 t2, (forall t1', size t1' < size t1 + size t2 -> P t1) -> (forall t2', size t2' < size t1 + size t2 -> P t2) -> P (n_app t1 t2)) ->
-                                                     (forall t1 t2 z, (forall t2', size t2' < size t2 -> P t2) -> (forall t1', size t1' <= size t1 -> P t1') -> P (n_sub t1 z t2)) -> (forall t, P t).
+                                                     (forall t1 z, (forall t1', size t1' <= size t1 -> P t1') -> P (n_abs z t1)) ->
+                                                     (forall t1 t2, (forall t1', size t1' < size t1 + size t2 -> P t1') -> (forall t2', size t2' < size t1 + size t2 -> P t2') -> P (n_app t1 t2)) ->
+                                                     (forall t1 t2 z, (forall t2', size t2' < size t2 -> P t2') -> (forall t1', size t1' < 1 + size t1 -> P t1') -> P (n_sub t1 z t2)) -> (forall t, P t).
 Proof.
+ intros P Hvar Habs Happ Hsub t. remember (size t) as n. generalize dependent t. induction n using strong_induction. intro t; case t.
+  - intros x Hsize. apply Hvar.
+  - intros x t1 Hsize. apply Habs. intros t1' Hsize'. apply H with (size t1'). rewrite Hsize. simpl. apply Nat.le_lt_trans with (size t1').
+    + auto.
+    + lia.
+    + reflexivity.
+  - intros t1 t2 Hsize. simpl in *. apply Happ.
+    + intros t1' Hlt. apply H with (size t1').
+      * rewrite Hsize. apply lt_trans with (size t1 + size t2).
+        ** assumption.
+        ** lia.
+      * reflexivity.
+    + 
 Admitted.
 
 Lemma n_sexp_induction: forall P : n_sexp -> Prop, (forall x, P (n_var x)) ->
