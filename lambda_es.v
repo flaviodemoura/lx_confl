@@ -178,7 +178,7 @@ Inductive n_sexp : Set :=
 (* begin hide *)
 Notation "[ x := u ] t" := (n_sub t x u) (at level 60).
 (* end hide *)
-
+Print n_sexp_ind.
 (** The [size] of a term, also written as $|t|$, and the set [fv_nom] of the free variables of a term are defined as usual: *)
 
 Fixpoint size (t : n_sexp) : nat :=
@@ -407,26 +407,6 @@ Proof.
       ++ reflexivity.
 Qed. *)
 
-Lemma n_sexp_size_induction: forall P : n_sexp -> Prop, (forall x, P (n_var x)) ->
-                                                     (forall t1 z, (forall t1', size t1' <= size t1 -> P t1') -> P (n_abs z t1)) ->
-                                                     (forall t1 t2, (forall t1', size t1' < size t1 + size t2 -> P t1') -> (forall t2', size t2' < size t1 + size t2 -> P t2') -> P (n_app t1 t2)) ->
-                                                     (forall t1 t2 z, (forall t2', size t2' < size t2 -> P t2') -> (forall t1', size t1' < 1 + size t1 -> P t1') -> P (n_sub t1 z t2)) -> (forall t, P t).
-Proof.
- intros P Hvar Habs Happ Hsub t. remember (size t) as n. generalize dependent t. induction n using strong_induction. intro t; case t.
-  - intros x Hsize. apply Hvar.
-  - intros x t1 Hsize. apply Habs. intros t1' Hsize'. apply H with (size t1'). rewrite Hsize. simpl. apply Nat.le_lt_trans with (size t1').
-    + auto.
-    + lia.
-    + reflexivity.
-  - intros t1 t2 Hsize. simpl in *. apply Happ.
-    + intros t1' Hlt. apply H with (size t1').
-      * rewrite Hsize. apply lt_trans with (size t1 + size t2).
-        ** assumption.
-        ** lia.
-      * reflexivity.
-    + 
-Admitted.
-
 Lemma n_sexp_induction: forall P : n_sexp -> Prop, (forall x, P (n_var x)) ->
                                                      (forall t1 z, (forall t2, size t2 = size t1 -> P t2) -> P (n_abs z t1)) ->
                                                      (forall t1 t2, P t1 -> P t2 -> P (n_app t1 t2)) ->
@@ -452,7 +432,17 @@ Proof.
       ++ rewrite Hsize'. rewrite Hsize. apply Nat.lt_succ_r. apply Nat.le_add_r.
       ++ reflexivity.
 Qed.
-  
+
+Lemma n_sexp_size_induction: forall P : n_sexp -> Prop, (forall x, P (n_var x)) ->
+                                                     (forall t1 z, (forall t1', size t1' < size (n_abs z t1) -> P t1') -> P (n_abs z t1)) ->
+                                                     (forall t1 t2, (forall t1', size t1' < size (n_app t1 t2) -> P t1') -> P (n_app t1 t2)) ->
+                                                     (forall t1 t2 z, (forall t1', size t1' < size (n_sub t1 z t2) -> P t1') -> P (n_sub t1 z t2)) -> (forall t, P t).
+Proof.
+  intros P Hvar Habs Happ Hsub. apply n_sexp_induction.
+  - apply Hvar.
+  - intros t1 z IH. apply Habs. intros t1' Hsize. apply IH. Admitted.
+
+
 (** used in FROM 2023 %\noindent% which states that in order to conclude that a certain property $P$ holds for all terms, we need to prove that:
 %\begin{enumerate}
  \item $P$ must hold for any variable;
@@ -722,7 +712,7 @@ Axiom remove_singleton_neq: forall x y, x <> y -> remove x (singleton y) = singl
 
 Axiom remove_singleton_empty_eq: forall x, remove x (singleton x) = empty.
 Axiom remove_empty_empty: forall x, remove x empty = empty. (* ? *)
-Axiom remove_singleton_eq: forall x y, x <> y -> remove x (singleton y) = singleton y.
+Axiom remove_singleton_notin: forall x y, x <> y -> remove x (singleton y) = singleton y.
 Axiom remove_remove_fv_nom: forall t x, remove x (remove x (fv_nom t)) = remove x (fv_nom t).
 (* Proof.
   induction t as [z | z t1 | t1 IHt1 t2 IHt2 | t1 IHt1 z t2 IHt2].
@@ -737,8 +727,8 @@ Axiom remove_remove_fv_nom: forall t x, remove x (remove x (fv_nom t)) = remove 
 
 Corollary remove_singleton_neq: forall x y z, x <> z -> y <> z -> remove x (singleton z) = remove y (singleton z).
 Proof.
-  intros x y z Hneq1 Hneq2. rewrite remove_singleton_eq.
-  - rewrite remove_singleton_eq.
+  intros x y z Hneq1 Hneq2. rewrite remove_singleton_notin.
+  - rewrite remove_singleton_notin.
     + reflexivity.
     + assumption.
   - assumption.
@@ -759,16 +749,16 @@ Lemma remove_remove_comm_fv_nom: forall t x y, x <> y -> remove x (remove y (fv_
 Proof.
   induction t as [z | t1 z | t1 t2 IHt1 IHt2 | t1 z t2 IHt1 IHt2] using  n_sexp_induction.
   - intros x y Hneq. simpl. case (y == z).
-    + intro Heq. subst. rewrite remove_singleton_empty_eq. rewrite remove_empty_empty. symmetry. rewrite remove_singleton_eq.
+    + intro Heq. subst. rewrite remove_singleton_empty_eq. rewrite remove_empty_empty. symmetry. rewrite remove_singleton_notin.
       * apply remove_singleton_empty_eq.
       * assumption.
     + intro Hneq2. case (x == z).
-      * intro Heq. subst. rewrite remove_singleton_eq.
+      * intro Heq. subst. rewrite remove_singleton_notin.
         ** symmetry. rewrite remove_singleton_empty_eq. apply remove_empty_empty.
         ** assumption.
-      * intro Hneq3. rewrite remove_singleton_eq.
-        ** rewrite remove_singleton_eq.
-           *** rewrite remove_singleton_eq.
+      * intro Hneq3. rewrite remove_singleton_notin.
+        ** rewrite remove_singleton_notin.
+           *** rewrite remove_singleton_notin.
                **** reflexivity.
                **** assumption.
            *** assumption.             
@@ -812,16 +802,34 @@ Admitted. *)
 Lemma remove_notin: forall t x, x `notin` fv_nom t -> remove x (fv_nom t) = fv_nom t.
 Proof.
   induction t as [y | y t1 | t1 IHt1 t2 IHt2 | t1 IHt1 y t2 IHt2].
-  - intros x H. simpl in *. apply notin_singleton_1 in H. apply aux_not_equal in H. apply remove_singleton_neq in H; assumption.
-  - intros x H. simpl in *. apply notin_remove_1 in H. destruct H.
-    + (* x = y *) subst. rewrite double_remove_eq; reflexivity.
-    + (* x <> y *) rewrite IHt1.
-  -
-  -
-  Admitted.
+  - intros x H. simpl in *. apply notin_singleton_1 in H. apply aux_not_equal in H. rewrite remove_singleton_notin.
+    + reflexivity.
+    + assumption.
+  - intros x H. simpl in *. case (x == y).
+    + (* x = y *) intro Heq. subst. rewrite remove_remove_fv_nom; reflexivity.
+    + (* x <> y *) intro Hneq. apply notin_remove_1 in H. destruct H.
+      * subst. contradiction.
+      * rewrite remove_remove_comm_fv_nom.
+        ** rewrite IHt1.
+           *** reflexivity.
+           *** assumption.
+        ** assumption.
+  - Admitted.
 
+(** errado Lemma fv_nom_swap_eq: forall t x y, x <> y -> fv_nom (swap x y t) = fv_nom t.
+Proof.
+  induction t as [z | z t1 | t1 IHt1 t2 IHt2 | t1 IHt1 z t2 IHt2].
+  - intros x y H. simpl. unfold vswap. destruct (z == x).
+    + subst. Admitted. *)
+
+(* falso: tome t = \x.y, com x <> y
 Lemma remove_remove_fv_nom_swap: forall t x y, remove y (remove x (fv_nom (swap y x t))) = remove x (remove y (fv_nom t)). 
-Proof.  Admitted. 
+Proof.
+  intros t x y. case (x == y).
+  - intro Heq. subst. rewrite swap_id. reflexivity.
+  - intro Hneq. pose proof remove_remove_comm_fv_nom. rewrite <- H. 
+    + Admitted. *)
+      
 (*  induction t as [z | z t1 | t1 IHt1 t2 IHt2 | t1 IHt1 z t2 IHt2].
   - intros x y Hneq. simpl in *. unfold vswap. destruct (z == y).
     + subst. rewrite remove_singleton_neq.
@@ -874,17 +882,42 @@ Proof.  Admitted.
                **** apply aux_not_equal. assumption.
            *** apply aux_not_equal. *)
 
-Lemma remove_swap_eq: forall t x y, y `notin` (fv_nom t) -> remove x (fv_nom t) = remove y (fv_nom (swap y x t)). 
+Theorem fv_nom_dec: forall t x, x `in` fv_nom t \/ x `notin` fv_nom t.
 Proof.
   induction t as [z | z t1 | t1 IHt1 t2 IHt2 | t1 IHt1 z t2 IHt2].
+  - intros x. simpl. case (x == z).
+    + intro Heq. subst. left. apply AtomSetImpl.singleton_2. reflexivity.
+    + intro Hneq. right. admit.
+  - intro x. simpl in *. case (x == z).
+    + intro Heq. subst. right. admit.
+    + intro Hneq. specialize (IHt1 x). destruct IHt1.
+      * left. apply AtomSetImpl.remove_2.
+        ** admit.
+        ** assumption.
+      * right. Admitted.
+      
+Lemma remove_swap_eq: forall t x y, y `notin` (fv_nom t) -> remove x (fv_nom t) = remove y (fv_nom (swap y x t)). 
+Proof.
+  intros t x. pose proof fv_nom_dec as H. specialize (H t x). destruct H.
   - admit.
-  - intros x y Hfv. simpl in *. apply notin_remove_1 in Hfv. destruct Hfv.
-    + subst. unfold vswap. rewrite eq_dec_refl. symmetry. apply remove_remove_fv_nom.
+  - intros y H'. Admitted.
+(*  induction t as [z | z t1 | t1 IHt1 t2 IHt2 | t1 IHt1 z t2 IHt2].
+  - intros x y H. simpl in *.
+    admit.
+  - intros x y Hfv. pose proof fv_nom_dec as H. specialize (H (n_abs z t1) x). destruct H.
+    + simpl in *. unfold vswap. case (y == z).
+      * intro Heq. subst. rewrite eq_dec_refl.
+      *
+    + intro Heq. subst. unfold vswap. rewrite eq_dec_refl.
+
+
+
+      symmetry. apply remove_remove_fv_nom.
     + unfold vswap. destruct (z == y).
       * subst. symmetry. apply remove_remove_fv_nom.
       * destruct (z == x).
         ** subst. specialize (IHt1 x y). assert (H' := H). apply IHt1 in H'. rewrite <- H'.
-Admitted.
+Admitted. *)
 
 (*      rewrite remove_singleton_empty.
 
