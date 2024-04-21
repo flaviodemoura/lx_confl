@@ -283,9 +283,9 @@ Qed.
 
 Lemma swap_symmetric : forall t x y, swap x y t = swap y x t.
 Proof.
-  induction t.
-  - intros x' y. simpl. unfold vswap. default_simp.
-  - intros x' y; simpl. unfold vswap. default_simp.
+  induction t as [z | z t1 | t1 IHt1 t2 IHt2 | t1 IHt1 z t2 IHt2 ].
+  - intros x y. simpl. unfold vswap. default_simp.
+  - intros x y; simpl. unfold vswap. default_simp.
   - intros x y; simpl. rewrite IHt1. rewrite IHt2; reflexivity.
   - intros. simpl. unfold vswap. default_simp.
 Qed.
@@ -797,7 +797,19 @@ Proof.
   -
 Admitted. *)
 
-
+Theorem fv_nom_dec: forall t x, x `in` fv_nom t \/ x `notin` fv_nom t.
+Proof.
+  induction t as [z | z t1 | t1 IHt1 t2 IHt2 | t1 IHt1 z t2 IHt2].
+  - intros x. simpl. case (x == z).
+    + intro Heq. subst. left. apply AtomSetImpl.singleton_2. reflexivity.
+    + intro Hneq. right. admit.
+  - intro x. simpl in *. case (x == z).
+    + intro Heq. subst. right. admit.
+    + intro Hneq. specialize (IHt1 x). destruct IHt1.
+      * left. apply AtomSetImpl.remove_2.
+        ** admit.
+        ** assumption.
+      * right. Admitted.
 
 Lemma remove_notin: forall t x, x `notin` fv_nom t -> remove x (fv_nom t) = fv_nom t.
 Proof.
@@ -881,25 +893,12 @@ Proof.
                **** reflexivity.
                **** apply aux_not_equal. assumption.
            *** apply aux_not_equal. *)
-
-Theorem fv_nom_dec: forall t x, x `in` fv_nom t \/ x `notin` fv_nom t.
-Proof.
-  induction t as [z | z t1 | t1 IHt1 t2 IHt2 | t1 IHt1 z t2 IHt2].
-  - intros x. simpl. case (x == z).
-    + intro Heq. subst. left. apply AtomSetImpl.singleton_2. reflexivity.
-    + intro Hneq. right. admit.
-  - intro x. simpl in *. case (x == z).
-    + intro Heq. subst. right. admit.
-    + intro Hneq. specialize (IHt1 x). destruct IHt1.
-      * left. apply AtomSetImpl.remove_2.
-        ** admit.
-        ** assumption.
-      * right. Admitted.
       
-Lemma remove_swap_eq: forall t x y, y `notin` (fv_nom t) -> remove x (fv_nom t) = remove y (fv_nom (swap y x t)). 
+Lemma remove_swap_eq: forall t x y, y `notin` (fv_nom t) -> remove x (fv_nom t) =a remove y (fv_nom (swap y x t)). 
 Proof.
   intros t x. pose proof fv_nom_dec as H. specialize (H t x). destruct H.
-  - admit.
+  - intros y Hnotin.
+    admit.
   - intros y H'. Admitted.
 (*  induction t as [z | z t1 | t1 IHt1 t2 IHt2 | t1 IHt1 z t2 IHt2].
   - intros x y H. simpl in *.
