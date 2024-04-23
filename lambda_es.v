@@ -189,6 +189,15 @@ Fixpoint size (t : n_sexp) : nat :=
   | n_sub t1 x t2 => 1 + size t1 + size t2
   end.
 
+Lemma n_sexp_size: forall t, size t > 0.
+Proof.
+  induction t.
+  - simpl. auto.
+  - simpl. auto.
+  - simpl. lia.
+  - simpl. lia.
+Qed.    
+
 Fixpoint fv_nom (t : n_sexp) : atoms :=
   match t with
   | n_var x => {{x}}
@@ -438,10 +447,18 @@ Lemma n_sexp_size_induction: forall P : n_sexp -> Prop, (forall x, P (n_var x)) 
                                                      (forall t1 t2, (forall t1', size t1' < size (n_app t1 t2) -> P t1') -> P (n_app t1 t2)) ->
                                                      (forall t1 t2 z, (forall t1', size t1' < size (n_sub t1 z t2) -> P t1') -> P (n_sub t1 z t2)) -> (forall t, P t).
 Proof.
-  intros P Hvar Habs Happ Hsub. apply n_sexp_induction.
-  - apply Hvar.
-  - intros t1 z IH. apply Habs. intros t1' Hsize. apply IH. Admitted.
-
+  intros P Hvar Habs Happ Hsub t. remember (size t) as n. generalize dependent t. induction n using strong_induction. intro t; case t.
+  - intros x Hsize. apply Hvar.
+  - intros x t' Hsize. apply Habs. intros t'' Hsize'. apply H with (size t'').
+    + rewrite Hsize. simpl. auto.
+    + reflexivity.
+  - intros t1 t2 Hsize. apply Happ. intros t1' Hsize'. apply H with (size t1').
+    + rewrite Hsize. assumption.
+    + reflexivity.
+  - intros t1 x t2 Hsize. simpl in *. apply Hsub. intros t1' Hsize'. apply H with (size t1').
+    + rewrite Hsize. assumption.
+    + reflexivity.
+Qed.
 
 (** used in FROM 2023 %\noindent% which states that in order to conclude that a certain property $P$ holds for all terms, we need to prove that:
 %\begin{enumerate}
