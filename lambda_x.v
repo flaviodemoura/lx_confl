@@ -330,8 +330,8 @@ Proof.
   intros n m H. inversion H.
   - apply le_n.
   - apply (le_trans n (S n) m).
-    -- apply le_S. reflexivity.
-    -- assumption.
+    + apply le_S. reflexivity.
+    + assumption.
 Qed.
 (** fim - mover para lambda_es.v *)
 
@@ -344,60 +344,22 @@ Proof.
 Qed.
 
 Lemma pure_m_subst : forall t u x, pure t -> pure u -> pure ({x := u}t).
-Proof. Admitted.
-(*  induction t using n_sexp_induction.
-  - intros. unfold m_subst. simpl. case (x0 == x).
-    -- intros. assumption.
-    -- intros. assumption.
-  - intros. unfold m_subst. simpl. case (x==z).
-    -- intros; subst. assumption.
-    -- intros. destruct (atom_fresh
-         (Metatheory.union (fv_nom u)
-                (Metatheory.union (remove z (fv_nom t)) (singleton x)))).
-       apply pure_abs. inversion H1. unfold m_subst in H.
-       pose proof pure_swap. specialize (H5 z x0 t).
-       pose proof H3. apply H5 in H6; clear H5.
-       specialize (H t z x0). assert (size t = size t). {
-         reflexivity.
-       }
-       specialize (H H5 u x); clear H5. rewrite swap_size_eq in H.
-       apply H.
-    --- assumption.
-    --- assumption.
-  - unfold m_subst; unfold m_subst in IHt1; unfold m_subst in IHt2.
-    intros. simpl. inversion H0.
-    clear H1; clear H2; clear e1; clear e2. apply pure_app.
-    -- specialize (IHt1 u x).
-       assert (size t1 <= size t1 + size t2). {
-         apply le_plus_l.
-       }
-       pose proof subst_size.
-       specialize (H2 (size t1 + size t2) u x t1).
-       apply H2 in H1; clear H2. rewrite H1. apply IHt1.
-    --- assumption.
-    --- assumption.
-    -- specialize (IHt2 u x).
-       assert (size t2 <= size t1 + size t2). {
-         apply le_plus_r.
-       }
-       pose proof subst_size.
-       specialize (H2 (size t1 + size t2) u x t2).
-       apply H2 in H1; clear H2. rewrite H1. apply IHt2.
-    --- assumption.
-    --- assumption.
-  - intros. inversion H1.
-Qed. *)
-
-(** apagar
-Lemma double_remove: forall x s,
-           remove x (remove x s) [=] remove x s.
 Proof.
-  intros. pose proof AtomSetProperties.remove_equal.
-  assert (x `notin` remove x s). {
-    apply AtomSetImpl.remove_1. reflexivity.
-  }
-  specialize (H (remove x s) x). apply H in H0. assumption.
-Qed. *)
+  induction t as [y | t1 y IHt1 | t1 t2 IHt1 IHt2 | t1 t2 y IHt1 IHt2] using n_sexp_induction.
+  - intros u x H1 H2. unfold m_subst. rewrite subst_rec_fun_equation. destruct (x == y).
+    + assumption.
+    + assumption.
+  - intros u x H1 H2. unfold m_subst in *. rewrite subst_rec_fun_equation. destruct (x == y).
+    + assumption.
+    + destruct (atom_fresh (union (fv_nom u) (union (fv_nom (n_abs y t1)) (singleton x)))) as [z Hnotin]. apply pure_abs. inversion H1; subst. pose proof pure_swap as H'. specialize (H' y z t1). pose proof H0 as H''. apply H' in H''. clear H'. apply IHt1.
+      * rewrite swap_size_eq. reflexivity.
+      * assumption.
+      * assumption.
+  - intros u x Happ Hpure. inversion Happ; subst. unfold m_subst in *. rewrite subst_rec_fun_equation. apply pure_app.
+    + apply IHt1; assumption.
+    + apply IHt2; assumption.
+  - intros u x Hsubst Hpure. inversion Hsubst. 
+Qed. 
   
 Fixpoint num_occ x t : nat :=
   match t with
@@ -434,7 +396,6 @@ Admitted.
 false: take t = y or t = x
 Lemma swap_trans: forall t x y z, (swap x y (swap y z t)) = swap x z t. *)
     
-
 Inductive betax : n_sexp -> n_sexp -> Prop :=
  | step_betax : forall (e1 e2: n_sexp) (x: atom),
      betax (n_app  (n_abs x e1) e2)  (n_sub e1 x e2).
@@ -465,11 +426,10 @@ Inductive pix : n_sexp -> n_sexp -> Prop :=
     x <> y -> x `notin` fv_nom e2 ->
     pix (n_sub (n_abs x e1) y e2)  (n_abs x (n_sub e1 y e2))
 | step_abs3 : forall (e1 e2: n_sexp) (x y z: atom),
-    x <> y -> z <> y -> x `in` fv_nom e2 -> z `notin` fv_nom e1 -> z `notin` fv_nom e2 -> 
+    x <> y -> z <> x -> z <> y -> x `in` fv_nom e2 -> z `notin` fv_nom e1 -> z `notin` fv_nom e2 -> 
                    pix (n_sub (n_abs x e1) y e2)  (n_abs z (n_sub (swap x z e1) y e2))
 | step_app : forall (e1 e2 e3: n_sexp) (y: atom),
     pix (n_sub (n_app e1 e2) y e3) (n_app (n_sub e1 y e3) (n_sub e2 y e3)).
-
 
 (* Pegar uma variável que não esteja livre tanto em e1 quanto em e2 e
   fazer um swap dessa variável com o x em e1. Estou considerando que é  possível uma
@@ -477,19 +437,27 @@ Inductive pix : n_sexp -> n_sexp -> Prop :=
   ex: \x -> x (\x -> x z) *)
 
 
-Inductive betapi: n_sexp -> n_sexp -> Prop :=
+Inductive betapi: Rel n_sexp :=
 | b_rule : forall t u, betax t u -> betapi t u
 | x_rule : forall t u, pix t u -> betapi t u.
 
-Inductive ctx  (R : n_sexp -> n_sexp -> Prop): n_sexp -> n_sexp -> Prop :=
- | step_aeq: forall e1 e2, aeq e1 e2 -> ctx R e1 e2
+(* Inductive ctx  (R : Rel n_sexp): Rel n_sexp :=
+ | step_aeq: forall e1 e2, e1 =a e2 -> ctx R e1 e2
+ | step_redex: forall (e1 e2 e3 e4: n_sexp), aeq e1 e2 -> R e2 e3 -> aeq e3 e4 -> ctx R e1 e4
+ | step_abs_in: forall (e e': n_sexp) (x: atom), ctx R e e' -> ctx R (n_abs x e) (n_abs x e')
+ | step_app_left: forall (e1 e1' e2: n_sexp) , ctx R e1 e1' -> ctx R (n_app e1 e2) (n_app e1' e2)
+ | step_app_right: forall (e1 e2 e2': n_sexp) , ctx R e2 e2' -> ctx R (n_app e1 e2) (n_app e1 e2')
+ | step_sub_left: forall (e1 e1' e2: n_sexp) (x : atom) , ctx R e1 e1' -> ctx R (n_sub e1 x e2) (n_sub e1' x e2)
+ | step_sub_right: forall (e1 e2 e2': n_sexp) (x:atom), ctx R e2 e2' -> ctx R (n_sub e1 x e2) (n_sub e1 x e2'). *)
+
+Inductive ctx  (R : Rel n_sexp): Rel n_sexp :=
+ | step_aeq: forall e1 e2, e1 =a e2 -> ctx R e1 e2
  | step_redex: forall (e1 e2 e3 e4: n_sexp), aeq e1 e2 -> R e2 e3 -> aeq e3 e4 -> ctx R e1 e4
  | step_abs_in: forall (e e': n_sexp) (x: atom), ctx R e e' -> ctx R (n_abs x e) (n_abs x e')
  | step_app_left: forall (e1 e1' e2: n_sexp) , ctx R e1 e1' -> ctx R (n_app e1 e2) (n_app e1' e2)
  | step_app_right: forall (e1 e2 e2': n_sexp) , ctx R e2 e2' -> ctx R (n_app e1 e2) (n_app e1 e2')
  | step_sub_left: forall (e1 e1' e2: n_sexp) (x : atom) , ctx R e1 e1' -> ctx R (n_sub e1 x e2) (n_sub e1' x e2)
  | step_sub_right: forall (e1 e2 e2': n_sexp) (x:atom), ctx R e2 e2' -> ctx R (n_sub e1 x e2) (n_sub e1 x e2').
-
 Definition lx t u := ctx betapi t u.
 
 (* Reflexive transitive closure modulo alpha equivalence 
