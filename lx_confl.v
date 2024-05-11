@@ -59,7 +59,7 @@ Proof.
       * apply aeq_m_subst_out. apply IHt1.
     + apply aeq_sym. apply aeq_swap_m_subst.
 Qed.
-                                                                                            
+(*                                                                                            
 Lemma aeq_P: forall t1 t2, t1 =a t2 -> (P t1) =a (P t2).
 Proof.
   induction t1 as [x | t11 x IH | t11 t12 IH1 IH2 | t11 t12 x IH1 IH2] using n_sexp_induction.
@@ -335,11 +335,12 @@ Proof.
   - simpl. apply aeq_m_subst_2. assumption.
   - simpl. apply aeq_m_subst_1. assumption.
 Qed.
+ *)
 
-(*Lemma 2 in Nakazawa*)
-Lemma pure_P: forall e, pure (P e).
+(*Lemma 2 in Nakazawa - Jose Roberto para 14/5/2024 *)
+Lemma pure_P: forall t, pure (P t).
 Proof.
-  induction e.
+  induction t.
   - simpl. apply pure_var.
   - simpl. apply pure_abs. assumption.
   - simpl. apply pure_app.

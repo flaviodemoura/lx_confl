@@ -1387,7 +1387,102 @@ Lemma singleton_eq: forall a b, singleton a [=] singleton b -> a = b.
 Proof.
   intros a b H. unfold AtomSetImpl.Equal in H. specialize (H a). destruct H. clear H0. pose proof AtomSetNotin.D.FSetDecideTestCases.test_In_singleton as H'. specialize (H' a). apply H in H'. apply AtomSetImpl.singleton_1 in H'. symmetry. assumption.
 Qed.
+
+(* AtomSetProperties.FM.singleton_m, KeySetFacts.singleton_m, KeySetProperties.Dec.F.singleton_m: forall x y, x = y -> singleton x [=] singleton y. *)
+Instance: Proper (eq ==> AtomSetImpl.Equal) singleton.
+Proof.
+  intros x y H. subst. reflexivity.
+Qed.
+
+(* AtomSetProperties.cardinal_m_Proper: forall x y, x [=] y -> AtomSetImpl.cardinal x = AtomSetImpl.cardinal y *)
+Instance: Proper (AtomSetImpl.Equal ==> eq) AtomSetImpl.cardinal.
+Proof.
+  intros x y H. rewrite H. reflexivity.
+Qed.  
+
+
+
+
+(* D.F.is_empty_m: forall x y, x [=] y -> AtomSetImpl.is_empty x = AtomSetImpl.is_empty y *)
+Instance: Proper (AtomSetImpl.Equal ==> eq) AtomSetImpl.is_empty.
+Proof.
+  intros x y H. rewrite H. reflexivity.
+Qed.
+
+(* subset_m: forall x y, x [=] y -> forall z w, z [=] w -> AtomSetImpl.subset x z = AtomSetImpl.subset y w *)
+Instance: Proper (AtomSetImpl.Equal ==> AtomSetImpl.Equal ==> eq) AtomSetImpl.subset.
+Proof.
+ intros x y H z w H'. rewrite H. rewrite H'. reflexivity.
+Qed.
+
+(* Morphisms_Prop.ex_iff_morphism: forall P1, P2 : A -> Prop -> (forall a : A, P1 a <-> P2 a) -> (exists y, P1 y) <-> (exists y, P2 y) *)
+Instance: forall {A : Type}, Proper (pointwise_relation A iff ==> iff) (ex (A:=A)).
+Proof.
+  intros A P1 P2 H. unfold pointwise_relation in H. split.
+  - intro H'. destruct H'. exists x. apply H. assumption.
+  - intro H'. destruct H'. exists x. apply H. assumption.
+Qed.
+
+(* equal_m: forall x y, x [=] y -> forall z w, z [=] w -> AtomSetImpl.equal x z = AtomSetImpl.equal y w *)
+Instance: Proper (AtomSetImpl.Equal ==> AtomSetImpl.Equal ==> eq) AtomSetImpl.equal.
+Proof.
+  intros x y H z w H'. rewrite H. rewrite H'. reflexivity.
+Qed.  
+
+(* F.remove_m: forall x y, x = y -> forall z w, z [=] w -> remove x z [=] remove y w *)
+Instance: Proper (eq ==> AtomSetImpl.Equal ==> AtomSetImpl.Equal) remove.
+Proof.
+ intros x y H z w H'. subst. rewrite H'. reflexivity.
+Qed.
+
+(* mem_m: forall x y, x = y -> forall z w, z [=] w -> AtomSetImpl.mem x z = AtomSetImpl.mem y w *)
+Instance: Proper (eq ==> AtomSetImpl.Equal ==> eq) AtomSetImpl.mem.
+Proof.
+  intros x y H z w H'. subst. rewrite H'. reflexivity.
+Qed.
+
+(* Proper_instance_3: forall x y, x [=] y -> forall z w, z [=] w ->  AtomSetImpl.subset x z = AtomSetImpl.subset y w *)
+Instance: Proper (AtomSetImpl.Equal ==> AtomSetImpl.Equal ==> eq) AtomSetImpl.subset.
+Proof.
+  intros s1 s2 H s3 s4 H'. rewrite H. rewrite H'. reflexivity.
+Qed.
   
+(* KeySetProperties.Dec.F.remove_s_m_Proper:  forall x y, x = y -> forall z w, z [<=] w -> remove x z [<=] remove y w  *)
+Instance: Proper (eq ==> AtomSetImpl.Subset ==> AtomSetImpl.Subset) remove.
+Proof.
+  intros x y H z q H'. subst. Admitted.
+  
+(* D.F.add_m: forall x y, x = y -> forall z w, z [=] w -> add x z [=] y w *)
+Instance: Proper (eq ==> AtomSetImpl.Equal ==> AtomSetImpl.Equal) add.
+Proof.
+ intros x y H z w H'. subst. rewrite H'. reflexivity.
+Qed.
+                                       
+(*Lemma singleton_is_singleton: forall a x, singleton a [=] x -> a = b.
+Proof.
+  intros a b H. unfold AtomSetImpl.Equal in H. specialize (H a). destruct H. clear H0. pose proof AtomSetNotin.D.FSetDecideTestCases.test_In_singleton as H'. specialize (H' a). apply H in H'. apply AtomSetImpl.singleton_1 in H'. symmetry. assumption.
+Qed.*)
+
+Instance: forall x, Proper (AtomSetImpl.Equal ==> flip impl) (eq (singleton x)).
+Proof.
+  intros x y z H. unfold flip. unfold impl. intro H'. subst. symmetry in H.
+  Admitted.
+
+Instance: forall x, Proper (AtomSetImpl.Equal ==> flip impl) (eq (remove x (singleton x))).
+Proof.
+  intros x y z H. unfold flip. unfold impl. intro H'.
+  Admitted.
+
+Lemma remove_singleton_empty_eq: forall x, remove x (singleton x) = empty.
+Proof.
+ intro x. pose proof remove_singleton_empty. specialize (H x). setoid_rewrite <- H. reflexivity.
+Qed.
+  
+Lemma remove_singleton_eq: forall x y, remove x (singleton x) = remove y (singleton y).
+Proof.
+  intros x y. repeat rewrite remove_singleton_empty_eq. reflexivity.
+Qed.
+    
 Lemma test0: forall a b c, (singleton a) [=] (singleton b) -> union (singleton a) (singleton c) [=] union (singleton b) (singleton c).
 Proof.
   intros a b c H. rewrite H. reflexivity.
@@ -1412,26 +1507,33 @@ Proof.
         ** apply singleton_eq in H. subst. apply aeq_refl.
 Qed.
 
-Lemma test: forall a b, (singleton a) [=] (singleton b) -> let (x,_) := atom_fresh (singleton a) in True.
+Lemma test3: forall a b, (singleton a) [=] (singleton b) -> let (x,_) := atom_fresh (singleton a) in True.
 Proof.
-  intros a b H. apply singleton_eq in H. rewrite H. destruct (atom_fresh (singleton b)). auto.
+  intros a b H.
+  apply singleton_eq in H. rewrite H. destruct (atom_fresh (singleton b)). auto.
 Qed.  
 
-
-Require Import Setoid.
-Require Import Morphisms.
 (*
-Require Import FunctionalExtensionality.
- *)
-
-Instance: Proper (AtomSetImpl.Equal ==> AtomSetImpl.Equal ==> flip impl) eq.
+Lemma test4: forall a b, (a <-> b) -> exists x, (a /\ b) -> x.
 Proof.
-  intros x y H x' y' H'. unfold flip. intro H''. subst.
-Admitted.
+  intros a b H. setoid_rewrite H.
+
+Lemma test4: forall a b, (a <-> b) -> let x := a in True.
+Proof.
+  intros a b H. setoid_rewrite H.
+  
+
+Require Import FunctionalExtensionality.
+
+Instance: Proper (AtomSetImpl.Equal ==> AtomSetImpl.Equal ==> impl) eq.
+Proof.
+  intros x y H x' y' H'. unfold impl. intro H''. Admitted.
+*)
 
 Lemma remove_singleton_neq: forall x y, x <> y -> remove x (singleton y) [=] singleton y.
 Proof.
-  intros x y H. Admitted.
+  intros x y H. apply AtomSetProperties.remove_equal. apply notin_singleton. apply aux_not_equal. assumption.
+Qed.
   
 Lemma remove_fv_nom_eq: forall t x y, x `notin` fv_nom t ->  remove x (fv_nom (swap y x t)) = remove y (fv_nom t).
 Proof.
@@ -1439,7 +1541,7 @@ Proof.
   - intros x y H. simpl. unfold vswap. destruct (z == x).
     + subst. simpl in H. apply notin_singleton_1 in H. contradiction.
     + destruct (z == y).
-      * subst. setoid_rewrite remove_singleton_empty. reflexivity.
+      * subst. (* setoid_rewrite remove_singleton_empty. reflexivity.
       * repeat rewrite remove_singleton_neq.
         ** reflexivity.
         ** apply aux_not_equal. assumption.
@@ -1480,14 +1582,14 @@ Proof.
                **** reflexivity.
                **** assumption.
     + apply notin_union_2 in Hsub. assumption.
-Qed.                    
+Qed.              *) Admitted.      
 
 Lemma aeq_fv_nom_eq : forall t1 t2, t1 =a t2 -> fv_nom t1 = fv_nom t2.
 Proof.
   intros t1 t2 Haeq. induction Haeq.
   - reflexivity.
   - simpl. rewrite IHHaeq. reflexivity.
-  - simpl. rewrite IHHaeq.
+  - simpl. rewrite IHHaeq. Admitted.
 
     
     
@@ -1499,7 +1601,9 @@ Proof.
     + apply aeq_refl.
   - intros u u' x Haeq. unfold m_subst in *. repeat rewrite subst_rec_fun_equation. destruct (x == y). 
     + apply aeq_refl. 
-    + pose proof Haeq as Hfv. apply aeq_fv_nom in Hfv. unfold AtomSetImpl.Equal in *. rewrite Hfv.
+    + pose proof Haeq as Hfv. apply aeq_fv_nom in Hfv. unfold AtomSetImpl.Equal in *. Admitted.
+
+ (*     rewrite Hfv.
 
 
 
@@ -1528,7 +1632,10 @@ Proof.
            *** rewrite swap_size_eq. reflexivity.
            *** apply aeq_sym. assumption.
         ** apply IHt1. apply aeq_sym. assumption.
-Qed. (** used in FROM 2023 %\noindent{\bf Proof.}% We go directly to the abstraction case. When $t = \lambda_y.t_1$, the goal is $\metasub{(\lambda_y.t_1)}{x}{u} =_\alpha \metasub{(\lambda_y.t_1)}{x}{u'}$. If $x \neq y$ then the fresh name needed for the LHS must not belong to the set $fv\_nom(u) \cup fv\_nom(\lambda_y. t_1)\cup \{x\}$, while the fresh name for the RHS must not belong to $fv\_nom(u' ) \cup fv\_nom(\lambda_y. t_1)\cup \{x\}$. These sets differ only by the subsets $fv\_nom(u)$ and $fv\_nom(u' )$. Nevertheless, these subsets are equal because $u$ and $u'$ are $\alpha$-equivalent (see lemma [aeq_fv_nom]). Concretely, the current goal is as follows:
+Qed. *)
+
+
+(** used in FROM 2023 %\noindent{\bf Proof.}% We go directly to the abstraction case. When $t = \lambda_y.t_1$, the goal is $\metasub{(\lambda_y.t_1)}{x}{u} =_\alpha \metasub{(\lambda_y.t_1)}{x}{u'}$. If $x \neq y$ then the fresh name needed for the LHS must not belong to the set $fv\_nom(u) \cup fv\_nom(\lambda_y. t_1)\cup \{x\}$, while the fresh name for the RHS must not belong to $fv\_nom(u' ) \cup fv\_nom(\lambda_y. t_1)\cup \{x\}$. These sets differ only by the subsets $fv\_nom(u)$ and $fv\_nom(u' )$. Nevertheless, these subsets are equal because $u$ and $u'$ are $\alpha$-equivalent (see lemma [aeq_fv_nom]). Concretely, the current goal is as follows:
 
 <<
  (let (z, _) := atom_fresh (union (fv_nom u) (union (fv_nom (n_abs y t1))
