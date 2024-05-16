@@ -1,0 +1,485 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<link href="coqdoc.css" rel="stylesheet" type="text/css" />
+<title>Metalib.Metatheory</title>
+</head>
+
+<body>
+
+<div id="page">
+
+<div id="header">
+</div>
+
+<div id="main">
+
+<h1 class="libtitle">Library Metalib.Metatheory</h1>
+
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Export</span> <a class="idref" href="http://coq.inria.fr/distrib/V8.15.0/stdlib//Coq.Arith.Arith.html#"><span class="id" title="library">Coq.Arith.Arith</span></a>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Export</span> <a class="idref" href="http://coq.inria.fr/distrib/V8.15.0/stdlib//Coq.FSets.FSets.html#"><span class="id" title="library">Coq.FSets.FSets</span></a>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Export</span> <a class="idref" href="http://coq.inria.fr/distrib/V8.15.0/stdlib//Coq.Lists.List.html#"><span class="id" title="library">Coq.Lists.List</span></a>.<br/>
+
+<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Export</span> <a class="idref" href="Metalib.AssocList.html#"><span class="id" title="library">Metalib.AssocList</span></a>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Export</span> <a class="idref" href="Metalib.CoqListFacts.html#"><span class="id" title="library">Metalib.CoqListFacts</span></a>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Export</span> <a class="idref" href="Metalib.LibTactics.html#"><span class="id" title="library">Metalib.LibTactics</span></a>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Export</span> <a class="idref" href="Metalib.MetatheoryAtom.html#"><span class="id" title="library">Metalib.MetatheoryAtom</span></a>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab82"></a><h1 class="section">Notations for finite sets of atoms</h1>
+
+<div class="paragraph"> </div>
+
+ Common set operations and constants may be written using more
+    convenient notations. 
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Declare Scope</span> <span class="id" title="var">set_scope</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Notation</span> <a id="687ad9a0d4d5361f7b758037bdde149d" class="idref" href="#687ad9a0d4d5361f7b758037bdde149d"><span class="id" title="notation">&quot;</span></a>E [=] F" :=<br/>
+&nbsp;&nbsp;(<a class="idref" href="Metalib.MetatheoryAtom.html#AtomSetImpl.Equal"><span class="id" title="definition">AtomSetImpl.Equal</span></a> <span class="id" title="var">E</span> <span class="id" title="var">F</span>)<br/>
+&nbsp;&nbsp;(<span class="id" title="tactic">at</span> <span class="id" title="keyword">level</span> 70, <span class="id" title="keyword">no</span> <span class="id" title="keyword">associativity</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">set_scope</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Notation</span> <a id="bf9ed07163853c34add24a2d0fcef4ef" class="idref" href="#bf9ed07163853c34add24a2d0fcef4ef"><span class="id" title="notation">&quot;</span></a>E [&lt;=] F" :=<br/>
+&nbsp;&nbsp;(<a class="idref" href="Metalib.MetatheoryAtom.html#AtomSetImpl.Subset"><span class="id" title="definition">AtomSetImpl.Subset</span></a> <span class="id" title="var">E</span> <span class="id" title="var">F</span>)<br/>
+&nbsp;&nbsp;(<span class="id" title="tactic">at</span> <span class="id" title="keyword">level</span> 70, <span class="id" title="keyword">no</span> <span class="id" title="keyword">associativity</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">set_scope</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Notation</span> <a id="19e8d08134d17e9b8659bce49a311051" class="idref" href="#19e8d08134d17e9b8659bce49a311051"><span class="id" title="notation">&quot;</span></a>{}" :=<br/>
+&nbsp;&nbsp;(<a class="idref" href="Metalib.MetatheoryAtom.html#AtomSetImpl.empty"><span class="id" title="axiom">AtomSetImpl.empty</span></a>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">set_scope</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Notation</span> <a id="8bc94874cc7fbdb36f931db8217ed899" class="idref" href="#8bc94874cc7fbdb36f931db8217ed899"><span class="id" title="notation">&quot;</span></a>{{  x  }}" :=<br/>
+&nbsp;&nbsp;(<a class="idref" href="Metalib.MetatheoryAtom.html#AtomSetImpl.singleton"><span class="id" title="axiom">AtomSetImpl.singleton</span></a> <span class="id" title="var">x</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">set_scope</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Declare Scope</span> <span class="id" title="var">set_hs_scope</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Notation</span> <a id="d26de186ca8d4ad7534dfd01d5ceb5c3" class="idref" href="#d26de186ca8d4ad7534dfd01d5ceb5c3"><span class="id" title="notation">&quot;</span></a>x `in` E" :=<br/>
+&nbsp;&nbsp;(<a class="idref" href="Metalib.MetatheoryAtom.html#AtomSetImpl.In"><span class="id" title="axiom">AtomSetImpl.In</span></a> <span class="id" title="var">x</span> <span class="id" title="var">E</span>)<br/>
+&nbsp;&nbsp;(<span class="id" title="tactic">at</span> <span class="id" title="keyword">level</span> 70)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">set_hs_scope</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Notation</span> <a id="06a610b5021a539a67215d21440be337" class="idref" href="#06a610b5021a539a67215d21440be337"><span class="id" title="notation">&quot;</span></a>x `notin` E" :=<br/>
+&nbsp;&nbsp;(<a class="idref" href="http://coq.inria.fr/distrib/V8.15.0/stdlib//Coq.Init.Logic.html#63a68285c81db8f9bc456233bb9ed181"><span class="id" title="notation">¬</span></a> <a class="idref" href="Metalib.MetatheoryAtom.html#AtomSetImpl.In"><span class="id" title="axiom">AtomSetImpl.In</span></a> <span class="id" title="var">x</span> <span class="id" title="var">E</span>)<br/>
+&nbsp;&nbsp;(<span class="id" title="tactic">at</span> <span class="id" title="keyword">level</span> 70)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">set_hs_scope</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Notation</span> <a id="025c90617166371a5921b2be3f12a7b4" class="idref" href="#025c90617166371a5921b2be3f12a7b4"><span class="id" title="notation">&quot;</span></a>E `union` F" :=<br/>
+&nbsp;&nbsp;(<a class="idref" href="Metalib.MetatheoryAtom.html#AtomSetImpl.union"><span class="id" title="axiom">AtomSetImpl.union</span></a> <span class="id" title="var">E</span> <span class="id" title="var">F</span>)<br/>
+&nbsp;&nbsp;(<span class="id" title="tactic">at</span> <span class="id" title="keyword">level</span> 65, <span class="id" title="tactic">right</span> <span class="id" title="keyword">associativity</span>, <span class="id" title="var">format</span> "E  `union`  '/' F")<br/>
+&nbsp;&nbsp;: <span class="id" title="var">set_hs_scope</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+We define some abbreviations for the empty set, singleton
+    sets, and the union of two sets. 
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Notation</span> <a id="add" class="idref" href="#add"><span class="id" title="abbreviation">add</span></a> := <a class="idref" href="Metalib.MetatheoryAtom.html#AtomSetImpl.add"><span class="id" title="axiom">AtomSetImpl.add</span></a>.<br/>
+<span class="id" title="keyword">Notation</span> <a id="empty" class="idref" href="#empty"><span class="id" title="abbreviation">empty</span></a> := <a class="idref" href="Metalib.MetatheoryAtom.html#AtomSetImpl.empty"><span class="id" title="axiom">AtomSetImpl.empty</span></a>.<br/>
+<span class="id" title="keyword">Notation</span> <a id="remove" class="idref" href="#remove"><span class="id" title="abbreviation">remove</span></a> := <a class="idref" href="Metalib.MetatheoryAtom.html#AtomSetImpl.remove"><span class="id" title="axiom">AtomSetImpl.remove</span></a>.<br/>
+<span class="id" title="keyword">Notation</span> <a id="singleton" class="idref" href="#singleton"><span class="id" title="abbreviation">singleton</span></a> := <a class="idref" href="Metalib.MetatheoryAtom.html#AtomSetImpl.singleton"><span class="id" title="axiom">AtomSetImpl.singleton</span></a>.<br/>
+<span class="id" title="keyword">Notation</span> <a id="union" class="idref" href="#union"><span class="id" title="abbreviation">union</span></a> := <a class="idref" href="Metalib.MetatheoryAtom.html#AtomSetImpl.union"><span class="id" title="axiom">AtomSetImpl.union</span></a>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Open the notation scopes declared above. 
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Open</span> <span class="id" title="keyword">Scope</span> <span class="id" title="var">set_scope</span>.<br/>
+<span class="id" title="keyword">Open</span> <span class="id" title="keyword">Scope</span> <span class="id" title="var">set_hs_scope</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab83"></a><h1 class="section">Environments</h1>
+
+<div class="paragraph"> </div>
+
+ We can use our implementation of association lists (in AssocList)
+    to implement association lists whose keys are atoms.  Thanks to
+    parameter inlining, the types in the instantiated functor will all
+    use <span class="inlinecode"><a class="idref" href="Metalib.MetatheoryAtom.html#atom"><span class="id" title="abbreviation">atom</span></a></span> for the type for keys. 
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Module</span> <span class="id" title="keyword">Export</span> <a id="EnvImpl" class="idref" href="#EnvImpl"><span class="id" title="module">EnvImpl</span></a> := <a class="idref" href="Metalib.AssocList.html#Make"><span class="id" title="module">AssocList.Make</span></a> <a class="idref" href="Metalib.MetatheoryAtom.html#Atom"><span class="id" title="module">Atom</span></a> <a class="idref" href="Metalib.MetatheoryAtom.html#AtomSetImpl"><span class="id" title="module">AtomSetImpl</span></a>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+We provide alternative names for the tactics on association lists
+    to reflect our use of association lists for environments. 
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Ltac</span> <span class="id" title="var">simpl_env</span> :=<br/>
+&nbsp;&nbsp;<span class="id" title="var">simpl_alist</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Tactic Notation</span> "simpl_env" "in" <span class="id" title="var">hyp</span>(<span class="id" title="var">H</span>) :=<br/>
+&nbsp;&nbsp;<span class="id" title="var">simpl_alist</span> <span class="id" title="tactic">in</span> <span class="id" title="var">H</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Tactic Notation</span> "simpl_env" "in" "*" :=<br/>
+&nbsp;&nbsp;<span class="id" title="var">simpl_alist</span> <span class="id" title="tactic">in</span> ×.<br/>
+
+<br/>
+<span class="id" title="keyword">Tactic Notation</span> "rewrite_env" <span class="id" title="keyword">constr</span>(<span class="id" title="var">E</span>) :=<br/>
+&nbsp;&nbsp;<span class="id" title="var">rewrite_alist</span> <span class="id" title="var">E</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Tactic Notation</span> "rewrite_env" <span class="id" title="keyword">constr</span>(<span class="id" title="var">E</span>) "in" <span class="id" title="var">hyp</span>(<span class="id" title="var">H</span>) :=<br/>
+&nbsp;&nbsp;<span class="id" title="var">rewrite_alist</span> <span class="id" title="var">E</span> <span class="id" title="tactic">in</span> <span class="id" title="var">H</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Tactic Notation</span> "env" "induction" <span class="id" title="var">ident</span>(<span class="id" title="var">E</span>) :=<br/>
+&nbsp;&nbsp;<span class="id" title="var">alist</span> <span class="id" title="tactic">induction</span> <span class="id" title="var">E</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Tactic Notation</span> "env" "induction" <span class="id" title="var">ident</span>(<span class="id" title="var">E</span>) "as" <span class="id" title="var">simple_intropattern</span>(<span class="id" title="var">P</span>) :=<br/>
+&nbsp;&nbsp;<span class="id" title="var">alist</span> <span class="id" title="tactic">induction</span> <span class="id" title="var">E</span> <span class="id" title="keyword">as</span> <span class="id" title="var">P</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+As an alternative to the <span class="inlinecode"><a class="idref" href="Metalib.FSetWeakNotin.html#Notin_fun.Lemmas.x"><span class="id" title="variable">x</span></a></span> <span class="inlinecode">¬</span> <span class="inlinecode"><a class="idref" href="Metalib.AssocList.html#Make.UniqMid.a"><span class="id" title="variable">a</span></a></span> notation, we also provide more
+    list-like notation for writing association lists consisting of a
+    single binding.
+
+<div class="paragraph"> </div>
+
+    Implementation note: The following notation overlaps with the
+    standard recursive notation for lists, e.g., the one found in the
+    Program library of Coq's standard library. 
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Declare Scope</span> <span class="id" title="var">env_scope</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Notation</span> <a id="2e6ec1b4ab6fdb71076113654e93db7a" class="idref" href="#2e6ec1b4ab6fdb71076113654e93db7a"><span class="id" title="notation">&quot;</span></a>[ x ]" := (<a class="idref" href="Metalib.Metatheory.html#one"><span class="id" title="definition">EnvImpl.one</span></a> <span class="id" title="var">x</span>) : <span class="id" title="var">env_scope</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Open</span> <span class="id" title="keyword">Scope</span> <span class="id" title="var">env_scope</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab84"></a><h1 class="section">Cofinite quantification</h1>
+
+<div class="paragraph"> </div>
+
+ Consider a rule <span class="inlinecode"><span class="id" title="var">H</span></span> (equivalently, constructor, lemma, etc.) whose
+    type begins with <span class="inlinecode"><span class="id" title="keyword">∀</span></span> <span class="inlinecode"><span class="id" title="var">L</span>,</span> <span class="inlinecode">...</span> and contains hypotheses of the
+    form <span class="inlinecode">(<span class="id" title="keyword">∀</span></span> <span class="inlinecode"><a class="idref" href="Metalib.FSetWeakNotin.html#Notin_fun.Lemmas.y"><span class="id" title="variable">y</span></a>,</span> <span class="inlinecode"><a class="idref" href="Metalib.FSetWeakNotin.html#Notin_fun.Lemmas.y"><span class="id" title="variable">y</span></a></span> <span class="inlinecode">`<a class="idref" href="Metalib.FSetExtra.html#Make.notin"><span class="id" title="definition">notin</span></a>`</span> <span class="inlinecode"><span class="id" title="var">L</span></span> <span class="inlinecode">→</span> <span class="inlinecode">...)</span>.
+
+<div class="paragraph"> </div>
+
+    The tactic <span class="inlinecode">(<span class="id" title="var">pick</span></span> <span class="inlinecode"><span class="id" title="tactic">fresh</span></span> <span class="inlinecode"><a class="idref" href="Metalib.FSetWeakNotin.html#Notin_fun.Lemmas.x"><span class="id" title="variable">x</span></a></span> <span class="inlinecode"><span class="id" title="var">excluding</span></span> <span class="inlinecode"><a class="idref" href="Metalib.AssocList.html#Make.UniqMid.F"><span class="id" title="variable">F</span></a></span> <span class="inlinecode"><a class="idref" href="http://coq.inria.fr/distrib/V8.15.0/stdlib//Coq.Init.Logic.html#and"><span class="id" title="inductive">and</span></a></span> <span class="inlinecode"><span class="id" title="tactic">apply</span></span> <span class="inlinecode"><span class="id" title="var">H</span>)</span> applies <span class="inlinecode"><span class="id" title="var">H</span></span> to
+    the current goal, instantiating <span class="inlinecode"><span class="id" title="var">H</span></span>'s first argument (<span class="inlinecode"><span class="id" title="var">L</span></span>) with
+    the finite set of atoms <span class="inlinecode"><a class="idref" href="Metalib.AssocList.html#Make.UniqMid.F"><span class="id" title="variable">F</span></a></span>.  In each new subgoal of the form
+    <span class="inlinecode">(<span class="id" title="keyword">∀</span></span> <span class="inlinecode"><a class="idref" href="Metalib.FSetWeakNotin.html#Notin_fun.Lemmas.y"><span class="id" title="variable">y</span></a>,</span> <span class="inlinecode"><a class="idref" href="Metalib.FSetWeakNotin.html#Notin_fun.Lemmas.y"><span class="id" title="variable">y</span></a></span> <span class="inlinecode">`<a class="idref" href="Metalib.FSetExtra.html#Make.notin"><span class="id" title="definition">notin</span></a>`</span> <span class="inlinecode"><a class="idref" href="Metalib.AssocList.html#Make.UniqMid.F"><span class="id" title="variable">F</span></a></span> <span class="inlinecode">→</span> <span class="inlinecode">...)</span>, the atom <span class="inlinecode"><a class="idref" href="Metalib.FSetWeakNotin.html#Notin_fun.Lemmas.y"><span class="id" title="variable">y</span></a></span> is introduced as
+    <span class="inlinecode"><a class="idref" href="Metalib.FSetWeakNotin.html#Notin_fun.Lemmas.x"><span class="id" title="variable">x</span></a></span>, and <span class="inlinecode">(<a class="idref" href="Metalib.FSetWeakNotin.html#Notin_fun.Lemmas.y"><span class="id" title="variable">y</span></a></span> <span class="inlinecode">`<a class="idref" href="Metalib.FSetExtra.html#Make.notin"><span class="id" title="definition">notin</span></a>`</span> <span class="inlinecode"><a class="idref" href="Metalib.AssocList.html#Make.UniqMid.F"><span class="id" title="variable">F</span></a>)</span> is introduced using a generated name.
+
+<div class="paragraph"> </div>
+
+    If we view <span class="inlinecode"><span class="id" title="var">H</span></span> as a rule that uses cofinite quantification, the
+    tactic can be read as picking a sufficiently fresh atom to open a
+    term with. 
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Tactic Notation</span><br/>
+&nbsp;&nbsp;"pick" "fresh" <span class="id" title="var">ident</span>(<span class="id" title="var">atom_name</span>)<br/>
+&nbsp;&nbsp;"excluding" <span class="id" title="keyword">constr</span>(<span class="id" title="var">L</span>)<br/>
+&nbsp;&nbsp;"and" "apply" <span class="id" title="keyword">constr</span>(<span class="id" title="var">H</span>)<br/>
+&nbsp;&nbsp;:=<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">first</span> [<span class="id" title="tactic">apply</span> (@<span class="id" title="var">H</span> <span class="id" title="var">L</span>) | <span class="id" title="tactic">eapply</span> (@<span class="id" title="var">H</span> <span class="id" title="var">L</span>)];<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">match</span> <span class="id" title="keyword">goal</span> <span class="id" title="keyword">with</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| |- <span class="id" title="keyword">∀</span> <span class="id" title="var">_</span>, <span class="id" title="var">_</span> <a class="idref" href="Metalib.Metatheory.html#06a610b5021a539a67215d21440be337"><span class="id" title="notation">`</span></a><a class="idref" href="Metalib.Metatheory.html#06a610b5021a539a67215d21440be337"><span class="id" title="notation">notin</span></a><a class="idref" href="Metalib.Metatheory.html#06a610b5021a539a67215d21440be337"><span class="id" title="notation">`</span></a> <span class="id" title="var">_</span> <a class="idref" href="http://coq.inria.fr/distrib/V8.15.0/stdlib//Coq.Init.Logic.html#::type_scope:x_'-&gt;'_x"><span class="id" title="notation">→</span></a> <span class="id" title="var">_</span> ⇒<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">let</span> <span class="id" title="var">Fr</span> := <span class="id" title="tactic">fresh</span> "Fr" <span class="id" title="tactic">in</span> <span class="id" title="tactic">intros</span> <span class="id" title="var">atom_name</span> <span class="id" title="var">Fr</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| |- <span class="id" title="keyword">∀</span> <span class="id" title="var">_</span>, <span class="id" title="var">_</span> <a class="idref" href="Metalib.Metatheory.html#06a610b5021a539a67215d21440be337"><span class="id" title="notation">`</span></a><a class="idref" href="Metalib.Metatheory.html#06a610b5021a539a67215d21440be337"><span class="id" title="notation">notin</span></a><a class="idref" href="Metalib.Metatheory.html#06a610b5021a539a67215d21440be337"><span class="id" title="notation">`</span></a> <span class="id" title="var">_</span> <a class="idref" href="http://coq.inria.fr/distrib/V8.15.0/stdlib//Coq.Init.Logic.html#::type_scope:x_'-&gt;'_x"><span class="id" title="notation">→</span></a> <span class="id" title="var">_</span> ⇒<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">fail</span> 1 "because" <span class="id" title="var">atom_name</span> "is already defined"<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| <span class="id" title="var">_</span> ⇒<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">idtac</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">end</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+The following variant of the tactic excludes the set of atoms
+    returned by the <span class="inlinecode"><span class="id" title="var">gather_atoms</span></span> tactic.  Redefine <span class="inlinecode"><span class="id" title="var">gather_atoms</span></span> if
+    you wish to modify the behavior of this tactic. 
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Tactic Notation</span><br/>
+&nbsp;&nbsp;"pick" "fresh" <span class="id" title="var">ident</span>(<span class="id" title="var">atom_name</span>)<br/>
+&nbsp;&nbsp;"and" "apply" <span class="id" title="keyword">constr</span>(<span class="id" title="var">H</span>)<br/>
+&nbsp;&nbsp;:=<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">let</span> <span class="id" title="var">L</span> := <span class="id" title="var">gather_atoms</span> <span class="id" title="tactic">in</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">let</span> <span class="id" title="var">L</span> := <span class="id" title="var">beautify_fset</span> <span class="id" title="var">L</span> <span class="id" title="tactic">in</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">pick</span> <span class="id" title="tactic">fresh</span> <span class="id" title="var">atom_name</span> <span class="id" title="var">excluding</span> <span class="id" title="var">L</span> <span class="id" title="var">and</span> <span class="id" title="tactic">apply</span> <span class="id" title="var">H</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab85"></a><h1 class="section">Lemma aliases</h1>
+
+<div class="paragraph"> </div>
+
+ A number of useful lemmas are given standardized, if somewhat
+    unintuitive, names.  Here, we define some intuitive aliases for
+    them. 
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Notation</span> <a id="uniq_one" class="idref" href="#uniq_one"><span class="id" title="abbreviation">uniq_one</span></a> := <a class="idref" href="Metalib.Metatheory.html#uniq_one_1"><span class="id" title="lemma">uniq_one_1</span></a>.<br/>
+<span class="id" title="keyword">Notation</span> <a id="uniq_cons" class="idref" href="#uniq_cons"><span class="id" title="abbreviation">uniq_cons</span></a> := <a class="idref" href="Metalib.Metatheory.html#uniq_cons_3"><span class="id" title="lemma">uniq_cons_3</span></a>.<br/>
+<span class="id" title="keyword">Notation</span> <a id="uniq_app" class="idref" href="#uniq_app"><span class="id" title="abbreviation">uniq_app</span></a> := <a class="idref" href="Metalib.Metatheory.html#uniq_app_4"><span class="id" title="lemma">uniq_app_4</span></a>.<br/>
+<span class="id" title="keyword">Notation</span> <a id="uniq_map" class="idref" href="#uniq_map"><span class="id" title="abbreviation">uniq_map</span></a> := <a class="idref" href="Metalib.Metatheory.html#uniq_map_2"><span class="id" title="lemma">uniq_map_2</span></a>.<br/>
+
+<br/>
+<span class="id" title="keyword">Notation</span> <a id="binds_one" class="idref" href="#binds_one"><span class="id" title="abbreviation">binds_one</span></a> := <a class="idref" href="Metalib.Metatheory.html#binds_one_3"><span class="id" title="lemma">binds_one_3</span></a>.<br/>
+<span class="id" title="keyword">Notation</span> <a id="binds_cons" class="idref" href="#binds_cons"><span class="id" title="abbreviation">binds_cons</span></a> := <a class="idref" href="Metalib.Metatheory.html#binds_cons_3"><span class="id" title="lemma">binds_cons_3</span></a>.<br/>
+<span class="id" title="keyword">Notation</span> <a id="binds_app_l" class="idref" href="#binds_app_l"><span class="id" title="abbreviation">binds_app_l</span></a> := <a class="idref" href="Metalib.Metatheory.html#binds_app_2"><span class="id" title="lemma">binds_app_2</span></a>.<br/>
+<span class="id" title="keyword">Notation</span> <a id="binds_app_r" class="idref" href="#binds_app_r"><span class="id" title="abbreviation">binds_app_r</span></a> := <a class="idref" href="Metalib.Metatheory.html#binds_app_3"><span class="id" title="lemma">binds_app_3</span></a>.<br/>
+<span class="id" title="keyword">Notation</span> <a id="binds_map" class="idref" href="#binds_map"><span class="id" title="abbreviation">binds_map</span></a> := <a class="idref" href="Metalib.Metatheory.html#binds_map_2"><span class="id" title="lemma">binds_map_2</span></a>.<br/>
+
+<br/>
+<span class="id" title="keyword">Notation</span> <a id="notin_empty" class="idref" href="#notin_empty"><span class="id" title="abbreviation">notin_empty</span></a> := <a class="idref" href="Metalib.MetatheoryAtom.html#AtomSetNotin.notin_empty_1"><span class="id" title="lemma">notin_empty_1</span></a>.<br/>
+<span class="id" title="keyword">Notation</span> <a id="notin_add" class="idref" href="#notin_add"><span class="id" title="abbreviation">notin_add</span></a> := <a class="idref" href="Metalib.MetatheoryAtom.html#AtomSetNotin.notin_add_3"><span class="id" title="lemma">notin_add_3</span></a>.<br/>
+<span class="id" title="keyword">Notation</span> <a id="notin_singleton" class="idref" href="#notin_singleton"><span class="id" title="abbreviation">notin_singleton</span></a> := <a class="idref" href="Metalib.MetatheoryAtom.html#AtomSetNotin.notin_singleton_2"><span class="id" title="lemma">notin_singleton_2</span></a>.<br/>
+<span class="id" title="keyword">Notation</span> <a id="notin_union" class="idref" href="#notin_union"><span class="id" title="abbreviation">notin_union</span></a> := <a class="idref" href="Metalib.MetatheoryAtom.html#AtomSetNotin.notin_union_3"><span class="id" title="lemma">notin_union_3</span></a>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab86"></a><h1 class="section">Hints</h1>
+
+<div class="paragraph"> </div>
+
+ The next block of hints is to help <span class="inlinecode"><span class="id" title="tactic">auto</span></span> discharge many of the
+    inequality and freshness goals that arise in programming language
+    metatheory proofs.
+
+<div class="paragraph"> </div>
+
+    Implementation note (BEA): The <span class="inlinecode"><span class="id" title="var">eassumption</span></span> step is intended to
+    address those cases where <span class="inlinecode"><span class="id" title="tactic">eauto</span></span> tries to use a cofinite
+    rule. The pattern goes something like this:
+
+<div class="paragraph"> </div>
+
+<ul class="doclist">
+<li> Apply a cofinite rule with no idea what "<span class="inlinecode"><span class="id" title="var">L</span></span>" should be.
+        This adds a hypothesis <span class="inlinecode"><a class="idref" href="Metalib.FSetWeakNotin.html#Notin_fun.Lemmas.x"><span class="id" title="variable">x</span></a></span> <span class="inlinecode">`<a class="idref" href="Metalib.FSetExtra.html#Make.notin"><span class="id" title="definition">notin</span></a>`</span> <span class="inlinecode">?1</span> to the context.
+
+</li>
+<li> Apply the IH.
+
+</li>
+<li> <span class="inlinecode"><span class="id" title="var">eassumption</span></span> resolves the <span class="inlinecode"><a class="idref" href="Metalib.FSetWeakNotin.html#Notin_fun.Lemmas.x"><span class="id" title="variable">x</span></a></span> <span class="inlinecode">`<a class="idref" href="Metalib.FSetExtra.html#Make.notin"><span class="id" title="definition">notin</span></a>`</span> <span class="inlinecode"><span class="id" title="var">L</span></span> obligation of
+        the IH against the previously introduced <span class="inlinecode"><a class="idref" href="Metalib.FSetWeakNotin.html#Notin_fun.Lemmas.x"><span class="id" title="variable">x</span></a></span> <span class="inlinecode">`<a class="idref" href="Metalib.FSetExtra.html#Make.notin"><span class="id" title="definition">notin</span></a>`</span> <span class="inlinecode">?1</span>
+        hypothesis.
+
+</li>
+</ul>
+
+<div class="paragraph"> </div>
+
+    This ensures that the <span class="inlinecode"><span class="id" title="tactic">autorewrite</span></span> step does not trigger an
+    infinite loop. 
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Ltac</span> <span class="id" title="var">hint_extern_solve_notin</span> :=<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">try</span> <span class="id" title="var">eassumption</span>;<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">autorewrite</span> <span class="id" title="keyword">with</span> <span class="id" title="var">rewr_dom</span> <span class="id" title="tactic">in</span> *;<br/>
+&nbsp;&nbsp;<span class="id" title="var">destruct_notin</span>;<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">repeat</span> <span class="id" title="tactic">first</span> [ <span class="id" title="tactic">apply</span> <a class="idref" href="Metalib.MetatheoryAtom.html#AtomSetNotin.notin_union_3"><span class="id" title="lemma">notin_union_3</span></a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| <span class="id" title="tactic">apply</span> <a class="idref" href="Metalib.MetatheoryAtom.html#AtomSetNotin.notin_add_3"><span class="id" title="lemma">notin_add_3</span></a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| <span class="id" title="tactic">apply</span> <a class="idref" href="Metalib.MetatheoryAtom.html#AtomSetNotin.notin_singleton_2"><span class="id" title="lemma">notin_singleton_2</span></a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| <span class="id" title="tactic">apply</span> <a class="idref" href="Metalib.MetatheoryAtom.html#AtomSetNotin.notin_empty_1"><span class="id" title="lemma">notin_empty_1</span></a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;];<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">try</span> <span class="id" title="tactic">tauto</span>.<br/>
+
+<br/>
+#[<span class="id" title="var">global</span>]<br/>
+<span class="id" title="keyword">Hint</span> <span class="id" title="keyword">Extern</span> 1 (<span class="id" title="var">_</span> <a class="idref" href="http://coq.inria.fr/distrib/V8.15.0/stdlib//Coq.Init.Logic.html#::type_scope:x_'&lt;&gt;'_x_':&gt;'_x"><span class="id" title="notation">≠</span></a> <span class="id" title="var">_</span> <a class="idref" href="http://coq.inria.fr/distrib/V8.15.0/stdlib//Coq.Init.Logic.html#::type_scope:x_'&lt;&gt;'_x_':&gt;'_x"><span class="id" title="notation">:&gt;</span></a> <span class="id" title="var">_</span>) ⇒ <span class="id" title="var">hint_extern_solve_notin</span> : <span class="id" title="var">core</span>.<br/>
+
+<br/>
+#[<span class="id" title="var">global</span>]<br/>
+<span class="id" title="keyword">Hint</span> <span class="id" title="keyword">Extern</span> 1 (<span class="id" title="var">_</span> <a class="idref" href="Metalib.Metatheory.html#06a610b5021a539a67215d21440be337"><span class="id" title="notation">`</span></a><a class="idref" href="Metalib.Metatheory.html#06a610b5021a539a67215d21440be337"><span class="id" title="notation">notin</span></a><a class="idref" href="Metalib.Metatheory.html#06a610b5021a539a67215d21440be337"><span class="id" title="notation">`</span></a> <span class="id" title="var">_</span>) ⇒ <span class="id" title="var">hint_extern_solve_notin</span> : <span class="id" title="var">core</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+The next block of hints are occasionally useful when reasoning
+    about finite sets.  In some instances, they obviate the need to
+    use <span class="inlinecode"><span class="id" title="tactic">auto</span></span> <span class="inlinecode"><span class="id" title="keyword">with</span></span> <span class="inlinecode"><span class="id" title="tactic">set</span></span>. 
+</div>
+<div class="code">
+
+<br/>
+#[<span class="id" title="var">global</span>]<br/>
+<span class="id" title="keyword">Hint</span> <span class="id" title="keyword">Resolve</span><br/>
+&nbsp;&nbsp;<span class="id" title="var">AtomSetImpl.add_1</span> <span class="id" title="var">AtomSetImpl.add_2</span> <span class="id" title="var">AtomSetImpl.remove_1</span><br/>
+&nbsp;&nbsp;<span class="id" title="var">AtomSetImpl.remove_2</span> <span class="id" title="var">AtomSetImpl.singleton_2</span> <span class="id" title="var">AtomSetImpl.union_2</span><br/>
+&nbsp;&nbsp;<span class="id" title="var">AtomSetImpl.union_3</span> <span class="id" title="var">AtomSetImpl.inter_3</span> <span class="id" title="var">AtomSetImpl.diff_3</span> : <span class="id" title="var">core</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab87"></a><h1 class="section">Decidable equality</h1>
+
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Export</span> <a class="idref" href="Metalib.CoqEqDec.html#"><span class="id" title="library">Metalib.CoqEqDec</span></a>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+We prefer that "==" refer to decidable equality at <span class="inlinecode"><a class="idref" href="Metalib.CoqFSetInterface.html#Sdep.eq"><span class="id" title="definition">eq</span></a></span>, as
+    defined by the <span class="inlinecode"><a class="idref" href="Metalib.CoqEqDec.html#EqDec_eq"><span class="id" title="record">EqDec_eq</span></a></span> class from the CoqEqDec library. 
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Notation</span> <a id="a6e843c62e1ac2a74737b7a9f636e026" class="idref" href="#a6e843c62e1ac2a74737b7a9f636e026"><span class="id" title="notation">&quot;</span></a> x  == y " := (<a class="idref" href="Metalib.CoqEqDec.html#eq_dec"><span class="id" title="definition">eq_dec</span></a> <span class="id" title="var">x</span> <span class="id" title="var">y</span>) (<span class="id" title="tactic">at</span> <span class="id" title="keyword">level</span> 70) : <span class="id" title="var">coqeqdec_scope</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Open</span> <span class="id" title="keyword">Scope</span> <span class="id" title="var">coqeqdec_scope</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab88"></a><h1 class="section">Ott compatibility</h1>
+
+<div class="paragraph"> </div>
+
+ Implementation note (BEA): The following definitions make this
+    library usable with the output of Ott's locally nameless backend.
+    They may disappear or change as Ott changes. 
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Notation</span> <a id="var" class="idref" href="#var"><span class="id" title="abbreviation">var</span></a> := <a class="idref" href="Metalib.MetatheoryAtom.html#atom"><span class="id" title="abbreviation">atom</span></a> (<span class="id" title="var">only</span> <span class="id" title="var">parsing</span>).<br/>
+
+<br/>
+<span class="id" title="keyword">Notation</span> <a id="vars" class="idref" href="#vars"><span class="id" title="abbreviation">vars</span></a> := <a class="idref" href="Metalib.MetatheoryAtom.html#atoms"><span class="id" title="abbreviation">atoms</span></a> (<span class="id" title="var">only</span> <span class="id" title="var">parsing</span>).<br/>
+
+<br/>
+<span class="id" title="keyword">Notation</span> <a id="eq_var" class="idref" href="#eq_var"><span class="id" title="abbreviation">eq_var</span></a> := <a class="idref" href="Metalib.CoqEqDec.html#eq_dec"><span class="id" title="definition">eq_dec</span></a> (<span class="id" title="var">only</span> <span class="id" title="var">parsing</span>).<br/>
+
+<br/>
+<span class="id" title="keyword">Notation</span> <a id="e65d1cda8142d0ce233f960175e98047" class="idref" href="#e65d1cda8142d0ce233f960175e98047"><span class="id" title="notation">&quot;</span></a>x  ===  y" :=<br/>
+&nbsp;&nbsp;(<span class="id" title="var">x</span> <a class="idref" href="Metalib.Metatheory.html#a6e843c62e1ac2a74737b7a9f636e026"><span class="id" title="notation">==</span></a> <span class="id" title="var">y</span>)<br/>
+&nbsp;&nbsp;(<span class="id" title="tactic">at</span> <span class="id" title="keyword">level</span> 70, <span class="id" title="var">only</span> <span class="id" title="var">parsing</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">coqeqdec_scope</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Declare Scope</span> <span class="id" title="var">set_sl_scope</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Notation</span> <a id="24f3e482416a3abd0aac5a2fc0a6697d" class="idref" href="#24f3e482416a3abd0aac5a2fc0a6697d"><span class="id" title="notation">&quot;</span></a>x \in s" :=<br/>
+&nbsp;&nbsp;(<span class="id" title="var">x</span> <a class="idref" href="Metalib.Metatheory.html#d26de186ca8d4ad7534dfd01d5ceb5c3"><span class="id" title="notation">`</span></a><a class="idref" href="Metalib.Metatheory.html#d26de186ca8d4ad7534dfd01d5ceb5c3"><span class="id" title="notation">in</span></a><a class="idref" href="Metalib.Metatheory.html#d26de186ca8d4ad7534dfd01d5ceb5c3"><span class="id" title="notation">`</span></a> <span class="id" title="var">s</span>)<br/>
+&nbsp;&nbsp;(<span class="id" title="tactic">at</span> <span class="id" title="keyword">level</span> 70, <span class="id" title="var">only</span> <span class="id" title="var">parsing</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">set_sl_scope</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Notation</span> <a id="f0ce7af8f13a709e212746c7ac1dd04f" class="idref" href="#f0ce7af8f13a709e212746c7ac1dd04f"><span class="id" title="notation">&quot;</span></a>x \notin s" :=<br/>
+&nbsp;&nbsp;(<span class="id" title="var">x</span> <a class="idref" href="Metalib.Metatheory.html#06a610b5021a539a67215d21440be337"><span class="id" title="notation">`</span></a><a class="idref" href="Metalib.Metatheory.html#06a610b5021a539a67215d21440be337"><span class="id" title="notation">notin</span></a><a class="idref" href="Metalib.Metatheory.html#06a610b5021a539a67215d21440be337"><span class="id" title="notation">`</span></a> <span class="id" title="var">s</span>)<br/>
+&nbsp;&nbsp;(<span class="id" title="tactic">at</span> <span class="id" title="keyword">level</span> 70, <span class="id" title="var">only</span> <span class="id" title="var">parsing</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">set_sl_scope</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Notation</span> <a id="dbfb1006fb19205c09bcd027f9a2dce8" class="idref" href="#dbfb1006fb19205c09bcd027f9a2dce8"><span class="id" title="notation">&quot;</span></a>s \u t" :=<br/>
+&nbsp;&nbsp;(<span class="id" title="var">s</span> <a class="idref" href="Metalib.Metatheory.html#025c90617166371a5921b2be3f12a7b4"><span class="id" title="notation">`</span></a><a class="idref" href="Metalib.Metatheory.html#025c90617166371a5921b2be3f12a7b4"><span class="id" title="notation">union</span></a><a class="idref" href="Metalib.Metatheory.html#025c90617166371a5921b2be3f12a7b4"><span class="id" title="notation">`</span></a> <span class="id" title="var">t</span>)<br/>
+&nbsp;&nbsp;(<span class="id" title="tactic">at</span> <span class="id" title="keyword">level</span> 65, <span class="id" title="tactic">right</span> <span class="id" title="keyword">associativity</span>, <span class="id" title="var">only</span> <span class="id" title="var">parsing</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">set_sl_scope</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Open</span> <span class="id" title="keyword">Scope</span> <span class="id" title="var">set_sl_scope</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Ltac</span> <span class="id" title="var">gather_vars_with</span> <span class="id" title="var">F</span> := <span class="id" title="var">gather_atoms_with</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Ltac</span> <span class="id" title="var">pick_fresh_gen</span> <span class="id" title="var">L</span> <span class="id" title="var">Y</span> := <span class="id" title="var">pick</span> <span class="id" title="tactic">fresh</span> <span class="id" title="var">Y</span> <span class="id" title="keyword">for</span> <span class="id" title="var">L</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Tactic Notation</span> "auto" "*" := <span class="id" title="tactic">auto</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Ltac</span> <span class="id" title="var">apply_fresh_base</span> <span class="id" title="var">H</span> <span class="id" title="var">gather_vars</span> <span class="id" title="var">atom_name</span> :=<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">let</span> <span class="id" title="var">L</span> := <span class="id" title="var">gather_vars</span> <span class="id" title="tactic">in</span><br/>
+&nbsp;&nbsp;<span class="id" title="keyword">let</span> <span class="id" title="var">L</span> := <span class="id" title="var">beautify_fset</span> <span class="id" title="var">L</span> <span class="id" title="tactic">in</span><br/>
+&nbsp;&nbsp;<span class="id" title="var">pick</span> <span class="id" title="tactic">fresh</span> <span class="id" title="var">x</span> <span class="id" title="var">excluding</span> <span class="id" title="var">L</span> <span class="id" title="var">and</span> <span class="id" title="tactic">apply</span> <span class="id" title="var">H</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Set Implicit Arguments</span>.<br/>
+<span class="id" title="keyword">Definition</span> <a id="union_map" class="idref" href="#union_map"><span class="id" title="definition">union_map</span></a> (<a id="A:1" class="idref" href="#A:1"><span class="id" title="binder">A</span></a>:<span class="id" title="keyword">Set</span>) (<a id="f:2" class="idref" href="#f:2"><span class="id" title="binder">f</span></a>:<a class="idref" href="Metalib.Metatheory.html#A:1"><span class="id" title="variable">A</span></a> <a class="idref" href="http://coq.inria.fr/distrib/V8.15.0/stdlib//Coq.Init.Logic.html#::type_scope:x_'-&gt;'_x"><span class="id" title="notation">→</span></a> <a class="idref" href="Metalib.Metatheory.html#vars"><span class="id" title="abbreviation">vars</span></a>) (<a id="l:3" class="idref" href="#l:3"><span class="id" title="binder">l</span></a>:<a class="idref" href="http://coq.inria.fr/distrib/V8.15.0/stdlib//Coq.Init.Datatypes.html#list"><span class="id" title="inductive">list</span></a> <a class="idref" href="Metalib.Metatheory.html#A:1"><span class="id" title="variable">A</span></a>) :=<br/>
+&nbsp;(<a class="idref" href="http://coq.inria.fr/distrib/V8.15.0/stdlib//Coq.Lists.List.html#fold_right"><span class="id" title="definition">List.fold_right</span></a> (<span class="id" title="keyword">fun</span> <a id="t:4" class="idref" href="#t:4"><span class="id" title="binder">t</span></a> <a id="acc:5" class="idref" href="#acc:5"><span class="id" title="binder">acc</span></a> ⇒ <a class="idref" href="Metalib.Metatheory.html#f:2"><span class="id" title="variable">f</span></a> <a class="idref" href="Metalib.Metatheory.html#t:4"><span class="id" title="variable">t</span></a> <a class="idref" href="Metalib.Metatheory.html#dbfb1006fb19205c09bcd027f9a2dce8"><span class="id" title="notation">\</span></a><a class="idref" href="Metalib.Metatheory.html#dbfb1006fb19205c09bcd027f9a2dce8"><span class="id" title="notation">u</span></a> <a class="idref" href="Metalib.Metatheory.html#acc:5"><span class="id" title="variable">acc</span></a>) <a class="idref" href="Metalib.Metatheory.html#19e8d08134d17e9b8659bce49a311051"><span class="id" title="notation">{}</span></a>) <a class="idref" href="Metalib.Metatheory.html#l:3"><span class="id" title="variable">l</span></a>.<br/>
+</div>
+</div>
+
+<div id="footer">
+<hr/><a href="index.html">Index</a><hr/>This page has been generated by <a href="http://coq.inria.fr/">coqdoc</a>
+</div>
+
+</div>
+
+</body>
+</html>

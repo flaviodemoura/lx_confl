@@ -14,7 +14,7 @@ Proof.
   - intros m Hlt; inversion Hlt.
   - intros n' H' m Hlt. apply IH. intros m0 Hlt'. apply H'. apply Nat.lt_succ_r in Hlt.  apply lt_le_trans with m.
     + assumption.
-    + apply Arith_prebase.lt_n_Sm_le. apply Arith_prebase.lt_S_n. assumption.
+    + lia.
 Qed.
 
 Lemma diff_remove_2: forall x y s, x <> y -> x `notin` remove y s -> x `notin` s.
@@ -431,11 +431,11 @@ Proof.
       ++ rewrite Hsize. apply Nat.lt_succ_r. apply Nat.le_add_r.
       ++ reflexivity.
     + apply H with ((size t2)).
-      ++ rewrite Hsize. apply Nat.lt_succ_r. apply Nat.le_add_l.
+      ++ rewrite Hsize. apply Nat.lt_succ_r. lia.
       ++ reflexivity.
   - intros t1 x t2 Hsize. simpl in Hsize. apply Hsub.
     + apply H with (size t2).
-      ++ rewrite Hsize. apply Nat.lt_succ_r. apply Nat.le_add_l.
+      ++ rewrite Hsize. apply Nat.lt_succ_r. lia.
       ++ reflexivity.
     + intros t1' Hsize'. apply H with (size t1').
       ++ rewrite Hsize'. rewrite Hsize. apply Nat.lt_succ_r. apply Nat.le_add_r.

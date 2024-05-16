@@ -346,7 +346,13 @@ Proof.
   - simpl. apply pure_app.
     -- assumption.
     -- assumption.
-  - simpl. unfold m_subst. 
+  - simpl. apply pure_m_subst.
+    -- assumption.
+    -- assumption.
+Qed.
+  
+
+(* 
     induction (P e1).
     -- simpl. case (x == x0).
        --- intros. assumption.
@@ -384,6 +390,7 @@ Proof.
            apply H in H0; clear H. rewrite H0. assumption.
     -- inversion IHe1.
 Qed.
+*)
 
 (*lemma 3 in Nakazawa*)
 Lemma pure_P_id: forall e, pure e -> P e = e.
@@ -414,6 +421,16 @@ Proof.
        --- apply rtrans with (n_abs x c).
            + apply step_aeq. apply aeq_abs_same. assumption.
            + apply refl.
+       --- apply refltrans_composition with (n_abs x e2).
+           + apply rtrans with (n_abs x e2).
+             ++ apply step_abs_in. apply step_aeq. assumption.
+             ++ apply refl.
+           + assumption.
+       --- apply refltrans_composition with (n_abs x e2).
+           + apply rtrans with (n_abs x e2).
+             ++ apply step_abs_in. apply step_aeq. assumption.
+             ++ apply refl.
+           + assumption.
        --- apply refltrans_composition with (n_abs x e2).
            + apply rtrans with (n_abs x e2).
              ++ apply step_abs_in. apply step_aeq. assumption.
@@ -457,6 +474,42 @@ Proof.
            + apply step_abs_in. apply step_sub_right. assumption.
            + apply refl.
        --- assumption.
+   - inversion H.
+      -- apply refl.
+      -- subst. apply rtrans with (n_abs x (n_abs x0 t2)).
+         --- repeat apply step_abs_in. apply step_aeq. assumption.
+         --- apply refl.
+      -- subst. apply rtrans with (n_abs x (n_abs y t2)).
+        --- apply step_abs_in. apply step_aeq. assumption.
+        --- apply refl.
+      -- subst. apply rtrans with (n_abs x (n_app t1' t2')).
+        --- apply step_abs_in. apply step_aeq. assumption.
+        --- apply refl.
+      -- subst. apply rtrans with (n_abs x ([x0 := t2'] t1')).
+        --- apply step_abs_in. apply step_aeq. assumption.
+        --- apply refl.
+      -- subst. apply rtrans with (n_abs x ([y := t2'] t1')).
+        --- apply step_abs_in. apply step_aeq. assumption.
+        --- apply refl.
+   - inversion IHrefltrans.
+    -- subst. apply rtrans with (n_abs x c).
+      --- apply step_abs_in. apply step_aeq. assumption.
+      --- apply refl.
+    -- subst. apply refltrans_composition with (n_abs x b).
+       --- apply rtrans with (n_abs x b).
+          + apply step_abs_in. apply step_aeq. assumption.
+          + apply refl.
+       --- assumption.  
+    -- subst. apply refltrans_composition with (n_abs x b).
+       --- apply rtrans with (n_abs x b).
+          + apply step_abs_in. apply step_aeq. assumption.
+          + apply refl.
+       --- assumption.  
+    -- subst. apply refltrans_composition with (n_abs x b).
+       --- apply rtrans with (n_abs x b).
+          + apply step_abs_in. apply step_aeq. assumption.
+          + apply refl.
+       --- assumption.  
 Qed.
     
 Lemma refltrans_app1 (R: Rel n_sexp): forall e1 e2 e3, refltrans (ctx R) e1 e2 -> refltrans (ctx R) (n_app e1 e3) (n_app e2 e3).
@@ -466,6 +519,16 @@ Proof.
   - apply refltrans_composition with (n_app b e3).
     -- apply rtrans with (n_app b e3).
        --- apply step_app_left. assumption.
+       --- apply refl.
+    -- assumption.
+   - apply refltrans_composition with (n_app b e3).
+    -- apply rtrans with (n_app b e3).
+       --- apply step_app_left. apply step_aeq. assumption.
+       --- apply refl.
+    -- apply refl.
+   - apply refltrans_composition with (n_app b e3).
+    -- apply rtrans with (n_app b e3).
+       --- apply step_app_left. apply step_aeq. assumption.
        --- apply refl.
     -- assumption.
 Qed.
@@ -513,6 +576,16 @@ Proof.
              assumption.
            + apply refl.
     -- assumption.
+  - apply refltrans_composition with (n_app e1 b).
+    -- apply rtrans with (n_app e1 b).
+       --- apply step_app_right. apply step_aeq. assumption.
+       --- apply refl.
+    -- apply refl.
+  - apply refltrans_composition with (n_app e1 b).
+    -- apply rtrans with (n_app e1 b).
+       --- apply step_app_right. apply step_aeq. assumption.
+       --- apply refl.
+    -- assumption.
 Qed.
 
 Lemma refltrans_app3 (R: Rel n_sexp): forall e1 e2 e3 e4, refltrans (ctx R) e1 e2 -> refltrans (ctx R) e3 e4 -> refltrans (ctx R) (n_app e1 e3) (n_app e2 e4).
@@ -524,11 +597,15 @@ Proof.
        apply rtrans with b.
        --- assumption.
        --- assumption.
+    -- admit.
+    -- admit.
   - apply refltrans_composition with (n_app e1 b).
     -- apply refltrans_app2. apply rtrans with (ctx R) a b b in H0.
        --- assumption.
        --- apply refl.
     -- assumption.
+  - admit.
+  - admit.
 Qed.
 
 Lemma refltrans_sub1 (R: Rel n_sexp): forall e1 e2 e3 x, refltrans (ctx R) e2 e3 -> refltrans (ctx R) (n_sub e1 x e2) (n_sub e1 x e3).
