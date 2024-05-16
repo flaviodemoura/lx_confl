@@ -2,6 +2,7 @@
 (* begin hide *)
 Require Import Arith Lia.  Print LoadPath.
 (* Metalib is in CP.2023.03.0~8.17~2023.08/lib/coq/user-contrib/Metalib *)
+
 Require Export Metalib.Metatheory.
 Require Export Metalib.LibDefaultSimp.
 Require Export Metalib.LibLNgen. 
@@ -659,14 +660,13 @@ Inductive aeq : n_sexp -> n_sexp -> Prop :=
 (* begin hide *)
 Notation "t =a u" := (aeq t u) (at level 60).
 
-#[global] Hint Constructors aeq.
 (* end hide *)
 
 (** used in FROM 2023 -  In what follows, we use a infix notation for $\alpha$-equivalence in the Coq code. Therefore, we write [t =a u] instead of [aeq t u]. The above notion defines an equivalence relation over the set [n_sexp] of nominal expressions with explicit substitutions, %{\it i.e.}% the [aeq] relation is reflexive, symmetric and transitive (proofs in the source file%\footnote{\url{https://flaviomoura.info/files/msubst.v}}%). In addition, $\alpha$-equivalent terms have the same size, and the same set of free variables: *)
 (* begin hide *)
 Example aeq1 : forall x y, x <> y -> (n_abs x (n_var x)) =a (n_abs y (n_var y)).
 Proof.
-  intros x y Hneq. eapply aeq_abs_diff; auto. simpl; unfold vswap; default_simp.
+  intros x y Hneq. eapply aeq_abs_diff; auto. simpl; unfold vswap. rewrite eq_dec_refl. apply aeq_var.
 Qed.
 
 Lemma aeq_var_2 : forall x y, (n_var x) =a (n_var y) -> x = y.
@@ -674,9 +674,13 @@ Proof.
   intros. inversion H; subst. reflexivity.
 Qed.
 
-Lemma aeq_refl : forall n, n =a n.
+Lemma aeq_refl : forall t, t =a t.
 Proof.
-  induction n; auto.
+  induction t.
+  - apply aeq_var.
+  - apply aeq_abs_same. assumption.
+  - apply aeq_app; assumption.
+  - apply aeq_sub_same; assumption.
 Qed.
 
 Lemma aeq_nvar_1: forall t x, t =a (n_var x) -> t = n_var x.
@@ -1110,6 +1114,15 @@ Proof.
 Qed.
 (* end hide *)
 
+
+Instance Equivalence_aeq: Equivalence aeq.
+Proof.
+  split.
+  - unfold Reflexive. apply aeq_refl.
+  - unfold Symmetric. apply aeq_sym.
+  - unfold Transitive. apply aeq_trans.
+Qed.
+
 (** The following lemma states that if $x \notin fv(t)$ then $\metasub{t}{x}{u} =_\alpha t$. In informal proofs the conclusion of this lemma is usually stated as a syntactic equality, %{\i.e.}% $\metasub{t}{x}{u} = t$ instead of the $\alpha$-equivalence, but the function [subst_rec_fun] renames bound variables whenever the metasubstitution is propagated inside an abstraction or an explicit substitution, even in the case that the metasubstitution has no effect in the subterm it is propagated, as long as the variables of the metasubstitution and the binder (abstraction or explicit substitution) are different of each other. That's why the syntactic equality does not hold here. *)
 
 Lemma m_subst_notin: forall t u x, x `notin` fv_nom t -> {x := u}t =a t.
@@ -1304,17 +1317,7 @@ Proof.
       * intro Hneq. apply aeq_abs_diff. 
         ** assumption.
         ** admit.
-        ** Abort. (** used in FROM 2023 %\noindent{\bf Proof.}% The proof is done by induction on the size of term [t], and we will focus on the abstraction case, %{\it i.e.}% $t = \lambda_y.t_1$. The goal in this case is $\metasub{(\lambda_y.t_1)}{x}{u} =_\alpha \metasub{(\lambda_y.t_1)}{x}{u'}$. %\begin{enumerate} \item If $x = y$ then the result is trivial by lemma $m\_subst\_abs\_eq$. \item If $x \neq y$ then we need two fresh names in order to propagate the metasubstitution inside the abstractions on each side of the $\alpha$-equation. Let $x_0$ be a fresh name not in the set $fv\_nom(u) \cup fv\_nom(\lambda_y. t_1)\cup \{x\}$, and $x_1$ be a fresh name not in the set $fv\_nom(u') \cup fv\_nom(\lambda_y. t_1)\cup \{x\}$. After propagating the metasubstitution we need to prove $\lambda_{x_0}.\metasub{(\swap{y}{x_0}{t_1})}{x}{u} =_\alpha \lambda_{x_1}.\metasub{(\swap{y}{x_1}{t_1})}{x}{u'}$, and we proceed by comparing $x_0$ and $x_1$: \begin{enumerate} \item If $x_0 = x_1$ then we are done by the induction hypothesis. \item Otherwise, we need to apply the rule $aeq\_abs\_diff$ and the goal is $\metasub{(\swap{y}{x_0}{t_1})}{x}{u} =_\alpha \swap{x_0}{x_1}{(\metasub{(\swap{y}{x_1}{t_1})}{x}{u'})}$. But in order to proceed we need to know how to propagate the swap inside the metasubstitution, which is the content of the following lemma: \end{enumerate}\end{enumerate}% haha*)
-
-Require Import Setoid Morphisms.
-
-Instance Equivalence_aeq: Equivalence aeq.
-Proof.
-  split.
-  - unfold Reflexive. apply aeq_refl.
-  - unfold Symmetric. apply aeq_sym.
-  - unfold Transitive. apply aeq_trans.
-Qed.
+        ** Abort. (** used in FROM 2023 %\noindent{\bf Proof.}% The proof is done by induction on the size of term [t], and we will focus on the abstraction case, %{\it i.e.}% $t = \lambda_y.t_1$. The goal in this case is $\metasub{(\lambda_y.t_1)}{x}{u} =_\alpha \metasub{(\lambda_y.t_1)}{x}{u'}$. %\begin{enumerate} \item If $x = y$ then the result is trivial by lemma $m\_subst\_abs\_eq$. \item If $x \neq y$ then we need two fresh names in order to propagate the metasubstitution inside the abstractions on each side of the $\alpha$-equation. Let $x_0$ be a fresh name not in the set $fv\_nom(u) \cup fv\_nom(\lambda_y. t_1)\cup \{x\}$, and $x_1$ be a fresh name not in the set $fv\_nom(u') \cup fv\_nom(\lambda_y. t_1)\cup \{x\}$. After propagating the metasubstitution we need to prove $\lambda_{x_0}.\metasub{(\swap{y}{x_0}{t_1})}{x}{u} =_\alpha \lambda_{x_1}.\metasub{(\swap{y}{x_1}{t_1})}{x}{u'}$, and we proceed by comparing $x_0$ and $x_1$: \begin{enumerate} \item If $x_0 = x_1$ then we are done by the induction hypothesis. \item Otherwise, we need to apply the rule $aeq\_abs\_diff$ and the goal is $\metasub{(\swap{y}{x_0}{t_1})}{x}{u} =_\alpha \swap{x_0}{x_1}{(\metasub{(\swap{y}{x_1}{t_1})}{x}{u'})}$. But in order to proceed we need to know how to propagate the swap inside the metasubstitution, which is the content of the following lemma: \end{enumerate}\end{enumerate}% *)
 
 Lemma swap_m_subst: forall t u x y z, swap y z ({x := u}t) =a ({(vswap y z x) := (swap y z u)}(swap y z t)).
 Proof.
@@ -1388,6 +1391,7 @@ Proof.
   intros a b H. unfold AtomSetImpl.Equal in H. specialize (H a). destruct H. clear H0. pose proof AtomSetNotin.D.FSetDecideTestCases.test_In_singleton as H'. specialize (H' a). apply H in H'. apply AtomSetImpl.singleton_1 in H'. symmetry. assumption.
 Qed.
 
+(*
 (* AtomSetProperties.FM.singleton_m, KeySetFacts.singleton_m, KeySetProperties.Dec.F.singleton_m: forall x y, x = y -> singleton x [=] singleton y. *)
 Instance: Proper (eq ==> AtomSetImpl.Equal) singleton.
 Proof.
@@ -1399,9 +1403,6 @@ Instance: Proper (AtomSetImpl.Equal ==> eq) AtomSetImpl.cardinal.
 Proof.
   intros x y H. rewrite H. reflexivity.
 Qed.  
-
-
-
 
 (* D.F.is_empty_m: forall x y, x [=] y -> AtomSetImpl.is_empty x = AtomSetImpl.is_empty y *)
 Instance: Proper (AtomSetImpl.Equal ==> eq) AtomSetImpl.is_empty.
@@ -1446,27 +1447,28 @@ Instance: Proper (AtomSetImpl.Equal ==> AtomSetImpl.Equal ==> eq) AtomSetImpl.su
 Proof.
   intros s1 s2 H s3 s4 H'. rewrite H. rewrite H'. reflexivity.
 Qed.
-  
-(* KeySetProperties.Dec.F.remove_s_m_Proper:  forall x y, x = y -> forall z w, z [<=] w -> remove x z [<=] remove y w  *)
+
+(* KeySetProperties.Dec.F.remove_s_m_Proper:  forall x y, x = y -> forall z w, z [<=] w -> remove x z [<=] remove y w  
 Instance: Proper (eq ==> AtomSetImpl.Subset ==> AtomSetImpl.Subset) remove.
 Proof.
-  intros x y H z q H'. subst. Admitted.
+  intros x y H z q H'. subst. Admitted. *)
   
 (* D.F.add_m: forall x y, x = y -> forall z w, z [=] w -> add x z [=] y w *)
 Instance: Proper (eq ==> AtomSetImpl.Equal ==> AtomSetImpl.Equal) add.
 Proof.
  intros x y H z w H'. subst. rewrite H'. reflexivity.
 Qed.
-                                       
+ *)
+
 (*Lemma singleton_is_singleton: forall a x, singleton a [=] x -> a = b.
 Proof.
   intros a b H. unfold AtomSetImpl.Equal in H. specialize (H a). destruct H. clear H0. pose proof AtomSetNotin.D.FSetDecideTestCases.test_In_singleton as H'. specialize (H' a). apply H in H'. apply AtomSetImpl.singleton_1 in H'. symmetry. assumption.
-Qed.*)
+Qed.
 
 Instance: forall x, Proper (AtomSetImpl.Equal ==> flip impl) (eq (singleton x)).
 Proof.
   intros x y z H. unfold flip. unfold impl. intro H'. subst. symmetry in H.
-  Admitted.
+  Admitted. *)
 
 (*
 Instance: forall x, Proper (AtomSetImpl.Equal ==> flip impl) (eq (remove x (singleton x))).
@@ -1483,7 +1485,8 @@ Lemma remove_singleton_eq: forall x y, remove x (singleton x) = remove y (single
 Proof.
   intros x y. repeat rewrite remove_singleton_empty_eq. reflexivity.
 Qed. *)
-    
+
+(*
 Lemma test0: forall a b c, (singleton a) [=] (singleton b) -> union (singleton a) (singleton c) [=] union (singleton b) (singleton c).
 Proof.
   intros a b c H. rewrite H. reflexivity.
@@ -1514,7 +1517,6 @@ Proof.
   apply singleton_eq in H. rewrite H. destruct (atom_fresh (singleton b)). auto.
 Qed.  
 
-(*
 Lemma test4: forall a b, (a <-> b) -> exists x, (a /\ b) -> x.
 Proof.
   intros a b H. setoid_rewrite H.
@@ -1529,7 +1531,11 @@ Require Import FunctionalExtensionality.
 Instance: Proper (AtomSetImpl.Equal ==> AtomSetImpl.Equal ==> impl) eq.
 Proof.
   intros x y H x' y' H'. unfold impl. intro H''. Admitted.
-*)
+               
+Instance set_equiv_subrelation : subrelation AtomSetImpl.Equal eq.
+Proof.
+  unfold subrelation, AtomSetImpl.Equal.
+  intros s1 s2 H. Admitted.
 
 Lemma remove_singleton_neq: forall x y, x <> y -> remove x (singleton y) [=] singleton y.
 Proof.
@@ -1543,12 +1549,10 @@ Proof.
     + subst. simpl in Hnotin. apply notin_singleton_1 in Hnotin. contradiction.
     + destruct (z == x).
       * subst. admit. (* mostrar remove y (singleton y) = remove x (singleton x) *)
-      * admit. (* mostrar remove y (singleton z) = remove x (singleton z) *)
-  - intros x y Hneq Hnotin. simpl in *. apply notin_remove_1 in Hnotin. destruct Hnotin.
-    + (* z = y *) subst. unfold vswap. rewrite eq_dec_refl. rewrite remove_symmetric.
-    +
+      * Admitted. (* mostrar remove y (singleton z) = remove x (singleton z) *)
+
         
-(* setoid_rewrite remove_singleton_empty. reflexivity.
+ setoid_rewrite remove_singleton_empty. reflexivity.
       * repeat rewrite remove_singleton_neq.
         ** reflexivity.
         ** apply aux_not_equal. assumption.
@@ -1589,7 +1593,7 @@ Proof.
                **** reflexivity.
                **** assumption.
     + apply notin_union_2 in Hsub. assumption.
-Qed.              *) Admitted.      
+Qed.              *) 
 (*
 Lemma aeq_fv_nom_eq : forall t1 t2, t1 =a t2 -> fv_nom t1 = fv_nom t2.
 Proof.
@@ -1601,7 +1605,7 @@ Proof.
 Instance: Proper (AtomSetImpl.Equal ==> AtomSetImpl.Equal ==> AtomSetImpl.Equal) union.
 Proof.
   intros s1 s2 H1 s3 s4 H2.
-Admitted. *)
+Admitted. 
     
 
 Instance: Proper (AtomSetImpl.Equal ==> AtomSetImpl.Equal ==> impl) eq.
@@ -1617,9 +1621,50 @@ Lemma fv_nom_eq: forall t1 t2, fv_nom t1 [=] fv_nom t2 -> fv_nom t1 = fv_nom t2.
 Proof.
  induction t1.
  - intros t2 H. simpl in *.
+*)
+(*
+Instance set_equiv_subrelation : subrelation AtomSetImpl.Equal aeq.
+Proof.
+  unfold subrelation, AtomSetImpl.Equal.
+  intros A B H. Admitted.
+(*  apply Extensionality_Ensembles; assumption.
+Qed. *)
 
+Instance union_Proper : Proper (AtomSetImpl.Equal ==> AtomSetImpl.Equal ==> AtomSetImpl.Equal) union.
+Proof.
+  intros s1 s2 H1 s3 s4 H2. Admitted.
+*)
 
-   
+(*
+Require Import Coq.Classes.SetoidClass.
+Require Import Coq.Relations.Relation_Definitions.
+ *)
+
+Require Import Setoid Morphisms.
+Declare Instance Equivalence_Equal: Equivalence AtomSetImpl.Equal.
+
+Lemma remove_empty_eq: forall x, remove x (singleton x) = empty.
+Proof.
+  intro x. pose proof remove_singleton_empty. rewrite H.
+  
+Lemma remove_fv_nom_swap: forall t x y, remove x (fv_nom (swap y x t)) = remove y (fv_nom t).
+Proof.
+  induction t as [z | t1 z | t1 t2 | t1 t2 z ] using n_sexp_induction.
+  - intros x y. simpl. unfold vswap. destruct (z == y).
+    + subst.
+    +
+ 
+  
+Lemma fv_nom_equal: forall t u, t =a u -> fv_nom t = fv_nom u.
+Proof.
+  induction 1.
+  - reflexivity.
+  - simpl. rewrite IHaeq; reflexivity.
+  - simpl. rewrite IHaeq.
+    
+  intros t u Haeq.
+
+  
 Lemma aeq_m_subst_in: forall t u u' x, u =a u' -> ({x := u}t) =a ({x := u'}t).
 Proof.
   induction t as [y | t1 y | t1 t2 | t1 t2 y ] using n_sexp_induction. 
@@ -1628,7 +1673,9 @@ Proof.
     + apply aeq_refl.
   - intros u u' x Haeq. unfold m_subst in *. repeat rewrite subst_rec_fun_equation. destruct (x == y). 
     + apply aeq_refl. 
-    + pose proof Haeq as Hfv. apply aeq_fv_nom in Hfv. remember (union (fv_nom u) (union (fv_nom (n_abs y t1)) (singleton x))) as union_set. setoid_rewrite Hfv in Hequnion_set. subst. Admitted.
+    + pose proof Haeq as Hfv. apply aeq_fv_nom in Hfv. rewrite Hfv. unfold AtomSetImpl.Equal in Hfv. setoid_rewrite Hfv. subst. Admitted.
+
+
 
  (*     rewrite Hfv.
 
