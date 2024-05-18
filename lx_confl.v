@@ -538,43 +538,9 @@ Proof.
   intros e1 e2 e3. intro H. induction H.
   - apply refl.
   - apply refltrans_composition with (n_app e1 b).
-    -- induction H.
-       --- apply rtrans with (n_app e1 e2).
-           + apply step_aeq. apply aeq_app.
-             ++ apply aeq_refl.
-             ++ assumption.
-           + apply refl.
-       --- apply refltrans_composition with (n_app e1 e2).
-           + apply rtrans with (n_app e1 e2).
-             ++ apply step_app_right. apply step_aeq. assumption.
-             ++ apply refl.
-           + apply refltrans_composition with (n_app e1 e3).
-             ++ apply rtrans with (n_app e1 e3).
-                +++ apply step_app_right. apply step_redex_R.
-                    assumption.
-                +++ apply refl.
-             ++ apply rtrans with (n_app e1 e4).
-                +++ apply step_app_right. apply step_aeq.
-                    assumption.
-                +++ apply refl.
-       --- apply rtrans with (n_app e1 (n_abs x e')).
-           + apply step_app_right. apply step_abs_in. assumption.
-           + apply refl.
-       --- apply rtrans with (n_app e1 (n_app e1' e2)).
-           + apply step_app_right. apply step_app_left.
-             assumption.
-           + apply refl.
-       --- apply rtrans with (n_app e1 (n_app e0 e2')).
-           + repeat apply step_app_right. assumption.
-           + apply refl.
-       --- apply rtrans with (n_app e1 (n_sub e1' x e2)).
-           + apply step_app_right. apply step_sub_left.
-             assumption.
-           + apply refl.
-       --- apply rtrans with (n_app e1 (n_sub e0 x e2')).
-           + apply step_app_right. apply step_sub_right.
-             assumption.
-           + apply refl.
+    -- apply rtrans with (n_app e1 b).
+      --- apply step_app_right. assumption.
+      --- apply refl.
     -- assumption.
   - apply refltrans_composition with (n_app e1 b).
     -- apply rtrans with (n_app e1 b).
@@ -590,31 +556,28 @@ Qed.
 
 Lemma refltrans_app3 (R: Rel n_sexp): forall e1 e2 e3 e4, refltrans (ctx R) e1 e2 -> refltrans (ctx R) e3 e4 -> refltrans (ctx R) (n_app e1 e3) (n_app e2 e4).
 Proof.
-  intros. induction H0.
-  - induction H.
-    -- apply refl.
-    -- apply refltrans_app1.
-       apply rtrans with b.
-       --- assumption.
-       --- assumption.
-    -- admit.
-    -- admit.
-  - apply refltrans_composition with (n_app e1 b).
-    -- apply refltrans_app2. apply rtrans with (ctx R) a b b in H0.
-       --- assumption.
-       --- apply refl.
-    -- assumption.
-  - admit.
-  - admit.
+
+  intros. apply refltrans_composition with (n_app e2 e3).
+    - apply refltrans_app1. assumption.
+    - apply refltrans_app2. assumption.
 Qed.
 
 Lemma refltrans_sub1 (R: Rel n_sexp): forall e1 e2 e3 x, refltrans (ctx R) e2 e3 -> refltrans (ctx R) (n_sub e1 x e2) (n_sub e1 x e3).
+Proof.
   intros. induction H.
   - apply refl.
   - apply refltrans_composition with (n_sub e1 x b).
     -- apply rtrans with (n_sub e1 x b).
        --- apply step_sub_right. assumption.
        --- apply refl.
+    -- assumption.
+  - pose proof aeq_sub_same. specialize (H0 e1 a e1 b x). apply refl_aeq. apply H0.
+    -- apply aeq_refl.
+    -- assumption.
+  - apply refltrans_composition with (n_sub e1 x b).
+    -- apply refl_aeq. apply aeq_sub_same.
+      --- apply aeq_refl.
+      --- assumption.
     -- assumption.
 Qed.
 
@@ -627,11 +590,19 @@ Proof.
        --- apply step_sub_left. assumption.
        --- apply refl.
     -- assumption.
+  - apply refl_aeq. apply aeq_sub_same.
+    -- assumption.
+    -- apply aeq_refl.
+  - apply refltrans_composition with (n_sub b x e1).
+    -- apply refl_aeq. apply aeq_sub_same.
+      --- assumption.
+      --- apply aeq_refl.
+    -- assumption.
 Qed.
 
 Lemma refltrans_sub3 (R: Rel n_sexp): forall e1 e2 e3 e4 x, refltrans (ctx R) e1 e3 -> refltrans (ctx R) e2 e4 -> refltrans (ctx R) (n_sub e1 x e2) (n_sub e3 x e4).
 Proof.
-  intros. apply (refltrans_composition _ _ (n_sub e3 x e2)).
+  intros. apply refltrans_composition with (n_sub e3 x e2).
   - apply refltrans_sub2. assumption.
   - apply refltrans_sub1. assumption.
 Qed.
