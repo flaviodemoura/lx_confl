@@ -612,24 +612,24 @@ Lemma pure_pix: forall e1 x e2, pure e1 -> refltrans (ctx pix) (n_sub e1 x e2) (
 Proof.
   induction e1 using n_sexp_induction.
   - intros. case (x == x0).
-    -- intros; subst. apply rtrans with e2.
-       --- apply step_redex_R. apply step_var.
-       --- unfold m_subst. simpl. destruct (x0 == x0).
-           + apply refl.
-           + contradiction.
-    -- intros. apply rtrans with (n_var x).
-       --- apply step_redex_R. apply step_gc. assumption.
-       --- unfold m_subst. simpl. destruct (x0 == x).
-           + symmetry in e. contradiction.
-           + apply refl.
-  - intros. inversion H0; subst.
-    unfold m_subst in *. simpl.
-    case (x == z).
-    -- intros; subst. apply rtrans with (n_abs z e1).
-       --- apply step_redex_R. apply step_abs1.
-       --- simpl. apply refl.
-    -- intros. default_simp. pose proof in_or_notin.
-       specialize (H0 z (fv_nom e2)). destruct H0.
+    -- intros; subst. apply rtrans with ({x0 := e2} n_var x0).
+       ---  apply step_redex_R. rewrite m_subst_var_eq. apply step_var.
+       --- apply refl.
+    -- intros. apply rtrans with ({x0 := e2} n_var x).
+       --- apply step_redex_R. rewrite m_subst_var_neq. 
+            ++ apply step_gc. assumption.
+            ++ assumption.
+       --- apply refl.  
+  - intros. inversion H0; subst. destruct (x == z).
+    -- subst. apply rtrans with ({z := e2} n_abs z e1).
+       --- apply step_redex_R. rewrite m_subst_abs_eq. apply step_abs1.
+       --- apply refl.
+    -- apply rtrans with ({x := e2} n_abs z e1).
+      --- apply step_redex_R.
+      --- apply refl.
+
+
+default_simp. pose proof in_or_notin. specialize (H0 z (fv_nom e2)). destruct H0.
        --- apply (rtrans _ _ (n_abs x0 (n_sub (swap z x0 e1) x e2))).
            ---- apply (step_redex _ _ (n_sub (n_abs z e1) x e2)
                 (n_abs x0 (n_sub (swap z x0 e1) x e2)) _ ).
@@ -737,6 +737,10 @@ Proof.
   - apply refl.
   - apply (rtrans _ _ b).
     -- apply ctx_betax_beta_pix. apply union_or. left. assumption.
+    -- assumption.
+  - apply refl_aeq. assumption.
+  - apply (rtrans _ _ b).
+    -- apply step_aeq. assumption.
     -- assumption.
 Qed.  
 
