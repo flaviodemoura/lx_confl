@@ -1638,23 +1638,59 @@ Proof.
 (*
 Require Import Coq.Classes.SetoidClass.
 Require Import Coq.Relations.Relation_Definitions.
- *)
 
 Require Import Setoid Morphisms.
 Declare Instance Equivalence_Equal: Equivalence AtomSetImpl.Equal.
+ *)
 
-Lemma remove_empty_eq: forall x, remove x (singleton x) = empty.
-Proof.
-  intro x. pose proof remove_singleton_empty. rewrite H.
-  
-Lemma remove_fv_nom_swap: forall t x y, remove x (fv_nom (swap y x t)) = remove y (fv_nom t).
+
+Conjecture remove_singleton_empty_eq: forall x, remove x (singleton x) = empty.
+Conjecture remove_singleton_eq: forall x y, remove x (singleton y) = singleton y.
+
+Lemma remove_remove_fv_nom_swap: forall t x y, x <> y -> remove x (remove y (fv_nom (swap y x t))) = remove y (remove x (fv_nom t)).
+Proof. Admitted. 
+
+Lemma double_remove_eq: forall t x, remove x (remove x (fv_nom t)) = remove x (fv_nom t). 
+Proof. Admitted.
+
+Lemma remove_comm_eq: forall t x y, remove x (remove y (fv_nom t)) = remove y (remove x (fv_nom t)). 
+Proof. Admitted.
+
+Lemma remove_fv_nom_swap: forall t x y, x <> y -> x `notin` fv_nom t -> remove x (fv_nom (swap y x t)) = remove y (fv_nom t).
 Proof.
   induction t as [z | t1 z | t1 t2 | t1 t2 z ] using n_sexp_induction.
-  - intros x y. simpl. unfold vswap. destruct (z == y).
-    + subst.
+  - intros x y Hneq Hnotin. simpl in *. apply notin_singleton_1 in Hnotin. unfold vswap. destruct (z == y).
+    + subst. repeat rewrite remove_singleton_empty_eq. reflexivity.
+    + destruct (z == x).
+      * subst. contradiction.
+      * repeat rewrite remove_singleton_eq. reflexivity.
+  - intros x y Hneq Hnotin. simpl in *. apply notin_remove_1 in Hnotin. destruct Hnotin.
+    + subst. unfold vswap. rewrite eq_dec_refl. destruct (x == y).
+      * subst. contradiction.
+      * rewrite remove_remove_fv_nom_swap.
+        ** reflexivity.
+        ** assumption.
+    + unfold vswap. destruct (z == y).
+      * subst. repeat rewrite double_remove_eq. apply H.
+        ** reflexivity.
+        ** assumption.
+        ** assumption.
+      * destruct (z == x).
+        ** subst. apply remove_remove_fv_nom_swap. assumption.
+        ** rewrite remove_comm_eq. rewrite H.
+           *** apply remove_comm_eq.
+           *** reflexivity.
+           *** assumption.
+           *** assumption.
+  - intros x y Hneq Hnotin. simpl in *. assert (Hnotin' := Hnotin). apply notin_union_1 in Hnotin. apply notin_union_2 in Hnotin'. assert (Hneq' := Hneq). apply IHt2 in Hneq.
+    + apply IHt1 in Hneq'.
+      * rewrite Hneq.
+      *
     +
- 
-  
+    
+
+    
+    
 Lemma fv_nom_equal: forall t u, t =a u -> fv_nom t = fv_nom u.
 Proof.
   induction 1.
