@@ -1,7 +1,9 @@
 (* Infrastructure *)
 (* begin hide *)
-Require Import Arith Lia.  Print LoadPath.
+Require Import Arith Lia. Print LoadPath.
 (* Metalib is in CP.2023.03.0~8.17~2023.08/lib/coq/user-contrib/Metalib *)
+
+
 
 Require Export Metalib.Metatheory.
 Require Export Metalib.LibDefaultSimp.
@@ -13,14 +15,12 @@ Proof.
   assert (H := nat_ind (fun n => (forall m : nat, m < n -> Q m))).
   apply IH. apply H.
   - intros m Hlt; inversion Hlt.
-  - intros n' H' m Hlt. apply IH. intros m0 Hlt'. apply H'. apply Nat.lt_succ_r in Hlt.  apply lt_le_trans with m.
-    + assumption.
-    + apply Arith_prebase.lt_n_Sm_le. apply Arith_prebase.lt_S_n. assumption.
+  - intros n' H' m Hlt. apply IH. intros m0 Hlt'. apply H'. apply Nat.lt_succ_r in Hlt. lia.  
 Qed.
 
 Lemma diff_remove_2: forall x y s, x <> y -> x `notin` remove y s -> x `notin` s.
 Proof.
-  intros. default_simp.
+  intros x y s Hneq Hnotin. default_simp.
 Qed. 
 
 Lemma aux_not_equal : forall (x:atom) (y:atom), x <> y -> y <> x.
@@ -33,7 +33,7 @@ Qed.
 
 Lemma remove_singleton_empty: forall x, remove x (singleton x) [=] empty.
 Proof.
-  intros. rewrite AtomSetProperties.singleton_equal_add. rewrite AtomSetProperties.remove_add.
+  intro x. rewrite AtomSetProperties.singleton_equal_add. rewrite AtomSetProperties.remove_add.
   - reflexivity.
   - apply notin_empty_1.
 Qed.
