@@ -134,7 +134,7 @@ Proof. exact Atom.eq_dec. Defined.
     this library.  In order to avoid polluting Coq's namespace, we do
     not use [Module Export]. *)
 
-Module Import AtomSetImpl : FSetExtra.WSfun Atom :=
+Module Import AtomSetImpl <: FSetExtra.WSfun Atom :=
   FSetExtra.Make Atom.
 
 Notation atoms :=
