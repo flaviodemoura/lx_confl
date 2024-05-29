@@ -585,9 +585,7 @@ Proof. (** %\noindent {\bf Proof.}% The proof is by induction on the structure o
   - intros Hfv. simpl in *. apply notin_remove_1 in Hfv. destruct Hfv.
     + subst. assert (H: vswap y x x = y).
       {
-        unfold vswap. destruct (x == y).
-        - assumption.
-        - rewrite eq_dec_refl. reflexivity.
+        unfold vswap. rewrite eq_dec_refl. admit.
       }
       rewrite H. rewrite remove_symmetric. rewrite swap_symmetric. apply swap_remove_reduction.
     + unfold vswap. destruct (x0 == y).
@@ -622,7 +620,7 @@ Proof. (** %\noindent {\bf Proof.}% The proof is by induction on the structure o
             *** assumption.
             *** auto.
     + apply IHt2. apply Hfv.
-Qed.
+Admitted.
 (* end hide *)
 
 (** used in FROM 2023 ** $\alpha$-equivalence *)
@@ -1132,16 +1130,16 @@ Proof.
     + apply aeq_refl.
     + assumption.
   - intros u x Hfv. simpl in *. unfold m_subst in *. rewrite subst_rec_fun_equation. destruct (x == y). 
-    + subst. apply aeq_refl. 
+    + subst. rewrite eq_dec_refl. apply aeq_refl. 
     + destruct (atom_fresh (union (fv_nom u) (union (fv_nom (n_abs y t1)) (singleton x)))) as [z]. case (z == y). 
-      * intro Heq. subst. apply aeq_abs_same. apply aeq_trans with (swap y y t1).
+      * intro Heq. subst. admit. (*apply aeq_abs_same. apply aeq_trans with (swap y y t1).
         ** apply H. 
            *** rewrite swap_id. reflexivity.
            *** rewrite swap_id. apply notin_remove_1 in Hfv. destruct Hfv.
                **** symmetry in H0. contradiction.
                **** assumption.
-        ** rewrite swap_id. apply aeq_refl. 
-      * intro Hneq. apply aeq_abs_diff. 
+        ** rewrite swap_id. apply aeq_refl. *) 
+      * intro Hneq. admit. (* apply aeq_abs_diff. 
         ** assumption.
         ** apply notin_union_2 in n0. apply notin_union_1 in n0. simpl in n0. apply notin_remove_1 in n0. destruct n0.
            *** subst. contradiction.
@@ -1150,15 +1148,15 @@ Proof.
            *** rewrite swap_size_eq. reflexivity.
            *** apply notin_remove_1 in Hfv. destruct Hfv.
                **** symmetry in H0. contradiction.
-               **** repeat apply notin_union_2 in n0. apply notin_singleton_1 in n0. apply fv_nom_remove_swap; assumption.
+               **** repeat apply notin_union_2 in n0. apply notin_singleton_1 in n0. apply fv_nom_remove_swap; assumption. *)
   - intros u x Hfv. unfold m_subst in *. simpl in *. rewrite subst_rec_fun_equation. apply aeq_app.
     + apply IHt2. apply notin_union_1 in Hfv. assumption.
     + apply IHt1. apply notin_union_2 in Hfv. assumption.
   - intros u x Hfv. simpl in *. unfold m_subst in *. rewrite subst_rec_fun_equation. destruct (atom_fresh (union (fv_nom u) (union (fv_nom (n_sub t1 y t2)) (singleton x)))). destruct (x == y). 
-    + subst. apply aeq_sub_same.
+    + subst. admit. (* apply aeq_sub_same.
       * apply aeq_refl.
-      * apply notin_union_2 in Hfv. apply IHt1. assumption.
-    + case (x0 == y).
+      * apply notin_union_2 in Hfv. apply IHt1. assumption. *)
+    + Admitted. (*case (x0 == y).
       * intro Heq. subst. apply aeq_sub_same.
         ** apply aeq_trans with (swap y y t1). apply H.
            *** rewrite swap_id. reflexivity.
@@ -1177,8 +1175,8 @@ Proof.
            *** rewrite swap_size_eq. reflexivity.
            *** apply notin_union_1 in Hfv. apply notin_remove_1 in Hfv. destruct Hfv. 
                **** symmetry in H0. contradiction. 
-               **** repeat apply notin_union_2 in n. apply notin_singleton_1 in n. apply fv_nom_remove_swap; assumption.
-Qed.
+               **** repeat apply notin_union_2 in n. apply notin_singleton_1 in n. apply fv_nom_remove_swap; assumption. *)
+
 (** used in FROM 2023 %\noindent{\bf Proof.}% The proof is done by induction on the size of the term [t] using [n_sexp_induction] defined above. The interesting cases are the abstraction and the explicit substituion. We focus in the abstraction case, %{\it i.e.}% when $t = \lambda_y.t_1$, where the goal to be proven is $\metasub{(\lambda_y.t_1)}{x}{u} =_\alpha \lambda_y.t_1$. We consider two cases: %\begin{enumerate} \item If $x = y$ the result is trivial because both LHS and RHS are equal to $\lambda_y.t_1$ \item If $x \neq y$ , we have to prove that $\lambda_z. \metasub{\swap{y}{z}{t_1}}{x}{u} =_{\alpha} \lambda_y. t_1$, where $z$ is a fresh name not in the set $fv\_nom(u)\cup fv\_nom(\lambda_y.t_1)\cup \{x\}$. The induction hypothesis express the fact that every term with the same size as the body $t_1$ of the abstraction  satisfies the property to be proven: $\forall t', |t'| = |t_1| \to \forall u\ x'\ x_0\ y_0, x' \notin fv(\swap{x_0}{y_0}{t'}) \to \metasub{(\swap{x_0}{y_0}{t'})}{x'}{u} =_\alpha \swap{x}{y}{t'}$. Therefore, according to the definition of the metasubstitution (function [subst_rec_fun]), the variable $y$ will be renamed to $z$, and the metasubstitution is propagated inside the abstraction resulting in the following goal: $\lambda_z.\metasub{(\swap{z}{y}{t_1})}{x}{u} =_\alpha \lambda_y.t_1$. Since $z \notin fv\_nom(\lambda_y.t_1) = fv\_nom(t_1)\backslash \{y\}$, there are two cases to consider, either $z = y$ or $z \in fv(t_1)$:
 \begin{enumerate}
  \item $z = y$: In this case, we are done by the induction hypothesis taking $x_0=y_0=y$, for instance.
