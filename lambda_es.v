@@ -566,7 +566,7 @@ Proof.
       * assumption. 
 Qed.
 
-Lemma remove_fv_swap: forall x y t, x `notin` fv_nom t -> remove x (fv_nom (swap y x t)) [=] remove y (fv_nom t).
+Lemma remove_fv_nom_swap: forall x y t, x `notin` fv_nom t -> remove x (fv_nom (swap y x t)) [=] remove y (fv_nom t).
 Proof. (** %\noindent {\bf Proof.}% The proof is by induction on the structure of [t].%\newline% *)
   intros x y t. induction t.
   (** %\noindent%$\bullet$ The first case is when [t] is a variable, say [x0]. By hypothesis [x0 <> x], and we need to show that [remove x (fv_nom (swap y x x0)) [=] remove y (fv_nom x0)]. There are two cases to consider: *)
@@ -712,10 +712,10 @@ Proof.
   induction 1.
   - reflexivity.
   - simpl. rewrite IHaeq. reflexivity.
-  - simpl. inversion H1; subst; rewrite IHaeq; apply remove_fv_swap; assumption.
+  - simpl. inversion H1; subst; rewrite IHaeq; apply remove_fv_nom_swap; assumption.
   - simpl. rewrite IHaeq1; rewrite IHaeq2. reflexivity.
   - simpl. rewrite IHaeq1; rewrite IHaeq2. reflexivity.
-  - simpl. pose proof remove_fv_swap.
+  - simpl. pose proof remove_fv_nom_swap.
     specialize (H3 x y t1'). apply H3 in H1.
     inversion H2; subst; rewrite IHaeq1; rewrite IHaeq2; rewrite H1; reflexivity.
 Qed.
@@ -1004,6 +1004,34 @@ Proof.
   intros t1 t2 u x. unfold m_subst. rewrite subst_rec_fun_equation. reflexivity.
 Qed.
 
+Lemma m_subst_abs_same: forall t u x, {x := u}(n_abs x t) = n_abs x t.
+Proof.
+  intros t u x. unfold m_subst. rewrite subst_rec_fun_equation. rewrite eq_dec_refl. reflexivity.
+Qed.
+
+Lemma m_subst_sub_same: forall u x t1 t2, {x := u}(n_sub t1 x t2) = n_sub t1 x ({x := u}t2).
+Proof.
+  intros u x t1 t2. unfold m_subst. rewrite subst_rec_fun_equation. rewrite eq_dec_refl. reflexivity.
+Qed.
+
+Lemma m_subst_abs: forall t u x y, {x := u}(n_abs y t) =a if (x == y) then (n_abs y t) else let (z,_) := atom_fresh (fv_nom u `union` fv_nom (n_abs y t) `union` {{x}}) in n_abs z ({x := u}(swap y z t)).
+Proof.
+  intros t u x y. destruct (x == y).
+  - subst. unfold m_subst. rewrite subst_rec_fun_equation. rewrite eq_dec_refl. apply aeq_refl.
+  - unfold m_subst. rewrite subst_rec_fun_equation. destruct (x == y).
+    + contradiction.
+    + destruct (atom_fresh (union (fv_nom u) (union (fv_nom (n_abs y t)) (singleton x)))). apply aeq_refl.
+Qed.
+
+Lemma m_subst_sub: forall t1 t2 u x y, {x := u}(n_sub t1 y t2) =a if (x == y) then (n_sub t1 y ({x := u}t2)) else let (z,_) := atom_fresh (fv_nom u `union` fv_nom (n_sub t1 y t2) `union` {{x}}) in n_sub ({x := u}(swap y z t1)) z ({x := u}t2).
+Proof.
+  intros t1 t2 u x y. destruct (x == y).
+  - subst. unfold m_subst. rewrite subst_rec_fun_equation. rewrite eq_dec_refl. apply aeq_refl.
+  - unfold m_subst. rewrite subst_rec_fun_equation. destruct (x == y).
+    + contradiction.
+    + simpl. apply aeq_refl.
+Qed.
+
 Lemma aeq_trans: forall t1 t2 t3, t1 =a t2 -> t2 =a t3 -> t1 =a t3.
 Proof.
   induction t1 as [x | t11 x | t11 t12 | t11 t12 x] using n_sexp_induction.
@@ -1129,7 +1157,14 @@ Proof.
   - intros u x Hfv. simpl in *. apply notin_singleton_1 in Hfv. rewrite m_subst_var_neq.
     + apply aeq_refl.
     + assumption.
-  - intros u x Hfv. simpl in *. unfold m_subst in *. rewrite subst_rec_fun_equation. destruct (x == y). 
+  - intros u x Hfv. rewrite m_subst_abs. simpl in Hfv. apply notin_remove_1 in Hfv.
+    destruct (x == y).
+    + apply aeq_refl.
+    + unfold atom_fresh.
+
+Admitted. (* how to destruct ifthenelse? case (x == y).??
+        ** contradiction.
+        ** destruct (x == y).
     + subst. rewrite eq_dec_refl. apply aeq_refl. 
     + destruct (atom_fresh (union (fv_nom u) (union (fv_nom (n_abs y t1)) (singleton x)))) as [z]. case (z == y). 
       * intro Heq. subst. admit. (*apply aeq_abs_same. apply aeq_trans with (swap y y t1).
@@ -1175,7 +1210,7 @@ Proof.
            *** rewrite swap_size_eq. reflexivity.
            *** apply notin_union_1 in Hfv. apply notin_remove_1 in Hfv. destruct Hfv. 
                **** symmetry in H0. contradiction. 
-               **** repeat apply notin_union_2 in n. apply notin_singleton_1 in n. apply fv_nom_remove_swap; assumption. *)
+               **** repeat apply notin_union_2 in n. apply notin_singleton_1 in n. apply fv_nom_remove_swap; assumption. *)*)
 
 (** used in FROM 2023 %\noindent{\bf Proof.}% The proof is done by induction on the size of the term [t] using [n_sexp_induction] defined above. The interesting cases are the abstraction and the explicit substituion. We focus in the abstraction case, %{\it i.e.}% when $t = \lambda_y.t_1$, where the goal to be proven is $\metasub{(\lambda_y.t_1)}{x}{u} =_\alpha \lambda_y.t_1$. We consider two cases: %\begin{enumerate} \item If $x = y$ the result is trivial because both LHS and RHS are equal to $\lambda_y.t_1$ \item If $x \neq y$ , we have to prove that $\lambda_z. \metasub{\swap{y}{z}{t_1}}{x}{u} =_{\alpha} \lambda_y. t_1$, where $z$ is a fresh name not in the set $fv\_nom(u)\cup fv\_nom(\lambda_y.t_1)\cup \{x\}$. The induction hypothesis express the fact that every term with the same size as the body $t_1$ of the abstraction  satisfies the property to be proven: $\forall t', |t'| = |t_1| \to \forall u\ x'\ x_0\ y_0, x' \notin fv(\swap{x_0}{y_0}{t'}) \to \metasub{(\swap{x_0}{y_0}{t'})}{x'}{u} =_\alpha \swap{x}{y}{t'}$. Therefore, according to the definition of the metasubstitution (function [subst_rec_fun]), the variable $y$ will be renamed to $z$, and the metasubstitution is propagated inside the abstraction resulting in the following goal: $\lambda_z.\metasub{(\swap{z}{y}{t_1})}{x}{u} =_\alpha \lambda_y.t_1$. Since $z \notin fv\_nom(\lambda_y.t_1) = fv\_nom(t_1)\backslash \{y\}$, there are two cases to consider, either $z = y$ or $z \in fv(t_1)$:
 \begin{enumerate}
@@ -1187,36 +1222,10 @@ Proof.
 The explicit substitution case is also interesting, %{\it i.e.}% if $t = \esub{t_1}{y}{t_2}$, but it follows a similar strategy used in the abstraction case for $t_1$. For $t_2$ the result follows from the induction hypothesis. $\hfill\Box$*)
 
 (* begin hide *)
-Lemma m_subst_abs: forall t u x y, {x := u}(n_abs y t) =a if (x == y) then (n_abs y t) else let (z,_) := atom_fresh (fv_nom u `union` fv_nom (n_abs y t) `union` {{x}}) in n_abs z ({x := u}(swap y z t)).
-Proof.
-  intros t u x y. destruct (x == y).
-  - subst. unfold m_subst. rewrite subst_rec_fun_equation. rewrite eq_dec_refl. apply aeq_refl.
-  - unfold m_subst. rewrite subst_rec_fun_equation. destruct (x == y).
-    + contradiction.
-    + destruct (atom_fresh (union (fv_nom u) (union (fv_nom (n_abs y t)) (singleton x)))). apply aeq_refl.
-Qed.
-
-Lemma m_subst_sub: forall t1 t2 u x y, {x := u}(n_sub t1 y t2) =a if (x == y) then (n_sub t1 y ({x := u}t2)) else let (z,_) := atom_fresh (fv_nom u `union` fv_nom (n_sub t1 y t2) `union` {{x}}) in n_sub ({x := u}(swap y z t1)) z ({x := u}t2).
-Proof.
-  intros t1 t2 u x y. destruct (x == y).
-  - subst. unfold m_subst. rewrite subst_rec_fun_equation. rewrite eq_dec_refl. apply aeq_refl.
-  - unfold m_subst. rewrite subst_rec_fun_equation. destruct (x == y).
-    + contradiction.
-    + simpl. apply aeq_refl.
-Qed.
+(* moved upwards*)
 (* end hide *)
 
 (** used in FROM 2023 - The following lemmas concern the expected behaviour of the metasubstitution when the metasubstitution's variable is equal to the abstraction's variable. Their proofs are straightforward from the definition [subst_rec_fun]. The corresponding version when the metasubstitution's variable is different from the abstraction's variable will be presented later. %\newline%*)
-
-Lemma m_subst_abs_eq: forall u x t, {x := u}(n_abs x t) = n_abs x t.
-Proof.
-  intros u x t. unfold m_subst. rewrite subst_rec_fun_equation. rewrite eq_dec_refl. reflexivity.
-Qed.
-
-Lemma m_subst_sub_eq: forall u x t1 t2, {x := u}(n_sub t1 x t2) = n_sub t1 x ({x := u}t2).
-Proof.
-  intros u x t1 t2. unfold m_subst. rewrite subst_rec_fun_equation. rewrite eq_dec_refl. reflexivity.
-Qed.
 
 (* begin hide *)
 Lemma fv_nom_remove: forall t u x y, y `notin` fv_nom u -> y `notin` remove x (fv_nom t) -> y `notin` fv_nom ({x := u}t).
@@ -1733,7 +1742,7 @@ Proof.
     + apply IHt2. apply aeq_sym. assumption.
     + apply IHt1. apply aeq_sym. assumption.
   - intros u u' x Haeq. case (x == y).
-    + intro Heq. subst. repeat rewrite m_subst_sub_eq. apply aeq_sub_same.
+    + intro Heq. subst. repeat rewrite m_subst_sub_same. apply aeq_sub_same.
       * apply aeq_refl.
       * apply IHt1. assumption.
     + intro Hneq. unfold m_subst in *. rewrite subst_rec_fun_equation. apply aeq_sym. rewrite subst_rec_fun_equation. destruct (x == y).
@@ -1780,14 +1789,14 @@ Proof.
   - intros t' u x Haeq. inversion Haeq; subst. apply aeq_refl.
   - intros t' u x Haeq. inversion Haeq; subst. 
     + case (x == y).  
-      * intro Heq. subst. repeat rewrite m_subst_abs_eq. assumption. 
+      * intro Heq. subst. repeat rewrite m_subst_abs_same. assumption. 
       * intro Hneq. unfold m_subst in *. repeat rewrite subst_rec_fun_equation. destruct (x == y).
         ** contradiction.
         ** simpl. pose proof H3 as Haeq'. apply aeq_fv_nom_eq in H3. rewrite H3. destruct (atom_fresh (union (fv_nom u) (union (remove y (fv_nom t2)) (singleton x)))) as [z]. apply aeq_abs_same. apply H.
            *** rewrite swap_size_eq. reflexivity. 
            *** apply aeq_swap1. assumption. 
     + case (x == y). 
-      * intro Heq. subst. rewrite m_subst_abs_eq. unfold m_subst in *. rewrite subst_rec_fun_equation. destruct (y == y0).
+      * intro Heq. subst. rewrite m_subst_abs_same. unfold m_subst in *. rewrite subst_rec_fun_equation. destruct (y == y0).
         ** contradiction.
         ** destruct (atom_fresh (union (fv_nom u) (union (fv_nom (n_abs y0 t2)) (singleton y)))) as [x]. apply aeq_trans with (n_abs x (swap y0 x t2)).
            *** apply aeq_trans with (n_abs y0 t2). 
@@ -1802,7 +1811,7 @@ Proof.
                     ****** rewrite (swap_symmetric _ y0 x). rewrite swap_involutive. apply aeq_refl.
            *** apply aeq_abs_same. apply aeq_sym. apply m_subst_notin. repeat apply notin_union_2 in n0. apply notin_singleton_1 in n0. apply fv_nom_remove_swap; assumption. 
       * intro Hneq. case (x == y0).
-        ** intro Heq. subst. rewrite m_subst_abs_eq. apply aeq_trans with (n_abs y t1).
+        ** intro Heq. subst. rewrite m_subst_abs_same. apply aeq_trans with (n_abs y t1).
            *** apply m_subst_notin. apply aeq_sym in Haeq. apply aeq_abs_notin in Haeq.
                ****  simpl. apply notin_remove_2. assumption.
                **** assumption.
@@ -1825,7 +1834,7 @@ Proof.
     + apply aeq_sym. apply IHt1. assumption.
   - intros t u x Haeq. (*  Initially, the goal is [({x := u} ([y := t2] t1)) =a ({x := u} t)], and according to the definition of $\alpha$-equivalence, there are 2 subcases.*) inversion Haeq; subst. (* %\newline {\bf 1.}% In the first subcase, [t = ([y := t2'] t1')] with [t1 =a t1'] and [t2 =a t2'].*)
     + case (x == y). (* As in the abstraction case, we start comparing [x] and [y].*)
-      * intro Heq. subst. (* When [x = y], the proof is trivial because both metasubstitutions are removed by applying lemma [m_subst_sub_eq] twice, and we get the following goal: [([y := {y := u} t2] t1) =a ([y := {y := u} t2'] t1')]*) repeat rewrite m_subst_sub_eq. apply aeq_sub_same. (* We compare the corresponding components of the explicit substitution via the constructor [aeq_sub_same], and the first case is trivial since [t1 =a t1'].*)
+      * intro Heq. subst. (* When [x = y], the proof is trivial because both metasubstitutions are removed by applying lemma [m_subst_sub_same] twice, and we get the following goal: [([y := {y := u} t2] t1) =a ([y := {y := u} t2'] t1')]*) repeat rewrite m_subst_sub_same. apply aeq_sub_same. (* We compare the corresponding components of the explicit substitution via the constructor [aeq_sub_same], and the first case is trivial since [t1 =a t1'].*)
         ** assumption.
         ** apply IHt1. assumption. (* In order to show that [({y := u} t2) =a ({y := u} t2')], we apply the induction hypothesis.*)
       * intro Hneq. (* When [x <> y], we propagate the metasubstitutions inside the explicit substitution on both sides.*) unfold m_subst in *. rewrite subst_rec_fun_equation. apply aeq_sym. rewrite subst_rec_fun_equation. destruct (x == y).
@@ -1836,7 +1845,7 @@ Proof.
                **** apply aeq_swap. apply aeq_sym. assumption.
            *** apply aeq_sym. apply IHt1. assumption.
     + case (x == y). (* %\newline {\bf 2.}% In the second subcase, the goal is [({x := u} ([y := t2] t1)) =a ({x := u} ([y0 := t2'] t1'))] with [y <> y0]. We proceed by comparing [x] and [y].*)
-      * intro Heq. subst. (* If [x = y] then the metasubstitution of the LHS only propagates to the subterm [t2].*) rewrite m_subst_sub_eq. case (y == y0). 
+      * intro Heq. subst. (* If [x = y] then the metasubstitution of the LHS only propagates to the subterm [t2].*) rewrite m_subst_sub_same. case (y == y0). 
         ** intro Heq. subst. contradiction. 
         ** intro Hneq. (* In the RHS, the metasubstitution is propagated to both subterms because [x = y <> y0].*) unfold m_subst in *. apply aeq_sym. rewrite subst_rec_fun_equation. destruct (y == y0).
            *** contradiction.
@@ -1865,7 +1874,7 @@ Proof.
                     ******** assumption.
                     ******* assumption.  
       * intro Hneq. (* When [x <> y], we start with the following goal: [({x := u} ([y := t2] t1)) =a ({x := u} ([y0 := t2'] t1'))]. We proceed by comparing [x] and [y0].*) case (x == y0).
-        ** intro Heq. subst. (* When [x = y0], the strategy is similar to the previous case [x = y] and [x <> y0].*) rewrite m_subst_sub_eq. unfold m_subst. rewrite subst_rec_fun_equation. destruct (y0 == y).
+        ** intro Heq. subst. (* When [x = y0], the strategy is similar to the previous case [x = y] and [x <> y0].*) rewrite m_subst_sub_same. unfold m_subst. rewrite subst_rec_fun_equation. destruct (y0 == y).
            *** contradiction.
            *** destruct (atom_fresh (union (fv_nom u) (union (fv_nom ([y := t2] t1)) (singleton y0)))). apply aeq_sub_diff.
                **** apply IHt1. assumption. 
@@ -3770,7 +3779,7 @@ Proof.
         ** contradiction.
         ** simpl swap. apply aeq_refl.
     + intros x y Hneq z u. simpl. case (y' == z). 
-      * intro Heq. subst. repeat rewrite m_subst_abs_eq. simpl. apply aeq_refl. 
+      * intro Heq. subst. repeat rewrite m_subst_abs_same. simpl. apply aeq_refl. 
       * intro Hneq'. unfold m_subst in *. repeat rewrite subst_rec_fun_equation. destruct (z == y').
         ** symmetry in e. contradiction.
         ** destruct (vswap x y z == vswap x y y').
@@ -3825,7 +3834,7 @@ Proof.
       * apply IHt2. assumption.
       * apply IHt1. assumption.
     + intros x y Hneq z u. simpl. case (y' == z). (* The case of the explicit substitution follows a similar strategy of the abstraction. The initial goal is to prove that [swap x y ({z := u}(n_sub t1 y' t2)) =a {(vswap x y z) := (swap x y u)}(swap x y (n_sub t1 y' t2))] and we start comparing the variables [y'] and [z].*)
-      * intro Heq. subst. repeat rewrite m_subst_sub_eq. simpl. apply aeq_sub_same. (* When [y' = z], the metasubstitution has no effect on the body of the metasubstitution but it can still be propagated to the term [t2]. Therefore, this case is proved using the induction hypothesis over [t2]. *)
+      * intro Heq. subst. repeat rewrite m_subst_sub_same. simpl. apply aeq_sub_same. (* When [y' = z], the metasubstitution has no effect on the body of the metasubstitution but it can still be propagated to the term [t2]. Therefore, this case is proved using the induction hypothesis over [t2]. *)
         ** apply aeq_refl.
         ** apply IHt1. assumption.
       * intro Hneq'. unfold m_subst. rewrite subst_rec_fun_equation. apply aeq_sym. rewrite subst_rec_fun_equation. destruct (z == y').
@@ -3894,7 +3903,7 @@ Admitted.
 \end{enumerate} $\hfill\Box$
 \end{enumerate}%*) 
 
-(** The following two lemmas toghether with lemmas [m_subst_abs_eq] and [m_subst_sub_eq] are essential in simplifying the propagations of metasubstitution. They are presented here because they depend on lemma [aeq_swap_m_subst]. *)
+(** The following two lemmas toghether with lemmas [m_subst_abs_same] and [m_subst_sub_same] are essential in simplifying the propagations of metasubstitution. They are presented here because they depend on lemma [aeq_swap_m_subst]. *)
 
 Lemma m_subst_abs_neq: forall t u x y z, x <> y -> z `notin` fv_nom u `union` fv_nom (n_abs y t) `union` {{x}} -> {x := u}(n_abs y t) =a n_abs z ({x := u}(swap y z t)).
 Proof.
@@ -3984,7 +3993,7 @@ Proof.
     + subst. contradiction.
     + simpl. reflexivity.
   - intros u x' Hfv. simpl in *. case (x' == x).
-    + intro Heq. subst. rewrite m_subst_abs_eq. simpl. reflexivity.
+    + intro Heq. subst. rewrite m_subst_abs_same. simpl. reflexivity.
     + intro Hneq. unfold m_subst in *. rewrite subst_rec_fun_equation. destruct (x' == x).
       * contradiction.
       * destruct (atom_fresh (union (fv_nom u) (union (fv_nom (n_abs x t)) (singleton x')))). simpl. case (x0 == x).
@@ -4270,16 +4279,16 @@ Proof.
                **** apply aux_not_equal. assumption.
         ** apply aux_not_equal. assumption.
 - intros t2 t3 x y Hneq Hfv. case (z == x). 
-    + intro Heq. subst. rewrite m_subst_abs_eq. apply aeq_sym. apply m_subst_notin. apply fv_nom_remove. 
+    + intro Heq. subst. rewrite m_subst_abs_same. apply aeq_sym. apply m_subst_notin. apply fv_nom_remove. 
         * assumption.
         * apply notin_remove_2. simpl. apply notin_remove_3. reflexivity.
     + intro Hneq'. destruct (y == z). 
-      * subst. rewrite m_subst_abs_eq. pose proof m_subst_abs_neq as Habs. pick fresh w for (union (fv_nom t3) (union (fv_nom t2) (union (fv_nom (n_abs z t11)) (singleton x)))). specialize (Habs t11 t2 x z w). apply aeq_trans with ({z := t3} n_abs w ({x := t2} swap z w t11)). 
+      * subst. rewrite m_subst_abs_same. pose proof m_subst_abs_neq as Habs. pick fresh w for (union (fv_nom t3) (union (fv_nom t2) (union (fv_nom (n_abs z t11)) (singleton x)))). specialize (Habs t11 t2 x z w). apply aeq_trans with ({z := t3} n_abs w ({x := t2} swap z w t11)). 
         ** apply aeq_m_subst_out. apply Habs. 
            *** assumption.
            *** apply notin_union_2 in Fr. assumption.
         ** destruct (z == w). 
-           *** subst. rewrite swap_id. rewrite m_subst_abs_eq. pose proof m_subst_abs_neq as H'. specialize (H' t11 ({w := t3}t2) x w w). rewrite swap_id in H'. rewrite H'.
+           *** subst. rewrite swap_id. rewrite m_subst_abs_same. pose proof m_subst_abs_neq as H'. specialize (H' t11 ({w := t3}t2) x w w). rewrite swap_id in H'. rewrite H'.
                **** apply aeq_abs_same. assert (Fr' := Fr). apply notin_union_2 in Fr'. apply notin_union_1 in Fr'. apply aeq_m_subst_in. apply aeq_sym. apply m_subst_notin. assumption.
                **** assumption.
                **** apply notin_union.
@@ -4369,9 +4378,9 @@ We can propagate the metasubstitution on the RHS and there is no need for a fres
   + apply IHt12; assumption.
   + apply IHt1_1; assumption.
 - intros t2 t3 x y Hneq Hfv. (* In the explicit substitution case, the initial goal is [({y := t3} ({x := t2} ([z := t12] t11))) =a ({x := {y := t3} t2} ({y := t3} ([z := t12] t11)))], and we start comparing [x] and [z]. *) case (z == x).
-  + intro Heq. subst. rewrite m_subst_sub_eq. (* When [z = x], the LHS [({y := t3} ({x := t2} ([z := t12] t11)))] reduces to [([x := {x := t2} t12] t11)], but differently to the abstraction case, the external metasubstitution of the RHS cannot be ignored because [x] may occur free in [t12], and it will therefore be propagated over the explicit substitution. We then need a fresh name, say [w], that is not in the set $fv(t_3)\cup fv(t_2) \cup fv(\esub{t_{11}}{x}{t_{12}}) \cup \{y\}$. We use lemma [m_subst_sub_neq] to perform the propagation.*) pick fresh w for (union (fv_nom t3) (union (fv_nom t2) (union (fv_nom ([x := t12]t11)) (singleton y)))). pose proof m_subst_sub_neq as Hsubneq. specialize (Hsubneq t11 t12 t3 y x w). apply aeq_trans with ({x := {y := t3} t2} ([w := {y := t3} t12] ({y := t3} swap x w t11))).
+  + intro Heq. subst. rewrite m_subst_sub_same. (* When [z = x], the LHS [({y := t3} ({x := t2} ([z := t12] t11)))] reduces to [([x := {x := t2} t12] t11)], but differently to the abstraction case, the external metasubstitution of the RHS cannot be ignored because [x] may occur free in [t12], and it will therefore be propagated over the explicit substitution. We then need a fresh name, say [w], that is not in the set $fv(t_3)\cup fv(t_2) \cup fv(\esub{t_{11}}{x}{t_{12}}) \cup \{y\}$. We use lemma [m_subst_sub_neq] to perform the propagation.*) pick fresh w for (union (fv_nom t3) (union (fv_nom t2) (union (fv_nom ([x := t12]t11)) (singleton y)))). pose proof m_subst_sub_neq as Hsubneq. specialize (Hsubneq t11 t12 t3 y x w). apply aeq_trans with ({x := {y := t3} t2} ([w := {y := t3} t12] ({y := t3} swap x w t11))).
     * case (x == w). (* We proceed by comparing [x] and [w] because if they are equal the external metasubstitution of the RHS can be removed as in the abstraction case.*)
-      ** intro Heq. subst. rewrite m_subst_sub_eq. rewrite swap_id. pose proof m_subst_sub_neq as Hsubneq'. specialize (Hsubneq' t11 ({w := t2} t12) t3 y w w). rewrite Hsubneq'. (* The current goal is [({y := t3} ([w := {w := t2} t12] t11)) =a ([w := {w := {y := t3} t2} ({y := t3} t12)] ({y := t3} t11))], and the next step is to propagate the external metasubstitution of the LHS without the need of a new name.*)
+      ** intro Heq. subst. rewrite m_subst_sub_same. rewrite swap_id. pose proof m_subst_sub_neq as Hsubneq'. specialize (Hsubneq' t11 ({w := t2} t12) t3 y w w). rewrite Hsubneq'. (* The current goal is [({y := t3} ([w := {w := t2} t12] t11)) =a ([w := {w := {y := t3} t2} ({y := t3} t12)] ({y := t3} t11))], and the next step is to propagate the external metasubstitution of the LHS without the need of a new name.*)
          *** apply aeq_sub_same. (* As the same name [w] is used on both sides, we can proceed with [aeq_sub_same]. *)
              **** rewrite swap_id. apply aeq_refl. (* The first subcase is trivial.*)
              **** apply IHt1_1; assumption. (* And the second is proved by the induction hypothesis for [t12].*)
@@ -4450,7 +4459,7 @@ We can propagate the metasubstitution on the RHS and there is no need for a fres
                   ***** apply notin_union_2 in Fr. apply notin_union_2 in Fr. apply notin_union_1 in Fr. simpl in Fr. apply notin_union_2 in Fr. assumption.
              **** apply notin_union_2 in Fr. apply notin_union_2 in Fr. apply notin_union_2 in Fr. apply notin_union_1 in Fr. assumption.
     * case (y == z). (* After the propagation, we get the following goal [({y := t3} ([w := {x := t2} t12] ({x := t2} swap z w t11))) =a ({x := {y := t3} t2} ({y := t3} ([z := t12] t11)))]. We now compare [y] and [z], and propagate the internal metasubstitution of the RHS.*)
-      ** intro Heq. subst. rewrite m_subst_sub_eq. (* When [y = z], we have the goal [({z := t3} ([w := {x := t2} t12] ({x := t2} swap z w t11))) =a ({x := {z := t3} t2} ([z := {z := t3} t12] t11))]. The next step is to propagate the external metasubstitutions on both sides of the current goal. To do so, we will use the same fresh name [w] on both propagations.*) pose proof m_subst_sub_neq as Hsubneq'. specialize (Hsubneq' ({x := t2} swap z w t11) ({x := t2} t12) t3 z w w). rewrite swap_id in Hsubneq'. rewrite Hsubneq'.
+      ** intro Heq. subst. rewrite m_subst_sub_same. (* When [y = z], we have the goal [({z := t3} ([w := {x := t2} t12] ({x := t2} swap z w t11))) =a ({x := {z := t3} t2} ([z := {z := t3} t12] t11))]. The next step is to propagate the external metasubstitutions on both sides of the current goal. To do so, we will use the same fresh name [w] on both propagations.*) pose proof m_subst_sub_neq as Hsubneq'. specialize (Hsubneq' ({x := t2} swap z w t11) ({x := t2} t12) t3 z w w). rewrite swap_id in Hsubneq'. rewrite Hsubneq'.
          *** pose proof m_subst_sub_neq as Hsubneq''. specialize (Hsubneq'' t11 ({z := t3} t12) ({z := t3} t2) x z w). rewrite Hsubneq''.
              **** apply aeq_sub_same.
                   ***** apply aeq_trans with ({x := {z := t3} t2} ({z := t3}(swap z w t11))).
