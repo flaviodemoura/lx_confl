@@ -1384,10 +1384,69 @@ Axiom Eq_implies_equality: forall t1 t2, t1 =a t2 -> fv_nom t1 = fv_nom t2.
 (* end hide *) 
  *)
 
+(*
 Lemma singleton_eq: forall a b, singleton a [=] singleton b -> a = b.
 Proof.
   intros a b H. unfold AtomSetImpl.Equal in H. specialize (H a). destruct H. clear H0. pose proof AtomSetNotin.D.FSetDecideTestCases.test_In_singleton as H'. specialize (H' a). apply H in H'. apply AtomSetImpl.singleton_1 in H'. symmetry. assumption.
 Qed.
+
+Conjecture remove_singleton_empty_eq: forall x, remove x (singleton x) = empty.
+Conjecture remove_singleton_eq: forall x y, remove x (singleton y) = singleton y.
+
+Lemma remove_remove_fv_nom_swap: forall t x y, x <> y -> remove x (remove y (fv_nom (swap y x t))) = remove y (remove x (fv_nom t)).
+Proof. Admitted. 
+
+Lemma double_remove_eq: forall t x, remove x (remove x (fv_nom t)) = remove x (fv_nom t). 
+Proof. Admitted.
+
+Lemma remove_comm_eq: forall t x y, remove x (remove y (fv_nom t)) = remove y (remove x (fv_nom t)). 
+Proof. Admitted.
+
+Lemma remove_fv_nom_swap: forall t x y, x <> y -> x `notin` fv_nom t -> remove x (fv_nom (swap y x t)) = remove y (fv_nom t).
+Proof.
+  induction t as [z | t1 z | t1 t2 | t1 t2 z ] using n_sexp_induction.
+  - intros x y Hneq Hnotin. simpl in *. apply notin_singleton_1 in Hnotin. unfold vswap. destruct (z == y).
+    + subst. repeat rewrite remove_singleton_empty_eq. reflexivity.
+    + destruct (z == x).
+      * subst. contradiction.
+      * repeat rewrite remove_singleton_eq. reflexivity.
+  - intros x y Hneq Hnotin. simpl in *. apply notin_remove_1 in Hnotin. destruct Hnotin.
+    + subst. unfold vswap. rewrite eq_dec_refl. destruct (x == y).
+      * subst. contradiction.
+      * rewrite remove_remove_fv_nom_swap.
+        ** reflexivity.
+        ** assumption.
+    + unfold vswap. destruct (z == y).
+      * subst. repeat rewrite double_remove_eq. apply H.
+        ** reflexivity.
+        ** assumption.
+        ** assumption.
+      * destruct (z == x).
+        ** subst. apply remove_remove_fv_nom_swap. assumption.
+        ** rewrite remove_comm_eq. rewrite H.
+           *** apply remove_comm_eq.
+           *** reflexivity.
+           *** assumption.
+           *** assumption.
+  - intros x y Hneq Hnotin. simpl in *. assert (Hnotin' := Hnotin). apply notin_union_1 in Hnotin. apply notin_union_2 in Hnotin'. assert (Hneq' := Hneq). apply IHt2 in Hneq.
+    + apply IHt1 in Hneq'.
+      * rewrite Hneq.
+      *
+    +
+    
+
+    
+    
+Lemma fv_nom_equal: forall t u, t =a u -> fv_nom t = fv_nom u.
+Proof.
+  induction 1.
+  - reflexivity.
+  - simpl. rewrite IHaeq; reflexivity.
+  - simpl. rewrite IHaeq.
+    
+  intros t u Haeq.
+*)
+
 
 (*
 (* AtomSetProperties.FM.singleton_m, KeySetFacts.singleton_m, KeySetProperties.Dec.F.singleton_m: forall x y, x = y -> singleton x [=] singleton y. *)
@@ -1641,62 +1700,6 @@ Require Import Setoid Morphisms.
 Declare Instance Equivalence_Equal: Equivalence AtomSetImpl.Equal.
  *)
 
-
-Conjecture remove_singleton_empty_eq: forall x, remove x (singleton x) = empty.
-Conjecture remove_singleton_eq: forall x y, remove x (singleton y) = singleton y.
-
-Lemma remove_remove_fv_nom_swap: forall t x y, x <> y -> remove x (remove y (fv_nom (swap y x t))) = remove y (remove x (fv_nom t)).
-Proof. Admitted. 
-
-Lemma double_remove_eq: forall t x, remove x (remove x (fv_nom t)) = remove x (fv_nom t). 
-Proof. Admitted.
-
-Lemma remove_comm_eq: forall t x y, remove x (remove y (fv_nom t)) = remove y (remove x (fv_nom t)). 
-Proof. Admitted.
-
-Lemma remove_fv_nom_swap: forall t x y, x <> y -> x `notin` fv_nom t -> remove x (fv_nom (swap y x t)) = remove y (fv_nom t).
-Proof.
-  induction t as [z | t1 z | t1 t2 | t1 t2 z ] using n_sexp_induction.
-  - intros x y Hneq Hnotin. simpl in *. apply notin_singleton_1 in Hnotin. unfold vswap. destruct (z == y).
-    + subst. repeat rewrite remove_singleton_empty_eq. reflexivity.
-    + destruct (z == x).
-      * subst. contradiction.
-      * repeat rewrite remove_singleton_eq. reflexivity.
-  - intros x y Hneq Hnotin. simpl in *. apply notin_remove_1 in Hnotin. destruct Hnotin.
-    + subst. unfold vswap. rewrite eq_dec_refl. destruct (x == y).
-      * subst. contradiction.
-      * rewrite remove_remove_fv_nom_swap.
-        ** reflexivity.
-        ** assumption.
-    + unfold vswap. destruct (z == y).
-      * subst. repeat rewrite double_remove_eq. apply H.
-        ** reflexivity.
-        ** assumption.
-        ** assumption.
-      * destruct (z == x).
-        ** subst. apply remove_remove_fv_nom_swap. assumption.
-        ** rewrite remove_comm_eq. rewrite H.
-           *** apply remove_comm_eq.
-           *** reflexivity.
-           *** assumption.
-           *** assumption.
-  - intros x y Hneq Hnotin. simpl in *. assert (Hnotin' := Hnotin). apply notin_union_1 in Hnotin. apply notin_union_2 in Hnotin'. assert (Hneq' := Hneq). apply IHt2 in Hneq.
-    + apply IHt1 in Hneq'.
-      * rewrite Hneq.
-      *
-    +
-    
-
-    
-    
-Lemma fv_nom_equal: forall t u, t =a u -> fv_nom t = fv_nom u.
-Proof.
-  induction 1.
-  - reflexivity.
-  - simpl. rewrite IHaeq; reflexivity.
-  - simpl. rewrite IHaeq.
-    
-  intros t u Haeq.
 
   
 Lemma aeq_m_subst_in: forall t u u' x, u =a u' -> ({x := u}t) =a ({x := u'}t).
