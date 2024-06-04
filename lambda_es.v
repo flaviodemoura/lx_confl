@@ -1151,16 +1151,46 @@ Qed.
 
 (** The following lemma states that if $x \notin fv(t)$ then $\metasub{t}{x}{u} =_\alpha t$. In informal proofs the conclusion of this lemma is usually stated as a syntactic equality, %{\i.e.}% $\metasub{t}{x}{u} = t$ instead of the $\alpha$-equivalence, but the function [subst_rec_fun] renames bound variables whenever the metasubstitution is propagated inside an abstraction or an explicit substitution, even in the case that the metasubstitution has no effect in the subterm it is propagated, as long as the variables of the metasubstitution and the binder (abstraction or explicit substitution) are different of each other. That's why the syntactic equality does not hold here. *)
 
+(* Tentar provar estas conjecturas dentro de Metalib. *)
+Conjecture remove_singleton_empty_eq: forall x, remove x (singleton x) = empty. 
+Conjecture remove_singleton_eq: forall x y, x <> y -> remove x (singleton y) = singleton y.
+
+Lemma remove_fv_nom_swap_eq: forall t x y, y `notin` fv_nom t -> remove y (fv_nom (swap x y t)) = remove x (fv_nom t).
+Proof.
+  induction t as [z | t1 z | t1 t2 | t1 t2 z ] using n_sexp_induction.
+  - intros x y H.  simpl in *. apply notin_singleton_1 in H. unfold vswap. destruct (z == x).
+    + subst. repeat rewrite remove_singleton_empty_eq. reflexivity.
+    + destruct (z == y).
+      * contradiction.
+      * repeat rewrite remove_singleton_eq.
+        ** reflexivity.
+        ** apply aux_not_equal. assumption.
+        ** apply aux_not_equal. assumption.
+  - 
+Admitted.  
+
+Lemma fv_nom_equal: forall t u, t =a u -> fv_nom t = fv_nom u.
+Proof.
+  induction t as [y | t1 y | t1 t2 | t1 t2 y ] using n_sexp_induction.
+  - intros u Haeq. inversion Haeq. subst. reflexivity.
+  - intros u Haeq. inversion Haeq; subst.
+    + simpl. specialize (H t2). assert (H3' := H3). apply aeq_size in H3. symmetry in H3. assert (H' : forall u : n_sexp, t2 =a u -> fv_nom t2 = fv_nom u).
+      {apply H. assumption.} specialize (H' t1). apply aeq_sym in H3'. apply H' in H3'. rewrite H3'. reflexivity.
+    + simpl. specialize (H (swap y0 y t2)). assert (H5' := H5). apply aeq_size in H5'. symmetry in H5'. assert (H' : forall u : n_sexp, swap y0 y t2 =a u -> fv_nom (swap y0 y t2) = fv_nom u). { apply H. assumption.} specialize (H' t1). apply aeq_sym in H5. apply H' in H5. rewrite <- H5. apply remove_fv_nom_swap_eq. assumption.
+Admitted.
+      
+
 Lemma m_subst_notin: forall t u x, x `notin` fv_nom t -> {x := u}t =a t.
 Proof.
   induction t as [y | t1 y | t1 t2 | t1 t2 y ] using n_sexp_induction. 
   - intros u x Hfv. simpl in *. apply notin_singleton_1 in Hfv. rewrite m_subst_var_neq.
     + apply aeq_refl.
     + assumption.
-  - intros u x Hfv. rewrite m_subst_abs. simpl in Hfv. apply notin_remove_1 in Hfv.
-    destruct (x == y).
+  - intros u x Hfv. rewrite m_subst_abs. simpl in Hfv. apply notin_remove_1 in Hfv.  destruct (x == y).
     + apply aeq_refl.
-    + unfold atom_fresh.
+    + assert (H' : fv_nom u [=] singleton x). {admit.}
+      rewrite H'.
+      unfold atom_fresh.
 
 Admitted. (* how to destruct ifthenelse? case (x == y).??
         ** contradiction.

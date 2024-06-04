@@ -74,6 +74,7 @@ Open Scope set_scope.
 Open Scope set_hs_scope.
 
 
+
 (* ********************************************************************** *)
 (** * Environments *)
 
@@ -83,6 +84,7 @@ Open Scope set_hs_scope.
     use [atom] for the type for keys. *)
 
 Module Export EnvImpl := AssocList.Make Atom AtomSetImpl.
+
 
 (** We provide alternative names for the tactics on association lists
     to reflect our use of association lists for environments. *)
@@ -121,6 +123,7 @@ Declare Scope env_scope.
 Notation "[ x ]" := (EnvImpl.one x) : env_scope.
 
 Open Scope env_scope.
+
 
 
 (* ********************************************************************** *)
@@ -254,6 +257,7 @@ Notation " x  == y " := (eq_dec x y) (at level 70) : coqeqdec_scope.
 
 Open Scope coqeqdec_scope.
 
+
 (* ********************************************************************** *)
 (** * Ott compatibility *)
 
@@ -302,7 +306,9 @@ Ltac apply_fresh_base H gather_vars atom_name :=
   let L := beautify_fset L in
   pick fresh x excluding L and apply H.
 
+
 (* SCW added this one for list support *)
 Set Implicit Arguments.
 Definition union_map (A:Set) (f:A -> vars) (l:list A) :=
  (List.fold_right (fun t acc => f t \u acc) {}) l.
+
