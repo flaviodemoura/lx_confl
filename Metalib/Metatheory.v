@@ -312,3 +312,24 @@ Set Implicit Arguments.
 Definition union_map (A:Set) (f:A -> vars) (l:list A) :=
  (List.fold_right (fun t acc => f t \u acc) {}) l.
 
+(* Require Import Coq.Classes.SetoidClass.
+Require Import Coq.Relations.Relation_Definitions.
+
+Require Import Setoid Morphisms.
+Declare Instance Equivalence_Equal: Equivalence AtomSetImpl.Equal. *)
+
+Lemma test2: forall a b, (singleton a) [=] (singleton b) -> let x := (singleton a) in True.
+Proof.
+  intros a b H. Fail rewrite H. 
+Abort.
+
+Lemma test3: forall a b, (singleton a) [=] (singleton b) -> let (x,_) := atom_fresh (singleton a) in True.
+Proof.
+  intros a b H. Fail rewrite H. 
+Abort.
+
+Lemma test4: forall a b, (singleton a) [=] (singleton b) -> let (x,_) := atom_fresh (singleton a) in True.
+Proof.
+  intros a b H. destruct (atom_fresh (singleton a)). rewrite H in n. 
+Abort.
+

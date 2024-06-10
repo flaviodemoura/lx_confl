@@ -1152,13 +1152,77 @@ Qed.
 (** The following lemma states that if $x \notin fv(t)$ then $\metasub{t}{x}{u} =_\alpha t$. In informal proofs the conclusion of this lemma is usually stated as a syntactic equality, %{\i.e.}% $\metasub{t}{x}{u} = t$ instead of the $\alpha$-equivalence, but the function [subst_rec_fun] renames bound variables whenever the metasubstitution is propagated inside an abstraction or an explicit substitution, even in the case that the metasubstitution has no effect in the subterm it is propagated, as long as the variables of the metasubstitution and the binder (abstraction or explicit substitution) are different of each other. That's why the syntactic equality does not hold here. *)
 
 (* Tentar provar estas conjecturas dentro de Metalib. *)
+(* adicionada no arquivo CoqFSetDecide.v, mas não está visível. 
 Conjecture remove_singleton_empty_eq: forall x, remove x (singleton x) = empty. 
+
+Conjecture remove_empty_eq: forall x, remove x empty = empty. 
+
 Conjecture remove_singleton_eq: forall x y, x <> y -> remove x (singleton y) = singleton y.
 
-Lemma remove_fv_nom_swap_eq: forall t x y, y `notin` fv_nom t -> remove y (fv_nom (swap x y t)) = remove x (fv_nom t).
+Conjecture remove_symmetric_eq: forall s x y, remove x (remove y s) = remove y (remove x s).
+
+Conjecture double_remove_eq: forall s x, remove x (remove x s) = remove x s.
+
+Lemma equal_sets: forall a b, union (singleton a) (singleton b) [=] union (singleton a) (union (singleton a) (singleton b)).
+Proof.
+  fsetdec.
+Qed. (* apenas teste - remover *)
+
+Lemma remove_remove_singleton: forall x y,  remove x (remove y (singleton x)) = remove y (remove x (singleton y)).
+Proof.
+  intros x y. destruct (x == y).
+  - subst. reflexivity.
+  - rewrite remove_singleton_eq.
+    + symmetry. rewrite remove_singleton_eq.
+      * repeat rewrite remove_singleton_empty_eq. reflexivity.
+      * assumption.
+    + apply aux_not_equal. assumption.
+Qed.  
+  
+Lemma remove_remove_fv_nom_swap_eq: forall t x y,  remove x (remove y (fv_nom (swap x y t))) = remove y (remove x (fv_nom t)).
 Proof.
   induction t as [z | t1 z | t1 t2 | t1 t2 z ] using n_sexp_induction.
-  - intros x y H.  simpl in *. apply notin_singleton_1 in H. unfold vswap. destruct (z == x).
+  - intros x y. simpl. unfold vswap. destruct (z == x).
+    + subst. repeat rewrite remove_singleton_empty_eq. repeat rewrite remove_empty_eq. reflexivity.
+    + destruct (z == y).
+      * subst. apply remove_remove_singleton.
+      * repeat rewrite remove_singleton_eq.
+        ** reflexivity.
+        ** apply aux_not_equal. assumption.
+        ** apply aux_not_equal. assumption.
+        ** apply aux_not_equal. assumption.
+  - intros x y. simpl. unfold vswap. destruct (z == x).
+    + subst. rewrite remove_symmetric_eq. symmetry. rewrite remove_symmetric_eq. symmetry. rewrite H.
+      * rewrite double_remove_eq. symmetry. rewrite remove_symmetric_eq. rewrite double_remove_eq. reflexivity.
+      * reflexivity.
+    + destruct (z == y).
+      * subst. rewrite swap_symmetric. rewrite H.
+        ** rewrite double_remove_eq. symmetry. rewrite remove_symmetric_eq. rewrite double_remove_eq. reflexivity.
+        ** reflexivity.
+      * rewrite (remove_symmetric_eq _ y z). rewrite (remove_symmetric_eq _ x z). rewrite H.
+        ** symmetry. rewrite (remove_symmetric_eq _ x z). rewrite (remove_symmetric_eq _ y z). reflexivity.
+        ** reflexivity.
+  - intros x y. simpl. rewrite remove_union_distrib.
+    rewrite remove_symmetric_eq. rewrite remove_symmetric_eq. rewrite H. reflexivity.
+
+    
+        ** apply aux_not_equal. assumption.
+      repeat rewrite remove_singleton_empty_eq. repeat rewrite remove_empty_eq. reflexivity.
+    + destruct (z == y).
+      * subst. apply remove_remove_singleton.
+      * repeat rewrite remove_singleton_eq.
+        ** reflexivity.
+        ** apply aux_not_equal. assumption.
+        ** apply aux_not_equal. assumption.
+        ** apply aux_not_equal. assumption.
+
+
+
+    
+Lemma remove_fv_nom_swap_eq: forall t x y, x <> y -> y `notin` fv_nom t -> remove y (fv_nom (swap x y t)) = remove x (fv_nom t).
+Proof. 
+  induction t as [z | t1 z | t1 t2 | t1 t2 z ] using n_sexp_induction.
+  - intros x y Hneq Hfv. simpl in *. apply notin_singleton_1 in Hfv. unfold vswap. destruct (z == x).
     + subst. repeat rewrite remove_singleton_empty_eq. reflexivity.
     + destruct (z == y).
       * contradiction.
@@ -1166,19 +1230,33 @@ Proof.
         ** reflexivity.
         ** apply aux_not_equal. assumption.
         ** apply aux_not_equal. assumption.
-  - 
-Admitted.  
+  - intros x y Hneq Hfv. simpl in *.
+
+
+    apply notin_remove_1 in Hfv. destruct Hfv as [Heq | Hfv].
+    + subst. unfold vswap. rewrite eq_dec_refl. destruct (y == x).
+      * subst. contradiction.
+      * rewrite swap_symmetric. rewrite H. 
+Admitted.
 
 Lemma fv_nom_equal: forall t u, t =a u -> fv_nom t = fv_nom u.
 Proof.
-  induction t as [y | t1 y | t1 t2 | t1 t2 y ] using n_sexp_induction.
-  - intros u Haeq. inversion Haeq. subst. reflexivity.
-  - intros u Haeq. inversion Haeq; subst.
-    + simpl. specialize (H t2). assert (H3' := H3). apply aeq_size in H3. symmetry in H3. assert (H' : forall u : n_sexp, t2 =a u -> fv_nom t2 = fv_nom u).
-      {apply H. assumption.} specialize (H' t1). apply aeq_sym in H3'. apply H' in H3'. rewrite H3'. reflexivity.
-    + simpl. specialize (H (swap y0 y t2)). assert (H5' := H5). apply aeq_size in H5'. symmetry in H5'. assert (H' : forall u : n_sexp, swap y0 y t2 =a u -> fv_nom (swap y0 y t2) = fv_nom u). { apply H. assumption.} specialize (H' t1). apply aeq_sym in H5. apply H' in H5. rewrite <- H5. apply remove_fv_nom_swap_eq. assumption.
-Admitted.
-      
+  intros t u H. induction H.
+  - reflexivity.
+  - simpl. rewrite IHaeq. reflexivity.
+  - simpl. rewrite IHaeq. apply remove_fv_nom_swap_eq.
+    + apply aux_not_equal. assumption.
+    + assumption.
+  - simpl. rewrite IHaeq1. rewrite IHaeq2. reflexivity.
+  - simpl. rewrite IHaeq1. rewrite IHaeq2. reflexivity.
+  - simpl. rewrite IHaeq1. rewrite IHaeq2. rewrite remove_fv_nom_swap_eq.
+    + reflexivity.
+    + apply aux_not_equal. assumption.
+    + assumption.
+Qed. try another solution. The syntactic equality does not seem to work. *) 
+
+
+
 
 Lemma m_subst_notin: forall t u x, x `notin` fv_nom t -> {x := u}t =a t.
 Proof.

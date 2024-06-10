@@ -179,7 +179,6 @@ Proof.
 Qed.
 
 
-
 (* ********************************************************************** *)
 (** * Tactic support for picking fresh atoms *)
 
@@ -286,4 +285,3 @@ Proof.
   trivial.
 Qed.
 (* end show *)
-

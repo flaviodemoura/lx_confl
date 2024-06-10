@@ -892,6 +892,12 @@ the above form:
         In x s -> Subset (singleton x) s.
     Proof. fsetdec. Qed.
 
+
+    (*Flavio added 2024-06-10 *)
+    Lemma  remove_singleton_empty_eq: forall x, remove x (singleton x) = empty.
+    Proof.
+      Admitted.
+      
   End FSetDecideTestCases.
 
 End WDecide_fun.
