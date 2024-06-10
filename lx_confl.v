@@ -60,43 +60,6 @@ Proof.
     + apply aeq_sym. apply aeq_swap_m_subst.
 Qed.
 (*                                                                                            
-Lemma aeq_P: forall t1 t2, t1 =a t2 -> (P t1) =a (P t2).
-Proof.
-  induction t1 as [x | t11 x IH | t11 t12 IH1 IH2 | t11 t12 x IH1 IH2] using n_sexp_induction.
-  - intros t2 H. inversion H; subst. apply aeq_refl.
-  - intros t2 H'. inversion H'; subst.
-    + simpl. apply aeq_abs_same. rewrite <- (swap_id t11 x). rewrite <- (swap_id t11 x) in H2. apply IH.
-      * reflexivity.
-      * assumption.
-    + simpl. apply aeq_abs_diff.
-      * assumption.
-      * apply notin_P. assumption.
-      * apply aeq_trans with (P (swap y x t0)).
-        ** symmetry. apply IH.
-           *** apply aeq_size in H4. rewrite swap_size_eq in H4. symmetry; assumption.
-           *** apply aeq_sym. assumption.
-        ** apply aeq_swap_P.
-  - intros t2 H. inversion H; subst. simpl. apply aeq_app.
-    + apply IH1. assumption.
-    + apply IH2. assumption.
-  - intros t2 H. inversion H; subst.
-    + apply (aeq_trans _ ({x := (P t12)}(P t1'))).
-      * simpl. apply aeq_m_subst_out. rewrite <- (swap_id t11 x). apply IH2.
-        ** reflexivity.
-        ** rewrite swap_id. assumption.
-      * simpl. apply aeq_m_subst_in. apply IH1. assumption.
-    + apply (aeq_trans _ (m_subst (P t2') z (P t1_1))).
-       --- apply aeq_m_subst_1. apply IHt1_1. assumption.
-       --- apply aeq_m_subst_3.
-           ---- assumption.
-           ---- apply notin_P. assumption.
-           ---- apply aeq_sym. apply (aeq_trans _ (P (swap z y t1'))).
-                ----- apply aeq_sym. apply aeq_swap_P.
-                ----- apply H.
-                      ------ apply aeq_size in H8. rewrite H8. rewrite swap_size_eq. reflexivity.
-                      ------ apply aeq_sym. rewrite swap_symmetric. assumption.
-Qed.
-
 Lemma notin_swap_P_1: forall t x y z, x `notin` fv_nom (P (swap y z t)) ->  x `notin` fv_nom (swap y z(P t)).
 Proof.
   induction t;intros.
@@ -175,14 +138,55 @@ Proof.
   - apply notin_swap_P_2.
   - apply notin_swap_P_1.
 Qed.
+*)
+
+Lemma aeq_swap_subst: forall t1 t2 x y, x<>y -> x `notin` fv_nom t1 -> ({x := P t2} P t1) =a ({y := P t2} P t1).
+Admitted.
+
+Lemma aeq_P: forall t1 t2, t1 =a t2 -> (P t1) =a (P t2).
+Proof.
+  induction t1 as [x | t11 x IH | t11 t12 IH1 IH2 | t11 t12 x IH1 IH2] using n_sexp_induction.
+  - intros t2 H. inversion H; subst. apply aeq_refl.
+  - intros t2 H'. inversion H'; subst.
+    + simpl. apply aeq_abs_same. rewrite <- (swap_id t11 x). rewrite <- (swap_id t11 x) in H2. apply IH.
+      * apply swap_size_eq.
+      * assumption.
+    + simpl. apply aeq_abs_diff.
+      * assumption.
+      * apply notin_P. assumption.
+      * apply aeq_trans with (P (swap y x t0)).
+        ** symmetry. apply IH.
+           *** apply aeq_size in H4. symmetry. assumption.
+           *** apply aeq_sym. assumption.
+        ** apply aeq_swap_P.
+  - intros t2 H. inversion H; subst. simpl. apply aeq_app.
+    + apply IH1. assumption.
+    + apply IH2. assumption.
+  - intros t2 H. inversion H; subst; simpl.
+    + apply (aeq_trans _ ({x := (P t12)}(P t1'))).
+      * apply aeq_m_subst_out. apply IH2.
+        ** reflexivity.
+        ** assumption.
+      *  apply aeq_m_subst_in. apply IH1. assumption.
+    + apply (aeq_trans _ ({x := P t2'} P t11)).
+       * apply aeq_m_subst_in. apply IH1. assumption.
+       * apply (aeq_trans _ ({x := P t2'} P t1')).
+        ** apply aeq_m_subst_out. apply IH2; auto. admit.
+        ** apply aeq_swap_subst; assumption.
+
+
+Qed.
+
 
 (*Lemma 5.3(1) in Nakazawa*)    
 Lemma pi_P: forall t1 t2, (ctx pix) t1 t2 -> (P t1) =a (P t2).
 Proof.
   intros t1 t2 H. induction H.
-  - apply aeq_P.
-    assumption.
-  - inversion H0; subst.
+  - apply aeq_P. assumption.
+  - admit.
+  - apply aeq_P. apply aeq_abs_same. apply P_aeq in IHctx. assumption.
+
+inversion H0; subst.
     -- apply aeq_trans with (P e3).
        --- apply aeq_P in H.
            simpl in H.
@@ -335,7 +339,7 @@ Proof.
   - simpl. apply aeq_m_subst_2. assumption.
   - simpl. apply aeq_m_subst_1. assumption.
 Qed.
- *)
+ 
 
 (*Lemma 2 in Nakazawa - Jose Roberto para 14/5/2024 *)
 Lemma pure_P: forall t, pure (P t).
@@ -512,6 +516,37 @@ Proof.
        --- assumption.  
 Qed.
     
+Lemma refltrans_abs_diff (R: Rel n_sexp): forall e1 e2 x y, x <> y -> x `notin` fv_nom e2 -> refltrans (ctx R) e1 (swap x y e2) -> refltrans (ctx R) (n_abs x e1) (n_abs y e2).
+Proof.
+  intros. inversion H1;subst.
+    - apply refl_aeq. apply aeq_abs_diff.
+      + assumption.
+      + assumption.
+      + rewrite swap_symmetric. apply aeq_refl.
+    - apply refltrans_composition with (n_abs x b).
+      + apply rtrans with (n_abs x b).
+        * apply step_abs_in. assumption.
+        * apply refl.
+      + apply refltrans_composition with (n_abs x (swap x y e2)).
+        * apply refltrans_abs. assumption.
+        * apply refl_aeq. apply aeq_abs_diff.
+          ** assumption.
+          ** assumption.
+          ** rewrite swap_symmetric. apply aeq_refl.
+    - apply refltrans_composition with (n_abs x (swap x y e2)).
+      + apply refl_aeq. apply aeq_abs_same. assumption.
+      + apply refl_aeq. apply aeq_abs_diff.
+          * assumption.
+          * assumption.
+          * rewrite swap_symmetric. apply aeq_refl.
+    - apply refltrans_composition with (n_abs x (swap x y e2)).
+      + apply refltrans_abs. assumption.
+      + apply refl_aeq. apply aeq_abs_diff.
+          * assumption.
+          * assumption.
+          * rewrite swap_symmetric. apply aeq_refl.
+Qed.
+
 Lemma refltrans_app1 (R: Rel n_sexp): forall e1 e2 e3, refltrans (ctx R) e1 e2 -> refltrans (ctx R) (n_app e1 e3) (n_app e2 e3).
 Proof.
   intros e1 e2 e3. intro H. induction H.
@@ -617,17 +652,55 @@ Proof.
        --- apply refl.
     -- intros. apply rtrans with ({x0 := e2} n_var x).
        --- apply step_redex_R. rewrite m_subst_var_neq. 
-            ++ apply step_gc. assumption.
-            ++ assumption.
+            ---- apply step_gc. assumption.
+            ---- assumption.
        --- apply refl.  
   - intros. inversion H0; subst. destruct (x == z).
     -- subst. apply rtrans with ({z := e2} n_abs z e1).
        --- apply step_redex_R. rewrite m_subst_abs_eq. apply step_abs1.
        --- apply refl.
-    -- apply rtrans with ({x := e2} n_abs z e1).
-      --- apply step_redex_R.
-      --- apply refl.
+    -- pose proof in_or_notin. specialize (H1 z (fv_nom(e2))). destruct H1. 
+        --- apply rtrans with (let (z',_) := (atom_fresh (Metatheory.union (singleton z) (Metatheory.union (singleton x) 
+            (Metatheory.union (fv_nom e2) (fv_nom e1))))) in (n_abs z' ([x := e2] (swap z z' e1)))).
+            ---- apply step_redex_R. destruct (atom_fresh (Metatheory.union (singleton z) (Metatheory.union (singleton x) 
+                 (Metatheory.union (fv_nom e2) (fv_nom e1))))). apply step_abs3.
+              ----- apply aux_not_equal in n. assumption.
+              ----- apply notin_union_1 in n0. apply notin_singleton_1 in n0. apply aux_not_equal in n0. assumption.
+              ----- apply notin_union_2 in n0. apply notin_union_1 in n0. apply notin_singleton_1 in n0. apply aux_not_equal in n0. assumption.
+              ----- assumption.
+              ----- apply notin_union_2 in n0. apply notin_union_2 in n0. apply notin_union_2 in n0. assumption.
+              ----- apply notin_union_2 in n0. apply notin_union_2 in n0. apply notin_union_1 in n0. assumption.
+            ---- destruct (atom_fresh (Metatheory.union (singleton z) (Metatheory.union (singleton x) (Metatheory.union (fv_nom e2) (fv_nom e1))))).
+                unfold m_subst. rewrite subst_rec_fun_equation. destruct (x==z).
+                ----- subst. contradiction.
+                ----- destruct (atom_fresh (Metatheory.union (fv_nom e2) (Metatheory.union (fv_nom (n_abs z e1)) (singleton x)))). 
+                    simpl in n2. case (x0 == x1).
+                    ------ intro. subst. apply refltrans_abs. apply H.
+                      ------- apply swap_size_eq.
+                      ------- apply pure_swap. assumption.
+                    ------ intro. apply refltrans_abs_diff.
+                      ------- assumption.
+                      ------- Search subst_rec_fun.
+                      ------- admit.
+        ---  apply rtrans with (let (z',_) := (atom_fresh (Metatheory.union (singleton z) (Metatheory.union (singleton x) 
+            ( (fv_nom e1))))) in (n_abs z' ([x := e2] (swap z z' e1)))).
+            ---- apply step_redex_R. destruct (atom_fresh (Metatheory.union (singleton z) (Metatheory.union (singleton x) 
+                 (Metatheory.union (fv_nom e2) (fv_nom e1))))). apply step_abs3.
 
+apply step_abs3.
+
+ apply rtrans with (let (z',_) := (atom_fresh (Metatheory.union (singleton z) (Metatheory.union (singleton x) 
+            (Metatheory.union (fv_nom e2) (fv_nom e1))))) in (n_abs z' ([x := e2] (swap z z' e1)))).
+          ---- apply step_redex_R. destruct (atom_fresh (Metatheory.union (singleton z) (Metatheory.union (singleton x) 
+                 (Metatheory.union (fv_nom e2) (fv_nom e1))))). apply step_abs3.
+              ----- apply aux_not_equal in n. assumption.
+              ----- apply notin_union_1 in n0. apply notin_singleton_1 in n0. apply aux_not_equal in n0. assumption.
+              ----- apply notin_union_2 in n0. apply notin_union_1 in n0. apply notin_singleton_1 in n0. apply aux_not_equal in n0. assumption.
+              ----- assumption.
+              ----- apply notin_union_2 in n0. apply notin_union_2 in n0. apply notin_union_2 in n0. assumption.
+              ----- apply notin_union_2 in n0. apply notin_union_2 in n0. apply notin_union_1 in n0. assumption.
+
+(*
 
 default_simp. pose proof in_or_notin. specialize (H0 z (fv_nom e2)). destruct H0.
        --- apply (rtrans _ _ (n_abs x0 (n_sub (swap z x0 e1) x e2))).
@@ -659,8 +732,8 @@ default_simp. pose proof in_or_notin. specialize (H0 z (fv_nom e2)). destruct H0
                       ------ rewrite <- (swap_size_eq z x0). apply H.
                              * reflexivity.
                              * apply pure_swap. assumption.
-  - intros.
-    apply refltrans_composition with (n_app (m_subst e2 x e1_1) (m_subst e2 x e1_2)).
+*)
+  - intros. apply refltrans_composition with (n_app (m_subst e2 x e1_1) (m_subst e2 x e1_2)).
     -- apply rtrans with (n_app (n_sub e1_1 x e2) (n_sub e1_2 x e2)).
        --- apply step_redex_R. apply step_app.
        --- inversion H; subst.
