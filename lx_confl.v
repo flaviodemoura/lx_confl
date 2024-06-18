@@ -203,7 +203,9 @@ Proof.
            apply aeq_trans with (n_abs x0 (subst_rec_fun (swap x x0 (P e0)) (P e5) y)).
            ---- assumption.
            ---- apply aeq_P in H1. apply aeq_trans with (P (n_abs x ([y := e5] e0))).
-                ----- simpl. unfold m_subst. Search n_abs. apply m_subst_abs_neq. apply aeq_abs_diff.
+                ----- simpl. unfold m_subst. Search n_abs. 
+
+(*apply m_subst_abs_neq. apply aeq_abs_diff.
                     ------ apply notin_union_2 in n0. apply notin_union_1 in n0. Search (_`notin`_).
  pose proof swap_reduction.
 
@@ -248,7 +250,7 @@ rewrite subst_rec_fun_equation. in Hcase ( x == x0 ).
                                               apply aeq_swap0.
                                               --------- apply notin_P. assumption.
                                               --------- default_simp.
-                                     -------- apply aeq_sym. apply aeq_swap_m_subst.*)
+                                     -------- apply aeq_sym. apply aeq_swap_m_subst.
                 ----- assumption.
     -- apply aeq_P in H. simpl in H. apply aeq_P in H1. simpl in H1.  apply (aeq_trans _
        (m_subst (P e5) y (n_abs x (P e0)))).
@@ -319,8 +321,8 @@ rewrite subst_rec_fun_equation. in Hcase ( x == x0 ).
     -- assumption.
   - simpl. apply aeq_m_subst_2. assumption.
   - simpl. apply aeq_m_subst_1. assumption.
-Qed.
-Qed.
+*)
+Admitted.
  
 
 (*Lemma 2 in Nakazawa - Jose Roberto para 14/5/2024 *)
@@ -671,28 +673,49 @@ Proof.
                       ------- assumption.
                       ------- apply fv_nom_remove. 
                         -------- apply notin_union_2 in n0. apply notin_union_2 in n0. apply notin_union_1 in n0. apply n0.
-                        -------- apply notin_remove_2. Search swap. apply fv_nom_remove_swap; auto.
+                        -------- apply notin_remove_2. assert (n0Copy:= n0). repeat apply notin_union_2 in n0. apply notin_union_1 in n0Copy. apply notin_singleton_1' in n0Copy. 
+                                  apply aux_not_equal in n0Copy. apply fv_nom_remove_swap; assumption.
                       ------- specialize (H (swap z x0 e1)). apply refltrans_composition with ({x := e2} swap z x0 e1).
                         -------- apply H. apply swap_size_eq. apply pure_swap. assumption.
                         -------- apply refl_aeq. apply aeq_sym. apply aeq_trans with (subst_rec_fun (swap x0 x1 (swap z x1 e1)) (swap x0 x1 e2) (vswap x0 x1 x)).
                           --------- apply aeq_swap_m_subst.
                           --------- rewrite vswap_neq; try auto. assert (Hneq: x1 <> z).
-                                        { apply (var_diff e2 x1 z); try assumption. apply notin_union_1 in n2. assumption. } 
+                                        { apply notin_union_1 in n2. apply (var_diff e2 x1 z); assumption. } 
                                          unfold m_subst. apply aeq_m_subst_eq.
-                            ---------- rewrite (swap_symmetric _ z x1). rewrite (swap_symmetric _ z x0). apply aeq_swap_swap; auto.
+                            ---------- rewrite (swap_symmetric _ z x1). rewrite (swap_symmetric _ z x0). apply aeq_swap_swap. 
+                              ----------- repeat apply notin_union_2 in n0. assumption.
+                              ----------- auto.
                             ---------- apply swap_reduction; auto.
-        --- apply rtrans with (let (z',_) := (atom_fresh (Metatheory.union (singleton z) (Metatheory.union (singleton x) 
-            ( (fv_nom e1))))) in (n_abs z' ([x := e2] (swap z z' e1)))).
-            ---- apply step_redex_R. destruct (atom_fresh (Metatheory.union (singleton z) (Metatheory.union (singleton x) 
-                 (fv_nom e1)))). apply step_abs3.
-              ----- apply aux_not_equal in n. assumption.
-              ----- apply notin_union_1 in n0. apply notin_singleton_1 in n0. apply aux_not_equal in n0. assumption.
-              ----- apply notin_union_2 in n0. apply notin_union_1 in n0. apply notin_singleton_1 in n0. apply aux_not_equal in n0. assumption.
-              ----- admit.
-              ----- apply notin_union_2 in n0. apply notin_union_2 in n0. assumption.
-              ----- admit.
-            ----
-
+        --- apply rtrans with (n_abs z ([x := e2]e1)).
+          ---- apply step_redex_R. apply step_abs2.
+            ----- apply aux_not_equal in n. assumption.
+            ----- assumption.
+          ---- unfold m_subst. rewrite subst_rec_fun_equation. destruct (x==z).
+            ----- contradiction.
+            ----- destruct (atom_fresh (Metatheory.union (fv_nom e2)(Metatheory.union (fv_nom (n_abs z e1))(singleton x)))). case (x0 == z).
+              ------ intro. subst. rewrite swap_id. apply refltrans_abs. apply H.
+                ------- reflexivity.
+                ------- assumption.
+              ------ intro. apply refltrans_abs_diff.
+                ------- apply aux_not_equal. assumption.
+                ------- apply fv_nom_remove.
+                  -------- assumption.
+                  -------- apply notin_remove_2. apply fv_nom_swap. apply notin_union_2 in n1. apply notin_union_1 in n1. simpl in n1. apply notin_remove_1 in n1. destruct n1.
+                    --------- subst. contradiction.
+                    --------- assumption.
+                ------- apply refltrans_composition with (subst_rec_fun (swap z x0(swap z x0 e1)) (swap z x0 e2) (vswap z x0 x)).
+                  -------- rewrite vswap_neq.
+                    --------- apply refltrans_composition with (subst_rec_fun (swap z x0 (swap z x0 e1)) e2 x).
+                      ---------- rewrite swap_involutive. apply H.
+                        ----------- reflexivity.
+                        ----------- assumption.
+                      ---------- rewrite swap_involutive. apply refl_aeq. apply aeq_m_subst_in. apply aeq_sym. apply swap_reduction.
+                        ----------- assumption.
+                        ----------- apply notin_union_1 in n1. assumption.
+                       --------- apply aux_not_equal. assumption.
+                       --------- repeat apply notin_union_2 in n1. apply notin_singleton_1 in n1. apply aux_not_equal. assumption.
+                  -------- apply refl_aeq. apply aeq_sym. apply aeq_swap_m_subst.
+                  
 (*
 
 default_simp. pose proof in_or_notin. specialize (H0 z (fv_nom e2)). destruct H0.
