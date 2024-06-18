@@ -183,50 +183,31 @@ Lemma pi_P: forall t1 t2, (ctx pix) t1 t2 -> (P t1) =a (P t2).
 Proof.
   intros t1 t2 H. induction H.
   - apply aeq_P. assumption.
-  - admit.
-  - apply aeq_P. apply aeq_abs_same. apply P_aeq in IHctx. assumption.
-
-inversion H0; subst.
+  - inversion H0; subst.
     -- apply aeq_trans with (P e3).
-       --- apply aeq_P in H.
-           simpl in H.
-           unfold m_subst in H.
-           simpl in H.
-           destruct (y == y).
+       --- apply aeq_P in H. simpl in H. unfold m_subst in H. rewrite subst_rec_fun_equation in H. destruct (y == y).
            ---- assumption.
            ---- contradiction.
        --- apply aeq_P; assumption.
-    -- apply aeq_P in H.
-       simpl in H.
-       unfold m_subst in H.
-       simpl in H.
-       destruct (y == x).
-       --- symmetry in e0.
-           contradiction.
+    -- apply aeq_P in H. simpl in H. unfold m_subst in H. rewrite subst_rec_fun_equation in H. destruct (y == x).
+       --- symmetry in e0. contradiction.
        --- apply aeq_trans with (n_var x).
            ---- assumption.
-           ---- apply aeq_P in H1.
-                simpl in H1.
-                assumption.
-    -- apply aeq_P in H. simpl in H. unfold m_subst in H.
-       simpl in H. destruct (y == y).
-       --- apply aeq_P in H1. simpl in H1.
-           apply (aeq_trans _ _ _ H H1).
+           ---- apply aeq_P in H1. simpl in H1. assumption.
+    -- apply aeq_P in H. simpl in H. unfold m_subst in H. rewrite subst_rec_fun_equation in H. destruct (y == y).
+       --- apply aeq_P in H1. simpl in H1. apply (aeq_trans _ _ _ H H1).
        --- contradiction.
-    -- apply aeq_P in H.
-       simpl in H.
-       unfold m_subst in H.
-       simpl in H.
-       destruct (y == x).
+    -- apply aeq_P in H. simpl in H. unfold m_subst in H. rewrite subst_rec_fun_equation in H. destruct (y == x).
        --- symmetry in e; contradiction.
-       --- destruct (atom_fresh (Metatheory.union (fv_nom (P e5)) (Metatheory.union (remove x (fv_nom (P e0))) (singleton y)))).
-           apply aeq_trans with (n_abs x0 (subst_rec (size (P e0)) (swap x x0 (P e0)) (P e5) y)).
+       --- destruct (atom_fresh(Metatheory.union (fv_nom (P e5))(Metatheory.union (fv_nom (n_abs x (P e0))) (singleton y)))) in H.
+           apply aeq_trans with (n_abs x0 (subst_rec_fun (swap x x0 (P e0)) (P e5) y)).
            ---- assumption.
-           ---- apply aeq_P in H1.
-                simpl in H1.
-                unfold m_subst in H1.
-                apply aeq_trans with (n_abs x (subst_rec (size (P e0)) (P e0) (P e5) y)).
-                ----- case ( x == x0 ).
+           ---- apply aeq_P in H1. apply aeq_trans with (P (n_abs x ([y := e5] e0))).
+                ----- simpl. unfold m_subst. Search n_abs. apply m_subst_abs_neq. apply aeq_abs_diff.
+                    ------ apply notin_union_2 in n0. apply notin_union_1 in n0. Search (_`notin`_).
+ pose proof swap_reduction.
+
+rewrite subst_rec_fun_equation. in Hcase ( x == x0 ).
                       ------ intro Heq; subst.
                              rewrite swap_id.
                              apply aeq_refl.
@@ -267,7 +248,7 @@ inversion H0; subst.
                                               apply aeq_swap0.
                                               --------- apply notin_P. assumption.
                                               --------- default_simp.
-                                     -------- apply aeq_sym. apply aeq_swap_m_subst.
+                                     -------- apply aeq_sym. apply aeq_swap_m_subst.*)
                 ----- assumption.
     -- apply aeq_P in H. simpl in H. apply aeq_P in H1. simpl in H1.  apply (aeq_trans _
        (m_subst (P e5) y (n_abs x (P e0)))).
@@ -338,6 +319,7 @@ inversion H0; subst.
     -- assumption.
   - simpl. apply aeq_m_subst_2. assumption.
   - simpl. apply aeq_m_subst_1. assumption.
+Qed.
 Qed.
  
 
@@ -642,6 +624,13 @@ Proof.
   - apply refltrans_sub1. assumption.
 Qed.
 
+Lemma var_diff: forall e1 x y, x`notin` fv_nom e1 -> y `in` fv_nom e1 -> x <> y.
+Proof.
+  intros. destruct (x == y).
+   - subst. contradiction.
+   - assumption. 
+Qed.
+
 (*Lemma 4 in Nakazawa*)
 Lemma pure_pix: forall e1 x e2, pure e1 -> refltrans (ctx pix) (n_sub e1 x e2) ({x := e2}e1).
 Proof.
@@ -680,25 +669,29 @@ Proof.
                       ------- apply pure_swap. assumption.
                     ------ intro. apply refltrans_abs_diff.
                       ------- assumption.
-                      ------- Search subst_rec_fun.
-                      ------- admit.
-        ---  apply rtrans with (let (z',_) := (atom_fresh (Metatheory.union (singleton z) (Metatheory.union (singleton x) 
+                      ------- apply fv_nom_remove. 
+                        -------- apply notin_union_2 in n0. apply notin_union_2 in n0. apply notin_union_1 in n0. apply n0.
+                        -------- apply notin_remove_2. Search swap. apply fv_nom_remove_swap; auto.
+                      ------- specialize (H (swap z x0 e1)). apply refltrans_composition with ({x := e2} swap z x0 e1).
+                        -------- apply H. apply swap_size_eq. apply pure_swap. assumption.
+                        -------- apply refl_aeq. apply aeq_sym. apply aeq_trans with (subst_rec_fun (swap x0 x1 (swap z x1 e1)) (swap x0 x1 e2) (vswap x0 x1 x)).
+                          --------- apply aeq_swap_m_subst.
+                          --------- rewrite vswap_neq; try auto. assert (Hneq: x1 <> z).
+                                        { apply (var_diff e2 x1 z); try assumption. apply notin_union_1 in n2. assumption. } 
+                                         unfold m_subst. apply aeq_m_subst_eq.
+                            ---------- rewrite (swap_symmetric _ z x1). rewrite (swap_symmetric _ z x0). apply aeq_swap_swap; auto.
+                            ---------- apply swap_reduction; auto.
+        --- apply rtrans with (let (z',_) := (atom_fresh (Metatheory.union (singleton z) (Metatheory.union (singleton x) 
             ( (fv_nom e1))))) in (n_abs z' ([x := e2] (swap z z' e1)))).
             ---- apply step_redex_R. destruct (atom_fresh (Metatheory.union (singleton z) (Metatheory.union (singleton x) 
-                 (Metatheory.union (fv_nom e2) (fv_nom e1))))). apply step_abs3.
-
-apply step_abs3.
-
- apply rtrans with (let (z',_) := (atom_fresh (Metatheory.union (singleton z) (Metatheory.union (singleton x) 
-            (Metatheory.union (fv_nom e2) (fv_nom e1))))) in (n_abs z' ([x := e2] (swap z z' e1)))).
-          ---- apply step_redex_R. destruct (atom_fresh (Metatheory.union (singleton z) (Metatheory.union (singleton x) 
-                 (Metatheory.union (fv_nom e2) (fv_nom e1))))). apply step_abs3.
+                 (fv_nom e1)))). apply step_abs3.
               ----- apply aux_not_equal in n. assumption.
               ----- apply notin_union_1 in n0. apply notin_singleton_1 in n0. apply aux_not_equal in n0. assumption.
               ----- apply notin_union_2 in n0. apply notin_union_1 in n0. apply notin_singleton_1 in n0. apply aux_not_equal in n0. assumption.
-              ----- assumption.
-              ----- apply notin_union_2 in n0. apply notin_union_2 in n0. apply notin_union_2 in n0. assumption.
-              ----- apply notin_union_2 in n0. apply notin_union_2 in n0. apply notin_union_1 in n0. assumption.
+              ----- admit.
+              ----- apply notin_union_2 in n0. apply notin_union_2 in n0. assumption.
+              ----- admit.
+            ----
 
 (*
 
