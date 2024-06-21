@@ -173,8 +173,15 @@ Proof.
        * apply (aeq_trans _ ({x := P t2'} P t1')).
         ** apply aeq_m_subst_out. apply IH2; auto. admit.
         ** apply aeq_swap_subst; assumption.
+Admitted.
 
-
+Lemma notin_abs: forall x y e, x <> y -> x `notin` fv_nom (n_abs y e) -> x `notin` fv_nom e.
+Proof.
+  intros. pose proof in_or_notin. specialize (H1 x (fv_nom e)). destruct H1.
+    - simpl in H0. apply notin_remove_1 in H0. destruct H0.
+      + subst. contradiction.
+      + assumption.
+    - assumption.
 Qed.
 
 
@@ -184,26 +191,77 @@ Proof.
   intros t1 t2 H. induction H.
   - apply aeq_P. assumption.
   - inversion H0; subst.
-    -- apply aeq_trans with (P e3).
-       --- apply aeq_P in H. simpl in H. unfold m_subst in H. rewrite subst_rec_fun_equation in H. destruct (y == y).
-           ---- assumption.
-           ---- contradiction.
-       --- apply aeq_P; assumption.
-    -- apply aeq_P in H. simpl in H. unfold m_subst in H. rewrite subst_rec_fun_equation in H. destruct (y == x).
-       --- symmetry in e0. contradiction.
-       --- apply aeq_trans with (n_var x).
-           ---- assumption.
-           ---- apply aeq_P in H1. simpl in H1. assumption.
-    -- apply aeq_P in H. simpl in H. unfold m_subst in H. rewrite subst_rec_fun_equation in H. destruct (y == y).
-       --- apply aeq_P in H1. simpl in H1. apply (aeq_trans _ _ _ H H1).
-       --- contradiction.
-    -- apply aeq_P in H. simpl in H. unfold m_subst in H. rewrite subst_rec_fun_equation in H. destruct (y == x).
-       --- symmetry in e; contradiction.
-       --- destruct (atom_fresh(Metatheory.union (fv_nom (P e5))(Metatheory.union (fv_nom (n_abs x (P e0))) (singleton y)))) in H.
+    + apply aeq_trans with (P e3).
+       * apply aeq_P in H. simpl in H. unfold m_subst in H. rewrite subst_rec_fun_equation in H. destruct (y == y).
+           ** assumption.
+           ** contradiction.
+       * apply aeq_P; assumption.
+    + apply aeq_P in H. simpl in H. unfold m_subst in H. rewrite subst_rec_fun_equation in H. destruct (y == x).
+       * symmetry in e0. contradiction.
+       * apply aeq_trans with (n_var x).
+           ** assumption.
+           ** apply aeq_P in H1. simpl in H1. assumption.
+    + apply aeq_P in H. simpl in H. unfold m_subst in H. rewrite subst_rec_fun_equation in H. destruct (y == y).
+       * apply aeq_P in H1. simpl in H1. apply (aeq_trans _ _ _ H H1).
+       * contradiction.
+    + apply aeq_P in H. simpl in H. unfold m_subst in H. rewrite subst_rec_fun_equation in H. destruct (y == x).
+       * symmetry in e. contradiction.
+       * destruct (atom_fresh(Metatheory.union (fv_nom (P e5))(Metatheory.union (fv_nom (n_abs x (P e0))) (singleton y)))) in H.
            apply aeq_trans with (n_abs x0 (subst_rec_fun (swap x x0 (P e0)) (P e5) y)).
-           ---- assumption.
-           ---- apply aeq_P in H1. apply aeq_trans with (P (n_abs x ([y := e5] e0))).
-                ----- simpl. unfold m_subst. Search n_abs. 
+           ** assumption.
+           ** apply aeq_P in H1. apply aeq_trans with (P (n_abs x ([y := e5] e0))).
+                *** simpl. unfold m_subst. destruct (x == x0).
+                  **** subst. rewrite swap_id. apply aeq_refl.
+                  **** apply aeq_abs_diff.
+                    ***** apply aux_not_equal. assumption.
+                    ***** apply fv_nom_remove. 
+                      ****** apply notin_union_1 in n0. assumption.
+                      ****** apply notin_remove_2. apply notin_union_2 in n0. apply notin_union_1 in n0. apply (notin_abs x0 x (P e0)).
+                        ******* apply aux_not_equal. assumption.
+                        ******* assumption.
+                    ***** apply aeq_trans with (subst_rec_fun (swap x x0 (P e0)) (swap x x0 (P e5)) (vswap x x0 y)).
+                      ****** unfold vswap. destruct (y == x).
+                        ******* subst. contradiction.
+                        ******* destruct (y == x0).
+                          ******** subst. repeat apply notin_union_2 in n0. apply notin_singleton_1 in n0. contradiction.
+                          ******** apply aeq_m_subst_in. rewrite swap_reduction.
+                            ********* apply aeq_refl.
+                            ********* apply notin_P in H3. assumption.
+                            *********  apply notin_union_1 in n0. assumption.  
+                      ****** apply aeq_sym. apply aeq_swap_m_subst.
+                *** assumption.
+    + apply aeq_P in H. apply aeq_trans with (P([y := e5] n_abs x e0)).
+      * assumption.
+      * apply aeq_trans with (P(n_abs z ([y := e5] swap x z e0))).
+        ** simpl. apply aeq_trans with (n_abs z ({y := P e5} (swap x z (P e0)))).
+          *** apply m_subst_abs_neq.
+            **** apply aux_not_equal. assumption.
+            **** apply notin_union_3.
+              ***** apply notin_P. assumption.
+              ***** apply notin_union_3.
+                ****** pose proof notin_abs. specialize (H8 z x e0). simpl. apply notin_remove_2. apply notin_P. assumption.
+                ****** apply notin_singleton. apply aux_not_equal. assumption.
+          *** apply aeq_abs_same. apply aeq_m_subst_out. apply aeq_sym. apply aeq_swap_P.
+        ** apply aeq_P. assumption.
+    + apply aeq_P in H. apply aeq_trans with (P([y := e6] n_app e0 e5)).
+      * assumption.
+      * apply aeq_P in H1. apply aeq_trans with (P(n_app ([y := e6] e0) ([y := e6] e5))).
+        ** simpl. rewrite m_subst_app. apply aeq_refl.
+        ** assumption.
+  - simpl. apply aeq_abs_same. assumption.
+  - simpl. apply aeq_app.
+    + assumption.
+    + apply aeq_refl.
+  - simpl. apply aeq_app.
+    + apply aeq_refl.
+    + assumption.
+  - simpl. apply aeq_m_subst_eq.
+    + assumption.
+    + apply aeq_refl.
+  - simpl. apply aeq_m_subst_eq.
+    + apply aeq_refl.
+    + assumption.
+Qed.
 
 (*apply m_subst_abs_neq. apply aeq_abs_diff.
                     ------ apply notin_union_2 in n0. apply notin_union_1 in n0. Search (_`notin`_).
